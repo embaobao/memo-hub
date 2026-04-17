@@ -250,8 +250,8 @@ program
 
 // 版本信息
 program
-  .name("memory")
-  .description("独立的双轨记忆系统 CLI 工具")
+  .name("mh")
+  .description("MemoHub - 我的双轨记忆中心")
   .version("1.0.0");
 
 // 解析参数

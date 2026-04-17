@@ -1,0 +1,40 @@
+{
+  "name": "memohub-mcp-server",
+  "version": "1.0.0",
+  "description": "MemoHub MCP Server - 统一的双轨记忆系统 MCP 服务器",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "bun test"
+  },
+  "keywords": [
+    "mcp",
+    "memohub",
+    "gbrain",
+    "clawmem",
+    "memory",
+    "vector-database",
+    "lancedb"
+  ],
+  "author": "盟哥",
+  "license": "MIT",
+  "dependencies": {
+    "@lancedb/lancedb": "^0.26.2",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "bun": ">=1.3.0"
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ]
+}

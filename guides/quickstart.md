@@ -1,0 +1,265 @@
+# 快速开始指南
+
+本指南将帮助你快速上手 MemoHub。
+
+## 前置条件
+
+### 1. 安装 Ollama
+
+MemoHub 使用 Ollama 运行本地嵌入模型。
+
+```bash
+# macOS/Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Windows (使用 WSL)
+wsl bash -c "curl -fsSL https://ollama.com/install.sh | sh"
+```
+
+### 2. 拉取嵌入模型
+
+```bash
+ollama pull nomic-embed-text-v2-moe
+```
+
+### 3. 启动 Ollama 服务
+
+```bash
+ollama serve
+```
+
+验证服务是否运行：
+
+```bash
+curl http://localhost:11434/api/tags
+```
+
+---
+
+## 安装 MemoHub
+
+### 从源码安装（推荐）
+
+```bash
+# 1. 克隆仓库
+git clone https://github.com/your-username/memohub.git
+cd memohub
+
+# 2. 安装依赖
+bun install
+
+# 3. 构建项目
+bun run build
+
+# 4. 配置文件
+cp config/config.example.yaml config/config.yaml
+
+# 5. 测试安装
+mh --help
+```
+
+### 全局安装
+
+```bash
+cd memohub
+bun run build
+npm install -g .
+
+# 验证
+mh --help
+```
+
+---
+
+## 基础使用
+
+### 1. 查看统计信息
+
+```bash
+mh stats
+```
+
+**输出示例**：
+```
+GBrain (通用知识):
+  总记录数: 69
+  数据库路径: ~/.memohub/gbrain.lancedb
+  嵌入模型: nomic-embed-text-v2-moe
+  向量维度: 768
+
+ClawMem (代码记忆):
+  总记录数: 833
+  数据库路径: ~/.memohub/clawmem.lancedb
+  嵌入模型: nomic-embed-text-v2-moe
+  向量维度: 768
+```
+
+### 2. 添加知识
+
+```bash
+# 添加用户偏好
+mh add-knowledge "用户喜欢 TypeScript 和 React 开发" \
+  -c user \
+  -i 0.9 \
+  -t preference,typescript,react
+
+# 添加环境信息
+mh add-knowledge "项目使用 Node.js v22 和 Bun 运行时" \
+  -c environment \
+  -i 0.8 \
+  -t system,nodejs,bun
+
+# 添加项目信息
+mh add-knowledge "项目是一个基于向量嵌入的双轨记忆系统" \
+  -c project \
+  -i 0.9 \
+  -t project,memory,vector
+```
+
+### 3. 搜索知识
+
+```bash
+# 搜索用户偏好
+mh search-knowledge "TypeScript" -l 3
+
+# 搜索环境信息
+mh search-knowledge "Node.js Bun" -l 3
+
+# 搜索项目信息
+mh search-knowledge "向量嵌入" -l 5
+```
+
+### 4. 添加代码片段
+
+```bash
+# 添加接口定义
+mh add-code "interface User { name: string; age: number; }" \
+  -f user.ts \
+  -a interface \
+  -s User \
+  -l typescript \
+  -i 0.8 \
+  -t user,model
+
+# 添加函数
+mh add-code "async function search(query: string): Promise<Result[]>" \
+  -f search.ts \
+  -a function \
+  -s search \
+  -l typescript \
+  -i 0.9 \
+  -t search,async
+
+# 添加类
+mh add-code "class MemoryStore { constructor() {} add(data) {} }" \
+  -f store.ts \
+  -a class \
+  -s MemoryStore \
+  -l typescript \
+  -i 0.9 \
+  -t memory,store
+```
+
+### 5. 搜索代码
+
+```bash
+# 搜索接口
+mh search-code "interface User" -l 3
+
+# 搜索函数
+mh search-code "async function search" -l 5
+
+# 搜索类
+mh search-code "class Memory" -l 3
+```
+
+---
+
+## 配置文件
+
+编辑 `config/config.yaml`：
+
+```yaml
+# 嵌入模型配置
+embedding:
+  model: "nomic-embed-text-v2-moe"
+  baseURL: "http://localhost:11434"
+  dimension: 768
+
+# GBrain 配置
+gbrain:
+  dbPath: "~/.memohub/gbrain.lancedb"
+  tableName: "gbrain"
+
+# ClawMem 配置
+clawmem:
+  dbPath: "~/.memohub/clawmem.lancedb"
+  tableName: "clawmem"
+
+# 同步配置（可选）
+sync:
+  enabled: false
+  repoUrl: ""
+  branch: "main"
+  syncInterval: "1h"
+  dataPath: "~/.memohub/"
+```
+
+---
+
+## 与 Hermes 集成
+
+如果你使用 Hermes，可以共享记忆数据：
+
+```yaml
+gbrain:
+  dbPath: "~/.hermes/data/gbrain.lancedb"
+
+clawmem:
+  dbPath: "~/.hermes/data/clawmem.lancedb"
+```
+
+---
+
+## 下一步
+
+- [配置指南](configuration.md) - 深入了解配置选项
+- [API 文档](../docs/api.md) - 查看 API 参考
+- [插件开发](../docs/plugins.md) - 开发自定义插件
+- [私有仓库同步](private-sync.md) - 设置私有仓库同步
+
+---
+
+## 常见问题
+
+### Q: 如何检查 Ollama 是否运行？
+
+```bash
+curl http://localhost:11434/api/tags
+```
+
+### Q: 如何重置数据库？
+
+```bash
+rm -rf ~/.memohub/*.lancedb
+```
+
+### Q: 如何备份数据？
+
+```bash
+# 备份整个目录
+cp -r ~/.memohub/ ~/.memohub-backup-$(date +%Y%m%d)/
+
+# 或者创建 tar 归档
+tar -czf memohub-backup-$(date +%Y%m%d).tar.gz ~/.memohub/
+```
+
+### Q: 如何验证配置？
+
+```bash
+mh config --validate
+```
+
+---
+
+需要帮助？查看 [常见问题](../docs/faq.md) 或提交 [GitHub Issue](https://github.com/your-username/memohub/issues)。

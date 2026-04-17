@@ -5,10 +5,11 @@ yarn.lock
 bun.lockb
 pnpm-lock.yaml
 
-# 构建输出
-dist/
+# 构建输出（开发时）
 build/
 *.tsbuildinfo
+
+# 注意：dist/ 会提交到 Git，因为用户需要预构建的二进制文件
 
 # 配置
 config/config.yaml
