@@ -63,12 +63,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/memohub.git"
+    "url": "https://github.com/embaobao/memo-hub.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/memohub/issues"
+    "url": "https://github.com/embaobao/memo-hub/issues"
   },
-  "homepage": "https://github.com/your-username/memohub#readme",
+  "homepage": "https://github.com/embaobao/memo-hub#readme",
   "files": [
     "dist/",
     "config/config.example.yaml",
