@@ -6,6 +6,10 @@ import { config } from "dotenv";
 import OpenAI from "openai";
 import chalk from "chalk";
 import ora from "ora";
+import { GBrain } from "../../src/lib/gbrain.js";
+import { ClawMem } from "../../src/lib/clawmem.js";
+import { Embedder } from "../../src/core/embedder.js";
+import { ConfigManager } from "../../src/core/config.js";
 config();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // 配置
@@ -159,12 +163,39 @@ class MemoryUpdateTracker {
 class AutoMemoryExtractor {
     openai;
     tracker;
+    gbrain;
+    clawmem;
     constructor() {
         this.openai = new OpenAI({
             apiKey: EXTRACTOR_CONFIG.openai.apiKey,
             baseURL: EXTRACTOR_CONFIG.openai.baseURL,
         });
         this.tracker = new MemoryUpdateTracker();
+    }
+    /**
+     * 初始化记忆系统连接
+     */
+    async initializeMemorySystem() {
+        try {
+            const spinner = ora("初始化记忆系统...").start();
+            // 加载配置
+            const configManager = new ConfigManager();
+            const config = await configManager.loadConfig();
+            // 初始化嵌入器
+            const embedder = new Embedder(config.embedding);
+            await embedder.initialize();
+            // 初始化 GBrain
+            this.gbrain = new GBrain(config.gbrain, embedder);
+            await this.gbrain.initialize();
+            // 初始化 ClawMem
+            this.clawmem = new ClawMem(config.clawmem, embedder);
+            await this.clawmem.initialize();
+            spinner.succeed("记忆系统初始化完成");
+        }
+        catch (error) {
+            log("error", `记忆系统初始化失败: ${error}`);
+            throw error;
+        }
     }
     /**
      * 分析 Session 并提取重要信息
@@ -306,48 +337,75 @@ ${sessionText.substring(0, 8000)}${sessionText.length > 8000 ? "\n...(已截断)
      * 保存到 GBrain
      */
     async saveToGBrain(item, sessionId, savedItems) {
-        // TODO: 实际调用 GBrain API
-        // 这里先用模拟数据
-        const update = {
-            id: `update-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-            timestamp: new Date().toISOString(),
-            sessionId,
-            type: "gbrain",
-            action: "add",
-            content: item.content,
-            metadata: {
+        try {
+            // 调用真实的 GBrain API
+            const id = await this.gbrain.addKnowledge({
+                text: item.content,
                 category: item.category || "other",
                 importance: item.importance,
                 tags: item.tags || [],
-                reason: item.reason,
-            },
-        };
-        savedItems.push(update);
-        this.tracker.saveUpdate(update);
+            });
+            const update = {
+                id,
+                timestamp: new Date().toISOString(),
+                sessionId,
+                type: "gbrain",
+                action: "add",
+                content: item.content,
+                metadata: {
+                    category: item.category || "other",
+                    importance: item.importance,
+                    tags: item.tags || [],
+                    reason: item.reason,
+                },
+            };
+            savedItems.push(update);
+            this.tracker.saveUpdate(update);
+            log("info", `成功保存到 GBrain: ${id}`);
+        }
+        catch (error) {
+            log("error", `保存到 GBrain 失败: ${error}`);
+            throw error;
+        }
     }
     /**
      * 保存到 ClawMem
      */
     async saveToClawMem(item, sessionId, savedItems) {
-        // TODO: 实际调用 ClawMem API
-        // 这里先用模拟数据
-        const update = {
-            id: `update-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-            timestamp: new Date().toISOString(),
-            sessionId,
-            type: "clawmem",
-            action: "add",
-            content: item.content,
-            metadata: {
+        try {
+            // 调用真实的 ClawMem API
+            const id = await this.clawmem.addCode({
+                text: item.content,
                 language: item.language || "unknown",
                 ast_type: item.ast_type || "unknown",
+                symbol_name: item.symbol_name || "",
+                file_path: item.file_path || "",
                 importance: item.importance,
                 tags: item.tags || [],
-                reason: item.reason,
-            },
-        };
-        savedItems.push(update);
-        this.tracker.saveUpdate(update);
+            });
+            const update = {
+                id,
+                timestamp: new Date().toISOString(),
+                sessionId,
+                type: "clawmem",
+                action: "add",
+                content: item.content,
+                metadata: {
+                    language: item.language || "unknown",
+                    ast_type: item.ast_type || "unknown",
+                    importance: item.importance,
+                    tags: item.tags || [],
+                    reason: item.reason,
+                },
+            };
+            savedItems.push(update);
+            this.tracker.saveUpdate(update);
+            log("info", `成功保存到 ClawMem: ${id}`);
+        }
+        catch (error) {
+            log("error", `保存到 ClawMem 失败: ${error}`);
+            throw error;
+        }
     }
     /**
      * 处理 Session 文件
@@ -423,6 +481,8 @@ async function main() {
         return;
     }
     const extractor = new AutoMemoryExtractor();
+    // 初始化记忆系统
+    await extractor.initializeMemorySystem();
     // 处理单个 Session
     if (args[0] && !args[0].startsWith("--")) {
         const sessionPath = args[0].replace(/^~/, process.env.HOME);

@@ -42,5 +42,13 @@ export declare class GBrain {
      * 获取所有记录
      */
     getAllRecords(): Promise<GBrainRecord[]>;
+    /**
+     * 删除知识记录
+     */
+    deleteKnowledge(ids: string[]): Promise<number>;
+    /**
+     * 按分类删除
+     */
+    deleteByCategory(category: string): Promise<number>;
 }
 //# sourceMappingURL=gbrain.d.ts.map

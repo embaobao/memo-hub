@@ -9,6 +9,7 @@ import type {
   AddKnowledgeParams,
 } from "../types/index.js";
 import { Embedder } from "../core/embedder.js";
+import { computeHash } from "./utils.js";
 
 export class GBrain {
   private db: any;
@@ -52,10 +53,12 @@ export class GBrain {
       scope: "global",
       importance: 0,
       timestamp: new Date().toISOString(),
-      tags: [],
+      tags: ["seed"], // 使用非空数组让 LanceDB 正确推断类型
       source: "seed",
       access_count: 0,
-      last_accessed: null,
+      last_accessed: new Date().toISOString(), // 使用实际值而不是 null
+      entities: ["seed"], // 非空数组
+      hash: "seed", // 非空字符串
     };
 
     this.table = await this.db.createTable(this.config.table_name, [seed]);
@@ -74,6 +77,7 @@ export class GBrain {
     } = params;
 
     const vector = await this.embedder.embed(text);
+    const hash = computeHash(text);
     const id = `gbrain-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
     await this.table.add([
@@ -89,6 +93,8 @@ export class GBrain {
         source: "cli",
         access_count: 0,
         last_accessed: null,
+        entities: [], // GBrain 实体暂时为空，后续可以从文本中提取
+        hash,
       },
     ]);
 
@@ -161,5 +167,34 @@ export class GBrain {
   async getAllRecords(): Promise<GBrainRecord[]> {
     const all = await this.table.query().limit(10000).toArray();
     return all as GBrainRecord[];
+  }
+
+  /**
+   * 删除知识记录
+   */
+  async deleteKnowledge(ids: string[]): Promise<number> {
+    if (ids.length === 0) {
+      return 0;
+    }
+
+    // 构建 WHERE 条件
+    const conditions = ids.map(
+      (id) => `id = '${id.replace(/'/g, "\\'")}'`
+    ).join(" OR ");
+
+    await this.table.delete(conditions);
+    return ids.length;
+  }
+
+  /**
+   * 按分类删除
+   */
+  async deleteByCategory(category: string): Promise<number> {
+    await this.table.delete(`category = '${category.replace(/'/g, "\\'")}'`);
+
+    // 返回删除的记录数
+    const all = await this.table.query().limit(10000).toArray();
+    const deleted = all.filter((r: any) => r.category === category).length;
+    return deleted;
   }
 }

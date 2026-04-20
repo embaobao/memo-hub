@@ -51,5 +51,13 @@ export declare class ClawMem {
      * 获取所有记录
      */
     getAllRecords(): Promise<ClawMemRecord[]>;
+    /**
+     * 删除代码记录
+     */
+    deleteCode(ids: string[]): Promise<number>;
+    /**
+     * 按语言删除
+     */
+    deleteByLanguage(language: string): Promise<number>;
 }
 //# sourceMappingURL=clawmem.d.ts.map

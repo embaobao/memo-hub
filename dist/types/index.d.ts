@@ -66,6 +66,8 @@ export interface GBrainRecord {
     source: string;
     access_count: number;
     last_accessed: string | null;
+    entities: string[];
+    hash: string;
     _distance?: number;
 }
 export interface ClawMemRecord {
@@ -83,6 +85,8 @@ export interface ClawMemRecord {
     tags: string[];
     access_count: number;
     last_accessed: string | null;
+    entities: string[];
+    hash: string;
     _distance?: number;
 }
 export interface SearchResult {

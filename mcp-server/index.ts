@@ -36,9 +36,11 @@ import * as path from "node:path";
 
 // ─── Config ───────────────────────────────────────────────
 
-const HOME = process.env.HOME ?? "/root";
-const GBRAIN_DB_PATH = process.env.GBRAIN_DB_PATH ?? path.join(HOME, ".hermes/data/gbrain.lancedb");
-const CLAWMEM_DB_PATH = process.env.CLAWMEM_DB_PATH ?? path.join(HOME, ".hermes/data/clawmem.lancedb");
+import * as os from "node:os";
+
+const HOME = process.env.HOME ?? os.homedir();
+const GBRAIN_DB_PATH = path.resolve((process.env.GBRAIN_DB_PATH ?? path.join(HOME, ".hermes/data/gbrain.lancedb")).replace(/^~/, HOME));
+const CLAWMEM_DB_PATH = path.resolve((process.env.CLAWMEM_DB_PATH ?? path.join(HOME, ".hermes/data/clawmem.lancedb")).replace(/^~/, HOME));
 const GBRAIN_TABLE_NAME = "gbrain";
 const CLAWMEM_TABLE_NAME = "clawmem";
 const EMBEDDING_URL = process.env.EMBEDDING_URL ?? "http://localhost:11434/v1";
@@ -104,7 +106,7 @@ async function main() {
     const seed = {
       id: "__schema__", text: "",
       vector: Array.from({ length: VECTOR_DIM }).fill(0) as number[],
-      ast_type: "unknown", symbol_name: "", parent_symbol: null,
+      ast_type: "unknown", symbol_name: "", parent_symbol: "",
       file_path: "", language: "unknown", importance: 0,
       timestamp: new Date().toISOString(), source: "seed", tags: [],
     };
@@ -358,7 +360,7 @@ async function main() {
     },
   );
 
-  // ── Unified Tools ───────────────────────────────────────
+// ── Unified Tools ───────────────────────────────────────
 
   // get_stats
   server.tool("get_stats",
@@ -448,6 +450,194 @@ async function main() {
           }, null, 2)
         }],
       };
+    },
+  );
+
+  // ── Facade Layer (防腐层) ───────────────────────────────────
+
+  // memo_search - 统一搜索接口
+  server.tool("memo_search",
+    "Unified search interface for all memories (GBrain + ClawMem). Supports hybrid vector + entity search.",
+    {
+      query: z.string().describe("Natural language search query"),
+      limit: z.number().optional().default(10).describe("Max total results"),
+      entities: z.array(z.string()).optional().default([]).describe("Entity names to filter (for precise matching)"),
+    },
+    async ({ query, limit, entities }) => {
+      const vector = await getEmbedding(query);
+      const queryEntities = entities.length > 0 ? entities : [];
+
+      // 并行搜索 GBrain 和 ClawMem
+      const [gbrainResults, clawmemResults] = await Promise.all([
+        gbrainTable.vectorSearch(vector)
+          .distanceType("cosine")
+          .limit(limit)
+          .toArray(),
+        clawmemTable.vectorSearch(vector)
+          .distanceType("cosine")
+          .limit(limit)
+          .toArray(),
+      ]);
+
+      // 格式化结果
+      const formatResult = (row: Record<string, unknown>, track: string) => ({
+        id: row.id,
+        text: row.text,
+        track,
+        ...(track === "gbrain" ? {
+          category: row.category,
+        } : {
+          ast_type: row.ast_type,
+          symbol_name: row.symbol_name,
+          language: row.language,
+        }),
+        importance: row.importance,
+        entities: row.entities ?? [],
+        hash: row.hash ?? "",
+        timestamp: row.timestamp,
+        _distance: row._distance,
+      });
+
+      // 混合评分和排序
+      const allResults = [
+        ...gbrainResults.map((r: any) => formatResult(r, "gbrain")),
+        ...clawmemResults.map((r: any) => formatResult(r, "clawmem")),
+      ];
+
+      // 如果有实体过滤，应用实体匹配
+      if (queryEntities.length > 0) {
+        const scored = allResults.map((result: any) => {
+          const recordEntities = result.entities || [];
+          const matches = queryEntities.filter((qe) =>
+            recordEntities.some((re: string) =>
+              re.toLowerCase().includes(qe.toLowerCase()) ||
+              qe.toLowerCase().includes(re.toLowerCase())
+            )
+          );
+          const vectorScore = 1 - result._distance;
+          const entityBonus = matches.length > 0 ? 0.3 : 0;
+          const finalScore = vectorScore * 0.7 + entityBonus * 0.3;
+          return { ...result, finalScore };
+        });
+        scored.sort((a: any, b: any) => b.finalScore - a.finalScore);
+        return {
+          content: [{
+            type: "text" as const,
+            text: JSON.stringify({
+              query,
+              query_entities: queryEntities,
+              results: scored.slice(0, limit),
+              total: scored.slice(0, limit).length,
+              search_mode: "hybrid",
+            }, null, 2)
+          }],
+        };
+      } else {
+        // 纯向量搜索，按距离排序
+        allResults.sort((a: any, b: any) => a._distance - b._distance);
+        return {
+          content: [{
+            type: "text" as const,
+            text: JSON.stringify({
+              query,
+              results: allResults.slice(0, limit),
+              total: allResults.slice(0, limit).length,
+              search_mode: "vector",
+            }, null, 2)
+          }],
+        };
+      }
+    },
+  );
+
+  // memo_add - 统一添加接口
+  server.tool("memo_add",
+    "Unified add interface for all memories. Auto-routes to GBrain or ClawMem based on content type.",
+    {
+      text: z.string().describe("Content to add (text or code)"),
+      type: z.enum(["knowledge", "code"]).default("knowledge").describe("Type: 'knowledge' for GBrain, 'code' for ClawMem"),
+      category: z.string().optional().default("other").describe("Category (for knowledge only)"),
+      importance: z.number().optional().default(0.5).describe("Importance score (0-1)"),
+      tags: z.array(z.string()).optional().default([]).describe("Tags for categorization"),
+      language: z.string().optional().default("typescript").describe("Programming language (for code only)"),
+      ast_type: z.string().optional().default("unknown").describe("AST type (for code only)"),
+      symbol_name: z.string().optional().default("").describe("Symbol name (for code only)"),
+      file_path: z.string().optional().default("").describe("File path (for code only)"),
+    },
+    async ({ text, type, category, importance, tags, language, ast_type, symbol_name, file_path }) => {
+      if (type === "knowledge") {
+        // 添加到 GBrain
+        const vector = await getEmbedding(text);
+        const id = `gbrain-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+        const hash = text; // 简化：使用文本作为 hash（实际应该用 SHA-256）
+
+        await gbrainTable.add([{
+          id,
+          text,
+          vector,
+          category,
+          scope: "global",
+          importance,
+          timestamp: new Date().toISOString(),
+          tags,
+          source: "memohub-facade",
+          access_count: 0,
+          last_accessed: null,
+          entities: [], // GBrain 实体暂时为空
+          hash,
+        }]);
+
+        return {
+          content: [{
+            type: "text" as const,
+            text: JSON.stringify({
+              track: "gbrain",
+              success: true,
+              id,
+              type: "knowledge",
+            })
+          }],
+        };
+      } else {
+        // 添加到 ClawMem
+        const vector = await getEmbedding(text);
+        const id = `clawmem-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+        const hash = text; // 简化：使用文本作为 hash
+
+        // TODO: 集成 Tree-sitter 提取实体
+        const entities: string[] = [];
+
+        await clawmemTable.add([{
+          id,
+          text,
+          vector,
+          ast_type,
+          symbol_name,
+          parent_symbol: null,
+          file_path,
+          language,
+          importance,
+          timestamp: new Date().toISOString(),
+          tags,
+          source: "memohub-facade",
+          access_count: 0,
+          last_accessed: null,
+          entities,
+          hash,
+        }]);
+
+        return {
+          content: [{
+            type: "text" as const,
+            text: JSON.stringify({
+              track: "clawmem",
+              success: true,
+              id,
+              type: "code",
+            })
+          }],
+        };
+      }
     },
   );
 

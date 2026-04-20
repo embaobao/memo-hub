@@ -78,6 +78,8 @@ export interface GBrainRecord {
   source: string;
   access_count: number;
   last_accessed: string | null;
+  entities: string[]; // 实体纽带（用于多轨交叉检索）
+  hash: string; // 内容哈希（用于去重）
   _distance?: number; // LanceDB 返回的距离
 }
 
@@ -97,6 +99,8 @@ export interface ClawMemRecord {
   tags: string[];
   access_count: number;
   last_accessed: string | null;
+  entities: string[]; // 实体纽带（接口/函数名等）
+  hash: string; // 内容哈希（用于去重）
   _distance?: number; // LanceDB 返回的距离
 }
 

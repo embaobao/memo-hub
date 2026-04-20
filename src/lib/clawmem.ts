@@ -9,6 +9,7 @@ import type {
   AddCodeParams,
 } from "../types/index.js";
 import { Embedder } from "../core/embedder.js";
+import { computeHash, extractEntitiesFromCode } from "./utils.js";
 
 export class ClawMem {
   private db: any;
@@ -50,15 +51,17 @@ export class ClawMem {
       vector: new Array(this.embedder["config"].dimensions).fill(0),
       ast_type: "unknown",
       symbol_name: "",
-      parent_symbol: null,
+      parent_symbol: "", // 使用空字符串而不是 null
       file_path: "",
       language: this.config.default_language,
       importance: 0,
       timestamp: new Date().toISOString(),
-      tags: [],
+      tags: ["seed"], // 使用非空数组让 LanceDB 正确推断类型
       source: "seed",
       access_count: 0,
-      last_accessed: null,
+      last_accessed: new Date().toISOString(), // 使用实际值而不是 null
+      entities: ["seed"], // 非空数组
+      hash: "seed", // 非空字符串
     };
 
     this.table = await this.db.createTable(this.config.table_name, [seed]);
@@ -80,6 +83,14 @@ export class ClawMem {
     } = params;
 
     const vector = await this.embedder.embed(text);
+    const hash = computeHash(text);
+
+    // 使用 Tree-sitter 提取实体（接口、函数、类名等）
+    const entities = extractEntitiesFromCode(text, language);
+
+    // 如果没有 symbol_name 但提取到了实体，使用第一个实体作为 symbol_name
+    const finalSymbolName = symbol_name || (entities.length > 0 ? entities[0] : "");
+
     const id = `clawmem-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
     await this.table.add([
@@ -88,8 +99,8 @@ export class ClawMem {
         text,
         vector,
         ast_type,
-        symbol_name,
-        parent_symbol: null,
+        symbol_name: finalSymbolName,
+        parent_symbol: "", // 使用空字符串而不是 null
         file_path,
         language,
         importance,
@@ -98,6 +109,8 @@ export class ClawMem {
         source: "cli",
         access_count: 0,
         last_accessed: null,
+        entities,
+        hash,
       },
     ]);
 
@@ -205,5 +218,34 @@ export class ClawMem {
   async getAllRecords(): Promise<ClawMemRecord[]> {
     const all = await this.table.query().limit(10000).toArray();
     return all as ClawMemRecord[];
+  }
+
+  /**
+   * 删除代码记录
+   */
+  async deleteCode(ids: string[]): Promise<number> {
+    if (ids.length === 0) {
+      return 0;
+    }
+
+    // 构建 WHERE 条件
+    const conditions = ids.map(
+      (id) => `id = '${id.replace(/'/g, "\\'")}'`
+    ).join(" OR ");
+
+    await this.table.delete(conditions);
+    return ids.length;
+  }
+
+  /**
+   * 按语言删除
+   */
+  async deleteByLanguage(language: string): Promise<number> {
+    await this.table.delete(`language = '${language.replace(/'/g, "\\'")}'`);
+
+    // 返回删除的记录数
+    const all = await this.table.query().limit(10000).toArray();
+    const deleted = all.filter((r: any) => r.language === language).length;
+    return deleted;
   }
 }
