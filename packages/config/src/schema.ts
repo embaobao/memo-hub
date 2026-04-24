@@ -44,7 +44,10 @@ export const FlowStepSchema = z.object({
 
 export const TrackSchema = z.object({
   id: z.string().min(1),
-  flow: z.array(FlowStepSchema).min(1),
+  // Map of MemoOp -> flow
+  flows: z.record(z.array(FlowStepSchema)).optional(),
+  // Fallback flow if op-specific flow is missing
+  flow: z.array(FlowStepSchema).optional(),
 }).passthrough();
 
 export const DispatcherSchema = z.object({
@@ -73,31 +76,99 @@ export const MemoHubConfigSchema = z.object({
   tracks: z.array(TrackSchema).default([
     {
       id: 'track-insight',
-      flow: [
-        { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.text' } },
-        { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.text' } },
-        { step: 'indexing', tool: 'builtin:vector', input: { 
-          id: '$.payload.id', 
-          vector: '$.embedding.vector',
-          hash: '$.storage.hash',
-          track_id: 'track-insight',
-          meta: { category: '$.payload.category' }
-        } }
-      ]
+      flows: {
+        ADD: [
+          { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.text' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.text' } },
+          { step: 'indexing', tool: 'builtin:vector', input: { 
+            id: '$.payload.id', 
+            vector: '$.embedding.vector',
+            hash: '$.storage.hash',
+            track_id: 'track-insight',
+            meta: { category: '$.payload.category' }
+          } }
+        ],
+        RETRIEVE: [
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.query' } },
+          { step: 'searching', tool: 'builtin:retriever', input: { 
+            vector: '$.embedding.vector', 
+            track_id: 'track-insight',
+            limit: '$.payload.limit'
+          } }
+        ]
+      }
     },
     {
       id: 'track-source',
-      flow: [
-        { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.content' } },
-        { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.content' } },
-        { step: 'indexing', tool: 'builtin:vector', input: { 
-          id: '$.payload.id', 
-          vector: '$.embedding.vector',
-          hash: '$.storage.hash',
-          track_id: 'track-source',
-          meta: { language: '$.payload.language', file_path: '$.payload.file_path' }
-        } }
-      ]
+      flows: {
+        ADD: [
+          { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.content' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.content' } },
+          { step: 'indexing', tool: 'builtin:vector', input: { 
+            id: '$.payload.id', 
+            vector: '$.embedding.vector',
+            hash: '$.storage.hash',
+            track_id: 'track-source',
+            meta: { language: '$.payload.language', file_path: '$.payload.file_path' }
+          } }
+        ],
+        RETRIEVE: [
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.query' } },
+          { step: 'searching', tool: 'builtin:retriever', input: { 
+            vector: '$.embedding.vector', 
+            track_id: 'track-source',
+            limit: '$.payload.limit'
+          } }
+        ]
+      }
+    },
+    {
+      id: 'track-stream',
+      flows: {
+        ADD: [
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.text' } },
+          { step: 'indexing', tool: 'builtin:vector', input: { 
+            id: '$.payload.id', 
+            vector: '$.embedding.vector',
+            hash: '$.payload.id',
+            track_id: 'track-stream',
+            meta: { sessionId: '$.payload.sessionId', role: '$.payload.role' }
+          } }
+        ],
+        RETRIEVE: [
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.query' } },
+          { step: 'searching', tool: 'builtin:retriever', input: { 
+            vector: '$.embedding.vector', 
+            track_id: 'track-stream',
+            limit: '$.payload.limit'
+          } }
+        ]
+      }
+    },
+    {
+      id: 'track-wiki',
+      flows: {
+        ADD: [
+          { step: 'linking', tool: 'builtin:entity-linker', input: { text: '$.payload.text' } },
+          { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.text' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.text' } },
+          { step: 'indexing', tool: 'builtin:vector', input: { 
+            id: '$.payload.id', 
+            vector: '$.embedding.vector',
+            hash: '$.storage.hash',
+            track_id: 'track-wiki',
+            entities: '$.linking.entities'
+          } }
+        ],
+        RETRIEVE: [
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.query' } },
+          { step: 'searching', tool: 'builtin:retriever', input: { 
+            vector: '$.embedding.vector', 
+            track_id: 'track-wiki',
+            limit: '$.payload.limit'
+          } }
+        ]
+      }
     }
   ]),
 });

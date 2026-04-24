@@ -368,12 +368,21 @@ program
       tools.forEach(t => console.log(`  - ${chalk.cyan(t.id)} (${t.type})`));
       
       console.log(chalk.bold('\n🛤  Registered Tracks:'));
-      tracks.forEach(t => console.log(`  - ${chalk.green(t.id)}: ${t.flow.length} steps`));
+      tracks.forEach(t => {
+        const stepCount = t.flow?.length || Object.values(t.flows || {}).reduce((acc, f) => acc + (f?.length || 0), 0);
+        console.log(`  - ${chalk.green(t.id)}: ${stepCount} steps total`);
+      });
       return;
     }
 
     const loader = new ConfigLoader();
     const config = opts.show ? loader.getMaskedConfig() : loader.getConfig();
+
+    if (opts.show && (config as any)._sources) {
+      console.log(chalk.bold('\n📄 Configuration Sources:'));
+      (config as any)._sources.forEach((s: string) => console.log(`  - ${chalk.dim(s)}`));
+      console.log('');
+    }
 
     if (opts.validate) {
       // Zod validation is already performed during loader.load()

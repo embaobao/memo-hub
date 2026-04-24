@@ -35,7 +35,9 @@ export class ObservationKernel {
   }
 
   public log(entry: TraceLog): void {
-    const line = JSON.stringify(entry) + '\n';
+    const json = JSON.stringify(entry);
+    if (!json) return;
+    const line = json + '\n';
     fs.appendFileSync(this.logPath, line, 'utf-8');
   }
 

@@ -8,6 +8,10 @@ import { CacheManager } from './cache.js';
 import { CasTool } from './tools/builtin/cas.js';
 import { VectorTool } from './tools/builtin/vector.js';
 import { EmbedderTool } from './tools/builtin/embedder.js';
+import { RetrieverTool } from './tools/builtin/retriever.js';
+import { RerankerTool } from './tools/builtin/reranker.js';
+import { AggregatorTool } from './tools/builtin/aggregator.js';
+import { EntityLinkerTool } from './tools/builtin/entity-linker.js';
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
 import { VectorStorage } from '@memohub/storage-soul';
 
@@ -41,6 +45,10 @@ export class MemoryKernel implements IKernel {
     this.toolRegistry.register(new CasTool(this.cas));
     this.toolRegistry.register(new VectorTool(this.vectorStorage));
     this.toolRegistry.register(new EmbedderTool(this.aiHub));
+    this.toolRegistry.register(new RetrieverTool(this.vectorStorage));
+    this.toolRegistry.register(new RerankerTool(this.aiHub));
+    this.toolRegistry.register(new AggregatorTool());
+    this.toolRegistry.register(new EntityLinkerTool());
     
     // In a real implementation, we would register external tools here based on config
   }
@@ -58,7 +66,7 @@ export class MemoryKernel implements IKernel {
     
     try {
       // 1. Dispatcher Phase (Flow-based routing)
-      let targetTrackId = this.config.dispatcher.fallback;
+      let targetTrackId = instruction.trackId || this.config.dispatcher.fallback;
       
       if (this.config.dispatcher.flow && this.config.dispatcher.flow.length > 0) {
         const dispatchResult = await this.flowEngine.executeFlow(
@@ -66,6 +74,7 @@ export class MemoryKernel implements IKernel {
           instruction.payload,
           traceId
         );
+        // If dispatcher explicitly returns a string, it's the target track
         if (dispatchResult && typeof dispatchResult === 'string') {
           targetTrackId = dispatchResult;
         }
@@ -77,8 +86,14 @@ export class MemoryKernel implements IKernel {
         throw new Error(`Track not found: ${targetTrackId}`);
       }
 
-      const result = await this.flowEngine.executeFlow(
-        track.flow,
+      // Determine which flow to run based on the operation
+      const flow = (track.flows && track.flows[instruction.op]) || track.flow;
+
+      if (!flow) {
+        throw new Error(`No flow defined for operation ${instruction.op} on track ${targetTrackId}`);
+      }
+
+      const result = await this.flowEngine.executeFlow(        flow,
         instruction.payload,
         traceId
       );

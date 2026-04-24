@@ -65,7 +65,8 @@ export class FlowEngine {
 
         contextPool[step.step] = output;
         lastResult = output;
-      } catch (error) {
+      } catch (error: any) {
+        console.error(`Step ${step.step} (${step.tool}) failed:`, error);
         if (step.on_fail === 'skip') {
           console.warn(`Step ${step.step} failed, skipping...`);
           continue;

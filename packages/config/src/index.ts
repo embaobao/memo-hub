@@ -8,8 +8,15 @@ import { applyEnvOverrides, resolvePath, maskSecrets, resolveSecrets } from './u
 export * from './schema.js';
 export * from './utils.js';
 
+import pkg from 'lodash';
+const { mergeWith, isArray, unionBy } = pkg;
+
+export interface EnhancedConfig extends MemoHubConfig {
+  _sources?: string[];
+}
+
 export class ConfigLoader {
-  private config: MemoHubConfig;
+  private config: EnhancedConfig;
   private configPath: string;
 
   constructor(customPath?: string) {
@@ -17,82 +24,121 @@ export class ConfigLoader {
     this.config = this.load();
   }
 
-  /**
-   * Load and validate configuration.
-   */
-  public load(): MemoHubConfig {
+  private mergeStrategy(objValue: any, srcValue: any): any {
+    if (isArray(objValue)) {
+      if (srcValue.length > 0 && srcValue[0] && typeof srcValue[0] === 'object' && 'id' in srcValue[0]) {
+        return unionBy(objValue, srcValue, 'id');
+      }
+      return objValue.concat(srcValue);
+    }
+  }
+
+  public load(): EnhancedConfig {
     const expandedPath = resolvePath(this.configPath);
-    let rawConfig: any = {};
+    let mainConfig: any = {};
+    const sources: string[] = [];
 
     if (fs.existsSync(expandedPath)) {
       try {
+        sources.push(expandedPath);
         const content = fs.readFileSync(expandedPath, 'utf-8');
-        rawConfig = parse(content);
+        mainConfig = parse(content);
       } catch (error) {
         console.error(`Error parsing JSONC at ${expandedPath}:`, error);
       }
     }
 
-    // Overlay environment variables
-    const withEnv = applyEnvOverrides(rawConfig);
+    const rootDir = path.dirname(expandedPath);
+    const subDirs = ['tracks', 'tools', 'agents', 'ai/providers', 'ai/agents'];
+    
+    for (const subDir of subDirs) {
+      const targetDir = path.join(rootDir, subDir);
+      if (fs.existsSync(targetDir)) {
+        const files = this.scanDir(targetDir);
+        for (const file of files) {
+          try {
+            sources.push(file);
+            const content = fs.readFileSync(file, 'utf-8');
+            const fragment = parse(content) as any;
+            
+            if (subDir === 'tracks') {
+              mainConfig.tracks = unionBy(mainConfig.tracks || [], isArray(fragment) ? fragment : [fragment], 'id');
+            } else if (subDir === 'tools') {
+              mainConfig.tools = unionBy(mainConfig.tools || [], isArray(fragment) ? fragment : [fragment], 'id');
+            } else if (subDir === 'agents' || subDir === 'ai/agents') {
+              mainConfig.ai = mainConfig.ai || {};
+              mainConfig.ai.agents = mergeWith(mainConfig.ai.agents || {}, fragment, this.mergeStrategy);
+            } else if (subDir === 'ai/providers') {
+              mainConfig.ai = mainConfig.ai || {};
+              mainConfig.ai.providers = unionBy(mainConfig.ai.providers || [], isArray(fragment) ? fragment : [fragment], 'id');
+            }
+          } catch (error) {
+            console.error(`Error parsing modular config at ${file}:`, error);
+          }
+        }
+      }
+    }
 
-    // Resolve dynamic secrets (env://)
+    const withEnv = applyEnvOverrides(mainConfig);
     const withSecrets = resolveSecrets(withEnv);
-
-    // Validate against schema
     const result = MemoHubConfigSchema.safeParse(withSecrets);
     
     if (!result.success) {
       console.error('Configuration validation failed:');
       console.error(result.error.format());
-      // Return defaults if validation fails but could potentially throw
-      return MemoHubConfigSchema.parse({});
+      return { ...MemoHubConfigSchema.parse({}), _sources: sources };
     }
 
-    this.config = result.data;
+    this.config = { ...result.data, _sources: sources };
     return this.config;
   }
 
-  /**
-   * Get the current configuration.
-   */
-  public getConfig(): MemoHubConfig {
+  private scanDir(dir: string): string[] {
+    let results: string[] = [];
+    if (!fs.existsSync(dir)) return [];
+    const list = fs.readdirSync(dir);
+    for (const file of list) {
+      const fullPath = path.join(dir, file);
+      const stat = fs.statSync(fullPath);
+      if (stat && stat.isDirectory()) {
+        results = results.concat(this.scanDir(fullPath));
+      } else if (file.endsWith('.json') || file.endsWith('.jsonc')) {
+        results.push(fullPath);
+      }
+    }
+    return results;
+  }
+
+  public getConfig(): EnhancedConfig {
     return this.config;
   }
 
-  /**
-   * Get a masked version of the config for safe display.
-   */
   public getMaskedConfig(): Record<string, any> {
     return maskSecrets(this.config);
   }
 
-  /**
-   * Save the current config back to disk as JSONC.
-   */
   public save(): void {
     const expandedPath = resolvePath(this.configPath);
     const dir = path.dirname(expandedPath);
-    
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    const content = stringify(this.config, null, 2);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    // Remove metadata before saving
+    const { _sources, ...cleanConfig } = this.config;
+    const content = stringify(cleanConfig, null, 2);
     fs.writeFileSync(expandedPath, content, 'utf-8');
   }
 
-  /**
-   * Initialize a default configuration file.
-   */
   public static initDefault(targetPath: string = '~/.memohub/memohub.json'): void {
     const expandedPath = resolvePath(targetPath);
-    if (fs.existsSync(expandedPath)) {
-      throw new Error(`Configuration file already exists at ${expandedPath}`);
+    if (fs.existsSync(expandedPath)) throw new Error(`Configuration file already exists at ${expandedPath}`);
+    
+    const rootDir = path.dirname(expandedPath);
+    const subDirs = ['tracks', 'tools', 'agents', 'ai/providers', 'ai/agents'];
+    for (const subDir of subDirs) {
+      const targetDir = path.join(rootDir, subDir);
+      if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
     }
 
     const loader = new ConfigLoader(targetPath);
     loader.save();
-    console.log(`Initialized default configuration at ${expandedPath}`);
   }
 }

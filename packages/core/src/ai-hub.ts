@@ -1,5 +1,5 @@
 import { AgentConfig, ProviderConfig } from '@memohub/config';
-import { IEmbedder, ICompleter, AIProviderRegistry, OllamaAdapter } from '@memohub/ai-provider';
+import { IEmbedder, ICompleter, AIProviderRegistry, OllamaAdapter, MockAdapter } from '@memohub/ai-provider';
 
 export class AIHub {
   private providers = new Map<string, any>();
@@ -10,6 +10,8 @@ export class AIHub {
     // Register default adapters
     this.registry.registerEmbedder('ollama', (config) => new OllamaAdapter(config as any));
     this.registry.registerCompleter('ollama', (config) => new OllamaAdapter(config as any));
+    this.registry.registerEmbedder('mock', () => new MockAdapter());
+    this.registry.registerCompleter('mock', () => new MockAdapter());
 
     // Initialize providers
     for (const p of providers) {
