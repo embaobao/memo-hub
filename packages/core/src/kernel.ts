@@ -5,6 +5,7 @@ import { ToolRegistry } from './tool-registry.js';
 import { FlowEngine } from './flow-engine.js';
 import { ObservationKernel } from './observation.js';
 import { CacheManager } from './cache.js';
+import { SessionCacheLayer } from './session-cache.js';
 import { CasTool } from './tools/builtin/cas.js';
 import { VectorTool } from './tools/builtin/vector.js';
 import { EmbedderTool } from './tools/builtin/embedder.js';
@@ -12,6 +13,7 @@ import { RetrieverTool } from './tools/builtin/retriever.js';
 import { RerankerTool } from './tools/builtin/reranker.js';
 import { AggregatorTool } from './tools/builtin/aggregator.js';
 import { EntityLinkerTool } from './tools/builtin/entity-linker.js';
+import { GraphStoreTool } from './tools/builtin/graph-store.js';
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
 import { VectorStorage } from '@memohub/storage-soul';
 import { IHostResources } from './types-host.js';
@@ -23,6 +25,7 @@ export class MemoryKernel implements IKernel {
   private flowEngine: FlowEngine;
   private observation: ObservationKernel;
   private cache: CacheManager;
+  private sessionCache: SessionCacheLayer;
   private cas: ContentAddressableStorage;
   private vectorStorage: VectorStorage;
   private hostResources: IHostResources;
@@ -33,6 +36,7 @@ export class MemoryKernel implements IKernel {
     this.toolRegistry = new ToolRegistry();
     this.observation = new ObservationKernel(config.system.root);
     this.cache = new CacheManager(config.system.root);
+    this.sessionCache = new SessionCacheLayer();
     
     // Initialize core storages
     this.cas = new ContentAddressableStorage(config.system.root + '/blobs');
@@ -71,8 +75,7 @@ export class MemoryKernel implements IKernel {
     this.toolRegistry.register(new RerankerTool());
     this.toolRegistry.register(new AggregatorTool());
     this.toolRegistry.register(new EntityLinkerTool());
-    
-    // In a real implementation, we would register external tools here based on config
+    this.toolRegistry.register(new GraphStoreTool(config.system.root));
   }
 
   public async initialize(): Promise<void> {
@@ -81,6 +84,7 @@ export class MemoryKernel implements IKernel {
 
   public clearCache(): void {
     this.cache.clear();
+    this.sessionCache.clear();
   }
 
   public async dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult> {
@@ -96,7 +100,6 @@ export class MemoryKernel implements IKernel {
           instruction.payload,
           traceId
         );
-        // If dispatcher explicitly returns a string, it's the target track
         if (dispatchResult && typeof dispatchResult === 'string') {
           targetTrackId = dispatchResult;
         }
@@ -110,12 +113,13 @@ export class MemoryKernel implements IKernel {
 
       // Determine which flow to run based on the operation
       const flow = (track.flows && track.flows[instruction.op]) || track.flow;
-
+      
       if (!flow) {
         throw new Error(`No flow defined for operation ${instruction.op} on track ${targetTrackId}`);
       }
 
-      const result = await this.flowEngine.executeFlow(        flow,
+      const result = await this.flowEngine.executeFlow(
+        flow,
         instruction.payload,
         traceId
       );
@@ -134,13 +138,11 @@ export class MemoryKernel implements IKernel {
     }
   }
 
-  // Implementation of IKernel interface methods
   public getEmbedder(agentId: string = 'embedder') { return this.aiHub.getEmbedder(agentId); }
   public getCompleter(agentId: string = 'summarizer') { return this.aiHub.getCompleter(agentId); }
   public getCAS() { return this.cas; }
   public getVectorStorage() { return this.vectorStorage; }
   public getConfig() { return this.config; }
-
   public getToolRegistry() { return this.toolRegistry; }
 
   public async listTools() {

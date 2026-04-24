@@ -4,5 +4,6 @@ export * from './tool-registry.js';
 export * from './flow-engine.js';
 export * from './observation.js';
 export * from './cache.js';
+export * from './session-cache.js';
 export * from './tools/builtin/cas.js';
 export * from './tools/builtin/vector.js';

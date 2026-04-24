@@ -1,4 +1,5 @@
-import { set, get, cloneDeep } from 'lodash';
+import pkg from 'lodash';
+const { set, get, cloneDeep } = pkg;
 
 /**
  * Smart variable resolver for flow execution.
