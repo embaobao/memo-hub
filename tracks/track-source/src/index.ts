@@ -211,7 +211,7 @@ export class SourceTrack implements ITrackProvider {
       if (filters?.symbol_name) filterParts.push(`symbol_name = '${filters.symbol_name}'`);
 
       const results = await storage.search(vector, { limit, filter: filterParts.join(' AND ') });
-      const hydrated = await Promise.all(results.map(async r => ({
+      const hydrated = await Promise.all(results.map(async (r: any) => ({
         ...r,
         text: await cas.read(r.hash).catch(() => '')
       })));

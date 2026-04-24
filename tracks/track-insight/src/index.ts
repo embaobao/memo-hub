@@ -118,7 +118,7 @@ export class InsightTrack implements ITrackProvider {
       });
 
       const hydrated = await Promise.all(
-        results.map(async (r) => {
+        results.map(async (r: any) => {
           const content = await cas.read(r.hash).catch(() => '');
           return { ...r, text: content };
         }),

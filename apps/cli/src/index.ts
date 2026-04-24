@@ -371,10 +371,10 @@ program
       const tracks = await kernel.listTracks();
       
       console.log(chalk.bold('\n🛠  Registered Tools:'));
-      tools.forEach(t => console.log(`  - ${chalk.cyan(t.id)} (${t.type})`));
+      tools.forEach((t: any) => console.log(`  - ${chalk.cyan(t.id)} (${t.type})`));
       
       console.log(chalk.bold('\n🛤  Registered Tracks:'));
-      tracks.forEach(t => {
+      tracks.forEach((t: any) => {
         console.log(`  - ${chalk.green(t.id)}: ${t.name || 'Active'}`);
       });
       return;
@@ -495,6 +495,15 @@ program
       console.error(chalk.red(error instanceof Error ? error.message : String(error)));
       process.exit(1);
     }
+  });
+
+program
+  .command('ui')
+  .description('Start MemoHub Web Console')
+  .action(async () => {
+    const { startApiServer } = await import('./api.js');
+    const kernel = await createKernel();
+    await startApiServer(kernel);
   });
 
 program

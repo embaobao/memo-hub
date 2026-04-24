@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { ITool, IToolManifest, ExecutionContext } from '@memohub/core';
-import { IHostResources } from '@memohub/core';
+import { z } from 'zod.js';
+import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index.js';
+import { IHostResources } from '@memohub/core/src/index.js';
 
 export class RerankerTool implements ITool {
   public manifest: IToolManifest = {
