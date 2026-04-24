@@ -1,11 +1,15 @@
 {
   "name": "@memohub/cli",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "memohub": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "bun test",

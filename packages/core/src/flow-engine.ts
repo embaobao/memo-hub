@@ -1,14 +1,17 @@
-import { get } from 'lodash';
+import pkg from 'lodash';
+const { get } = pkg;
 import { FlowStepConfig } from '@memohub/config';
 import { ToolRegistry, ExecutionContext } from './tool-registry.js';
 import { ObservationKernel } from './observation.js';
 import { AIHub } from './ai-hub.js';
+import { CacheManager } from './cache.js';
 
 export class FlowEngine {
   constructor(
     private toolRegistry: ToolRegistry,
     private observation: ObservationKernel,
-    private aiHub: AIHub
+    private aiHub: AIHub,
+    private cache: CacheManager
   ) {}
 
   /**
@@ -23,12 +26,25 @@ export class FlowEngine {
     const contextPool: Record<string, any> = { payload: initialPayload };
     let lastResult: any = null;
 
+    const cacheDisabled = process.env.MEMOHUB_CACHE_DISABLED === 'true';
+
     for (const step of flow) {
       const spanId = this.observation.createSpanId();
       const tool = this.toolRegistry.get(step.tool);
       
       // Resolve inputs from context pool
       const input = this.resolveInput(step.input, contextPool);
+
+      const cacheKey = this.cache.generateKey(step.tool, input, step.agent);
+      
+      if (!cacheDisabled) {
+        const cached = this.cache.get(cacheKey);
+        if (cached) {
+          contextPool[step.step] = cached;
+          lastResult = cached;
+          continue;
+        }
+      }
 
       const execContext: ExecutionContext = {
         traceId: tid,
@@ -43,6 +59,10 @@ export class FlowEngine {
           { traceId: tid, spanId, step: step.step, tool: step.tool, input }
         );
         
+        if (!cacheDisabled) {
+          this.cache.set(cacheKey, output);
+        }
+
         contextPool[step.step] = output;
         lastResult = output;
       } catch (error) {

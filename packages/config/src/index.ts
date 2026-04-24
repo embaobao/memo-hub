@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import * as os from 'node:os';
 import { parse, stringify } from 'comment-json';
 import { MemoHubConfig, MemoHubConfigSchema } from './schema.js';
-import { applyEnvOverrides, resolvePath, maskSecrets } from './utils.js';
+import { applyEnvOverrides, resolvePath, maskSecrets, resolveSecrets } from './utils.js';
 
 export * from './schema.js';
 export * from './utils.js';
@@ -36,8 +36,11 @@ export class ConfigLoader {
     // Overlay environment variables
     const withEnv = applyEnvOverrides(rawConfig);
 
+    // Resolve dynamic secrets (env://)
+    const withSecrets = resolveSecrets(withEnv);
+
     // Validate against schema
-    const result = MemoHubConfigSchema.safeParse(withEnv);
+    const result = MemoHubConfigSchema.safeParse(withSecrets);
     
     if (!result.success) {
       console.error('Configuration validation failed:');

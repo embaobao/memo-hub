@@ -340,6 +340,7 @@ program
   .option('--validate', 'Validate configuration')
   .option('--init', 'Initialize default configuration file')
   .option('--show', 'Show current configuration with masked secrets')
+  .option('--clear-cache', 'Clear execution cache')
   .action(async (opts: any) => {
     if (opts.init) {
       try {
@@ -347,6 +348,13 @@ program
       } catch (error: any) {
         console.error(chalk.red(error.message));
       }
+      return;
+    }
+
+    if (opts.clearCache) {
+      const kernel = await createKernel();
+      kernel.clearCache();
+      console.log(chalk.green('Cache cleared successfully'));
       return;
     }
 

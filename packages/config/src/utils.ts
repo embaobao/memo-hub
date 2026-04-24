@@ -1,4 +1,5 @@
-import { set } from 'lodash';
+import pkg from 'lodash';
+const { set } = pkg;
 import * as os from 'node:os';
 import * as path from 'node:path';
 
@@ -71,4 +72,27 @@ export function maskSecrets(config: Record<string, any>): Record<string, any> {
 
   traverseAndMask(masked);
   return masked;
+}
+
+/**
+ * Resolve dynamic secrets (env:// prefix) in the configuration.
+ */
+export function resolveSecrets(config: Record<string, any>): Record<string, any> {
+  const result = JSON.parse(JSON.stringify(config));
+
+  function traverseAndResolve(obj: any) {
+    if (!obj || typeof obj !== 'object') return;
+
+    for (const key of Object.keys(obj)) {
+      if (typeof obj[key] === 'string' && obj[key].startsWith('env://')) {
+        const envKey = obj[key].slice(6);
+        result[key] = process.env[envKey] || obj[key]; // Fallback to original if env var missing
+      } else if (typeof obj[key] === 'object') {
+        traverseAndResolve(obj[key]);
+      }
+    }
+  }
+
+  traverseAndResolve(result);
+  return result;
 }

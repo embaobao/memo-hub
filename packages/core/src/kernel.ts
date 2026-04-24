@@ -4,6 +4,7 @@ import { AIHub } from './ai-hub.js';
 import { ToolRegistry } from './tool-registry.js';
 import { FlowEngine } from './flow-engine.js';
 import { ObservationKernel } from './observation.js';
+import { CacheManager } from './cache.js';
 import { CasTool } from './tools/builtin/cas.js';
 import { VectorTool } from './tools/builtin/vector.js';
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
@@ -15,6 +16,7 @@ export class MemoryKernel implements IKernel {
   private toolRegistry: ToolRegistry;
   private flowEngine: FlowEngine;
   private observation: ObservationKernel;
+  private cache: CacheManager;
   private cas: ContentAddressableStorage;
   private vectorStorage: VectorStorage;
 
@@ -23,7 +25,8 @@ export class MemoryKernel implements IKernel {
     this.aiHub = new AIHub(config.ai.providers, config.ai.agents);
     this.toolRegistry = new ToolRegistry();
     this.observation = new ObservationKernel(config.system.root);
-    this.flowEngine = new FlowEngine(this.toolRegistry, this.observation, this.aiHub);
+    this.cache = new CacheManager(config.system.root);
+    this.flowEngine = new FlowEngine(this.toolRegistry, this.observation, this.aiHub, this.cache);
 
     // Initialize core storages
     this.cas = new ContentAddressableStorage(config.system.root + '/blobs');
@@ -42,6 +45,10 @@ export class MemoryKernel implements IKernel {
 
   public async initialize(): Promise<void> {
     await this.vectorStorage.initialize();
+  }
+
+  public clearCache(): void {
+    this.cache.clear();
   }
 
   public async dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult> {

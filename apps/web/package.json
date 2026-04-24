@@ -1,10 +1,29 @@
 {
-  "name": "@memohub/web",
-  "version": "3.0.0",
+  "name": "web",
+  "module": "index.ts",
   "type": "module",
   "private": true,
-  "scripts": {
-    "build": "echo 'placeholder'",
-    "test": "echo 'placeholder'"
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.10",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "tailwindcss": "^4.2.4",
+    "vite": "^8.0.10"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@memohub/config": "workspace:*",
+    "@memohub/protocol": "workspace:*",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.9.0",
+    "reactflow": "^11.11.4",
+    "tailwind-merge": "^3.5.0"
   }
 }
