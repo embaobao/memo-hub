@@ -78,14 +78,14 @@ BACKUP_DIR="~/.hermes/data/memory-system/mcp-servers-backup-$(date +%Y%m%d)"
 # 备份现有 MCP 服务器
 mkdir -p "$BACKUP_DIR"
 
-# 备份 mcp-gbrain
-cp -r ~/.hermes/data/memory-system/mcp-servers/mcp-gbrain "$BACKUP_DIR/"
+# 备份 mcp-track-insight
+cp -r ~/.hermes/data/memory-system/mcp-servers/mcp-track-insight "$BACKUP_DIR/"
 
-# 备份 mcp-clawmem
-cp -r ~/.hermes/data/memory-system/mcp-servers/mcp-clawmem "$BACKUP_DIR/"
+# 备份 mcp-track-source
+cp -r ~/.hermes/data/memory-system/mcp-servers/mcp-track-source "$BACKUP_DIR/"
 
 # 备份 Hermes 配置
-cp ~/.hermes/config.yaml "$BACKUP_DIR/config.yaml.backup"
+cp ~/.hermes/config.jsonc "$BACKUP_DIR/config.jsonc.backup"
 
 echo "✅ 备份完成: $BACKUP_DIR"
 ```
@@ -113,7 +113,7 @@ ls -la mcp-server/dist/
 
 ### 步骤 3：更新 Hermes 配置
 
-编辑 `~/.hermes/config.yaml`，添加 MemoHub v1 MCP 服务器：
+编辑 `~/.hermes/config.jsonc`，添加 MemoHub v1 MCP 服务器：
 
 **推荐配置**（使用 Hermes 优化版本）：
 ```yaml
@@ -132,8 +132,8 @@ mcpServers:
       EMBEDDING_MODEL: nomic-embed-text-v2-moe
 
       # 可选: 独立数据库路径 (兼容性)
-      GBRAIN_DB_PATH: ~/.hermes/data/gbrain.lancedb
-      CLAWMEM_DB_PATH: ~/.hermes/data/clawmem.lancedb
+      GBRAIN_DB_PATH: ~/.hermes/data/track-insight.lancedb
+      CLAWMEM_DB_PATH: ~/.hermes/data/track-source.lancedb
     timeout: 60
 ```
 
@@ -145,8 +145,8 @@ mcpServers:
 | `MEMOHUB_CAS_PATH` | CAS 内容寻址存储路径 | `~/.hermes/data/memohub-cas` |
 | `EMBEDDING_URL` | Ollama 嵌入 API 地址 | `http://localhost:11434/v1` |
 | `EMBEDDING_MODEL` | 嵌入模型名称 | `nomic-embed-text-v2-moe` |
-| `GBRAIN_DB_PATH` | GBrain 独立数据库 (可选) | `~/.hermes/data/gbrain.lancedb` |
-| `CLAWMEM_DB_PATH` | ClawMem 独立数据库 (可选) | `~/.hermes/data/clawmem.lancedb` |
+| `GBRAIN_DB_PATH` | GBrain 独立数据库 (可选) | `~/.hermes/data/track-insight.lancedb` |
+| `CLAWMEM_DB_PATH` | ClawMem 独立数据库 (可选) | `~/.hermes/data/track-source.lancedb` |
 
 ### 步骤 4：测试 MemoHub v1 MCP 服务器
 
@@ -361,8 +361,8 @@ env:
 **方案 2: 独立数据库 (兼容性)**
 ```yaml
 env:
-  GBRAIN_DB_PATH: ~/.hermes/data/gbrain.lancedb
-  CLAWMEM_DB_PATH: ~/.hermes/data/clawmem.lancedb
+  GBRAIN_DB_PATH: ~/.hermes/data/track-insight.lancedb
+  CLAWMEM_DB_PATH: ~/.hermes/data/track-source.lancedb
 ```
 - 兼容现有 v2 数据
 - 便于数据迁移
@@ -380,8 +380,8 @@ env:
 | `MEMOHUB_CAS_PATH` | CAS 内容存储 | `~/.hermes/data/memohub-cas` | 高 |
 | `EMBEDDING_URL` | 嵌入 API 地址 | `http://localhost:11434/v1` | 高 |
 | `EMBEDDING_MODEL` | 嵌入模型 | `nomic-embed-text-v2-moe` | 高 |
-| `GBRAIN_DB_PATH` | GBrain 独立 DB | `~/.hermes/data/gbrain.lancedb` | 中 |
-| `CLAWMEM_DB_PATH` | ClawMem 独立 DB | `~/.hermes/data/clawmem.lancedb` | 中 |
+| `GBRAIN_DB_PATH` | GBrain 独立 DB | `~/.hermes/data/track-insight.lancedb` | 中 |
+| `CLAWMEM_DB_PATH` | ClawMem 独立 DB | `~/.hermes/data/track-source.lancedb` | 中 |
 
 ---
 
@@ -500,7 +500,7 @@ ls -la ~/.hermes/data/memohub-cas
 **诊断步骤**：
 ```bash
 # 1. 检查 Hermes 配置
-cat ~/.hermes/config.yaml | grep -A 15 "mcpServers:"
+cat ~/.hermes/config.jsonc | grep -A 15 "mcpServers:"
 
 # 2. 验证 MCP 服务器路径
 ls -la /Users/embaobao/workspace/ai/memo-hub/mcp-server/dist/index-hermes.js
@@ -592,8 +592,8 @@ console.log(JSON.stringify(schema, null, 2));
 
 ```bash
 # 1. 恢复 v2 MCP 服务器配置
-vim ~/.hermes/config.yaml
-# 添加回旧的 gbrain 和 clawmem 配置
+vim ~/.hermes/config.jsonc
+# 添加回旧的 track-insight 和 track-source 配置
 
 # 2. 移除 v1 配置
 # 删除 memohub mcpServers 配置块

@@ -10,8 +10,8 @@
 ### 1. 记忆系统数据库验证
 
 **位置**:
-- GBrain: `~/.hermes/data/gbrain.lancedb/gbrain.lance/` (316 KB)
-- ClawMem: `~/.hermes/data/clawmem.lancedb/clawmem.lance/` (191 MB)
+- GBrain: `~/.hermes/data/track-insight.lancedb/track-insight.lance/` (316 KB)
+- ClawMem: `~/.hermes/data/track-source.lancedb/track-source.lance/` (191 MB)
 
 **状态**:
 - GBrain: 18 条记录（通过 MCP 工具验证）
@@ -23,7 +23,7 @@
 
 **修复内容**:
 1. 改用 `@lancedb/lancedb` 直接操作数据库
-2. 修正表名：`knowledge` → `gbrain`, `code` → `clawmem`
+2. 修正表名：`knowledge` → `track-insight`, `code` → `track-source`
 3. 添加缺失字段：`parent_symbol`, `source`
 
 **测试结果** (2026-04-17 19:49):
@@ -65,7 +65,7 @@
 - `README.md` - 项目说明 (12 KB)
 - `package.json` - NPM 配置
 - `install.sh` - 一键安装脚本
-- `templates/config.yaml` - 配置模板 (3 KB)
+- `templates/config.jsonc` - 配置模板 (3 KB)
 - `docs/installation.md` - 安装指南 (12 KB)
 
 **状态**: 文档结构完整，等待初始化 Git 仓库
@@ -73,14 +73,14 @@
 ### 6. MCP 服务器验证
 
 **已配置的 MCP 服务器**:
-- gbrain: `bun run /Users/embaobao/....` (启用)
-- clawmem: `bun run /Users/embaobao/....` (启用)
+- track-insight: `bun run /Users/embaobao/....` (启用)
+- track-source: `bun run /Users/embaobao/....` (启用)
 
 **可用工具**:
-- `mcp_gbrain_add_knowledge` - 添加知识记录
-- `mcp_gbrain_get_stats` - 获取统计信息
-- `mcp_clawmem_add_code` - 添加代码记录
-- `mcp_clawmem_get_stats` - 获取统计信息
+- `mcp_track-insight_add_knowledge` - 添加知识记录
+- `mcp_track-insight_get_stats` - 获取统计信息
+- `mcp_track-source_add_code` - 添加代码记录
+- `mcp_track-source_get_stats` - 获取统计信息
 - 以及查询、搜索、列出等功能
 
 ---
@@ -109,8 +109,8 @@
 ### 3. 表名规范
 
 **正确表名**:
-- GBrain: `gbrain`
-- ClawMem: `clawmem`
+- GBrain: `track-insight`
+- ClawMem: `track-source`
 
 **错误表名**（已修复）:
 - `knowledge` - 已在 sync-editor-memory.ts 中修正
@@ -124,13 +124,13 @@
 ```
 ~/.hermes/
 ├── data/
-│   ├── gbrain.lancedb/
-│   └── clawmem.lancedb/
+│   ├── track-insight.lancedb/
+│   └── track-source.lancedb/
 ├── backups/
 ├── scripts/
 │   ├── sync-editor-memory.ts  # ✅ 已修复
 │   └── sync-memory-cloud.ts   # ✅ 已测试
-├── config.yaml
+├── config.jsonc
 └── .env
 ```
 
@@ -141,7 +141,7 @@
 ├── package.json
 ├── install.sh
 ├── templates/
-│   └── config.yaml
+│   └── config.jsonc
 └── docs/
     └── installation.md
 ```
@@ -151,12 +151,12 @@
 ~/.hermes/data/memory-system/
 ├── src/
 │   ├── schemas.ts          # 数据库 schema 定义
-│   ├── gbrain-writer.ts   # GBrain 写入器
-│   └── clawmem-writer.ts  # ClawMem 写入器
+│   ├── track-insight-writer.ts   # GBrain 写入器
+│   └── track-source-writer.ts  # ClawMem 写入器
 └── dist/
     ├── schemas.js
-    ├── gbrain-writer.js
-    └── clawmem-writer.js
+    ├── track-insight-writer.js
+    └── track-source-writer.js
 ```
 
 ---
@@ -190,8 +190,8 @@ const tableNames = await db.tableNames();
 console.log('现有表:', tableNames);
 
 // 迁移数据（如果需要）
-if (tableNames.includes('knowledge') && !tableNames.includes('gbrain')) {
-  await db.renameTable('knowledge', 'gbrain');
+if (tableNames.includes('knowledge') && !tableNames.includes('track-insight')) {
+  await db.renameTable('knowledge', 'track-insight');
 }
 ```
 
@@ -226,13 +226,13 @@ backup list     # 列出备份
 实现配置文件读取和验证：
 
 ```yaml
-# ~/.hermes-memory/config.yaml
+# ~/.hermes-memory/config.jsonc
 memory:
-  gbrain:
-    db_path: ~/.hermes/data/gbrain.lancedb
+  track-insight:
+    db_path: ~/.hermes/data/track-insight.lancedb
     embedding_model: nomic-embed-text-v2-moe
-  clawmem:
-    db_path: ~/.hermes/data/clawmem.lancedb
+  track-source:
+    db_path: ~/.hermes/data/track-source.lancedb
     embedding_model: nomic-embed-text-v2-moe
 
 sync:
@@ -246,8 +246,8 @@ sync:
 
 | 项目 | 路径 | 大小 | 记录数 |
 |------|------|------|--------|
-| GBrain | `~/.hermes/data/gbrain.lancedb/` | 564 KB | 18 (MCP) / 6 (新) |
-| ClawMem | `~/.hermes/data/clawmem.lancedb/` | 191 MB | 25 (MCP) / 808 (新) |
+| GBrain | `~/.hermes/data/track-insight.lancedb/` | 564 KB | 18 (MCP) / 6 (新) |
+| ClawMem | `~/.hermes/data/track-source.lancedb/` | 191 MB | 25 (MCP) / 808 (新) |
 | 备份 | `~/.hermes/backups/` | 21 MB | 1 个文件 |
 | 开源项目 | `~/hermes-dual-track-memory/` | 48 KB | - |
 

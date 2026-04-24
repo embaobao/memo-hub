@@ -71,9 +71,13 @@ The system SHALL provide a `memohub config` command to validate and display curr
 - **THEN** the configuration file is validated and any issues are reported
 
 ### Requirement: Standardized CLI config loading and Kernel assembly
-The CLI `index.ts` SHALL completely delegate configuration loading to `@memohub/config` and remove all hardcoded `registerTrack` and `new AIAdapter()` logic. It SHALL instantiate the `MemoryKernel` solely by passing the loaded configuration object.
+The CLI `index.ts` SHALL completely delegate configuration loading to `@memohub/config`. In "client mode", it SHALL prioritize communication with the running Daemon over direct filesystem access.
 
 #### Scenario: Kernel instantiation via configuration
 - **WHEN** the CLI starts and runs `createKernel()`
 - **THEN** it reads the combined `memohub.json` config and passes it to the `MemoryKernel` constructor without manually assembling tracks or tools
+
+#### Scenario: Proxy commands to Daemon
+- **WHEN** the CLI starts and detects an active Daemon lock
+- **THEN** it SHALL forward instructions (like `ADD`, `RETRIEVE`) to the Daemon via RPC instead of initializing a local MemoryKernel
 

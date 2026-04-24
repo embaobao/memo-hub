@@ -29,13 +29,13 @@ mh stats
 ```
 GBrain (通用知识):
   总记录数: 69
-  数据库路径: ~/.memohub/gbrain.lancedb
+  数据库路径: ~/.memohub/track-insight.lancedb
   嵌入模型: nomic-embed-text-v2-moe
   向量维度: 768
 
 ClawMem (代码记忆):
   总记录数: 833
-  数据库路径: ~/.memohub/clawmem.lancedb
+  数据库路径: ~/.memohub/track-source.lancedb
   嵌入模型: nomic-embed-text-v2-moe
   向量维度: 768
 ```
@@ -99,7 +99,7 @@ mh delete-knowledge <ids>
 
 **示例**：
 ```bash
-mh delete-knowledge gbrain-id1,gbrain-id2,gbrain-id3
+mh delete-knowledge track-insight-id1,track-insight-id2,track-insight-id3
 ```
 
 ---
@@ -206,12 +206,12 @@ const config = configManager.getConfig();
 const embedder = new Embedder(config.embedding);
 
 // 初始化数据库
-const gbrain = new GBrain(config.gbrain, embedder);
-const clawmem = new ClawMem(config.clawmem, embedder);
+const track-insight = new GBrain(config.track-insight, embedder);
+const track-source = new ClawMem(config.track-source, embedder);
 
 // 初始化数据库
-await gbrain.initialize();
-await clawmem.initialize();
+await track-insight.initialize();
+await track-source.initialize();
 ```
 
 ### GBrain API
@@ -239,7 +239,7 @@ const record: GBrainRecord = {
   createdAt: new Date().toISOString()
 };
 
-await gbrain.add(record);
+await track-insight.add(record);
 ```
 
 #### 搜索知识
@@ -250,14 +250,14 @@ interface SearchResult {
   similarity: number;
 }
 
-const results = await gbrain.search('TypeScript', 5);
+const results = await track-insight.search('TypeScript', 5);
 console.log(results);
 ```
 
 #### 获取统计信息
 
 ```typescript
-const stats = await gbrain.getStats();
+const stats = await track-insight.getStats();
 console.log(stats);
 // { totalRecords: 69, dbPath: '...', ... }
 ```
@@ -265,7 +265,7 @@ console.log(stats);
 #### 删除知识
 
 ```typescript
-await gbrain.delete(['id1', 'id2']);
+await track-insight.delete(['id1', 'id2']);
 ```
 
 ### ClawMem API
@@ -299,20 +299,20 @@ const record: ClawMemRecord = {
   createdAt: new Date().toISOString()
 };
 
-await clawmem.add(record);
+await track-source.add(record);
 ```
 
 #### 搜索代码
 
 ```typescript
-const results = await clawmem.search('interface User', 5);
+const results = await track-source.search('interface User', 5);
 console.log(results);
 ```
 
 #### 获取统计信息
 
 ```typescript
-const stats = await clawmem.getStats();
+const stats = await track-source.getStats();
 console.log(stats);
 ```
 
@@ -374,7 +374,7 @@ class MemoHubError extends Error {
 
 // 使用示例
 try {
-  await gbrain.add(record);
+  await track-insight.add(record);
 } catch (error) {
   if (error instanceof MemoHubError) {
     console.error(`错误代码: ${error.code}`);
@@ -411,16 +411,16 @@ async function main() {
 
     // 2. 初始化组件
     const embedder = new Embedder(config.embedding);
-    const gbrain = new GBrain(config.gbrain, embedder);
-    const clawmem = new ClawMem(config.clawmem, embedder);
+    const track-insight = new GBrain(config.track-insight, embedder);
+    const track-source = new ClawMem(config.track-source, embedder);
 
     // 3. 初始化数据库
-    await gbrain.initialize();
-    await clawmem.initialize();
+    await track-insight.initialize();
+    await track-source.initialize();
 
     // 4. 添加知识
-    await gbrain.add({
-      id: `gbrain-${Date.now()}`,
+    await track-insight.add({
+      id: `track-insight-${Date.now()}`,
       text: '用户喜欢 TypeScript',
       category: 'user',
       tags: ['preference', 'typescript'],
@@ -430,11 +430,11 @@ async function main() {
     });
 
     // 5. 搜索知识
-    const results = await gbrain.search('TypeScript', 3);
+    const results = await track-insight.search('TypeScript', 3);
     console.log('搜索结果:', results);
 
     // 6. 获取统计
-    const stats = await gbrain.getStats();
+    const stats = await track-insight.getStats();
     console.log('统计信息:', stats);
 
   } catch (error) {

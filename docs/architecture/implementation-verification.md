@@ -386,7 +386,7 @@ server.tool('get_stats', ...)                // ✅ 统计信息
 
 ### 配置位置
 
-**主配置文件**: `config/config.yaml`
+**主配置文件**: `config/config.jsonc`
 
 ```yaml
 # AI 配置
@@ -409,7 +409,7 @@ storage:
 ```typescript
 function loadConfig(): Record<string, any> {
   const configPath = process.env.MEMOHUB_CONFIG
-    ?? path.join(process.cwd(), 'config', 'config.yaml');
+    ?? path.join(process.cwd(), 'config', 'config.jsonc');
 
   // ✅ 优先级: 环境变量 > YAML 配置 > 默认值
   return {
@@ -445,7 +445,7 @@ const embedder = registry.getEmbedder('ollama');
 
 ### Hermes 配置
 
-**位置**: `~/.hermes/config.yaml`
+**位置**: `~/.hermes/config.jsonc`
 
 ```yaml
 mcpServers:
@@ -475,7 +475,7 @@ YAML 配置文件
 
 **结论**: AI 配置灵活且完整
 
-1. ✅ **配置文件**: `config/config.yaml`
+1. ✅ **配置文件**: `config/config.jsonc`
 2. ✅ **环境变量**: 支持覆盖所有配置
 3. ✅ **默认值**: 代码提供合理默认值
 4. ✅ **Hermes 集成**: Hermes 可以通过环境变量配置
@@ -495,7 +495,7 @@ YAML 配置文件
    bun run build
    ```
 
-2. **配置 Hermes** (`~/.hermes/config.yaml`)
+2. **配置 Hermes** (`~/.hermes/config.jsonc`)
    ```yaml
    mcpServers:
      memohub:

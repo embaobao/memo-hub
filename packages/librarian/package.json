@@ -9,7 +9,8 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@memohub/protocol": "workspace:*"
+    "@memohub/protocol": "workspace:*",
+    "@memohub/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

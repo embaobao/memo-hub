@@ -143,7 +143,7 @@ $ memohub config
 
 | 环境变量 | 说明 | 默认值 |
 |---------|------|--------|
-| `MEMOHUB_CONFIG` | 配置文件路径 | `config/config.yaml` |
+| `MEMOHUB_CONFIG` | 配置文件路径 | `config/config.jsonc` |
 
 ---
 

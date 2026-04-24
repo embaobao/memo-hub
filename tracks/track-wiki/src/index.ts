@@ -65,7 +65,7 @@ export class WikiTrack implements ITrackProvider {
       limit, filter: `track_id = '${this.id}'`
     });
     
-    const hydrated = await Promise.all(results.map(async r => ({
+    const hydrated = await Promise.all(results.map(async (r: any) => ({
       ...r,
       text: await this.kernel.getCAS().read(r.hash).catch(() => '')
     })));

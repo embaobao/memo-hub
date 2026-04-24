@@ -30,10 +30,10 @@ bun run build
 ### 3. 配置文件
 ```bash
 # 复制示例配置
-cp config/config.example.yaml config/config.yaml
+cp config/config.example.yaml config/config.jsonc
 
 # 根据需要修改配置
-vim config/config.yaml
+vim config/config.jsonc
 ```
 
 ## 📖 基本使用
@@ -171,12 +171,12 @@ memohub search-all "查询内容" \
 cp -r ~/.memohub ~/.memohub.backup
 
 # Dry run 测试
-bun run scripts/migrate-gbrain.ts --dry-run
-bun run scripts/migrate-clawmem.ts --dry-run
+bun run scripts/migrate-track-insight.ts --dry-run
+bun run scripts/migrate-track-source.ts --dry-run
 
 # 实际迁移
-bun run scripts/migrate-gbrain.ts
-bun run scripts/migrate-clawmem.ts
+bun run scripts/migrate-track-insight.ts
+bun run scripts/migrate-track-source.ts
 ```
 
 ### 3. 治理功能
@@ -195,22 +195,22 @@ memohub config --validate
 
 ### 推荐配置
 ```yaml
-# config/config.yaml
+# config/config.jsonc
 embedding:
   url: "http://localhost:11434/v1"
   model: "nomic-embed-text-v2-moe"
   dimensions: 768
   timeout: 30
 
-gbrain:
-  db_path: "~/.memohub/data/gbrain.lancedb"
-  table_name: "gbrain"
+track-insight:
+  db_path: "~/.memohub/data/track-insight.lancedb"
+  table_name: "track-insight"
   default_category: "other"
   default_importance: 0.5
 
-clawmem:
-  db_path: "~/.memohub/data/clawmem.lancedb"
-  table_name: "clawmem"
+track-source:
+  db_path: "~/.memohub/data/track-source.lancedb"
+  table_name: "track-source"
   default_language: "typescript"
   default_importance: 0.5
 ```

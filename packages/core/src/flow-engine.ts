@@ -51,17 +51,27 @@ export class FlowEngine {
         }
       }
 
-      const execContext: ExecutionContext = {
-        traceId: tid,
-        spanId,
-        state: state
-      };
-
+      // 2. 获取工具或嵌套流
+      let output: any;
       try {
-        const output = await this.observation.safeRun(
-          () => tool.execute(input, this.resources, execContext),
-          { traceId: tid, spanId, step: step.step, tool: step.tool, input }
-        );
+        if (step.tool.includes(':') && !step.tool.startsWith('builtin:')) {
+          // 嵌套流调用: track-id:OPERATION
+          const [targetTrackId, op] = step.tool.split(':');
+          const result = await this.resources.kernel.dispatch({
+            op: op as any,
+            trackId: targetTrackId,
+            payload: input
+          });
+          output = result.data;
+        } else {
+          // 原子原子工具节点调用
+          const tool = this.toolRegistry.get(step.tool);
+          const execContext: ExecutionContext = { traceId: tid, spanId, state };
+          output = await this.observation.safeRun(
+            () => tool.execute(input, this.resources, execContext),
+            { traceId: tid, spanId, step: step.step, tool: step.tool, input }
+          );
+        }
         
         if (!cacheDisabled) {
           this.cache.set(cacheKey, output);

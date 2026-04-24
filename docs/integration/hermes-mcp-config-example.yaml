@@ -1,6 +1,6 @@
 # MemoHub v1 MCP 配置示例
 # 
-# 将此配置添加到 ~/.hermes/config.yaml 中的 mcp_servers 部分
+# 将此配置添加到 ~/.hermes/config.jsonc 中的 mcp_servers 部分
 # 请根据您的实际路径调整配置值
 
 mcp_servers:

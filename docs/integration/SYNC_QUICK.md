@@ -9,7 +9,7 @@
 
 ✅ **编辑器同步脚本已修复** (`~/.hermes/scripts/sync-editor-memory.ts`)
 - 改用 `@lancedb/lancedb` 直接操作数据库
-- 修正表名：`gbrain` 和 `clawmem`
+- 修正表名：`track-insight` 和 `track-source`
 - 测试通过：成功写入 814 条记录（6+808）
 
 ✅ **自动备份系统已配置**
@@ -21,7 +21,7 @@
 
 ✅ **开源项目结构已创建** (`~/hermes-dual-track-memory/`)
 - README.md, package.json, install.sh
-- docs/installation.md, templates/config.yaml
+- docs/installation.md, templates/config.jsonc
 
 ---
 
@@ -29,8 +29,8 @@
 
 ```
 ~/.hermes/data/
-├── gbrain.lancedb/gbrain.lance/    (564 KB)
-└── clawmem.lancedb/clawmem.lance/  (191 MB)
+├── track-insight.lancedb/track-insight.lance/    (564 KB)
+└── track-source.lancedb/track-source.lance/  (191 MB)
 ```
 
 **MCP 统计**: GBrain 18 条, ClawMem 25 条
@@ -41,7 +41,7 @@
 
 1. **嵌入模型缺失**: 使用零向量占位，需添加 nomic-embed-text-v2-moe
 2. **数据库统计不一致**: MCP 显示 18/25 条，但同步写入了 6/808 条
-3. **表名已修正**: `knowledge` → `gbrain`, `code` → `clawmem`
+3. **表名已修正**: `knowledge` → `track-insight`, `code` → `track-source`
 
 ---
 

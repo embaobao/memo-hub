@@ -85,7 +85,7 @@ cat ~/.ssh/id_ed25519.pub
 
 ### 3. 配置 MemoHub
 
-编辑 `config/config.yaml`：
+编辑 `config/config.jsonc`：
 
 ```yaml
 sync:
@@ -169,7 +169,7 @@ sync:
 
 ```bash
 # 1. 配置同步
-# 编辑 config/config.yaml
+# 编辑 config/config.jsonc
 sync:
   enabled: true
   repoUrl: "git@your-git-server:user/repo.git"
@@ -193,12 +193,12 @@ git push -u origin main
 git clone git@your-git-server:user/repo.git ~/.memohub
 
 # 2. 配置 MemoHub 使用同步的数据
-# 编辑 config/config.yaml
-gbrain:
-  dbPath: "~/.memohub/gbrain.lancedb"
+# 编辑 config/config.jsonc
+track-insight:
+  dbPath: "~/.memohub/track-insight.lancedb"
 
-clawmem:
-  dbPath: "~/.memohub/clawmem.lancedb"
+track-source:
+  dbPath: "~/.memohub/track-source.lancedb"
 
 # 3. 测试
 mh stats
@@ -368,10 +368,10 @@ git commit -m "Track .lancedb with LFS"
 
 ```bash
 # 开发环境
-~/.memohub-dev/config.yaml
+~/.memohub-dev/config.jsonc
 
 # 生产环境
-~/.memohub-prod/config.yaml
+~/.memohub-prod/config.jsonc
 ```
 
 ### 2. 定时同步

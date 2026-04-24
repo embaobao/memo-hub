@@ -109,7 +109,7 @@ mcp_memohub_get_stats()
 
 ### 配置文件
 ```
-~/.hermes/config.yaml    # Hermes 主配置
+~/.hermes/config.jsonc    # Hermes 主配置
 ```
 
 ### 项目目录

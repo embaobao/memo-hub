@@ -52,7 +52,7 @@ bun install
 bun run build
 
 # 4. 配置文件
-cp config/config.example.yaml config/config.yaml
+cp config/config.example.yaml config/config.jsonc
 
 # 5. 测试安装
 mh --help
@@ -83,13 +83,13 @@ mh stats
 ```
 GBrain (通用知识):
   总记录数: 69
-  数据库路径: ~/.memohub/gbrain.lancedb
+  数据库路径: ~/.memohub/track-insight.lancedb
   嵌入模型: nomic-embed-text-v2-moe
   向量维度: 768
 
 ClawMem (代码记忆):
   总记录数: 833
-  数据库路径: ~/.memohub/clawmem.lancedb
+  数据库路径: ~/.memohub/track-source.lancedb
   嵌入模型: nomic-embed-text-v2-moe
   向量维度: 768
 ```
@@ -177,7 +177,7 @@ mh search-code "class Memory" -l 3
 
 ## 配置文件
 
-编辑 `config/config.yaml`：
+编辑 `config/config.jsonc`：
 
 ```yaml
 # 嵌入模型配置
@@ -194,17 +194,17 @@ cas:
 # 写入路由配置（可选）
 routing:
   enabled: true
-  default_track: "gbrain"
+  default_track: "track-insight"
   code_suffixes: [".ts", ".tsx", ".js", ".jsx", ".py", ".md"]
 
 # 双轨数据库配置
-gbrain:
-  db_path: "~/.hermes/data/gbrain.lancedb"
-  table_name: "gbrain"
+track-insight:
+  db_path: "~/.hermes/data/track-insight.lancedb"
+  table_name: "track-insight"
 
-clawmem:
-  db_path: "~/.hermes/data/clawmem.lancedb"
-  table_name: "clawmem"
+track-source:
+  db_path: "~/.hermes/data/track-source.lancedb"
+  table_name: "track-source"
 
 # 同步配置（可选）
 sync:
@@ -221,7 +221,7 @@ sync:
 ```
 
 说明：
-- 推荐直接复制示例配置：`cp config/config.example.yaml config/config.yaml`
+- 推荐直接复制示例配置：`cp config/config.example.yaml config/config.jsonc`
 - 配置优先级为：环境变量 > YAML > 默认值
 
 ## 进阶：2.0+ 能力快速体验
@@ -257,11 +257,11 @@ mh librarian ingest-git --commit HEAD --dry-run
 如果你使用 Hermes，可以共享记忆数据：
 
 ```yaml
-gbrain:
-  dbPath: "~/.hermes/data/gbrain.lancedb"
+track-insight:
+  dbPath: "~/.hermes/data/track-insight.lancedb"
 
-clawmem:
-  dbPath: "~/.hermes/data/clawmem.lancedb"
+track-source:
+  dbPath: "~/.hermes/data/track-source.lancedb"
 ```
 
 ---

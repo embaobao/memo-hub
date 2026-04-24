@@ -83,7 +83,7 @@ bun install
 bun run build
 
 # 4. 配置文件
-cp config/config.example.yaml config/config.yaml
+cp config/config.example.yaml config/config.jsonc
 
 # 5. 测试安装
 node dist/cli/index.js --help
@@ -106,7 +106,7 @@ bun run build
 bun test
 
 # 运行特定测试
-bun test test/unit/gbrain.test.ts
+bun test test/unit/track-insight.test.ts
 ```
 
 ### 代码格式化
@@ -188,7 +188,7 @@ function getConfig() {
 ```typescript
 // ✅ 好
 try {
-  await gbrain.add(record);
+  await track-insight.add(record);
 } catch (error) {
   if (error instanceof MemoHubError) {
     console.error(`错误: ${error.message}`);
@@ -196,7 +196,7 @@ try {
 }
 
 // ❌ 不好
-await gbrain.add(record);
+await track-insight.add(record);
 ```
 
 ---
@@ -230,10 +230,10 @@ await gbrain.add(record);
 
 ```bash
 # 新功能
-git commit -m "feat(gbrain): add export functionality"
+git commit -m "feat(track-insight): add export functionality"
 
 # Bug 修复
-git commit -m "fix(clawmem): resolve duplicate record issue"
+git commit -m "fix(track-source): resolve duplicate record issue"
 
 # 文档
 git commit -m "docs(readme): update installation instructions"

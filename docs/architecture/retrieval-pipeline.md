@@ -40,7 +40,7 @@ MemoHub 不依赖重型图数据库，而是通过各轨道的 `entities` 字段
 
 ## 🔧 配置与调参
 
-在 `config.yaml` 中可以通过以下参数调整流水线行为：
+在 `config.jsonc` 中可以通过以下参数调整流水线行为：
 
 ```yaml
 search:

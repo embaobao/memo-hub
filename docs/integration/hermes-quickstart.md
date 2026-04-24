@@ -12,7 +12,7 @@ bun run build
 
 ### 步骤 2: 配置 Hermes (1 分钟)
 
-编辑 `~/.hermes/config.yaml`，添加：
+编辑 `~/.hermes/config.jsonc`，添加：
 
 ```yaml
 mcpServers:

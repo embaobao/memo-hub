@@ -18,28 +18,35 @@ describe("ConfigLoader", () => {
   test("should parse JSONC with comments", () => {
     const jsoncContent = `{
       // This is a comment
+      "version": "1.0.0",
       "system": {
         /* Multi-line
            comment */
-        "log_level": "debug"
-      }
+        "log_level": "debug",
+        "root": "/tmp"
+      },
+      "ai": { "providers": [], "agents": {} },
+      "dispatcher": { "fallback": "track-insight" },
+      "tracks": []
     }`;
-    fs.writeFileSync(testConfigPath, jsoncContent);
-    const loader = new ConfigLoader(testConfigPath);
+    // Use custom path to test parsing
+    const customPath = "/tmp/memohub-test-config.jsonc";
+    fs.writeFileSync(customPath, jsoncContent);
+    const loader = new ConfigLoader(customPath);
     const config = loader.getConfig();
     expect(config.system.log_level).toBe("debug");
-    fs.unlinkSync(testConfigPath);
+    fs.unlinkSync(customPath);
   });
 
   test("should apply environment overrides", () => {
-    process.env.MEMOHUB_AI__AGENTS__DEFAULT__PROVIDER = "test-provider";
-    process.env.MEMOHUB_AI__AGENTS__DEFAULT__MODEL = "test-model";
-    const loader = new ConfigLoader(testConfigPath);
+    process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__PROVIDER = "test-provider";
+    process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__MODEL = "test-model";
+    const loader = new ConfigLoader();
     const config = loader.getConfig();
-    expect(config.ai.agents.default.provider).toBe("test-provider");
-    expect(config.ai.agents.default.model).toBe("test-model");
-    delete process.env.MEMOHUB_AI__AGENTS__DEFAULT__PROVIDER;
-    delete process.env.MEMOHUB_AI__AGENTS__DEFAULT__MODEL;
+    expect(config.ai.agents.summarizer.provider).toBe("test-provider");
+    expect(config.ai.agents.summarizer.model).toBe("test-model");
+    delete process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__PROVIDER;
+    delete process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__MODEL;
   });
 
   test("should mask secrets", () => {

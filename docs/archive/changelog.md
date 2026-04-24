@@ -177,16 +177,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 3. **Run migration script**:
    ```bash
    # Dry run first
-   bun run scripts/migrate-gbrain.ts --dry-run
-   bun run scripts/migrate-clawmem.ts --dry-run
+   bun run scripts/migrate-track-insight.ts --dry-run
+   bun run scripts/migrate-track-source.ts --dry-run
    
    # Actual migration
-   bun run scripts/migrate-gbrain.ts
-   bun run scripts/migrate-clawmem.ts
+   bun run scripts/migrate-track-insight.ts
+   bun run scripts/migrate-track-source.ts
    ```
 
 4. **Update configuration**:
-   - Copy `config/config.example.yaml` to `config/config.yaml`
+   - Copy `config/config.example.yaml` to `config/config.jsonc`
    - Update paths and settings as needed
    - Run `memohub config --validate` to verify
 
@@ -201,7 +201,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 1. **Update imports**:
    ```typescript
    // Old
-   import { GBrain } from './lib/gbrain';
+   import { GBrain } from './lib/track-insight';
    
    // New
    import { MemoOp } from '@memohub/protocol';
@@ -211,7 +211,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 2. **Use Kernel dispatch**:
    ```typescript
    // Old
-   await gbrain.addKnowledge({ text, category });
+   await track-insight.addKnowledge({ text, category });
    
    // New
    await kernel.dispatch({

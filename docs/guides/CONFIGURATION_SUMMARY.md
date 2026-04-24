@@ -9,8 +9,8 @@
 ### 配置文件位置
 
 1. **环境变量 `MEMOHUB_CONFIG`** 指定的路径
-2. **项目根目录**: `config/config.yaml`
-3. **用户主目录**: `~/.memohub/config.yaml`
+2. **项目根目录**: `config/config.jsonc`
+3. **用户主目录**: `~/.memohub/config.jsonc`
 
 ### 配置优先级
 
@@ -42,7 +42,7 @@
 
 | 环境变量 | 说明 | 默认值 |
 |---------|------|--------|
-| `MEMOHUB_CONFIG` | 配置文件路径 | `config/config.yaml` |
+| `MEMOHUB_CONFIG` | 配置文件路径 | `config/config.jsonc` |
 
 ---
 
@@ -50,7 +50,7 @@
 
 ### 完整配置文件
 
-**位置**: `config/config.yaml`
+**位置**: `config/config.jsonc`
 
 ```yaml
 # AI 嵌入配置
@@ -187,7 +187,7 @@ storage:
 #### Hermes AI
 
 ```bash
-# ~/.hermes/config.yaml
+# ~/.hermes/config.jsonc
 mcpServers:
   memohub:
     command: memohub

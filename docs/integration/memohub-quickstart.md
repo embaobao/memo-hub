@@ -44,7 +44,7 @@ cd memo-hub
 bun install && bun run build
 
 # 3. 配置 Hermes (自动配置)
-# 编辑 ~/.hermes/config.yaml，添加以下内容：
+# 编辑 ~/.hermes/config.jsonc，添加以下内容：
 ```
 
 ```yaml

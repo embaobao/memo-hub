@@ -22,7 +22,7 @@
 
 ### 1. 创建配置文件
 
-**位置**: `config/config.yaml`（项目根目录或用户主目录）
+**位置**: `config/config.jsonc`（项目根目录或用户主目录）
 
 ```yaml
 # AI 嵌入配置
@@ -63,8 +63,8 @@ memohub config --validate
 MemoHub 按以下顺序查找配置文件：
 
 1. **环境变量 `MEMOHUB_CONFIG`** 指定的路径
-2. **项目根目录**: `config/config.yaml`
-3. **用户主目录**: `~/.memohub/config.yaml`
+2. **项目根目录**: `config/config.jsonc`
+3. **用户主目录**: `~/.memohub/config.jsonc`
 
 ### 配置文件格式
 
@@ -116,7 +116,7 @@ completion:
 
 | 环境变量 | 说明 | 默认值 | 必填 |
 |---------|------|--------|------|
-| `MEMOHUB_CONFIG` | 配置文件路径 | `config/config.yaml` | ❌ |
+| `MEMOHUB_CONFIG` | 配置文件路径 | `config/config.jsonc` | ❌ |
 
 ### 环境变量使用示例
 
@@ -515,7 +515,7 @@ timeout: 30                          # 使用代码默认值
 ### 开发环境
 
 ```yaml
-# config/config.yaml
+# config/config.jsonc
 embedding:
   url: http://localhost:11434/v1
   model: nomic-embed-text-v2-moe
@@ -532,7 +532,7 @@ storage:
 ### 生产环境
 
 ```yaml
-# config/config.yaml
+# config/config.jsonc
 embedding:
   url: http://ollama.internal:11434/v1
   model: mxbai-embed-large-v1
@@ -549,7 +549,7 @@ storage:
 ### Hermes AI 集成
 
 ```bash
-# ~/.hermes/config.yaml
+# ~/.hermes/config.jsonc
 mcpServers:
   memohub:
     command: memohub
@@ -591,7 +591,7 @@ mcpServers:
 
 1. **检查文件是否存在**
    ```bash
-   ls -la config/config.yaml
+   ls -la config/config.jsonc
    ```
 
 2. **检查环境变量**

@@ -468,7 +468,7 @@ program
 
 ### 配置文件结构
 
-**位置**: `config/config.yaml`
+**位置**: `config/config.jsonc`
 
 ```yaml
 # AI 配置
@@ -489,7 +489,7 @@ storage:
 // apps/cli/src/index.ts
 function loadConfig(): Record<string, any> {
   const configPath = process.env.MEMOHUB_CONFIG
-    ?? path.join(process.cwd(), 'config', 'config.yaml');
+    ?? path.join(process.cwd(), 'config', 'config.jsonc');
 
   return yaml.parse(fs.readFileSync(configPath, 'utf-8'));
 }

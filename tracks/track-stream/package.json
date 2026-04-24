@@ -6,8 +6,8 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "echo 'placeholder'",
-    "test": "echo 'placeholder'"
+    "build": "tsc",
+    "test": "bun test"
   },
   "dependencies": {
     "@memohub/protocol": "workspace:*"

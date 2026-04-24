@@ -128,6 +128,6 @@ describe('Flow Engine Integration', () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error).toContain('Track not found');
+    expect(result.error).toContain('轨道定义不存在');
   });
 });

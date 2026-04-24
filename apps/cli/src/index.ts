@@ -15,17 +15,23 @@ import { VectorStorage } from '@memohub/storage-soul';
 import { MemoOp } from '@memohub/protocol';
 import { InsightTrack } from '@memohub/track-insight';
 import { SourceTrack } from '@memohub/track-source';
+import { StreamTrack } from '@memohub/track-stream';
+import { WikiTrack } from '@memohub/track-wiki';
 import { Librarian } from '@memohub/librarian';
+import { DeduplicatorTool } from '@memohub/librarian/src/tools.js';
 
 import { ConfigLoader, resolvePath } from '@memohub/config';
 
 export async function createKernel(): Promise<MemoryKernel> {
   const loader = new ConfigLoader();
   const config = loader.getConfig();
-  
+
   const kernel = new MemoryKernel(config);
   await kernel.initialize();
 
+  kernel.getToolRegistry().register(new DeduplicatorTool() as any);
+
+  // 编程式注册内置轨道
   return kernel;
 }
 
@@ -369,8 +375,7 @@ program
       
       console.log(chalk.bold('\n🛤  Registered Tracks:'));
       tracks.forEach(t => {
-        const stepCount = t.flow?.length || Object.values(t.flows || {}).reduce((acc, f) => acc + (f?.length || 0), 0);
-        console.log(`  - ${chalk.green(t.id)}: ${stepCount} steps total`);
+        console.log(`  - ${chalk.green(t.id)}: ${t.name || 'Active'}`);
       });
       return;
     }
@@ -394,6 +399,43 @@ program
   });
 
 program
+  .command('log <content>')
+  .description('Add session log to stream track')
+  .option('-s, --session <sessionId>', 'Session ID', 'default')
+  .action(async (content: string, opts: any) => {
+    const spinner = ora('Logging session...').start();
+    try {
+      const kernel = await createKernel();
+      const result = await kernel.dispatch({
+        op: MemoOp.ADD,
+        trackId: 'track-stream',
+        payload: { content, session_id: opts.session },
+      });
+      if (result.success) spinner.succeed(chalk.green(`Logged: ${result.data.id}`));
+    } catch (error) {
+      spinner.fail(chalk.red(error instanceof Error ? error.message : String(error)));
+    }
+  });
+
+program
+  .command('wiki-add <title> <content>')
+  .description('Add authoritative knowledge to wiki track')
+  .action(async (title: string, content: string) => {
+    const spinner = ora('Adding wiki entry...').start();
+    try {
+      const kernel = await createKernel();
+      const result = await kernel.dispatch({
+        op: MemoOp.ADD,
+        trackId: 'track-wiki',
+        payload: { title, content },
+      });
+      if (result.success) spinner.succeed(chalk.green(`Wiki entry added: ${result.data.id}`));
+    } catch (error) {
+      spinner.fail(chalk.red(error instanceof Error ? error.message : String(error)));
+    }
+  });
+
+program
   .command('update')
   .description('检查并更新 CLI 到最新版本')
   .action(async () => {
@@ -405,6 +447,53 @@ program
       await updateModule.main();
     } catch (error) {
       spinner.fail(chalk.red(error instanceof Error ? error.message : String(error)));
+    }
+  });
+
+program
+  .command('daemon')
+  .description('Start background daemon for automated memory governance (Librarian)')
+  .option('-i, --interval <ms>', 'Scan interval in ms', '3600000') // 默认一小时
+  .action(async (opts: any) => {
+    const pidFile = path.join(os.homedir(), '.memohub', 'daemon.pid');
+    if (fs.existsSync(pidFile)) {
+      console.error(chalk.red(`[Error] Daemon is already running (PID: ${fs.readFileSync(pidFile, 'utf-8')}).`));
+      process.exit(1);
+    }
+    
+    fs.writeFileSync(pidFile, process.pid.toString());
+    console.log(chalk.cyan(`Starting MemoHub Librarian Daemon (Interval: ${opts.interval}ms)...`));
+    
+    // 清理钩子
+    const cleanup = () => {
+      if (fs.existsSync(pidFile)) fs.unlinkSync(pidFile);
+      console.log(chalk.gray('\\nShutting down Daemon cleanly...'));
+      process.exit(0);
+    };
+    process.on('SIGINT', cleanup);
+    process.on('SIGTERM', cleanup);
+
+    try {
+      const kernel = await createKernel();
+      const librarian = new Librarian();
+      await librarian.initialize(kernel);
+
+      setInterval(async () => {
+        console.log(chalk.gray(`[${new Date().toISOString()}] Running proactive stream distillation...`));
+        await kernel.dispatch({
+          op: MemoOp.DISTILL,
+          trackId: 'track-stream',
+          payload: {}
+        });
+      }, parseInt(opts.interval));
+
+      librarian.startScheduled(parseInt(opts.interval), 'track-insight');
+      console.log(chalk.green('Daemon is running. Press Ctrl+C to exit.'));
+      process.stdin.resume();
+    } catch (error) {
+      cleanup();
+      console.error(chalk.red(error instanceof Error ? error.message : String(error)));
+      process.exit(1);
     }
   });
 

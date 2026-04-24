@@ -94,7 +94,7 @@ memohub search "查询内容" -l 5
 
 **快速集成**:
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.hermes/config.jsonc
 mcpServers:
   memohub:
     command: node

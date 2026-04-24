@@ -1,3 +1,4 @@
+export * from './types-host.js';
 export * from './kernel.js';
 export * from './ai-hub.js';
 export * from './tool-registry.js';

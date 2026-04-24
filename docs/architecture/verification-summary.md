@@ -113,7 +113,7 @@ AI 层 (Ollama)
 
 **验证结果**: **AI 配置灵活且完整**
 
-**配置文件**: `config/config.yaml`
+**配置文件**: `config/config.jsonc`
 
 ```yaml
 embedding:
@@ -140,7 +140,7 @@ storage:
 2. 配置 Hermes: 添加 MCP Server 配置
 3. 重启 Hermes: `hermes restart`
 
-**配置示例**: `~/.hermes/config.yaml`
+**配置示例**: `~/.hermes/config.jsonc`
 
 ```yaml
 mcpServers:

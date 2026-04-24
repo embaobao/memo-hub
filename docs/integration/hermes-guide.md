@@ -24,7 +24,7 @@
    ```
 
 2. **配置 Hermes**
-   编辑 `~/.hermes/config.yaml`，添加以下配置：
+   编辑 `~/.hermes/config.jsonc`，添加以下配置：
    ```yaml
    mcpServers:
      memohub:
@@ -149,7 +149,7 @@ curl http://localhost:11434/v1/models
 
 ```bash
 # 编辑 Hermes 配置
-vim ~/.hermes/config.yaml
+vim ~/.hermes/config.jsonc
 ```
 
 #### 2.2 添加 MemoHub MCP 服务器
@@ -405,7 +405,7 @@ echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | \
   node /Users/embaobao/workspace/ai/memo-hub/apps/cli/dist/index.js serve 2>&1
 
 # 3. 检查 Hermes 配置
-cat ~/.hermes/config.yaml | grep -A 10 "memohub"
+cat ~/.hermes/config.jsonc | grep -A 10 "memohub"
 ```
 
 **解决方案**：

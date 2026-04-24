@@ -51,7 +51,7 @@ mh search-knowledge "macOS" -l 3
 
 ```bash
 # 添加接口定义
-mh add-code "interface MemoryConfig { embedding: EmbeddingConfig; gbrain: GBrainConfig; }" \
+mh add-code "interface MemoryConfig { embedding: EmbeddingConfig; track-insight: GBrainConfig; }" \
   -f src/types/index.ts \
   -s MemoryConfig \
   -a interface

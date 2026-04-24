@@ -42,7 +42,7 @@ kill -9 <PID>
 
 ### Q: 如何切换到不同的嵌入模型？
 
-**A**: 修改 `config/config.yaml`：
+**A**: 修改 `config/config.jsonc`：
 
 ```yaml
 embedding:
@@ -59,7 +59,7 @@ rm -rf ~/.memohub/*.lancedb
 ### Q: 配置文件位置在哪里？
 
 **A**:
-- 配置文件：`config/config.yaml`
+- 配置文件：`config/config.jsonc`
 - 示例配置：`config/config.example.yaml`
 
 ---
@@ -69,8 +69,8 @@ rm -rf ~/.memohub/*.lancedb
 ### Q: 数据库文件在哪里？
 
 **A**: 默认位置：
-- GBrain: `~/.memohub/gbrain.lancedb`
-- ClawMem: `~/.memohub/clawmem.lancedb`
+- GBrain: `~/.memohub/track-insight.lancedb`
+- ClawMem: `~/.memohub/track-source.lancedb`
 
 ### Q: 如何备份数据库？
 
@@ -232,11 +232,11 @@ echo $TERM
 **A**: 修改配置文件使用 Hermes 数据库路径：
 
 ```yaml
-gbrain:
-  dbPath: "~/.hermes/data/gbrain.lancedb"
+track-insight:
+  dbPath: "~/.hermes/data/track-insight.lancedb"
 
-clawmem:
-  dbPath: "~/.hermes/data/clawmem.lancedb"
+track-source:
+  dbPath: "~/.hermes/data/track-source.lancedb"
 ```
 
 ### Q: 如何与 AI 智能体集成？
@@ -246,11 +246,11 @@ clawmem:
 ```typescript
 import { GBrain, ClawMem, Embedder } from 'memohub';
 
-const gbrain = new GBrain(config.gbrain, embedder);
-await gbrain.initialize();
+const track-insight = new GBrain(config.track-insight, embedder);
+await track-insight.initialize();
 
 // 搜索相关知识
-const results = await gbrain.search('用户偏好', 3);
+const results = await track-insight.search('用户偏好', 3);
 ```
 
 ### Q: 如何导出数据？
@@ -272,7 +272,7 @@ import { GBrain } from 'memohub';
 const data = JSON.parse(readFileSync('knowledge.json', 'utf-8'));
 
 for (const item of data) {
-  await gbrain.add(item);
+  await track-insight.add(item);
 }
 ```
 
@@ -345,7 +345,7 @@ chmod -R 755 ~/.memohub/
 **A**:
 ```bash
 # 复制示例配置
-cp config/config.example.yaml config/config.yaml
+cp config/config.example.yaml config/config.jsonc
 ```
 
 ---
@@ -366,7 +366,7 @@ cp config/config.example.yaml config/config.yaml
 
 ### Q: 配置文件包含敏感信息吗？
 
-**A**: 是的。`config/config.yaml` 包含数据库路径和同步配置。
+**A**: 是的。`config/config.jsonc` 包含数据库路径和同步配置。
 
 **不要提交到公共 Git 仓库！**
 
@@ -406,7 +406,7 @@ npm uninstall -g memohub
 rm -rf ~/.memohub/
 
 # 删除配置
-rm -rf config/config.yaml
+rm -rf config/config.jsonc
 ```
 
 ### Q: 如何报告 Bug？

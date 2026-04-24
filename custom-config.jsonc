@@ -1,0 +1,13 @@
+{
+      // This is a comment
+      "version": "1.0.0",
+      "system": {
+        /* Multi-line
+           comment */
+        "log_level": "debug",
+        "root": "/tmp"
+      },
+      "ai": { "providers": [], "agents": {} },
+      "dispatcher": { "fallback": "track-insight" },
+      "tracks": []
+    }
