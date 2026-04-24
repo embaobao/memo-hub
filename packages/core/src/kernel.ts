@@ -15,16 +15,18 @@ import { ObservationKernel } from './observation.js';
 import { CacheManager } from './cache.js';
 import { SessionCacheLayer } from './session-cache.js';
 
-// 内置原子工具
-import { CasTool } from './tools/builtin/cas.js';
-import { VectorTool } from './tools/builtin/vector.js';
-import { EmbedderTool } from './tools/builtin/embedder.js';
-import { RetrieverTool } from './tools/builtin/retriever.js';
-import { RerankerTool } from './tools/builtin/reranker.js';
-import { AggregatorTool } from './tools/builtin/aggregator.js';
-import { EntityLinkerTool } from './tools/builtin/entity-linker.js';
-import { GraphStoreTool } from './tools/builtin/graph-store.js';
-import { CodeAnalyzerTool } from './tools/builtin/code-analyzer.js';
+// 从解耦的原子工具包导入
+import { 
+  CasTool, 
+  VectorTool, 
+  EmbedderTool, 
+  RetrieverTool, 
+  RerankerTool, 
+  AggregatorTool, 
+  EntityLinkerTool, 
+  GraphStoreTool,
+  CodeAnalyzerTool
+} from '@memohub/builtin-tools';
 
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
 import { VectorStorage } from '@memohub/storage-soul';

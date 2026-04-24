@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ITool, ExecutionContext } from '../../tool-registry.js';
-import { IHostResources } from '../../types-host.js';
+import { ITool, ExecutionContext } from '@memohub/core';
+import { IHostResources } from '@memohub/core';
 import * as Parser from 'web-tree-sitter';
 
 /**

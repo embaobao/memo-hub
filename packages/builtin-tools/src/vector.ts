@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
-import { IHostResources } from '../../types-host.js';
+import { ITool, IToolManifest, ExecutionContext } from '@memohub/core';
+import { IHostResources } from '@memohub/core';
 import { randomUUID } from 'node:crypto';
 
 export class VectorTool implements ITool {

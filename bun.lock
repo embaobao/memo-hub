@@ -80,6 +80,22 @@
         "typescript": "^5.9.3",
       },
     },
+    "packages/builtin-tools": {
+      "name": "@memohub/builtin-tools",
+      "version": "1.0.0",
+      "dependencies": {
+        "@memohub/config": "workspace:*",
+        "@memohub/core": "workspace:*",
+        "@memohub/protocol": "workspace:*",
+        "lodash": "^4.17.21",
+        "web-tree-sitter": "^0.26.8",
+        "zod": "^3.23.8",
+      },
+      "devDependencies": {
+        "@types/lodash": "^4.17.15",
+        "typescript": "^5.9.3",
+      },
+    },
     "packages/config": {
       "name": "@memohub/config",
       "version": "3.0.0",
@@ -100,6 +116,7 @@
       "version": "3.0.0",
       "dependencies": {
         "@memohub/ai-provider": "workspace:*",
+        "@memohub/builtin-tools": "workspace:*",
         "@memohub/config": "workspace:*",
         "@memohub/protocol": "workspace:*",
         "@memohub/storage-flesh": "workspace:*",
@@ -251,6 +268,8 @@
     "@lancedb/lancedb-win32-x64-msvc": ["@lancedb/lancedb-win32-x64-msvc@0.26.2", "http://npm.fe.sensorsdata.cn/@lancedb/lancedb-win32-x64-msvc/-/lancedb-win32-x64-msvc-0.26.2.tgz", { "os": "win32", "cpu": "x64" }, "sha512-GH3pfyzicgPGTb84xMXgujlWDaAnBTmUyjooYiCE2tC24BaehX4hgFhXivamzAEsF5U2eVsA/J60Ppif+skAbA=="],
 
     "@memohub/ai-provider": ["@memohub/ai-provider@workspace:packages/ai-provider"],
+
+    "@memohub/builtin-tools": ["@memohub/builtin-tools@workspace:packages/builtin-tools"],
 
     "@memohub/cli": ["@memohub/cli@workspace:apps/cli"],
 
