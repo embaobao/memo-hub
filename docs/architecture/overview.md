@@ -1,4 +1,4 @@
-# MemoHub v3 - 整体功能和思路
+# MemoHub v1 - 整体功能和思路
 
 > **📘 相关文档**:
 > - [轨道设计文档](tracks-design.md) - 多轨道动态矩阵架构
@@ -338,7 +338,7 @@ export class InsightTrack implements ITrackProvider {
 
 ## 📚 总结
 
-MemoHub v3 是一个 **Agent 记忆内核**，采用 **多轨道动态矩阵架构**：
+MemoHub v1 是一个 **Agent 记忆内核**，采用 **多轨道动态矩阵架构**：
 
 1. ✅ **多轨道**: Source、Insight、Stream、Wiki 等
 2. ✅ **语义搜索**: 基于向量嵌入的智能检索

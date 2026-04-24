@@ -1,4 +1,4 @@
-# MemoHub v3
+# MemoHub v1
 
 ## 🧠 Personal Agent Memory System
 
@@ -156,7 +156,7 @@ MemoHub MCP Server 提供 7 个工具：
 
 ## 🏗️ Text2Mem 协议
 
-MemoHub v3 基于 **Text2Mem 协议**，提供 12 个原子操作：
+MemoHub v1 基于 **Text2Mem 协议**，提供 12 个原子操作：
 
 ### 写入操作
 - `ADD` - 添加记录

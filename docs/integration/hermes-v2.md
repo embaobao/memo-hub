@@ -1,10 +1,10 @@
-# MemoHub v3 对接 Hermes 流程文档
+# MemoHub v1 对接 Hermes 流程文档
 
 ## 📋 概述
 
-本文档说明如何将 MemoHub v3 的统一 MCP 服务器与 Hermes AI Agent 对接。MemoHub v3 基于 **Text2Mem 协议**和**双轨记忆架构**，提供更强大的智能记忆管理能力。
+本文档说明如何将 MemoHub v1 的统一 MCP 服务器与 Hermes AI Agent 对接。MemoHub v1 基于 **Text2Mem 协议**和**双轨记忆架构**，提供更强大的智能记忆管理能力。
 
-**v3 核心特性**：
+**v1 核心特性**：
 - 🧠 **双轨记忆**: track-insight (知识) + track-source (代码)
 - 🔍 **LightRAG 检索**: 三阶段智能检索流水线
 - 📦 **Monorepo 架构**: Bun Workspace 模块化设计
@@ -15,9 +15,9 @@
 
 ## 🔍 系统架构
 
-### v3 架构概览
+### v1 架构概览
 
-MemoHub v3 采用 Monorepo 架构，各层清晰分离：
+MemoHub v1 采用 Monorepo 架构，各层清晰分离：
 
 ```
 apps/cli (入口层)
@@ -39,7 +39,7 @@ packages/ (核心层)
 
 ### 数据模型
 
-**统一 VectorRecord** (v3 扁平化结构)：
+**统一 VectorRecord** (v1 扁平化结构)：
 - `id`: 唯一标识符
 - `vector`: 嵌入向量 (768维)
 - `hash`: CAS blob 引用
@@ -57,7 +57,7 @@ packages/ (核心层)
 
 ## 🎯 对接目标
 
-将 MemoHub v3 MCP 服务器集成到 Hermes：
+将 MemoHub v1 MCP 服务器集成到 Hermes：
 
 - ✅ 统一的双轨记忆管理 (知识 + 代码)
 - ✅ LightRAG 风格的智能检索
@@ -90,10 +90,10 @@ cp ~/.hermes/config.yaml "$BACKUP_DIR/config.yaml.backup"
 echo "✅ 备份完成: $BACKUP_DIR"
 ```
 
-### 步骤 2：构建 MemoHub v3
+### 步骤 2：构建 MemoHub v1
 
 ```bash
-# 进入 MemoHub v3 项目目录
+# 进入 MemoHub v1 项目目录
 cd /Users/embaobao/workspace/ai/memo-hub
 
 # 安装依赖
@@ -113,7 +113,7 @@ ls -la mcp-server/dist/
 
 ### 步骤 3：更新 Hermes 配置
 
-编辑 `~/.hermes/config.yaml`，添加 MemoHub v3 MCP 服务器：
+编辑 `~/.hermes/config.yaml`，添加 MemoHub v1 MCP 服务器：
 
 **推荐配置**（使用 Hermes 优化版本）：
 ```yaml
@@ -123,7 +123,7 @@ mcpServers:
     args:
       - /Users/embaobao/workspace/ai/memo-hub/mcp-server/dist/index-hermes.js
     env:
-      # v3 统一数据库路径
+      # v1 统一数据库路径
       MEMOHUB_DB_PATH: ~/.hermes/data/memohub.lancedb
       MEMOHUB_CAS_PATH: ~/.hermes/data/memohub-cas
 
@@ -141,14 +141,14 @@ mcpServers:
 
 | 变量 | 说明 | 默认值 |
 |------|------|--------|
-| `MEMOHUB_DB_PATH` | v3 统一向量数据库路径 | `~/.hermes/data/memohub.lancedb` |
+| `MEMOHUB_DB_PATH` | v1 统一向量数据库路径 | `~/.hermes/data/memohub.lancedb` |
 | `MEMOHUB_CAS_PATH` | CAS 内容寻址存储路径 | `~/.hermes/data/memohub-cas` |
 | `EMBEDDING_URL` | Ollama 嵌入 API 地址 | `http://localhost:11434/v1` |
 | `EMBEDDING_MODEL` | 嵌入模型名称 | `nomic-embed-text-v2-moe` |
 | `GBRAIN_DB_PATH` | GBrain 独立数据库 (可选) | `~/.hermes/data/gbrain.lancedb` |
 | `CLAWMEM_DB_PATH` | ClawMem 独立数据库 (可选) | `~/.hermes/data/clawmem.lancedb` |
 
-### 步骤 4：测试 MemoHub v3 MCP 服务器
+### 步骤 4：测试 MemoHub v1 MCP 服务器
 
 ```bash
 # 直接测试 Hermes 优化版本
@@ -189,7 +189,7 @@ hermes logs
 
 ### 步骤 6：验证工具可用性
 
-在 Hermes 中测试 MemoHub v3 工具：
+在 Hermes 中测试 MemoHub v1 工具：
 
 **1. 测试搜索知识 (track-insight)**：
 ```json
@@ -209,7 +209,7 @@ hermes logs
 }
 ```
 
-**预期输出** (v3 Hermes 优化格式)：
+**预期输出** (v1 Hermes 优化格式)：
 ```json
 {
   "track": "track-insight",
@@ -298,7 +298,7 @@ hermes logs
 {
   "name": "add_knowledge",
   "arguments": {
-    "text": "MemoHub v3 基于 Text2Mem 协议实现双轨记忆管理",
+    "text": "MemoHub v1 基于 Text2Mem 协议实现双轨记忆管理",
     "category": "architecture",
     "importance": 0.9,
     "tags": ["memohub", "text2mem", "architecture"],
@@ -319,7 +319,7 @@ hermes logs
 
 ## 🔧 配置详解
 
-### v3 MCP 服务器配置选项
+### v1 MCP 服务器配置选项
 
 **标准版本** vs **Hermes 优化版本**：
 
@@ -372,7 +372,7 @@ env:
 
 配置优先级：**环境变量 > YAML 配置文件 > 默认值**
 
-**v3 核心环境变量**：
+**v1 核心环境变量**：
 
 | 变量 | 说明 | 默认值 | 优先级 |
 |------|------|--------|--------|
@@ -387,7 +387,7 @@ env:
 
 ## 📊 工具对照表
 
-### v3 MCP 工具完整列表
+### v1 MCP 工具完整列表
 
 | 工具名 | 轨道 | 说明 | Hermes 优化 |
 |--------|------|------|-------------|
@@ -401,9 +401,9 @@ env:
 | **search_all** ⭐ | 统一 | LightRAG 风格检索流水线 | ✅ 完整流水线输出 |
 | **get_stats** | 统一 | 获取数据库统计 | ✅ 双轨统计 |
 
-### v3 vs v2 功能对比
+### v1 vs v2 功能对比
 
-| 功能 | v2 (旧系统) | v3 (新系统) |
+| 功能 | v2 (旧系统) | v1 (新系统) |
 |------|-----------|-----------|
 | 知识搜索 | ✅ query_knowledge | ✅ query_knowledge (增强) |
 | 代码搜索 | ✅ search_code | ✅ search_code (增强) |
@@ -421,7 +421,7 @@ env:
 
 ### 功能验证
 
-- [ ] MemoHub v3 MCP 服务器成功启动
+- [ ] MemoHub v1 MCP 服务器成功启动
 - [ ] LanceDB 数据库连接成功
 - [ ] CAS 存储路径创建成功
 - [ ] Ollama 嵌入服务可用
@@ -444,7 +444,7 @@ env:
 - [ ] `search_all` - LightRAG 检索流水线 ⭐
 - [ ] `get_stats` - 数据库统计 (双轨)
 
-### v3 特性验证
+### v1 特性验证
 
 - [ ] **意图识别**: code/knowledge/mixed 正确分类
 - [ ] **实体抽取**: 自动提取查询中的实体
@@ -595,7 +595,7 @@ console.log(JSON.stringify(schema, null, 2));
 vim ~/.hermes/config.yaml
 # 添加回旧的 gbrain 和 clawmem 配置
 
-# 2. 移除 v3 配置
+# 2. 移除 v1 配置
 # 删除 memohub mcpServers 配置块
 
 # 3. 重启 Hermes
@@ -663,9 +663,9 @@ export NODE_OPTIONS="--max-old-space-size=2048"
 
 ## 🎯 迁移总结
 
-### v2 vs v3 对比
+### v2 vs v1 对比
 
-| 特性 | v2 (旧系统) | v3 (新系统) |
+| 特性 | v2 (旧系统) | v1 (新系统) |
 |------|-----------|-----------|
 | **架构** | 2 个独立服务器 | 1 个统一服务器 |
 | **协议** | 各自独立 | Text2Mem 统一协议 |
@@ -677,7 +677,7 @@ export NODE_OPTIONS="--max-old-space-size=2048"
 | **访问统计** | ❌ | ✅ count + timestamp |
 | **Hermes 兼容** | ⚠️ 部分 | ✅ 完全优化 |
 
-### v3 核心优势
+### v1 核心优势
 
 **1. 架构优化**：
 - ✅ 从 2 个服务器 → 1 个服务器 (资源减少 50%)
@@ -726,7 +726,7 @@ export NODE_OPTIONS="--max-old-space-size=2048"
 ### 官方文档
 
 - **主文档**: [README.md](../README.md)
-- **快速开始**: [QUICKSTART_V3.md](../QUICKSTART_V3.md)
+- **快速开始**: [QUICKSTART_V1.md](../QUICKSTART_V1.md)
 - **项目总结**: [PROJECT_COMPLETION_SUMMARY.md](../PROJECT_COMPLETION_SUMMARY.md)
 - **测试报告**: [TEST_RESULTS.md](../TEST_RESULTS.md)
 - **开发指南**: [CLAUDE.md](../CLAUDE.md)
@@ -761,11 +761,11 @@ memohub serve
 
 ## 📝 更新日志
 
-### 2026-04-24 (v3.0.0)
-- ✅ 完成基于 Text2Mem 协议的 v3 架构
+### 2026-04-24 (v1.0.0)
+- ✅ 完成基于 Text2Mem 协议的 v1 架构
 - ✅ 实现 LightRAG 风格检索流水线
 - ✅ 创建 Hermes 优化版 MCP 服务器
-- ✅ 更新集成文档以反映 v3 架构
+- ✅ 更新集成文档以反映 v1 架构
 - ✅ 添加 9 个完整的 MCP 工具
 - ✅ 实现双轨记忆 (track-insight + track-source)
 - ✅ 支持 CAS 内容寻址存储

@@ -1,4 +1,4 @@
-# MemoHub v3 - Hermes AI Agent 集成完整指南
+# MemoHub v1 - Hermes AI Agent 集成完整指南
 
 ## 📋 目录
 
@@ -16,7 +16,7 @@
 
 ### 3 步完成集成
 
-1. **构建 MemoHub v3**
+1. **构建 MemoHub v1**
    ```bash
    cd /Users/embaobao/workspace/ai/memo-hub
    bun install
@@ -53,7 +53,7 @@
 
 ### Monorepo 架构
 
-MemoHub v3 采用 **Bun Workspace Monorepo** 架构：
+MemoHub v1 采用 **Bun Workspace Monorepo** 架构：
 
 ```
 memohub/
@@ -81,7 +81,7 @@ memohub/
 
 ### Text2Mem 协议
 
-MemoHub v3 基于 **Text2Mem 协议**，提供 12 个原子操作：
+MemoHub v1 基于 **Text2Mem 协议**，提供 12 个原子操作：
 
 - **ADD** - 添加记录
 - **RETRIEVE** - 检索记录
@@ -243,7 +243,7 @@ memohub serve
 
 **在 Hermes 中说**：
 ```
-请添加一条知识：MemoHub v3 基于 Text2Mem 协议实现双轨记忆管理，包含 track-insight (知识轨道) 和 track-source (代码轨道)
+请添加一条知识：MemoHub v1 基于 Text2Mem 协议实现双轨记忆管理，包含 track-insight (知识轨道) 和 track-source (代码轨道)
 ```
 
 **工具调用**：
@@ -251,7 +251,7 @@ memohub serve
 {
   "name": "add_knowledge",
   "arguments": {
-    "text": "MemoHub v3 基于 Text2Mem 协议实现双轨记忆管理，包含 track-insight (知识轨道) 和 track-source (代码轨道)",
+    "text": "MemoHub v1 基于 Text2Mem 协议实现双轨记忆管理，包含 track-insight (知识轨道) 和 track-source (代码轨道)",
     "category": "architecture",
     "importance": 0.9,
     "tags": ["memohub", "text2mem", "architecture"]
@@ -345,7 +345,7 @@ interface Config {
 请执行以下操作：
 1. 搜索关于 "monorepo" 的知识
 2. 如果找到相关知识，总结给我
-3. 如果没有找到，添加一条新知识：MemoHub v3 使用 Bun Workspace Monorepo 架构
+3. 如果没有找到，添加一条新知识：MemoHub v1 使用 Bun Workspace Monorepo 架构
 ```
 
 ---
@@ -521,7 +521,7 @@ chmod 755 ~/.hermes/data
 {
   "name": "add_knowledge",
   "arguments": {
-    "text": "MemoHub v3 基于 Text2Mem 协议",
+    "text": "MemoHub v1 基于 Text2Mem 协议",
     "category": "architecture",
     "importance": 0.9,
     "tags": ["memohub", "text2mem"]
@@ -714,7 +714,7 @@ bun run lint
 
 ## 🎉 总结
 
-MemoHub v3 为 Hermes AI Agent 提供了强大的双轨记忆管理能力：
+MemoHub v1 为 Hermes AI Agent 提供了强大的双轨记忆管理能力：
 
 - ✅ **统一协议**：Text2Mem 协议提供标准化接口
 - ✅ **双轨架构**：知识 + 代码，满足不同需求

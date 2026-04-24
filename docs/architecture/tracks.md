@@ -1,4 +1,4 @@
-# MemoHub v3 轨道架构说明
+# MemoHub v1 轨道架构说明
 
 ## 📋 当前轨道状态
 
@@ -41,7 +41,7 @@ MemoryKernel
 
 ### 设计目标：多轨架构
 
-MemoHub v3 设计为**可扩展的多轨架构**：
+MemoHub v1 设计为**可扩展的多轨架构**：
 
 ```
 MemoryKernel

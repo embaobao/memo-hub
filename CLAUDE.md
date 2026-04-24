@@ -1,6 +1,6 @@
-# CLAUDE.md - MemoHub v3 AI 协作指南
+# GEMINI.md - MemoHub v1 AI 协作指南
 
-这是 **MemoHub v3** 的 AI 协作入口。本文档为 AI Agent (如 Claude Code) 提供项目概览和文档导航。
+这是 **MemoHub v1** 的 AI 协作入口。本文档为 AI Agent (如 Claude Code) 提供项目概览和文档导航。
 
 ---
 
@@ -25,7 +25,7 @@
 ## 📋 项目概述
 
 ### 核心信息
-- **项目名称**: MemoHub v3
+- **项目名称**: MemoHub v1
 - **架构**: Bun Workspace Monorepo
 - **协议**: Text2Mem (12 原子操作)
 - **存储**: CAS (内容) + LanceDB (向量)

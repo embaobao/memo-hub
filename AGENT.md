@@ -1,6 +1,6 @@
-# AGENT.md - MemoHub v3 开发规范
+# AGENT.md - MemoHub v1 开发规范
 
-本文档定义 MemoHub v3 项目的开发规范和规则，所有开发者（包括 AI Agent）必须遵守。
+本文档定义 MemoHub v1 项目的开发规范和规则，所有开发者（包括 AI Agent）必须遵守。
 
 ---
 

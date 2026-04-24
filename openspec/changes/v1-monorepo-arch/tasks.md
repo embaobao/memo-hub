@@ -128,5 +128,5 @@
 - [x] 12.1 Update root package.json version to 3.0.0
 - [x] 12.2 Update CLAUDE.md to reflect new monorepo structure and commands
 - [ ] 12.3 Remove old `src/`, `mcp-server/`, `plugins/` directories after migration is verified
-- [x] 12.4 Update CHANGELOG.md with v3 breaking changes and migration guide
+- [x] 12.4 Update CHANGELOG.md with v1 breaking changes and migration guide
 - [x] 12.5 Run full build, lint, and test suite to verify everything works

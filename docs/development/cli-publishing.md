@@ -1,4 +1,4 @@
-# MemoHub v3 CLI 发布和安装指南
+# MemoHub v1 CLI 发布和安装指南
 
 ## 📦 发布流程
 

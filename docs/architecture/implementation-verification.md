@@ -1,4 +1,4 @@
-# MemoHub v3 架构实现验证
+# MemoHub v1 架构实现验证
 
 ## ✅ 核心问题验证清单
 
@@ -259,7 +259,7 @@ packages/protocol
 
 ### 架构设计要求
 
-根据 `docs/architecture/overview.md`，MemoHub v3 应该：
+根据 `docs/architecture/overview.md`，MemoHub v1 应该：
 
 1. ✅ 支持多轨架构
 2. ✅ 基于 Text2Mem 协议

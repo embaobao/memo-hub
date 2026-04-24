@@ -147,14 +147,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Enhanced Documentation
 - Updated CLAUDE.md with monorepo architecture
-- Migration guide for v2 → v3
+- Migration guide for v2 → v1
 - Protocol specification documentation
 - Track implementation guide
 
 ### 🗑️ Removed
 
 #### Deprecated Features
-- Old monolithic `src/` structure (will be removed in v3.1)
+- Old monolithic `src/` structure (will be removed in v1.1)
 - Legacy GBrain and ClawMem classes (use tracks instead)
 - Old MCP server implementation (use new unified server)
 - Plugin system (replaced by track system)
@@ -235,7 +235,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 📚 Documentation
 
-- Updated README.md with v3 architecture
+- Updated README.md with v1 architecture
 - New CLAUDE.md for developers
 - Protocol specification in packages/protocol
 - Migration scripts with --dry-run support

@@ -1,13 +1,13 @@
-# MemoHub v3 文档中心
+# MemoHub v1 文档中心
 
-欢迎使用 MemoHub v3 文档！这里是项目的完整文档索引。
+欢迎使用 MemoHub v1 文档！这里是项目的完整文档索引。
 
-**MemoHub v3** 是一个 **Agent 记忆内核**，基于 **多轨道动态矩阵架构**，旨在成为像真实"数字大脑"一样的记忆系统。
+**MemoHub v1** 是一个 **Agent 记忆内核**，基于 **多轨道动态矩阵架构**，旨在成为像真实"数字大脑"一样的记忆系统。
 
 ## 📚 文档导航
 
 ### 🚀 快速开始
-- [快速开始指南](guides/quickstart.md) - 5 分钟上手 MemoHub v3
+- [快速开始指南](guides/quickstart.md) - 5 分钟上手 MemoHub v1
 - [配置指南](guides/configuration.md) - 详细的配置说明
 - [私有同步](guides/private-sync.md) - 私有仓库同步指南
 

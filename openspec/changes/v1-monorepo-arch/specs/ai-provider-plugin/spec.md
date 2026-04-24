@@ -31,7 +31,7 @@ The system SHALL provide an Ollama adapter implementing both IEmbedder and IComp
 
 #### Scenario: Handle Ollama connection failure
 - **WHEN** embed is called but the Ollama endpoint is unreachable
-- **THEN** an error SHALL be thrown (no silent zero-vector fallback in v3)
+- **THEN** an error SHALL be thrown (no silent zero-vector fallback in v1)
 
 ### Requirement: Adapter registration and lookup
 The system SHALL provide an `AIProviderRegistry` that maps adapter names to factory functions, supporting runtime selection.

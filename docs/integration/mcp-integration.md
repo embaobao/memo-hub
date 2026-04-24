@@ -1,4 +1,4 @@
-# MemoHub v3 - MCP 协议集成指南
+# MemoHub v1 - MCP 协议集成指南
 
 > **🎯 适用对象**: 所有支持 MCP 协议的 AI Agent（Claude, ChatGPT, 等）
 > **⚡ 集成难度**: ⭐ (非常简单)

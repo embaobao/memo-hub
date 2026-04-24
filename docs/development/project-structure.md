@@ -1,8 +1,8 @@
-# MemoHub v3 项目结构说明
+# MemoHub v1 项目结构说明
 
 ## 📁 Monorepo 架构
 
-MemoHub v3 使用 **Bun Workspace Monorepo** 架构，模块化设计，清晰分离关注点。
+MemoHub v1 使用 **Bun Workspace Monorepo** 架构，模块化设计，清晰分离关注点。
 
 ```
 memohub/
@@ -108,7 +108,7 @@ bun run --filter './tracks/*' build
 
 ### 集成方式
 
-MemoHub v3 的 MCP 服务器通过 **CLI 暴露**，符合 monorepo 最佳实践：
+MemoHub v1 的 MCP 服务器通过 **CLI 暴露**，符合 monorepo 最佳实践：
 
 ```
 用户调用

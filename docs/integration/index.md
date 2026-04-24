@@ -1,6 +1,6 @@
-# MemoHub v3 集成指南
+# MemoHub v1 集成指南
 
-欢迎使用 MemoHub v3 集成指南！本文档为 AI Agent 和开发者提供完整的集成方式说明。
+欢迎使用 MemoHub v1 集成指南！本文档为 AI Agent 和开发者提供完整的集成方式说明。
 
 ---
 

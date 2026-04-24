@@ -1,5 +1,5 @@
 #!/bin/bash
-# MemoHub v3 CLI 安装脚本
+# MemoHub v1 CLI 安装脚本
 
 set -e
 
@@ -7,7 +7,7 @@ PROJECT_DIR="/Users/embaobao/workspace/ai/memo-hub"
 INSTALL_DIR="/usr/local/bin"
 CLI_PATH="$PROJECT_DIR/apps/cli/dist/index.js"
 
-echo "🚀 安装 MemoHub v3 CLI..."
+echo "🚀 安装 MemoHub v1 CLI..."
 
 # 检查 CLI 是否存在
 if [ ! -f "$CLI_PATH" ]; then
@@ -26,7 +26,7 @@ SCRIPT
 # 设置可执行权限
 sudo chmod +x "$INSTALL_DIR/memohub"
 
-echo "✅ MemoHub v3 CLI 安装成功！"
+echo "✅ MemoHub v1 CLI 安装成功！"
 echo ""
 echo "🎯 现在可以使用 memohub 命令："
 echo "  memohub add '知识内容'"

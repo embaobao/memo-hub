@@ -1,4 +1,4 @@
-# 🚀 MemoHub v3 快速开始指南
+# 🚀 MemoHub v1 快速开始指南
 
 ## 📋 前置要求
 
@@ -20,7 +20,7 @@ ollama serve
 ollama pull nomic-embed-text-v2-moe
 ```
 
-### 2. 安装 MemoHub v3
+### 2. 安装 MemoHub v1
 ```bash
 cd /path/to/memo-hub
 bun install
@@ -43,7 +43,7 @@ vim config/config.yaml
 #### 1. 添加知识
 ```bash
 # 添加简单知识
-memohub add "MemoHub v3 是基于 Text2Mem 协议的智能记忆管理系统" \
+memohub add "MemoHub v1 是基于 Text2Mem 协议的智能记忆管理系统" \
   -c project \
   -i 0.8 \
   -t "memohub,text2mem"
@@ -166,7 +166,7 @@ memohub search-all "查询内容" \
 
 ### 2. 数据迁移
 ```bash
-# 从 v2 迁移到 v3
+# 从 v2 迁移到 v1
 # 首先备份
 cp -r ~/.memohub ~/.memohub.backup
 
@@ -290,7 +290,7 @@ bun run build
 
 ## 🎉 开始使用
 
-MemoHub v3 已经准备就绪！按照上述步骤，您就可以开始体验：
+MemoHub v1 已经准备就绪！按照上述步骤，您就可以开始体验：
 
 - 🧠 **智能知识管理**: 基于语义相似度的知识检索
 - 💻 **代码记忆**: AST 分析的代码片段管理

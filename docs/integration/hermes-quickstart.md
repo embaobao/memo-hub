@@ -72,7 +72,7 @@ hermes restart
 
 **添加知识**：
 ```
-请添加知识：MemoHub v3 使用 Bun Workspace Monorepo 架构，包含 apps/、packages/、tracks/ 三个主要目录
+请添加知识：MemoHub v1 使用 Bun Workspace Monorepo 架构，包含 apps/、packages/、tracks/ 三个主要目录
 ```
 
 **搜索代码**：
