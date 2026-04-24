@@ -7,6 +7,7 @@ import { ObservationKernel } from './observation.js';
 import { CacheManager } from './cache.js';
 import { CasTool } from './tools/builtin/cas.js';
 import { VectorTool } from './tools/builtin/vector.js';
+import { EmbedderTool } from './tools/builtin/embedder.js';
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
 import { VectorStorage } from '@memohub/storage-soul';
 
@@ -39,6 +40,7 @@ export class MemoryKernel implements IKernel {
     // Register built-in tools
     this.toolRegistry.register(new CasTool(this.cas));
     this.toolRegistry.register(new VectorTool(this.vectorStorage));
+    this.toolRegistry.register(new EmbedderTool(this.aiHub));
     
     // In a real implementation, we would register external tools here based on config
   }

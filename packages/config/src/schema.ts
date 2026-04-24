@@ -61,12 +61,31 @@ export const MemoHubConfigSchema = z.object({
     root: z.string().default('~/.memohub'),
   }).default({}),
   ai: z.object({
-    providers: z.array(ProviderSchema).default([]),
-    agents: z.record(AgentSchema).default({}),
+    providers: z.array(ProviderSchema).default([
+      { id: 'local', type: 'ollama', url: 'http://localhost:11434/v1' }
+    ]),
+    agents: z.record(AgentSchema).default({
+      embedder: { provider: 'local', model: 'nomic-embed-text-v2-moe', dimensions: 768 }
+    }),
   }).default({}),
   dispatcher: DispatcherSchema.default({ fallback: 'track-insight' }),
   tools: z.array(ToolManifestSchema).default([]),
-  tracks: z.array(TrackSchema).default([]),
+  tracks: z.array(TrackSchema).default([
+    {
+      id: 'track-insight',
+      flow: [
+        { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.text' } },
+        { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.text' } },
+        { step: 'indexing', tool: 'builtin:vector', input: { 
+          id: '$.payload.id', 
+          vector: '$.embedding.vector',
+          hash: '$.storage.hash',
+          track_id: 'track-insight',
+          meta: { category: '$.payload.category' }
+        } }
+      ]
+    }
+  ]),
 });
 
 export type MemoHubConfig = z.infer<typeof MemoHubConfigSchema>;
