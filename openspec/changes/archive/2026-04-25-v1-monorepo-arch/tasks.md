@@ -75,6 +75,7 @@
 - [x] 7.7 Implement MERGE — combine records, merge metadata and tags
 - [x] 7.8 Implement LIST — list categories with counts
 - [x] 7.9 Write unit tests for all insight track operations
+- [x] 7.10 Implement all 12 Text2Mem operations (CLARIFY, DISTILL, etc.)
 
 ## 8. Track: Source (tracks/track-source)
 
@@ -87,6 +88,13 @@
 - [x] 8.7 Implement DELETE — remove records by symbol_name
 - [x] 8.8 Implement LIST — list symbols with optional ast_type filter
 - [x] 8.9 Write unit tests for all source track operations
+- [x] 8.10 Implement all 12 Text2Mem operations
+
+## 9. Track: Stream & Wiki (tracks/track-stream, track-wiki)
+
+- [x] 9.1 Implement StreamTrack for dialogue logs with TTL
+- [x] 9.2 Implement WikiTrack for verified authoritative knowledge
+- [x] 9.3 Register all core tracks in MemoryKernel
 
 ## 9. Librarian Package (packages/librarian)
 

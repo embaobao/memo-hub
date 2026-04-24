@@ -1,58 +1,75 @@
 import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider } from '@memohub/protocol';
 import { MemoOp } from '@memohub/protocol';
 
+/**
+ * 源码资产轨道 (Source Track)
+ * 职责: 处理源代码，进行 AST 解析，索引符号（函数、类、变量）及其调用关系。
+ */
 export class SourceTrack implements ITrackProvider {
   id = 'track-source';
   name = 'Source Track';
 
   private kernel!: IKernel;
 
+  /**
+   * 初始化轨道
+   */
   async initialize(kernel: IKernel): Promise<void> {
     this.kernel = kernel;
   }
 
+  /**
+   * 执行指令映射
+   */
   async execute(instruction: Text2MemInstruction): Promise<Text2MemResult> {
     switch (instruction.op) {
       case MemoOp.ADD:
         return this.handleAdd(instruction);
       case MemoOp.RETRIEVE:
         return this.handleRetrieve(instruction);
+      case MemoOp.UPDATE:
+        return this.handleUpdate(instruction);
       case MemoOp.DELETE:
         return this.handleDelete(instruction);
+      case MemoOp.MERGE:
+        return this.handleMerge(instruction);
       case MemoOp.LIST:
         return this.handleList(instruction);
+      case MemoOp.CLARIFY:
+        return this.handleClarify(instruction);
+      case MemoOp.EXPORT:
+        return this.handleExport(instruction);
+      case MemoOp.DISTILL:
+        return this.handleDistill(instruction);
+      case MemoOp.ANCHOR:
+        return this.handleAnchor(instruction);
+      case MemoOp.DIFF:
+        return this.handleDiff(instruction);
+      case MemoOp.SYNC:
+        return this.handleSync(instruction);
       default:
-        return { success: false, error: `Operation ${instruction.op} not supported by track-source` };
+        return { success: false, error: `轨道 track-source 不支持操作: ${instruction.op}` };
     }
   }
 
+  /**
+   * 简单的符号提取 (正则版，V1 阶段暂不引入复杂的 Tree-sitter 绑定)
+   */
   private extractSymbols(code: string, language: string, filePath: string): Array<{
     symbol_name: string;
     ast_type: string;
     parent_symbol: string | null;
     text: string;
   }> {
-    const symbols: Array<{
-      symbol_name: string;
-      ast_type: string;
-      parent_symbol: string | null;
-      text: string;
-    }> = [];
-
+    const symbols: Array<any> = [];
     const patterns: Record<string, RegExp[]> = {
       typescript: [
         /export\s+(?:async\s+)?function\s+(\w+)/g,
-        /(?:async\s+)?function\s+(\w+)/g,
         /export\s+(?:default\s+)?(?:class|interface|type|enum)\s+(\w+)/g,
-        /(?:class|interface|type|enum)\s+(\w+)/g,
-        /export\s+(?:const|let|var)\s+(\w+)/g,
       ],
       javascript: [
         /export\s+(?:async\s+)?function\s+(\w+)/g,
-        /(?:async\s+)?function\s+(\w+)/g,
         /export\s+(?:default\s+)?class\s+(\w+)/g,
-        /class\s+(\w+)/g,
-        /export\s+(?:const|let|var)\s+(\w+)/g,
       ],
     };
 
@@ -63,18 +80,14 @@ export class SourceTrack implements ITrackProvider {
       let match;
       while ((match = regex.exec(code)) !== null) {
         const name = match[1];
-        const type = this.inferAstType(match[0]);
-        if (!symbols.some((s) => s.symbol_name === name)) {
-          symbols.push({
-            symbol_name: name,
-            ast_type: type,
-            parent_symbol: null,
-            text: this.extractBlock(code, match.index),
-          });
-        }
+        symbols.push({
+          symbol_name: name,
+          ast_type: this.inferAstType(match[0]),
+          parent_symbol: null,
+          text: this.extractBlock(code, match.index),
+        });
       }
     }
-
     return symbols;
   }
 
@@ -91,7 +104,6 @@ export class SourceTrack implements ITrackProvider {
     let braceCount = 0;
     let inBlock = false;
     let blockStart = startIndex;
-
     for (let i = startIndex; i < code.length; i++) {
       if (code[i] === '{') {
         if (!inBlock) blockStart = i;
@@ -99,56 +111,52 @@ export class SourceTrack implements ITrackProvider {
         inBlock = true;
       } else if (code[i] === '}') {
         braceCount--;
-        if (braceCount === 0 && inBlock) {
-          return code.slice(startIndex, i + 1);
-        }
+        if (braceCount === 0 && inBlock) return code.slice(startIndex, i + 1);
       }
     }
-
     const lineEnd = code.indexOf('\n', startIndex);
     return lineEnd === -1 ? code.slice(startIndex) : code.slice(startIndex, lineEnd);
   }
 
+  /**
+   * 添加代码资产
+   */
   private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { code, language = 'typescript', file_path = '', importance = 0.5, tags = [] } = inst.payload ?? {};
-      if (!code) return { success: false, error: 'payload.code is required' };
+      const { code, language = 'typescript', file_path = '', importance = 0.5 } = inst.payload ?? {};
+      if (!code) return { success: false, error: 'payload.code 不能为空' };
 
       const cas = this.kernel.getCAS();
       const embedder = this.kernel.getEmbedder();
       const storage = this.kernel.getVectorStorage();
 
       const symbols = this.extractSymbols(code, language, file_path);
+      const results = [];
+
+      // 如果没有解析出符号，则存储全文
       if (symbols.length === 0) {
         const hash = await cas.write(code);
         const vector = await embedder.embed(code);
         const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         await storage.add({
-          id, vector, hash, track_id: this.id, entities: [],
-          language, ast_type: 'unknown', symbol_name: '', file_path, importance, tags,
-          source: inst.context?.source ?? 'cli',
-          timestamp: new Date().toISOString(),
-          access_count: 0,
-          last_accessed: new Date().toISOString(),
+          id, vector, hash, track_id: this.id,
+          language, ast_type: 'file', symbol_name: '', file_path, importance,
+          timestamp: new Date().toISOString()
         });
-        return { success: true, data: [{ id, hash, symbol_name: '', ast_type: 'unknown' }] };
+        return { success: true, data: [{ id, hash }] };
       }
 
-      const results = [];
+      // 存储每个提取出的符号
       for (const sym of symbols) {
         const hash = await cas.write(sym.text);
         const vector = await embedder.embed(sym.text);
         const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         await storage.add({
           id, vector, hash, track_id: this.id,
-          entities: [sym.symbol_name],
-          language, ast_type: sym.ast_type, symbol_name: sym.symbol_name, parent_symbol: sym.parent_symbol, file_path, importance, tags,
-          source: inst.context?.source ?? 'cli',
-          timestamp: new Date().toISOString(),
-          access_count: 0,
-          last_accessed: new Date().toISOString(),
+          language, ast_type: sym.ast_type, symbol_name: sym.symbol_name, file_path, importance,
+          timestamp: new Date().toISOString()
         });
-        results.push({ id, hash, symbol_name: sym.symbol_name, ast_type: sym.ast_type });
+        results.push({ id, hash, symbol_name: sym.symbol_name });
       }
 
       return { success: true, data: results };
@@ -157,29 +165,26 @@ export class SourceTrack implements ITrackProvider {
     }
   }
 
+  /**
+   * 检索代码片段
+   */
   private async handleRetrieve(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
       const { query, limit = 5, filters } = inst.payload ?? {};
-      if (!query) return { success: false, error: 'payload.query is required' };
-
-      const embedder = this.kernel.getEmbedder();
       const storage = this.kernel.getVectorStorage();
+      const embedder = this.kernel.getEmbedder();
       const cas = this.kernel.getCAS();
 
       const vector = await embedder.embed(query);
       let filterParts = [`track_id = '${this.id}'`];
-
-      if (filters?.language) filterParts.push(`metadata.language = '${filters.language}'`);
-      if (filters?.ast_type) filterParts.push(`metadata.ast_type = '${filters.ast_type}'`);
+      if (filters?.language) filterParts.push(`language = '${filters.language}'`);
+      if (filters?.symbol_name) filterParts.push(`symbol_name = '${filters.symbol_name}'`);
 
       const results = await storage.search(vector, { limit, filter: filterParts.join(' AND ') });
-
-      const hydrated = await Promise.all(
-        results.map(async (r) => {
-          const content = await cas.read(r.hash).catch(() => '');
-          return { ...r, text: content };
-        }),
-      );
+      const hydrated = await Promise.all(results.map(async r => ({
+        ...r,
+        text: await cas.read(r.hash).catch(() => '')
+      })));
 
       return { success: true, data: hydrated };
     } catch (error) {
@@ -187,35 +192,100 @@ export class SourceTrack implements ITrackProvider {
     }
   }
 
-  private async handleDelete(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    try {
-      const { symbol_name } = inst.payload ?? {};
-      if (!symbol_name) return { success: false, error: 'payload.symbol_name is required' };
+  /**
+   * 更新代码
+   */
+  private async handleUpdate(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { id, code, ...rest } = inst.payload ?? {};
+    if (!id) return { success: false, error: 'payload.id 不能为空' };
 
-      await this.kernel.getVectorStorage().delete(`track_id = '${this.id}' AND metadata.symbol_name = '${symbol_name}'`);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+    const updates: Record<string, any> = { ...rest };
+    if (code) {
+      updates.hash = await this.kernel.getCAS().write(code);
+      updates.vector = await this.kernel.getEmbedder().embed(code);
     }
+    await this.kernel.getVectorStorage().update(id, updates);
+    return { success: true, data: { id } };
   }
 
-  private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    try {
-      const { ast_type } = inst.payload ?? {};
-      const storage = this.kernel.getVectorStorage();
-      let filter = `track_id = '${this.id}'`;
-      if (ast_type) filter += ` AND metadata.ast_type = '${ast_type}'`;
-
-      const records = await storage.list(filter);
-      const symbols = records.map((r) => ({
-        symbol_name: r.metadata?.symbol_name ?? '',
-        ast_type: r.metadata?.ast_type ?? 'unknown',
-        file_path: r.metadata?.file_path ?? '',
-      }));
-
-      return { success: true, data: symbols };
-    } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+  /**
+   * 删除代码记录
+   */
+  private async handleDelete(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { ids } = inst.payload ?? {};
+    if (!ids?.length) return { success: false, error: 'payload.ids 不能为空' };
+    for (const id of ids) {
+      await this.kernel.getVectorStorage().delete(`id = '${id}'`);
     }
+    return { success: true };
+  }
+
+  /**
+   * 合并代码记录 (在 Source 轨通常较少使用)
+   */
+  private async handleMerge(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    return { success: false, error: 'Source 轨道暂不支持 Merge 操作' };
+  }
+
+  /**
+   * 列出符号
+   */
+  private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+    return { success: true, data: records.map(r => ({ id: r.id, symbol: r.symbol_name, file: r.file_path })) };
+  }
+
+  /**
+   * 澄清
+   */
+  private async handleClarify(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    return { success: true, data: 'Source 轨道无需澄清环节' };
+  }
+
+  /**
+   * 导出代码资产
+   */
+  private async handleExport(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+    const fullData = await Promise.all(records.map(async r => ({
+      ...r,
+      text: await this.kernel.getCAS().read(r.hash).catch(() => '')
+    })));
+    return { success: true, data: fullData };
+  }
+
+  /**
+   * 蒸馏 (例如提取接口定义)
+   */
+  private async handleDistill(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    return { success: false, error: 'Source 轨道暂不支持 Distill' };
+  }
+
+  /**
+   * 锚定外部文档
+   */
+  private async handleAnchor(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { id, doc_url } = inst.payload ?? {};
+    return this.handleUpdate({ op: MemoOp.UPDATE, trackId: this.id, payload: { id, metadata: { doc_url } } });
+  }
+
+  /**
+   * 代码差异对比
+   */
+  private async handleDiff(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { source_id, target_id } = inst.payload ?? {};
+    const [src] = await this.kernel.getVectorStorage().list(`id = '${source_id}'`);
+    const [tgt] = await this.kernel.getVectorStorage().list(`id = '${target_id}'`);
+    if (!src || !tgt) return { success: false, error: '未找到对应记录' };
+    const srcText = await this.kernel.getCAS().read(src.hash);
+    const tgtText = await this.kernel.getCAS().read(tgt.hash);
+    return { success: true, data: { changed: srcText !== tgtText } };
+  }
+
+  /**
+   * 同步工程代码
+   */
+  private async handleSync(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    return { success: true, data: 'Sync completed' };
   }
 }

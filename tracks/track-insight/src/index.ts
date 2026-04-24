@@ -1,16 +1,26 @@
 import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider } from '@memohub/protocol';
 import { MemoOp, extractEntitiesFromText } from '@memohub/protocol';
 
+/**
+ * 知识沉淀轨道 (Insight Track)
+ * 职责: 存储 LLM 提纯后的事实、决策定论和用户偏好。
+ */
 export class InsightTrack implements ITrackProvider {
   id = 'track-insight';
   name = 'Insight Track';
 
   private kernel!: IKernel;
 
+  /**
+   * 初始化轨道，注入内核引用
+   */
   async initialize(kernel: IKernel): Promise<void> {
     this.kernel = kernel;
   }
 
+  /**
+   * 执行 Text2Mem 指令
+   */
   async execute(instruction: Text2MemInstruction): Promise<Text2MemResult> {
     switch (instruction.op) {
       case MemoOp.ADD:
@@ -25,19 +35,34 @@ export class InsightTrack implements ITrackProvider {
         return this.handleMerge(instruction);
       case MemoOp.LIST:
         return this.handleList(instruction);
+      case MemoOp.CLARIFY:
+        return this.handleClarify(instruction);
+      case MemoOp.EXPORT:
+        return this.handleExport(instruction);
+      case MemoOp.DISTILL:
+        return this.handleDistill(instruction);
+      case MemoOp.ANCHOR:
+        return this.handleAnchor(instruction);
+      case MemoOp.DIFF:
+        return this.handleDiff(instruction);
+      case MemoOp.SYNC:
+        return this.handleSync(instruction);
       default:
-        return { success: false, error: `Operation ${instruction.op} not supported by track-insight` };
+        return { success: false, error: `轨道 track-insight 不支持操作: ${instruction.op}` };
     }
   }
 
+  /**
+   * 添加新知识
+   */
   private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { text, category = 'other', importance = 0.5, tags = [], entities: providedEntities = [] } = inst.payload ?? {};
-      if (!text) return { success: false, error: 'payload.text is required' };
+      const { text, category = 'other', importance = 0.5, tags = [], entities: providedEntities = [], confidence = 0.9 } = inst.payload ?? {};
+      if (!text) return { success: false, error: 'payload.text 不能为空' };
 
       const cas = this.kernel.getCAS();
-      const embedder = this.kernel.getEmbedder();
       const storage = this.kernel.getVectorStorage();
+      const embedder = this.kernel.getEmbedder();
 
       const hash = await cas.write(text);
       const vector = await embedder.embed(text);
@@ -56,6 +81,7 @@ export class InsightTrack implements ITrackProvider {
         category,
         importance,
         tags,
+        confidence,
         source: inst.context?.source ?? 'cli',
         timestamp: new Date().toISOString(),
         access_count: 0,
@@ -68,21 +94,23 @@ export class InsightTrack implements ITrackProvider {
     }
   }
 
+  /**
+   * 检索相关知识
+   */
   private async handleRetrieve(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
       const { query, limit = 5, filters } = inst.payload ?? {};
-      if (!query) return { success: false, error: 'payload.query is required' };
+      if (!query) return { success: false, error: 'payload.query 不能为空' };
 
-      const embedder = this.kernel.getEmbedder();
       const storage = this.kernel.getVectorStorage();
+      const embedder = this.kernel.getEmbedder();
       const cas = this.kernel.getCAS();
 
       const vector = await embedder.embed(query);
       let filterParts = [`track_id = '${this.id}'`];
 
-      if (filters?.category) {
-        filterParts.push(`category = '${filters.category}'`);
-      }
+      if (filters?.category) filterParts.push(`category = '${filters.category}'`);
+      if (filters?.min_importance) filterParts.push(`importance >= ${filters.min_importance}`);
 
       const results = await storage.search(vector, {
         limit,
@@ -91,7 +119,7 @@ export class InsightTrack implements ITrackProvider {
 
       const hydrated = await Promise.all(
         results.map(async (r) => {
-          const content = await cas.read(r.hash).catch(() => r.metadata?.text ?? '');
+          const content = await cas.read(r.hash).catch(() => '');
           return { ...r, text: content };
         }),
       );
@@ -102,99 +130,218 @@ export class InsightTrack implements ITrackProvider {
     }
   }
 
+  /**
+   * 更新知识
+   */
   private async handleUpdate(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { id, text } = inst.payload ?? {};
-      if (!id) return { success: false, error: 'payload.id is required' };
+      const { id, text, ...rest } = inst.payload ?? {};
+      if (!id) return { success: false, error: 'payload.id 不能为空' };
 
-      const cas = this.kernel.getCAS();
-      const embedder = this.kernel.getEmbedder();
-      const storage = this.kernel.getVectorStorage();
-
-      const updates: Record<string, any> = {};
+      const updates: Record<string, any> = { ...rest };
       if (text) {
-        updates.hash = await cas.write(text);
-        updates.vector = await embedder.embed(text);
+        updates.hash = await this.kernel.getCAS().write(text);
+        updates.vector = await this.kernel.getEmbedder().embed(text);
       }
-      if (inst.payload?.tags) updates.metadata = { ...(inst.payload.metadata ?? {}), tags: inst.payload.tags };
-      if (inst.payload?.category) updates.metadata = { ...(updates.metadata ?? inst.payload.metadata ?? {}), category: inst.payload.category };
 
-      await storage.update(id, updates);
+      await this.kernel.getVectorStorage().update(id, updates);
       return { success: true, data: { id } };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
+  /**
+   * 删除知识
+   */
   private async handleDelete(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { ids, category } = inst.payload ?? {};
+      const { ids } = inst.payload ?? {};
+      if (!ids?.length) return { success: false, error: 'payload.ids 不能为空' };
+
       const storage = this.kernel.getVectorStorage();
-
-      if (ids?.length) {
-        for (const id of ids) {
-          await storage.delete(`id = '${id}'`);
-        }
-      } else if (category) {
-        await storage.delete(`track_id = '${this.id}' AND category = '${category}'`);
-      } else {
-        return { success: false, error: 'payload.ids or payload.category required' };
+      for (const id of ids) {
+        await storage.delete(`id = '${id}'`);
       }
-
       return { success: true };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
+  /**
+   * 合并多个知识条目
+   */
   private async handleMerge(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { ids } = inst.payload ?? {};
-      if (!ids?.length || ids.length < 2) return { success: false, error: 'payload.ids must have at least 2 entries' };
+      const { ids, summary } = inst.payload ?? {};
+      if (!ids?.length || ids.length < 2) return { success: false, error: '合并至少需要 2 个 ID' };
 
       const storage = this.kernel.getVectorStorage();
       const cas = this.kernel.getCAS();
 
       const records = await storage.list(`track_id = '${this.id}'`);
-      const toMerge = records.filter((r) => ids.includes(r.id));
-      if (toMerge.length < 2) return { success: false, error: 'Not enough records found to merge' };
+      const toMerge = records.filter(r => ids.includes(r.id));
 
-      const allTags = toMerge.flatMap((r) => r.metadata?.tags ?? []);
-      const mergedTags = [...new Set(allTags)];
-      const maxImportance = Math.max(...toMerge.map((r) => r.metadata?.importance ?? 0));
+      const texts = await Promise.all(toMerge.map(r => cas.read(r.hash)));
+      const combinedText = summary || texts.join('\n\n---\n\n');
 
-      const mergedText = (await Promise.all(toMerge.map((r) => cas.read(r.hash).catch(() => '')))).join('\n\n---\n\n');
-
-      const result = await this.handleAdd({
+      const addResult = await this.handleAdd({
         op: MemoOp.ADD,
         trackId: this.id,
-        payload: { text: mergedText, tags: mergedTags, importance: maxImportance },
+        payload: {
+          text: combinedText,
+          category: toMerge[0].category,
+          tags: [...new Set(toMerge.flatMap(r => r.tags || []))],
+          importance: Math.max(...toMerge.map(r => r.importance || 0.5)),
+        }
       });
 
-      if (result.success) {
-        for (const r of toMerge) {
-          await storage.delete(`id = '${r.id}'`);
-        }
+      if (addResult.success) {
+        await this.handleDelete({ op: MemoOp.DELETE, trackId: this.id, payload: { ids } });
       }
 
-      return result;
+      return addResult;
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }
   }
 
+  /**
+   * 澄清知识冲突或模糊
+   */
+  private async handleClarify(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    // 澄清通常涉及用户反馈，此处更新置信度或添加备注
+    const { id, question, answer } = inst.payload ?? {};
+    if (!id) return { success: false, error: 'payload.id 不能为空' };
+
+    return this.handleUpdate({
+      op: MemoOp.UPDATE,
+      trackId: this.id,
+      payload: {
+        id,
+        confidence: 1.0, // 澄清后置信度设为最高
+        metadata: { clarification: { question, answer, timestamp: new Date().toISOString() } }
+      }
+    });
+  }
+
+  /**
+   * 导出轨道数据
+   */
+  private async handleExport(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    try {
+      const { format = 'json' } = inst.payload ?? {};
+      const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+      const cas = this.kernel.getCAS();
+
+      const fullData = await Promise.all(records.map(async r => ({
+        ...r,
+        text: await cas.read(r.hash).catch(() => '')
+      })));
+
+      return { success: true, data: format === 'json' ? fullData : JSON.stringify(fullData, null, 2) };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : String(error) };
+    }
+  }
+
+  /**
+   * 蒸馏知识（提炼精华）
+   */
+  private async handleDistill(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { ids } = inst.payload ?? {};
+    if (!ids?.length) return { success: false, error: 'payload.ids 不能为空' };
+
+    const completer = this.kernel.getCompleter();
+    if (!completer) return { success: false, error: '内核未配置 AI Completer，无法执行蒸馏' };
+
+    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+    const toDistill = records.filter(r => ids.includes(r.id));
+    const texts = await Promise.all(toDistill.map(r => this.kernel.getCAS().read(r.hash)));
+
+    const summary = await completer.summarize(texts.join('\n\n'));
+
+    return this.handleAdd({
+      op: MemoOp.ADD,
+      trackId: this.id,
+      payload: {
+        text: summary,
+        category: 'distilled',
+        importance: 0.9,
+        tags: ['distilled', ...new Set(toDistill.flatMap(r => r.tags || []))]
+      }
+    });
+  }
+
+  /**
+   * 锚定知识（关联外部实体）
+   */
+  private async handleAnchor(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { id, external_ref } = inst.payload ?? {};
+    if (!id || !external_ref) return { success: false, error: 'id 和 external_ref 均不能为空' };
+
+    return this.handleUpdate({
+      op: MemoOp.UPDATE,
+      trackId: this.id,
+      payload: { id, metadata: { anchor: external_ref } }
+    });
+  }
+
+  /**
+   * 对比知识差异
+   */
+  private async handleDiff(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    const { source_id, target_id } = inst.payload ?? {};
+    if (!source_id || !target_id) return { success: false, error: 'source_id 和 target_id 不能为空' };
+
+    const cas = this.kernel.getCAS();
+    const storage = this.kernel.getVectorStorage();
+
+    const [src] = await storage.list(`id = '${source_id}'`);
+    const [tgt] = await storage.list(`id = '${target_id}'`);
+
+    if (!src || !tgt) return { success: false, error: '记录未找到' };
+
+    const srcText = await cas.read(src.hash);
+    const tgtText = await cas.read(tgt.hash);
+
+    return {
+      success: true,
+      data: {
+        text_diff: srcText === tgtText ? 'identical' : 'different',
+        metadata_diff: JSON.stringify(src) === JSON.stringify(tgt) ? 'identical' : 'different'
+      }
+    };
+  }
+
+  /**
+   * 同步外部数据
+   */
+  private async handleSync(inst: Text2MemInstruction): Promise<Text2MemResult> {
+    // 简单实现：如果是 ADD 模式则直接添加
+    const { mode = 'add', data } = inst.payload ?? {};
+    if (mode === 'add' && Array.isArray(data)) {
+      const results = [];
+      for (const item of data) {
+        results.push(await this.handleAdd({ op: MemoOp.ADD, trackId: this.id, payload: item }));
+      }
+      return { success: true, data: results };
+    }
+    return { success: false, error: 'Sync 模式暂仅支持 add' };
+  }
+
+  /**
+   * 列出轨道统计信息
+   */
   private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const storage = this.kernel.getVectorStorage();
-      const records = await storage.list(`track_id = '${this.id}'`);
+      const { category } = inst.payload ?? {};
+      let filter = `track_id = '${this.id}'`;
+      if (category) filter += ` AND category = '${category}'`;
 
-      const categoryCounts: Record<string, number> = {};
-      for (const r of records) {
-        const cat = r.metadata?.category ?? 'uncategorized';
-        categoryCounts[cat] = (categoryCounts[cat] ?? 0) + 1;
-      }
-
-      return { success: true, data: { categories: categoryCounts, total: records.length } };
+      const records = await this.kernel.getVectorStorage().list(filter);
+      return { success: true, data: { count: records.length, items: records.map(r => ({ id: r.id, hash: r.hash, category: r.category })) } };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
     }

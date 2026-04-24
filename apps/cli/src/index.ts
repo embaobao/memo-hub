@@ -34,7 +34,7 @@ const program = new Command();
 program
   .name('memohub')
   .description('MemoHub v1 - Personal Agent Memory System')
-  .version('3.0.0');
+  .version('1.0.0');
 
 program
   .command('add <text>')

@@ -30,6 +30,8 @@ export class MemoryKernel implements IKernel {
   private vectorStorage: VectorStorage;
   private hostResources: IHostResources;
 
+  private tracks: Map<string, ITrackProvider> = new Map();
+
   constructor(config: MemoHubConfig) {
     this.config = config;
     this.aiHub = new AIHub(config.ai.providers, config.ai.agents);
@@ -80,6 +82,17 @@ export class MemoryKernel implements IKernel {
 
   public async initialize(): Promise<void> {
     await this.vectorStorage.initialize();
+
+    // 注册核心内置轨道
+    await this.registerTrack(new InsightTrack());
+    await this.registerTrack(new SourceTrack());
+    await this.registerTrack(new StreamTrack());
+    await this.registerTrack(new WikiTrack());
+  }
+
+  public async registerTrack(track: ITrackProvider): Promise<void> {
+    this.tracks.set(track.id, track);
+    await track.initialize(this);
   }
 
   public clearCache(): void {
@@ -105,30 +118,28 @@ export class MemoryKernel implements IKernel {
         }
       }
 
-      // 2. Track Phase
-      const track = this.config.tracks.find(t => t.id === targetTrackId);
-      if (!track) {
-        throw new Error(`Track not found: ${targetTrackId}`);
+      // 2. Track Phase - Config Based
+      const configTrack = this.config.tracks.find(t => t.id === targetTrackId);
+      if (configTrack) {
+        const flow = (configTrack.flows && configTrack.flows[instruction.op]) || track.flow;
+        if (flow) {
+          const result = await this.flowEngine.executeFlow(
+            flow,
+            instruction.payload,
+            traceId
+          );
+          return { success: true, data: result, meta: { traceId, trackId: targetTrackId } };
+        }
       }
 
-      // Determine which flow to run based on the operation
-      const flow = (track.flows && track.flows[instruction.op]) || track.flow;
-      
-      if (!flow) {
-        throw new Error(`No flow defined for operation ${instruction.op} on track ${targetTrackId}`);
+      // 3. Track Phase - Provider Based Fallback
+      const provider = this.tracks.get(targetTrackId);
+      if (provider) {
+        const result = await provider.execute(instruction);
+        return { ...result, meta: { ...result.meta, traceId, trackId: targetTrackId } };
       }
 
-      const result = await this.flowEngine.executeFlow(
-        flow,
-        instruction.payload,
-        traceId
-      );
-
-      return {
-        success: true,
-        data: result,
-        meta: { traceId, trackId: targetTrackId }
-      };
+      throw new Error(`未找到轨道实现: ${targetTrackId}`);
     } catch (error: any) {
       return {
         success: false,
