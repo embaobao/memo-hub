@@ -1,5 +1,7 @@
-export { MemoryKernel } from './kernel.js';
-export { ConfigManager } from './config.js';
-export type { MemoHubConfig, RoutingRule } from './config.js';
-export type { KernelEvent, KernelEventHandler } from './types-internal.js';
-export type { IKernel, ITrackProvider } from '@memohub/protocol';
+export * from './kernel.js';
+export * from './ai-hub.js';
+export * from './tool-registry.js';
+export * from './flow-engine.js';
+export * from './observation.js';
+export * from './tools/builtin/cas.js';
+export * from './tools/builtin/vector.js';

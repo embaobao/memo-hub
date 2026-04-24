@@ -9,13 +9,16 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@memohub/ai-provider": "workspace:*",
+    "@memohub/config": "workspace:*",
     "@memohub/protocol": "workspace:*",
     "@memohub/storage-flesh": "workspace:*",
     "@memohub/storage-soul": "workspace:*",
-    "@memohub/ai-provider": "workspace:*",
+    "lodash": "^4.18.1",
     "yaml": "^2.6.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.24",
     "typescript": "^5.9.3"
   }
 }

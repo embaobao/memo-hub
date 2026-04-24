@@ -1,112 +1,101 @@
-import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider, KernelEvent, KernelEventHandler } from './types-internal.js';
-import { validateInstruction } from '@memohub/protocol';
+import { MemoHubConfig, resolvePath } from '@memohub/config';
+import { IKernel, Text2MemInstruction, Text2MemResult } from '@memohub/protocol';
+import { AIHub } from './ai-hub.js';
+import { ToolRegistry } from './tool-registry.js';
+import { FlowEngine } from './flow-engine.js';
+import { ObservationKernel } from './observation.js';
+import { CasTool } from './tools/builtin/cas.js';
+import { VectorTool } from './tools/builtin/vector.js';
+import { ContentAddressableStorage } from '@memohub/storage-flesh';
+import { VectorStorage } from '@memohub/storage-soul';
 
 export class MemoryKernel implements IKernel {
-  private config: Record<string, any>;
-  private embedder: import('@memohub/protocol').IEmbedder;
-  private completer: import('@memohub/protocol').ICompleter | null;
-  private cas: import('@memohub/protocol').ICAS;
-  private vectorStorage: import('@memohub/protocol').IVectorStorage;
-  private tracks = new Map<string, ITrackProvider>();
-  private eventHandlers: KernelEventHandler[] = [];
+  private config: MemoHubConfig;
+  private aiHub: AIHub;
+  private toolRegistry: ToolRegistry;
+  private flowEngine: FlowEngine;
+  private observation: ObservationKernel;
+  private cas: ContentAddressableStorage;
+  private vectorStorage: VectorStorage;
 
-  constructor(options: {
-    config: Record<string, any>;
-    embedder: import('@memohub/protocol').IEmbedder;
-    completer?: import('@memohub/protocol').ICompleter;
-    cas: import('@memohub/protocol').ICAS;
-    vectorStorage: import('@memohub/protocol').IVectorStorage;
-  }) {
-    this.config = options.config;
-    this.embedder = options.embedder;
-    this.completer = options.completer ?? null;
-    this.cas = options.cas;
-    this.vectorStorage = options.vectorStorage;
+  constructor(config: MemoHubConfig) {
+    this.config = config;
+    this.aiHub = new AIHub(config.ai.providers, config.ai.agents);
+    this.toolRegistry = new ToolRegistry();
+    this.observation = new ObservationKernel(config.system.root);
+    this.flowEngine = new FlowEngine(this.toolRegistry, this.observation, this.aiHub);
+
+    // Initialize core storages
+    this.cas = new ContentAddressableStorage(config.system.root + '/blobs');
+    this.vectorStorage = new VectorStorage({
+      dbPath: config.system.root + '/data/memohub.lancedb',
+      tableName: 'memohub',
+      dimensions: config.ai.agents.embedder?.dimensions || 768
+    });
+
+    // Register built-in tools
+    this.toolRegistry.register(new CasTool(this.cas));
+    this.toolRegistry.register(new VectorTool(this.vectorStorage));
+    
+    // In a real implementation, we would register external tools here based on config
   }
 
-  getEmbedder(): import('@memohub/protocol').IEmbedder {
-    return this.embedder;
+  public async initialize(): Promise<void> {
+    await this.vectorStorage.initialize();
   }
 
-  getCompleter(): import('@memohub/protocol').ICompleter | null {
-    return this.completer;
-  }
-
-  getCAS(): import('@memohub/protocol').ICAS {
-    return this.cas;
-  }
-
-  getVectorStorage(): import('@memohub/protocol').IVectorStorage {
-    return this.vectorStorage;
-  }
-
-  getConfig(): Record<string, any> {
-    return this.config;
-  }
-
-  onEvent(handler: KernelEventHandler): void {
-    this.eventHandlers.push(handler);
-  }
-
-  async registerTrack(provider: ITrackProvider): Promise<void> {
-    if (this.tracks.has(provider.id)) {
-      throw new Error(`Track '${provider.id}' is already registered`);
-    }
-    await provider.initialize(this);
-    this.tracks.set(provider.id, provider);
-  }
-
-  unregisterTrack(trackId: string): void {
-    this.tracks.delete(trackId);
-  }
-
-  getTrack(trackId: string): ITrackProvider | undefined {
-    return this.tracks.get(trackId);
-  }
-
-  listTracks(): string[] {
-    return Array.from(this.tracks.keys());
-  }
-
-  async dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult> {
-    const validation = validateInstruction(instruction);
-    if (!validation.success) {
-      return { success: false, error: validation.error };
-    }
-
-    this.emit({ type: 'pre-dispatch', instruction });
-
-    const track = this.tracks.get(instruction.trackId);
-    if (!track) {
-      const result: Text2MemResult = {
-        success: false,
-        error: `Track '${instruction.trackId}' not found. Available: ${this.listTracks().join(', ')}`,
-      };
-      this.emit({ type: 'post-dispatch', instruction, result });
-      return result;
-    }
-
+  public async dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult> {
+    const traceId = this.observation.createTraceId();
+    
     try {
-      const result = await track.execute(instruction);
-      this.emit({ type: 'post-dispatch', instruction, result });
-      return result;
-    } catch (error) {
-      const result: Text2MemResult = {
-        success: false,
-        error: error instanceof Error ? error.message : String(error),
+      // 1. Dispatcher Phase (Flow-based routing)
+      let targetTrackId = this.config.dispatcher.fallback;
+      
+      if (this.config.dispatcher.flow && this.config.dispatcher.flow.length > 0) {
+        const dispatchResult = await this.flowEngine.executeFlow(
+          this.config.dispatcher.flow,
+          instruction.payload,
+          traceId
+        );
+        if (dispatchResult && typeof dispatchResult === 'string') {
+          targetTrackId = dispatchResult;
+        }
+      }
+
+      // 2. Track Phase
+      const track = this.config.tracks.find(t => t.id === targetTrackId);
+      if (!track) {
+        throw new Error(`Track not found: ${targetTrackId}`);
+      }
+
+      const result = await this.flowEngine.executeFlow(
+        track.flow,
+        instruction.payload,
+        traceId
+      );
+
+      return {
+        success: true,
+        data: result,
+        meta: { traceId, trackId: targetTrackId }
       };
-      this.emit({ type: 'post-dispatch', instruction, result });
-      return result;
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || String(error),
+        meta: { traceId }
+      };
     }
   }
 
-  private emit(event: KernelEvent): void {
-    for (const handler of this.eventHandlers) {
-      try {
-        handler(event);
-      } catch {
-        // handler errors don't block dispatch
-      }
-    }
+  // Implementation of IKernel interface methods
+  public getEmbedder(agentId: string = 'embedder') { return this.aiHub.getEmbedder(agentId); }
+  public getCompleter(agentId: string = 'summarizer') { return this.aiHub.getCompleter(agentId); }
+  public getCAS() { return this.cas; }
+  public getVectorStorage() { return this.vectorStorage; }
+  public getConfig() { return this.config; }
+
+  public async listTracks() {
+    return this.config.tracks;
   }
 }

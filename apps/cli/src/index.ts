@@ -17,60 +17,14 @@ import { InsightTrack } from '@memohub/track-insight';
 import { SourceTrack } from '@memohub/track-source';
 import { Librarian } from '@memohub/librarian';
 
-function loadConfig(): Record<string, any> {
-  const configPath = process.env.MEMOHUB_CONFIG ?? path.join(process.cwd(), 'config', 'config.yaml');
-  try {
-    const expanded = configPath.replace(/^~/, os.homedir());
-    if (fs.existsSync(expanded)) {
-      return yaml.parse(fs.readFileSync(expanded, 'utf-8'));
-    }
-  } catch {}
-  return {
-    embedding: {
-      url: process.env.EMBEDDING_URL ?? 'http://localhost:11434/v1',
-      model: process.env.EMBEDDING_MODEL ?? 'nomic-embed-text-v2-moe',
-      dimensions: 768,
-      timeout: 30,
-    },
-    storage: {
-      dbPath: process.env.MEMOHUB_DB_PATH ?? '~/.memohub/data/memohub.lancedb',
-      casPath: process.env.MEMOHUB_CAS_PATH ?? '~/.memohub/blobs',
-    },
-  };
-}
+import { ConfigLoader, resolvePath } from '@memohub/config';
 
 export async function createKernel(): Promise<MemoryKernel> {
-  const config = loadConfig();
-  const embeddingConfig = config.embedding ?? {};
-
-  const registry = new AIProviderRegistry();
-  registry.registerEmbedder('ollama', () => new OllamaAdapter({
-    url: embeddingConfig.url ?? 'http://localhost:11434/v1',
-    embeddingModel: embeddingConfig.model ?? 'nomic-embed-text-v2-moe',
-    dimensions: embeddingConfig.dimensions ?? 768,
-    timeout: embeddingConfig.timeout ?? 30,
-  }));
-
-  const embedder = registry.getEmbedder('ollama');
-  const cas = new ContentAddressableStorage(config.storage?.casPath ?? '~/.memohub/blobs');
-  const vectorStorage = new VectorStorage({
-    dbPath: config.storage?.dbPath ?? '~/.memohub/data/memohub.lancedb',
-    tableName: 'memohub',
-    dimensions: embeddingConfig.dimensions ?? 768,
-  });
-
-  await vectorStorage.initialize();
-
-  const kernel = new MemoryKernel({
-    config,
-    embedder,
-    cas,
-    vectorStorage,
-  });
-
-  await kernel.registerTrack(new InsightTrack());
-  await kernel.registerTrack(new SourceTrack());
-  await kernel.registerTrack(new Librarian());
+  const loader = new ConfigLoader();
+  const config = loader.getConfig();
+  
+  const kernel = new MemoryKernel(config);
+  await kernel.initialize();
 
   return kernel;
 }
@@ -384,25 +338,28 @@ program
   .command('config')
   .description('Show or validate configuration')
   .option('--validate', 'Validate configuration')
-  .action((opts: any) => {
-    const config = loadConfig();
-    if (opts.validate) {
-      const errors: string[] = [];
-      if (!config.embedding?.url) errors.push('embedding.url is required');
-      if (!config.embedding?.model) errors.push('embedding.model is required');
-      if (!config.storage?.dbPath) errors.push('storage.dbPath is required');
-
-      if (errors.length === 0) {
-        console.log(chalk.green('Configuration is valid'));
-      } else {
-        for (const e of errors) {
-          console.log(chalk.red(`  Error: ${e}`));
-        }
-        process.exit(1);
+  .option('--init', 'Initialize default configuration file')
+  .option('--show', 'Show current configuration with masked secrets')
+  .action(async (opts: any) => {
+    if (opts.init) {
+      try {
+        ConfigLoader.initDefault();
+      } catch (error: any) {
+        console.error(chalk.red(error.message));
       }
-    } else {
-      console.log(JSON.stringify(config, null, 2));
+      return;
     }
+
+    const loader = new ConfigLoader();
+    const config = opts.show ? loader.getMaskedConfig() : loader.getConfig();
+
+    if (opts.validate) {
+      // Zod validation is already performed during loader.load()
+      console.log(chalk.green('Configuration is valid'));
+      return;
+    }
+
+    console.log(JSON.stringify(config, null, 2));
   });
 
 program

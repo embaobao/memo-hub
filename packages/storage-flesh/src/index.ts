@@ -16,7 +16,7 @@ export class ContentAddressableStorage {
     return createHash('sha256').update(String(content ?? '')).digest('hex');
   }
 
-  private blobPath(hash: string): string {
+  public blobPath(hash: string): string {
     const prefix = hash.slice(0, 2) || '__';
     return path.join(this.rootPath, prefix, hash);
   }
