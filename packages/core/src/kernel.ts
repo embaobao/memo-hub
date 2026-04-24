@@ -104,6 +104,12 @@ export class MemoryKernel implements IKernel {
   public getVectorStorage() { return this.vectorStorage; }
   public getConfig() { return this.config; }
 
+  public getToolRegistry() { return this.toolRegistry; }
+
+  public async listTools() {
+    return this.toolRegistry.list().map(t => t.manifest);
+  }
+
   public async listTracks() {
     return this.config.tracks;
   }

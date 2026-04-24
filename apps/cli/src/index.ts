@@ -341,6 +341,7 @@ program
   .option('--init', 'Initialize default configuration file')
   .option('--show', 'Show current configuration with masked secrets')
   .option('--clear-cache', 'Clear execution cache')
+  .option('--check', 'Scan configuration integrity and display registered tools/tracks')
   .action(async (opts: any) => {
     if (opts.init) {
       try {
@@ -355,6 +356,19 @@ program
       const kernel = await createKernel();
       kernel.clearCache();
       console.log(chalk.green('Cache cleared successfully'));
+      return;
+    }
+
+    if (opts.check) {
+      const kernel = await createKernel();
+      const tools = await kernel.listTools();
+      const tracks = await kernel.listTracks();
+      
+      console.log(chalk.bold('\n🛠  Registered Tools:'));
+      tools.forEach(t => console.log(`  - ${chalk.cyan(t.id)} (${t.type})`));
+      
+      console.log(chalk.bold('\n🛤  Registered Tracks:'));
+      tracks.forEach(t => console.log(`  - ${chalk.green(t.id)}: ${t.flow.length} steps`));
       return;
     }
 

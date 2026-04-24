@@ -84,6 +84,20 @@ export const MemoHubConfigSchema = z.object({
           meta: { category: '$.payload.category' }
         } }
       ]
+    },
+    {
+      id: 'track-source',
+      flow: [
+        { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.content' } },
+        { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.content' } },
+        { step: 'indexing', tool: 'builtin:vector', input: { 
+          id: '$.payload.id', 
+          vector: '$.embedding.vector',
+          hash: '$.storage.hash',
+          track_id: 'track-source',
+          meta: { language: '$.payload.language', file_path: '$.payload.file_path' }
+        } }
+      ]
     }
   ]),
 });
