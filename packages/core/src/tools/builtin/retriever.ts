@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
-import { VectorStorage } from '@memohub/storage-soul';
+import { IHostResources } from '../../types-host.js';
 
 export class RetrieverTool implements ITool {
   public manifest: IToolManifest = {
@@ -19,11 +19,9 @@ export class RetrieverTool implements ITool {
     }),
   };
 
-  constructor(private storage: VectorStorage) {}
-
-  public async execute(input: { vector: number[], track_id?: string, limit: number, filter?: string }, context: ExecutionContext): Promise<{ results: any[] }> {
+  public async execute(input: { vector: number[], track_id?: string, limit: number, filter?: string }, resources: IHostResources, context: ExecutionContext): Promise<{ results: any[] }> {
     const filter = input.track_id ? `track_id = '${input.track_id}'` : input.filter;
-    const results = await this.storage.search(input.vector, {
+    const results = await resources.soul.search(input.vector, {
       limit: input.limit,
       filter: filter,
     });

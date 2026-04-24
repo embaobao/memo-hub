@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
-import { VectorStorage } from '@memohub/storage-soul';
-
+import { IHostResources } from '../../types-host.js';
 import { randomUUID } from 'node:crypto';
 
 export class VectorTool implements ITool {
@@ -15,6 +14,8 @@ export class VectorTool implements ITool {
       vector: z.array(z.number()),
       hash: z.string(),
       track_id: z.string(),
+      entities: z.array(z.string()).optional(),
+      timestamp: z.string().optional(),
       meta: z.record(z.any()).optional(),
     }),
     outputSchema: z.object({
@@ -22,9 +23,7 @@ export class VectorTool implements ITool {
     }),
   };
 
-  constructor(private storage: VectorStorage) {}
-
-  public async execute(input: any, context: ExecutionContext): Promise<{ success: boolean }> {
+  public async execute(input: any, resources: IHostResources, context: ExecutionContext): Promise<{ success: boolean }> {
     const data = {
       id: input.id || randomUUID(),
       vector: input.vector,
@@ -34,7 +33,7 @@ export class VectorTool implements ITool {
       timestamp: input.timestamp || new Date().toISOString(),
       ...input.meta,
     };
-    await this.storage.add(data);
+    await resources.soul.add(data);
     return { success: true };
   }
 }

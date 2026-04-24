@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
-import { AIHub } from '../../ai-hub.js';
+import { IHostResources } from '../../types-host.js';
 
 export class EmbedderTool implements ITool {
   public manifest: IToolManifest = {
@@ -17,11 +17,9 @@ export class EmbedderTool implements ITool {
     }),
   };
 
-  constructor(private aiHub: AIHub) {}
-
-  public async execute(input: { text: string, agent?: string }, context: ExecutionContext): Promise<{ vector: number[] }> {
+  public async execute(input: { text: string, agent?: string }, resources: IHostResources, context: ExecutionContext): Promise<{ vector: number[] }> {
     const agentId = input.agent || 'embedder';
-    const embedder = this.aiHub.getEmbedder(agentId);
+    const embedder = resources.ai.getEmbedder(agentId);
     const vector = await embedder.embed(input.text);
     return { vector };
   }

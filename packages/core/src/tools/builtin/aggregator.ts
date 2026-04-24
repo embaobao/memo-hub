@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
+import { IHostResources } from '../../types-host.js';
 import pkg from 'lodash';
 const { uniqBy, sortBy } = pkg;
 
@@ -18,7 +19,7 @@ export class AggregatorTool implements ITool {
     }),
   };
 
-  public async execute(input: { lists: any[][], sort_by: string }, context: ExecutionContext): Promise<{ results: any[] }> {
+  public async execute(input: { lists: any[][], sort_by: string }, resources: IHostResources, context: ExecutionContext): Promise<{ results: any[] }> {
     const combined = input.lists.flat();
     const unique = uniqBy(combined, (r: any) => r.hash || r.id);
     

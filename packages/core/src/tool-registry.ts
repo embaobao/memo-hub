@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { ToolManifestConfig } from '@memohub/config';
+import { IHostResources } from './types-host.js';
 
 export interface ExecutionContext {
   traceId: string;
   spanId: string;
-  contextPool: Record<string, any>;
-  variables: Record<string, any>;
+  state: Record<string, any>;
 }
 
 export interface IToolManifest extends ToolManifestConfig {
@@ -17,7 +17,7 @@ export interface IToolManifest extends ToolManifestConfig {
 
 export interface ITool<TInput = any, TOutput = any> {
   manifest: IToolManifest;
-  execute(input: TInput, context: ExecutionContext): Promise<TOutput>;
+  execute(input: TInput, resources: IHostResources, context: ExecutionContext): Promise<TOutput>;
 }
 
 export class ToolRegistry {

@@ -14,6 +14,7 @@ import { AggregatorTool } from './tools/builtin/aggregator.js';
 import { EntityLinkerTool } from './tools/builtin/entity-linker.js';
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
 import { VectorStorage } from '@memohub/storage-soul';
+import { IHostResources } from './types-host.js';
 
 export class MemoryKernel implements IKernel {
   private config: MemoHubConfig;
@@ -24,6 +25,7 @@ export class MemoryKernel implements IKernel {
   private cache: CacheManager;
   private cas: ContentAddressableStorage;
   private vectorStorage: VectorStorage;
+  private hostResources: IHostResources;
 
   constructor(config: MemoHubConfig) {
     this.config = config;
@@ -31,8 +33,7 @@ export class MemoryKernel implements IKernel {
     this.toolRegistry = new ToolRegistry();
     this.observation = new ObservationKernel(config.system.root);
     this.cache = new CacheManager(config.system.root);
-    this.flowEngine = new FlowEngine(this.toolRegistry, this.observation, this.aiHub, this.cache);
-
+    
     // Initialize core storages
     this.cas = new ContentAddressableStorage(config.system.root + '/blobs');
     this.vectorStorage = new VectorStorage({
@@ -41,12 +42,33 @@ export class MemoryKernel implements IKernel {
       dimensions: config.ai.agents.embedder?.dimensions || 768
     });
 
+    // Create Host Resources (The "Environment")
+    this.hostResources = {
+      flesh: this.cas,
+      soul: this.vectorStorage,
+      ai: {
+        getEmbedder: (id) => this.aiHub.getEmbedder(id || 'embedder'),
+        getCompleter: (id) => this.aiHub.getCompleter(id || 'summarizer'),
+      },
+      logger: {
+        log: (msg, level = 'info') => console.log(`[${level.toUpperCase()}] ${msg}`)
+      }
+    };
+
+    this.flowEngine = new FlowEngine(
+      this.toolRegistry, 
+      this.observation, 
+      this.aiHub, 
+      this.cache, 
+      this.hostResources
+    );
+
     // Register built-in tools
-    this.toolRegistry.register(new CasTool(this.cas));
-    this.toolRegistry.register(new VectorTool(this.vectorStorage));
-    this.toolRegistry.register(new EmbedderTool(this.aiHub));
-    this.toolRegistry.register(new RetrieverTool(this.vectorStorage));
-    this.toolRegistry.register(new RerankerTool(this.aiHub));
+    this.toolRegistry.register(new CasTool());
+    this.toolRegistry.register(new VectorTool());
+    this.toolRegistry.register(new EmbedderTool());
+    this.toolRegistry.register(new RetrieverTool());
+    this.toolRegistry.register(new RerankerTool());
     this.toolRegistry.register(new AggregatorTool());
     this.toolRegistry.register(new EntityLinkerTool());
     

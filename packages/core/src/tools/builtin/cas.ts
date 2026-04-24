@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
-import { ContentAddressableStorage } from '@memohub/storage-flesh';
+import { IHostResources } from '../../types-host.js';
 
 export class CasTool implements ITool {
   public manifest: IToolManifest = {
@@ -17,11 +17,10 @@ export class CasTool implements ITool {
     }),
   };
 
-  constructor(private cas: ContentAddressableStorage) {}
-
-  public async execute(input: { content: string }, context: ExecutionContext): Promise<{ hash: string, path: string }> {
-    const hash = await this.cas.write(input.content);
-    const path = this.cas.blobPath(hash);
+  public async execute(input: { content: string }, resources: IHostResources, context: ExecutionContext): Promise<{ hash: string, path: string }> {
+    const hash = await resources.flesh.write(input.content);
+    // @ts-ignore - blobPath might be internal but we know it exists in this implementation
+    const path = resources.flesh.blobPath ? resources.flesh.blobPath(hash) : hash;
     return { hash, path };
   }
 }

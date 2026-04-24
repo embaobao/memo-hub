@@ -1,17 +1,21 @@
 import pkg from 'lodash';
 const { get } = pkg;
-import { FlowStepConfig } from '@memohub/config';
+import { FlowStepConfig, VariableResolver } from '@memohub/config';
 import { ToolRegistry, ExecutionContext } from './tool-registry.js';
 import { ObservationKernel } from './observation.js';
 import { AIHub } from './ai-hub.js';
 import { CacheManager } from './cache.js';
+import { IHostResources } from './types-host.js';
 
 export class FlowEngine {
+  private resolver = new VariableResolver();
+
   constructor(
     private toolRegistry: ToolRegistry,
     private observation: ObservationKernel,
     private aiHub: AIHub,
-    private cache: CacheManager
+    private cache: CacheManager,
+    private resources: IHostResources
   ) {}
 
   /**
@@ -23,7 +27,8 @@ export class FlowEngine {
     traceId?: string
   ): Promise<any> {
     const tid = traceId || this.observation.createTraceId();
-    const contextPool: Record<string, any> = { payload: initialPayload };
+    // n8n/Dify style state: payload and nodes results
+    const state: Record<string, any> = { payload: initialPayload, nodes: {} };
     let lastResult: any = null;
 
     const cacheDisabled = process.env.MEMOHUB_CACHE_DISABLED === 'true';
@@ -32,15 +37,15 @@ export class FlowEngine {
       const spanId = this.observation.createSpanId();
       const tool = this.toolRegistry.get(step.tool);
       
-      // Resolve inputs from context pool
-      const input = this.resolveInput(step.input, contextPool);
+      // Resolve inputs using state machine logic
+      const input = this.resolver.resolve(step.input || state.payload, state);
 
       const cacheKey = this.cache.generateKey(step.tool, input, step.agent);
       
       if (!cacheDisabled) {
         const cached = this.cache.get(cacheKey);
         if (cached) {
-          contextPool[step.step] = cached;
+          state.nodes[step.step] = cached;
           lastResult = cached;
           continue;
         }
@@ -49,13 +54,12 @@ export class FlowEngine {
       const execContext: ExecutionContext = {
         traceId: tid,
         spanId,
-        contextPool,
-        variables: step.input && typeof step.input === 'object' ? step.input : {}
+        state: state
       };
 
       try {
         const output = await this.observation.safeRun(
-          () => tool.execute(input, execContext),
+          () => tool.execute(input, this.resources, execContext),
           { traceId: tid, spanId, step: step.step, tool: step.tool, input }
         );
         
@@ -63,7 +67,7 @@ export class FlowEngine {
           this.cache.set(cacheKey, output);
         }
 
-        contextPool[step.step] = output;
+        state.nodes[step.step] = output;
         lastResult = output;
       } catch (error: any) {
         console.error(`Step ${step.step} (${step.tool}) failed:`, error);

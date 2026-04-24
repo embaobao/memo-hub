@@ -78,22 +78,22 @@ export const MemoHubConfigSchema = z.object({
       id: 'track-insight',
       flows: {
         ADD: [
-          { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.text' } },
-          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.text' } },
+          { step: 'storage', tool: 'builtin:cas', input: { content: '{{payload.text}}' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.text}}' } },
           { step: 'indexing', tool: 'builtin:vector', input: { 
-            id: '$.payload.id', 
-            vector: '$.embedding.vector',
-            hash: '$.storage.hash',
+            id: '{{payload.id}}', 
+            vector: '{{nodes.embedding.vector}}',
+            hash: '{{nodes.storage.hash}}',
             track_id: 'track-insight',
-            meta: { category: '$.payload.category' }
+            meta: { category: '{{payload.category}}' }
           } }
         ],
         RETRIEVE: [
-          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.query' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.query}}' } },
           { step: 'searching', tool: 'builtin:retriever', input: { 
-            vector: '$.embedding.vector', 
+            vector: '{{nodes.embedding.vector}}', 
             track_id: 'track-insight',
-            limit: '$.payload.limit'
+            limit: '{{payload.limit}}'
           } }
         ]
       }
@@ -102,22 +102,22 @@ export const MemoHubConfigSchema = z.object({
       id: 'track-source',
       flows: {
         ADD: [
-          { step: 'storage', tool: 'builtin:cas', input: { content: '$.payload.content' } },
-          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.content' } },
+          { step: 'storage', tool: 'builtin:cas', input: { content: '{{payload.content}}' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.content}}' } },
           { step: 'indexing', tool: 'builtin:vector', input: { 
-            id: '$.payload.id', 
-            vector: '$.embedding.vector',
-            hash: '$.storage.hash',
+            id: '{{payload.id}}', 
+            vector: '{{nodes.embedding.vector}}',
+            hash: '{{nodes.storage.hash}}',
             track_id: 'track-source',
-            meta: { language: '$.payload.language', file_path: '$.payload.file_path' }
+            meta: { language: '{{payload.language}}', file_path: '{{payload.file_path}}' }
           } }
         ],
         RETRIEVE: [
-          { step: 'embedding', tool: 'builtin:embedder', input: { text: '$.payload.query' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.query}}' } },
           { step: 'searching', tool: 'builtin:retriever', input: { 
-            vector: '$.embedding.vector', 
+            vector: '{{nodes.embedding.vector}}', 
             track_id: 'track-source',
-            limit: '$.payload.limit'
+            limit: '{{payload.limit}}'
           } }
         ]
       }

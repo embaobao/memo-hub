@@ -26,6 +26,48 @@ describe('Flow Engine Integration', () => {
       ranker: { provider: 'mock', model: 'mock-model' }
     };
 
+    // Update track-insight to use new interpolation syntax
+    config.tracks = [
+      {
+        id: 'track-insight',
+        flows: {
+          ADD: [
+            { step: 'storage', tool: 'builtin:cas', input: { content: '{{payload.text}}' } },
+            { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.text}}' } },
+            { step: 'indexing', tool: 'builtin:vector', input: { 
+              id: '{{payload.id}}', 
+              vector: '{{nodes.embedding.vector}}',
+              hash: '{{nodes.storage.hash}}',
+              track_id: 'track-insight',
+              meta: { category: '{{payload.category}}' }
+            } }
+          ],
+          RETRIEVE: [
+            { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.query}}' } },
+            { step: 'searching', tool: 'builtin:retriever', input: { 
+              vector: '{{nodes.embedding.vector}}', 
+              track_id: 'track-insight',
+              limit: '{{payload.limit}}'
+            } }
+          ]
+        }
+      },
+      {
+        id: 'track-source',
+        flow: [
+          { step: 'storage', tool: 'builtin:cas', input: { content: '{{payload.content}}' } },
+          { step: 'embedding', tool: 'builtin:embedder', input: { text: '{{payload.content}}' } },
+          { step: 'indexing', tool: 'builtin:vector', input: { 
+            id: '{{payload.id}}', 
+            vector: '{{nodes.embedding.vector}}',
+            hash: '{{nodes.storage.hash}}',
+            track_id: 'track-source',
+            meta: { language: '{{payload.language}}', file_path: '{{payload.file_path}}' }
+          } }
+        ]
+      }
+    ];
+
     kernel = new MemoryKernel(config);
     await kernel.initialize();
   });

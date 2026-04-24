@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ITool, IToolManifest, ExecutionContext } from '../../tool-registry.js';
+import { IHostResources } from '../../types-host.js';
 
 export class EntityLinkerTool implements ITool {
   public manifest: IToolManifest = {
@@ -19,7 +20,7 @@ export class EntityLinkerTool implements ITool {
     }),
   };
 
-  public async execute(input: { text: string }, context: ExecutionContext): Promise<{ entities: any[] }> {
+  public async execute(input: { text: string }, resources: IHostResources, context: ExecutionContext): Promise<{ entities: any[] }> {
     // Placeholder logic for entity extraction/linking
     // In a real implementation, this would use an NER model or LLM
     return { 
