@@ -1,7 +1,7 @@
-import { z } from 'zod.js';
-import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index.js';
-import { IHostResources } from '@memohub/core/src/index.js';
-import { randomUUID } from 'node:crypto.js';
+import { z } from 'zod';
+import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index';
+import { IHostResources } from '@memohub/core/src/index';
+import { randomUUID } from 'node:crypto';
 
 export class VectorTool implements ITool {
   public manifest: IToolManifest = {

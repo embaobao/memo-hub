@@ -1,7 +1,7 @@
-import { z } from 'zod.js';
-import { ITool, ExecutionContext } from '@memohub/core/src/index.js';
-import { IHostResources } from '@memohub/core/src/index.js';
-import * as Parser from 'web-tree-sitter.js';
+import { z } from 'zod';
+import { ITool, ExecutionContext } from '@memohub/core/src/index';
+import { IHostResources } from '@memohub/core/src/index';
+import * as Parser from 'web-tree-sitter';
 
 /**
  * 代码解析原子工具 (AST Code Analyzer)

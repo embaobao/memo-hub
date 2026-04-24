@@ -1,7 +1,7 @@
-import { z } from 'zod.js';
-import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index.js';
-import { IHostResources } from '@memohub/core/src/index.js';
-import pkg from 'lodash.js';
+import { z } from 'zod';
+import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index';
+import { IHostResources } from '@memohub/core/src/index';
+import pkg from 'lodash';
 const { uniqBy, sortBy } = pkg;
 
 export class AggregatorTool implements ITool {
