@@ -1,0 +1,20 @@
+{
+  "name": "@memohub/track-source",
+  "version": "3.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@memohub/protocol": "workspace:*",
+    "web-tree-sitter": "^0.25.9",
+    "tree-sitter-javascript": "^0.23.0",
+    "tree-sitter-typescript": "^0.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

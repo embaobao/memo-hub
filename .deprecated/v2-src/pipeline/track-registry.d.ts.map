@@ -1,0 +1,1 @@
+{"version":3,"file":"track-registry.d.ts","sourceRoot":"","sources":["track-registry.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,aAAa,EAAE,MAAM,mBAAmB,CAAC;AAEvD;;;;;;GAMG;AACH,qBAAa,aAAa;IACxB,OAAO,CAAC,SAAS,CAAoC;gBAEzC,cAAc,EAAE,aAAa,EAAE;IAM3C,UAAU,IAAI,MAAM,EAAE;IAItB,GAAG,CAAC,KAAK,EAAE,MAAM,GAAG,aAAa;IAQjC;;OAEG;IACG,aAAa,IAAI,OAAO,CAAC,IAAI,CAAC;CAQrC"}

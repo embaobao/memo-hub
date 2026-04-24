@@ -1,0 +1,15 @@
+- [x] 三条管道骨架存在且可插拔：Ingestion/Retrieval/Governance 均有明确阶段与事件流
+- [x] 多轨 Provider 可扩展：至少 GBrain/ClawMem 以 Provider 形式接入；新增轨道不需要改引擎核心
+- [x] 灵肉分离落地：原文写入 CAS；索引仅保存向量/元数据/实体/contentRef
+- [x] 幂等去重生效：相同内容重复写入不会造成 CAS 重复落盘，索引按默认策略不重复插入
+- [x] Hydration 可用：检索可回填原文；关闭 hydration 时保持旧版默认行为
+- [x] 轻量实体抽取可用：驼峰词/带点标识符/版本号/缩写能被抽取并落库
+- [x] AST 解析保留且增强：Tree-sitter 能提取 TS/JS 的符号（函数/类/接口/导出）并写入索引元数据
+- [x] 路由规则可用：默认按 filePath 后缀路由到 ClawMem；可配置规则可覆盖默认行为
+- [x] 混合召回结构完备：Vector 必选；FTS 可选（可用则启用，不可用则不影响主流程）
+- [x] 治理管最小闭环可用：能产出 `CONFLICT_PENDING` 事件；裁决结果可回流写入管
+- [x] Git Hook 骨架可用：post-commit 能触发增量写入且幂等
+- [x] Librarian 骨架可运行：可通过命令/任务入口触发对话蒸馏并写入（允许最小占位实现）
+- [x] MCP 对外接口兼容：原有工具仍可用，新增字段为可选且有默认值
+- [x] CLI 对外接口兼容：原命令不破坏，新增参数不影响旧用法
+- [x] 构建与测试通过：`bun run build` 与 `bun test` 成功

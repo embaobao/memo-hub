@@ -12,6 +12,62 @@ embedding:
   # 超时时间（秒）
   timeout: 30
 
+# CAS（内容寻址存储，可选）
+cas:
+  # 原文落盘根目录（支持 ~ 展开）
+  root_path: "~/.hermes/data/memohub-cas"
+
+# 写入路由配置（可选）
+# 说明：
+# - 用于“写入管”的智能路由阶段：根据 MemoContext.filePath 等信息决定写入到哪个轨道
+# - 默认规则：filePath 后缀命中 → clawmem；否则 → gbrain
+routing:
+  # 是否启用路由阶段
+  enabled: true
+  # 默认轨道（兜底）
+  default_track: "gbrain"
+  # 默认“代码后缀”列表（未配置 rules 时生效）
+  code_suffixes:
+    - ".ts"
+    - ".tsx"
+    - ".js"
+    - ".jsx"
+    - ".mjs"
+    - ".cjs"
+    - ".json"
+    - ".md"
+    - ".py"
+    - ".go"
+    - ".rs"
+    - ".java"
+    - ".kt"
+    - ".swift"
+    - ".c"
+    - ".cc"
+    - ".cpp"
+    - ".h"
+    - ".hpp"
+    - ".cs"
+    - ".php"
+    - ".rb"
+    - ".lua"
+    - ".sql"
+    - ".sh"
+    - ".zsh"
+    - ".yml"
+    - ".yaml"
+    - ".toml"
+  # 可选：自定义规则（责任链，按顺序执行）
+  # 注意：一旦显式配置 rules，系统将认为是“全量覆盖”（将忽略 code_suffixes）
+  # rules:
+  #   - type: "file_suffix"
+  #     name: "route_code_by_suffix"
+  #     track: "clawmem"
+  #     suffixes: [".ts", ".tsx", ".js", ".jsx", ".py"]
+  #   - type: "default"
+  #     name: "route_default"
+  #     track: "gbrain"
+
 # GBrain 配置（通用知识记忆）
 gbrain:
   # 数据库路径

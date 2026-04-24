@@ -1,221 +1,123 @@
 # 配置指南
 
-本指南详细说明 MemoHub 的配置选项。
+本指南说明 MemoHub 的配置结构、常用配置项与环境变量覆盖方式。
+
+## 配置优先级
+
+优先级为：环境变量 > `config/config.yaml` > 默认值。
 
 ## 配置文件结构
 
-配置文件位于 `config/config.yaml`，包含以下部分：
+配置文件位于 `config/config.yaml`，推荐从示例复制：
+
+```bash
+cp config/config.example.yaml config/config.yaml
+```
+
+核心结构如下（字段名与项目实际代码保持一致）：
 
 ```yaml
-# 嵌入模型配置
 embedding:
+  url: "http://localhost:11434/v1"
   model: "nomic-embed-text-v2-moe"
-  baseURL: "http://localhost:11434"
-  dimension: 768
+  dimensions: 768
+  timeout: 30
 
-# GBrain 配置
-gbrain:
-  dbPath: "~/.memohub/gbrain.lancedb"
-  tableName: "gbrain"
+cas:
+  root_path: "~/.hermes/data/memohub-cas"
 
-# ClawMem 配置
-clawmem:
-  dbPath: "~/.memohub/clawmem.lancedb"
-  tableName: "clawmem"
-
-# 同步配置
-sync:
-  enabled: false
-  repoUrl: ""
-  branch: "main"
-  syncInterval: "1h"
-  dataPath: "~/.memohub/"
-```
-
----
-
-## 配置选项详解
-
-### 嵌入模型配置 (`embedding`)
-
-#### `model`
-嵌入模型名称。
-
-**支持的模型**：
-- `nomic-embed-text-v2-moe` (推荐)
-- `nomic-embed-text-v1`
-- `all-minilm`
-- 其他 Ollama 支持的嵌入模型
-
-**示例**：
-```yaml
-embedding:
-  model: "nomic-embed-text-v2-moe"
-```
-
-#### `baseURL`
-Ollama API 端点。
-
-**默认值**：`http://localhost:11434`
-
-**示例**：
-```yaml
-embedding:
-  baseURL: "http://localhost:11434"
-```
-
-#### `dimension`
-向量维度。
-
-**不同模型的维度**：
-- `nomic-embed-text-v2-moe`: 768
-- `nomic-embed-text-v1`: 768
-- `all-minilm`: 384
-
-**示例**：
-```yaml
-embedding:
-  dimension: 768
-```
-
----
-
-### GBrain 配置 (`gbrain`)
-
-#### `dbPath`
-GBrain 数据库路径。
-
-**支持路径格式**：
-- 绝对路径：`/Users/username/data/gbrain.lancedb`
-- 相对路径：`./data/gbrain.lancedb`
-- 用户目录：`~/.memohub/gbrain.lancedb`
-
-**示例**：
-```yaml
-gbrain:
-  dbPath: "~/.memohub/gbrain.lancedb"
-```
-
-#### `tableName`
-GBrain 表名。
-
-**默认值**：`gbrain`
-
-**示例**：
-```yaml
-gbrain:
-  tableName: "gbrain"
-```
-
----
-
-### ClawMem 配置 (`clawmem`)
-
-#### `dbPath`
-ClawMem 数据库路径。
-
-**格式**：同 GBrain
-
-**示例**：
-```yaml
-clawmem:
-  dbPath: "~/.memohub/clawmem.lancedb"
-```
-
-#### `tableName`
-ClawMem 表名。
-
-**默认值**：`clawmem`
-
-**示例**：
-```yaml
-clawmem:
-  tableName: "clawmem"
-```
-
----
-
-### 同步配置 (`sync`)
-
-#### `enabled`
-是否启用私有仓库同步。
-
-**值**：`true` / `false`
-
-**示例**：
-```yaml
-sync:
+routing:
   enabled: true
+  default_track: "gbrain"
+  code_suffixes: [".ts", ".tsx", ".js", ".jsx", ".py", ".md"]
+
+gbrain:
+  db_path: "~/.hermes/data/gbrain.lancedb"
+  table_name: "gbrain"
+  default_category: "other"
+  default_importance: 0.5
+
+clawmem:
+  db_path: "~/.hermes/data/clawmem.lancedb"
+  table_name: "clawmem"
+  default_language: "typescript"
+  default_importance: 0.5
 ```
 
-#### `repoUrl`
-私有 Git 仓库 URL。
+## 配置项详解
 
-**支持的格式**：
-- SSH：`git@github.com:username/repo.git`
-- HTTPS：`https://github.com/username/repo.git`
+### 1) 嵌入模型配置（embedding）
 
-**示例**：
-```yaml
-sync:
-  repoUrl: "git@github.com:your-username/memohub-memory-private.git"
-```
+- `embedding.url`：嵌入 API 地址（默认 `http://localhost:11434/v1`）
+- `embedding.model`：嵌入模型名（默认 `nomic-embed-text-v2-moe`）
+- `embedding.dimensions`：向量维度（默认 768）
+- `embedding.timeout`：超时秒数（默认 30）
 
-#### `branch`
-同步分支。
+### 2) CAS（灵肉分离原文存储，cas）
 
-**默认值**：`main`
+- `cas.root_path`：原文落盘根目录（支持 `~` 展开）
 
-**示例**：
-```yaml
-sync:
-  branch: "main"
-```
+说明：
+- 当检索开启 Hydration 且索引记录缺失 `text` 时，会使用 `content_ref` 从 CAS 回填原文
+- CAS 目录建议与数据库目录同属一个“数据根目录”（例如 `~/.hermes/data/`），便于迁移与备份
 
-#### `syncInterval`
-同步间隔。
+### 3) 写入路由（routing）
 
-**支持的格式**：
-- 数字（秒）：`3600`
-- 分钟：`60m`, `1h`
-- 小时：`24h`
+路由发生在“写入管（Ingestion Pipe）”阶段，用于根据 `MemoContext.filePath` 等上下文决定写入到哪个轨道。
 
-**示例**：
-```yaml
-sync:
-  syncInterval: "1h"
-```
+- `routing.enabled`：是否启用路由阶段
+- `routing.default_track`：兜底轨道（默认 `gbrain`）
+- `routing.code_suffixes`：默认代码后缀列表（未配置 rules 时生效）
+- `routing.rules`：可选，自定义责任链规则（按顺序执行）
 
-#### `dataPath`
-要同步的数据路径。
+当你需要全量覆盖规则时，可以在 YAML 配置 `routing.rules`，或使用环境变量 `MEMOHUB_ROUTING_RULES`（JSON 数组）。
 
-**示例**：
-```yaml
-sync:
-  dataPath: "~/.memohub/"
-```
+### 4) 双轨数据库（gbrain/clawmem）
 
----
+- `gbrain.db_path` / `clawmem.db_path`：LanceDB 数据库路径
+- `gbrain.table_name` / `clawmem.table_name`：表名
+- `default_*`：默认分类/语言/重要性等
 
 ## 环境变量
 
-除了 YAML 配置文件，MemoHub 也支持环境变量覆盖。
-
-### 嵌入模型环境变量
+### 嵌入与数据库（最常用）
 
 ```bash
-export MEMOHUB_EMBEDDING_MODEL="nomic-embed-text-v2-moe"
-export MEMOHUB_EMBEDDING_BASE_URL="http://localhost:11434"
-export MEMOHUB_EMBEDDING_DIMENSION="768"
+export EMBEDDING_URL="http://localhost:11434/v1"
+export EMBEDDING_MODEL="nomic-embed-text-v2-moe"
+export GBRAIN_DB_PATH="~/.hermes/data/gbrain.lancedb"
+export CLAWMEM_DB_PATH="~/.hermes/data/clawmem.lancedb"
 ```
 
-### 数据库环境变量
+### CAS（原文落盘）
 
 ```bash
-export MEMOHUB_GBRAIN_DB_PATH="~/.memohub/gbrain.lancedb"
-export MEMOHUB_GBRAIN_TABLE_NAME="gbrain"
-export MEMOHUB_CLAWMEM_DB_PATH="~/.memohub/clawmem.lancedb"
-export MEMOHUB_CLAWMEM_TABLE_NAME="clawmem"
+export MEMOHUB_CAS_PATH="~/.hermes/data/memohub-cas"
+```
+
+### 路由（责任链）
+
+```bash
+export MEMOHUB_ROUTING_ENABLED="true"
+export MEMOHUB_ROUTING_DEFAULT_TRACK="gbrain"
+export MEMOHUB_ROUTING_CODE_SUFFIXES=".ts,.tsx,.js,.jsx,.py,.md"
+
+# 可选：全量覆盖规则（JSON 数组）
+export MEMOHUB_ROUTING_RULES='[
+  { "type": "file_suffix", "name": "route_code", "track": "clawmem", "suffixes": [".ts", ".tsx"] },
+  { "type": "default", "name": "route_default", "track": "gbrain" }
+]'
+```
+
+### 治理冲突检测（Governance Pipe，环境变量）
+
+治理管的最小冲突检测与事件队列采用环境变量控制：
+
+```bash
+export MEMOHUB_CONFLICT_ENABLED="true"
+export MEMOHUB_CONFLICT_THRESHOLD="0.9"
+export MEMOHUB_CONFLICT_STRATEGY="jaccard" # 或 contains
+export MEMOHUB_CONFLICT_QUEUE_PATH="~/.hermes/data/memohub-conflicts.ndjson"
 ```
 
 ### 同步环境变量

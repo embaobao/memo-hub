@@ -1,0 +1,10 @@
+{
+  "name": "@memohub/web",
+  "version": "3.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "echo 'placeholder'",
+    "test": "echo 'placeholder'"
+  }
+}

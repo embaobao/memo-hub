@@ -1,0 +1,21 @@
+{
+  "name": "@memohub/core",
+  "version": "3.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@memohub/protocol": "workspace:*",
+    "@memohub/storage-flesh": "workspace:*",
+    "@memohub/storage-soul": "workspace:*",
+    "@memohub/ai-provider": "workspace:*",
+    "yaml": "^2.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

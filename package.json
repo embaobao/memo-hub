@@ -1,61 +1,26 @@
 {
   "name": "memohub",
   "version": "1.0.0",
-  "description": "MemoHub - 智能双轨记忆系统 CLI 工具 - GBrain (通用知识) + ClawMem (代码记忆)",
-  "main": "dist/cli/index.js",
-  "bin": {
-    "mh": "dist/cli/index.js",
-    "memohub": "dist/cli/index.js"
-  },
+  "description": "MemoHub - Agent 智能记忆管理系统 - 多轨道动态矩阵架构",
+  "private": true,
   "type": "module",
+  "workspaces": ["apps/*", "packages/*", "tracks/*"],
   "scripts": {
-    "build": "tsc",
-    "build:plugins": "bun run build:extractor && bun run build:injector",
-    "build:extractor": "cd plugins/auto-memory-extractor && tsc",
-    "build:injector": "cd plugins/memory-injection && tsc",
-    "dev": "bun run --watch src/cli/index.ts",
-    "start": "bun run dist/cli/index.js",
-    "test": "bun test",
-    "lint": "eslint src/**/*.ts",
-    "format": "prettier --write src/**/*.ts",
-    "prepack": "npm run build",
-    "postinstall": "node -e \"console.log('🚀 MemoHub 安装成功！\\n   使用 mh 或 memohub 命令开始使用\\n   mh --help 查看帮助信息')\""
-  },
-  "keywords": [
-    "memory",
-    "vector-database",
-    "lancedb",
-    "cli",
-    "gbrain",
-    "clawmem",
-    "embedding",
-    "semantic-search",
-    "memohub",
-    "dual-track-memory",
-    "knowledge-management",
-    "code-memory"
-  ],
-  "author": "盟哥",
-  "license": "MIT",
-  "dependencies": {
-    "@lancedb/lancedb": "^0.26.2",
-    "@modelcontextprotocol/sdk": "^1.29.0",
-    "commander": "^12.1.0",
-    "ora": "^8.1.0",
-    "chalk": "^5.3.0",
-    "inquirer": "^10.0.0",
-    "yaml": "^2.6.0",
-    "openai": "^6.21.0",
-    "zod": "^3.23.8",
-    "tree-sitter": "^0.25.0"
+    "build": "bun run --filter '*' build",
+    "test": "bun run --filter '*' test",
+    "lint": "eslint 'packages/*/src/**/*.ts' 'tracks/*/src/**/*.ts' 'apps/*/src/**/*.ts'",
+    "format": "prettier --write 'packages/*/src/**/*.ts' 'tracks/*/src/**/*.ts' 'apps/*/src/**/*.ts'",
+    "clean": "find . -name 'dist' -type d -exec rm -rf {} + 2>/dev/null; true",
+    "dev": "bun run --watch apps/cli/src/index.ts"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.7",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^22.10.0",
     "bun-types": "^1.3.12",
     "eslint": "^9.0.0",
     "prettier": "^3.3.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.58.2"
   },
   "engines": {
     "node": ">=22.0.0",
@@ -65,19 +30,6 @@
     "type": "git",
     "url": "https://github.com/embaobao/memo-hub.git"
   },
-  "bugs": {
-    "url": "https://github.com/embaobao/memo-hub/issues"
-  },
-  "homepage": "https://github.com/embaobao/memo-hub#readme",
-  "files": [
-    "dist/",
-    "config/config.example.yaml",
-    "plugins/*/dist/",
-    "plugins/*/package.json",
-    "README.md",
-    "LICENSE",
-    "docs/",
-    "guides/",
-    "examples/"
-  ]
+  "author": "zhumeng",
+  "license": "MIT"
 }

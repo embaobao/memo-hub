@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# MemoHub Git post-commit Hook（模板）
+#
+# 目标（Task9）：
+# - 捕捉增量变更并触发写入管（通过 mh librarian ingest-git）
+# - 幂等：实际幂等由 Librarian 侧的“内容哈希幂等存储”保证，这里只负责触发
+#
+# 安全性与兼容性：
+# - Hook 必须永远返回 0，不能阻塞开发者的 commit 流程
+# - 如果没有安装/构建 mh（或 dist/cli/index.js 不存在），则静默跳过
+
+set +e
+
+COMMIT="$(git rev-parse HEAD 2>/dev/null)"
+if [ -z "$COMMIT" ]; then
+  exit 0
+fi
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
+if [ -n "$REPO_ROOT" ]; then
+  cd "$REPO_ROOT" >/dev/null 2>&1 || true
+fi
+
+if command -v mh >/dev/null 2>&1; then
+  mh librarian ingest-git --commit "$COMMIT" --quiet >/dev/null 2>&1 || true
+  exit 0
+fi
+
+if [ -f "dist/cli/index.js" ]; then
+  node dist/cli/index.js librarian ingest-git --commit "$COMMIT" --quiet >/dev/null 2>&1 || true
+  exit 0
+fi
+
+exit 0

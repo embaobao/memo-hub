@@ -1,0 +1,17 @@
+{
+  "name": "@memohub/storage-soul",
+  "version": "3.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@lancedb/lancedb": "^0.26.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
