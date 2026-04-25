@@ -238,15 +238,26 @@ const App = () => {
            <div className="flex items-center gap-3">
               <History size={16} className="text-zinc-600" />
               <div className="text-xs font-mono">
+                <span className="text-zinc-500">workspaces /</span>
+                <select 
+                  value={activeWorkspace}
+                  onChange={(e) => setActiveWorkspace(e.target.value)}
+                  className="bg-transparent border-none outline-none text-white font-bold ml-1 cursor-pointer hover:underline"
+                >
+                  {workspaces.map(w => <option key={w} value={w}>{w}</option>)}
+                </select>
+              </div>
+              <ChevronRight size={14} className="text-zinc-700" />
+              <div className="text-xs font-mono">
                 <span className="text-zinc-500">tracks /</span>
                 <select 
-                  className="bg-transparent border-none outline-none text-white font-bold ml-1 cursor-pointer"
+                  className="bg-transparent border-none outline-none text-white font-bold ml-1 cursor-pointer hover:underline"
                   onChange={(e) => {
-                    const track = sysInfo.tracks.find(t => t.id === e.target.value);
+                    const track = sysInfo.tracks.find((t: any) => t.id === e.target.value);
                     if (track) mapFlowToGraph(track, 'ADD');
                   }}
                 >
-                  {sysInfo.tracks.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  {sysInfo.tracks.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}
                 </select>
               </div>
            </div>
@@ -344,6 +355,29 @@ const App = () => {
                            ))}
                         </div>
                       </div>
+                   </div>
+                )}
+             </motion.div>
+           </AnimatePresence>
+
+           {/* 侧边属性面板 */}
+           <AnimatePresence>
+             {selectedNodeId && (
+               <PropertyPanel 
+                 node={nodes.find(n => n.id === selectedNodeId)} 
+                 tools={sysInfo.tools}
+                 onSave={updateNodeInput}
+               />
+             )}
+           </AnimatePresence>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default App;
+        </div>
                    </div>
                 )}
              </motion.div>

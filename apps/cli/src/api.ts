@@ -94,6 +94,44 @@ export async function startApiServer(kernel: any) {
     }
   });
 
+  server.get('/api/workspaces', async () => {
+    // 简单扫描 ~/.memohub 下的目录或从配置读取
+    const root = path.resolve(os.homedir(), '.memohub');
+    if (!fs.existsSync(root)) return { workspaces: ['default'] };
+    const dirs = fs.readdirSync(root).filter(f => fs.statSync(path.join(root, f)).isDirectory());
+    return { workspaces: ['default', ...dirs.filter(d => d !== 'blobs' && d !== 'data')] };
+  });
+
+  server.post('/api/chat', async (request: any) => {
+    const { message, sessionId = 'web-debug' } = request.body;
+    
+    // 仿真逻辑：Agent 收到消息后，先去检索相关记忆，再回答
+    const searchResult = await kernel.dispatch({
+      op: 'RETRIEVE' as any,
+      trackId: 'track-insight',
+      payload: { query: message, limit: 3 }
+    });
+
+    // 记录对话到 Stream 轨
+    await kernel.dispatch({
+      op: 'ADD' as any,
+      trackId: 'track-stream',
+      payload: { content: message, role: 'user', session_id: sessionId }
+    });
+
+    const responseText = searchResult.success && searchResult.data.length > 0
+      ? `I found some relevant memories for you: ${searchResult.data.map((r:any) => r.text.slice(0, 50)).join('; ')}`
+      : "I don't have any specific memories about that, but I'm listening.";
+
+    await kernel.dispatch({
+      op: 'ADD' as any,
+      trackId: 'track-stream',
+      payload: { content: responseText, role: 'assistant', session_id: sessionId }
+    });
+
+    return { response: responseText, sources: searchResult.data };
+  });
+
   // 3. 托管静态资源
   if (fs.existsSync(webDistPath)) {
     console.log(chalk.gray(`[API] Serving React UI from: ${webDistPath}`));
