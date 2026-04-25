@@ -4,19 +4,14 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: './', // 关键：使用相对路径确保在任意托管目录下都能找到 assets
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    port: 5173,
-    proxy: {
-      '/api': 'http://localhost:3000',
-      '/ws': {
-        target: 'ws://localhost:3000',
-        ws: true,
-      },
-    },
-  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  }
 });

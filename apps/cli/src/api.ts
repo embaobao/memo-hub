@@ -182,8 +182,8 @@ server.get('/api/wiki/relations', async (request: any) => {
   }
 
   try {
-    const address = await server.listen({ port: 3000, host: '0.0.0.0' });
-    console.log(`\n🚀 MemoHub Web Console: ${address}`);
+    const address = await server.listen({ port: 3001, host: '0.0.0.0' });
+    console.log(`\n🚀 MemoHub Web Console: http://localhost:3001`);
   } catch (err) {
     console.error(chalk.red(`[Error] Failed to start server: ${err}`));
     process.exit(1);
