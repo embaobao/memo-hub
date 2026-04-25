@@ -34,12 +34,33 @@ export async function startApiServer(kernel: any) {
   }
 
   // 核心数据反射接口
-  server.get('/api/inspect', async () => {
-    return {
-      config: kernel.getConfig(),
-      tools: await kernel.listTools(),
-      tracks: await kernel.listTracks()
-    };
+  server.get('/api/inspect', async (request, reply) => {
+    try {
+      const config = kernel.getConfig();
+      const tools = (await kernel.listTools()).map(t => ({
+        id: t.id,
+        type: t.type,
+        description: t.description
+      }));
+      const tracks = (await kernel.listTracks()).map((t: any) => ({
+        id: t.id,
+        name: t.name || t.id
+      }));
+      
+      // 仅返回可序列化的基础配置
+      return {
+        config: {
+          version: config.version,
+          system: { root: config.system.root, log_level: config.system.log_level },
+          dispatcher: config.dispatcher
+        },
+        tools,
+        tracks
+      };
+    } catch (err) {
+      console.error('[API] Critical error in /api/inspect:', err);
+      return reply.code(500).send({ error: 'Internal Kernel Error' });
+    }
   });
 
   server.get('/api/health', async () => ({ status: 'ok' }));
