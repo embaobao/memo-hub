@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "bun x --bun vite",
+    "build": "tsc && bun x --bun vite build",
+    "preview": "bun x --bun vite preview"
   },
   "dependencies": {
     "@memohub/protocol": "workspace:*",

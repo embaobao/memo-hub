@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@memohub/ai-provider": "workspace:*",
-    "@memohub/builtin-tools": "workspace:*",
     "@memohub/config": "workspace:*",
     "@memohub/protocol": "workspace:*",
     "@memohub/storage-flesh": "workspace:*",

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ITool, ExecutionContext } from '@memohub/core';
-import { IHostResources } from '@memohub/core';
+import { ITool, ExecutionContext } from '@memohub/core/src/index.js';
+import { IHostResources } from '@memohub/core/src/index.js';
 
 /**
  * 语义去重原子工具
