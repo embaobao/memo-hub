@@ -1,27 +1,240 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import ReactFlow, { 
+  Background, 
+  Controls, 
+  Panel,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MarkerType,
+  NodeProps,
+  Handle,
+  Position
+} from 'reactflow';
+import 'reactflow/dist/style.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Box, Search, Database, Activity, Settings, 
+  Cpu, Zap, ChevronRight, History, ShieldCheck, 
+  Plus, Terminal, Globe, Send, Layers
+} from 'lucide-react';
+import { TracePanel, AgentSandbox } from './components/Sandbox';
 
-const App = () => {
+// --- Ether UI 节点定制 ---
+const ToolNode = ({ data, selected }: NodeProps) => {
+  const isBuiltin = data.tool?.startsWith('builtin:');
+  const isTrack = data.tool?.includes(':') && !isBuiltin;
+
   return (
-    <div style={{ 
-      height: '100vh', 
-      display: 'flex', 
-      flexDirection: 'column',
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: '#000',
-      color: '#fff',
-      fontFamily: 'system-ui'
-    }}>
-      <h1 style={{ fontSize: '3rem', margin: 0 }}>MemoHub V1</h1>
-      <p style={{ opacity: 0.5 }}>Ether UI - Build Successful</p>
-      <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
-        <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#0070F3', boxShadow: '0 0 10px #0070F3' }}></div>
-        <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#50E3C2', boxShadow: '0 0 10px #50E3C2' }}></div>
-        <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#F5A623', boxShadow: '0 0 10px #F5A623' }}></div>
+    <div className={`px-4 py-3 rounded-2xl glass min-w-[200px] transition-all duration-500 border ${
+      selected ? "border-blue-500 shadow-2xl shadow-blue-500/20 scale-105" : "border-white/10"
+    }`}>
+      <Handle type="target" position={Position.Top} className="!bg-zinc-700 border-none" />
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded-xl ${
+          isBuiltin ? "bg-blue-500/10 text-blue-400" : isTrack ? "bg-purple-500/10 text-purple-400" : "bg-emerald-500/10 text-emerald-400"
+        }`}>
+          {isBuiltin ? <Cpu size={16} /> : isTrack ? <Layers size={16} /> : <Zap size={16} />}
+        </div>
+        <div className="flex flex-col overflow-hidden">
+          <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest truncate">{data.step}</span>
+          <span className="text-xs font-bold truncate">{data.tool}</span>
+        </div>
       </div>
-      <div style={{ position: 'fixed', bottom: '2rem', fontSize: '0.8rem', opacity: 0.3 }}>
-        [V1.0.0-PROD] Ready for memory orchestration.
-      </div>
+      <Handle type="source" position={Position.Bottom} className="!bg-zinc-700 border-none" />
+    </div>
+  );
+};
+
+const nodeTypes = {
+  tool: ToolNode,
+};
+
+// --- 主应用 ---
+const App = () => {
+  const [activeTab, setActiveTab] = useState('flow');
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [sysInfo, setSysInfo] = useState({ tracks: [], tools: [], config: {} });
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // 1. 从后端同步数据
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/inspect');
+        const data = await res.json();
+        setSysInfo(data);
+        
+        // 默认解析第一个轨道的 ADD 操作展示在画布上
+        if (data.tracks?.length > 0) {
+           mapFlowToGraph(data.tracks[0], 'ADD');
+        }
+        setIsLoaded(true);
+      } catch (e) {
+        console.error('Failed to fetch system metadata', e);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // 2. 将 JSONC Flow 转换为图形
+  const mapFlowToGraph = (track: any, op: string) => {
+    const flow = track.flows?.[op] || [];
+    const newNodes = flow.map((step: any, index: number) => ({
+      id: `${track.id}-${op}-${index}`,
+      type: 'tool',
+      position: { x: 250, y: index * 120 },
+      data: { step: step.step, tool: step.tool }
+    }));
+
+    const newEdges = newNodes.slice(0, -1).map((node: any, index: number) => ({
+      id: `e-${index}`,
+      source: node.id,
+      target: newNodes[index + 1].id,
+      animated: true,
+      style: { stroke: '#3b82f6', strokeWidth: 2 },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#3b82f6' }
+    }));
+
+    setNodes(newNodes);
+    setEdges(newEdges);
+  };
+
+  const navItems = [
+    { id: 'flow', icon: <Box size={18} />, label: 'Studio' },
+    { id: 'search', icon: <Globe size={18} />, label: 'Sandbox' },
+    { id: 'assets', icon: <Database size={18} />, label: 'Matrix' },
+    { id: 'trace', icon: <Activity size={18} />, label: 'Trace' },
+    { id: 'settings', icon: <Settings size={18} />, label: 'Config' },
+  ];
+
+  if (!isLoaded) return <div className="h-screen w-screen bg-black flex items-center justify-center font-mono text-zinc-500">Loading Ether System...</div>;
+
+  return (
+    <div className="flex h-screen w-full overflow-hidden bg-[#000] text-zinc-100 selection:bg-blue-500/30">
+      <div className="noise-overlay" />
+      
+      {/* Sidebar - iOS Glassmorphism */}
+      <aside className="w-64 glass border-r border-white/5 flex flex-col z-50">
+        <div className="p-8">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-blue-400 shadow-2xl shadow-blue-500/40 flex items-center justify-center">
+               <Zap size={20} className="text-white fill-white" />
+            </div>
+            <span className="font-bold tracking-tighter text-xl">MemoHub</span>
+          </div>
+        </div>
+
+        <nav className="flex-1 px-4 space-y-1">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              className={`w-full flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-500 group relative ${
+                activeTab === item.id ? 'bg-white/5 text-white' : 'text-zinc-500 hover:text-zinc-200'
+              }`}
+            >
+              <span className={activeTab === item.id ? 'scale-110 text-blue-400' : 'group-hover:scale-110'}>
+                {item.icon}
+              </span>
+              <span className="font-semibold text-sm tracking-tight">{item.label}</span>
+              {activeTab === item.id && (
+                <motion.div layoutId="active-nav" className="absolute left-0 w-1 h-6 rounded-full bg-blue-500" />
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="p-6 mt-auto">
+          <div className="glass p-4 rounded-3xl border-emerald-500/20 bg-emerald-500/5">
+             <div className="flex items-center gap-2 mb-2">
+                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">System Online</span>
+             </div>
+             <p className="text-[10px] text-zinc-500 font-mono">Kernel v1.0.0-stable</p>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 relative flex flex-col overflow-hidden">
+        <header className="h-20 flex items-center justify-between px-10 border-b border-white/5 z-40 bg-black/20 backdrop-blur-xl">
+           <div className="flex items-center gap-3">
+              <History size={16} className="text-zinc-600" />
+              <div className="text-xs font-mono">
+                <span className="text-zinc-500">tracks /</span>
+                <select 
+                  className="bg-transparent border-none outline-none text-white font-bold ml-1 cursor-pointer"
+                  onChange={(e) => {
+                    const track = sysInfo.tracks.find(t => t.id === e.target.value);
+                    if (track) mapFlowToGraph(track, 'ADD');
+                  }}
+                >
+                  {sysInfo.tracks.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+           </div>
+           
+           <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                <ShieldCheck size={12} className="text-emerald-500" />
+                <span>Verified TraceID: {Math.random().toString(36).slice(2, 10)}</span>
+              </div>
+              <button className="h-10 w-10 rounded-full glass border border-white/10 flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
+                <Plus size={18} />
+              </button>
+           </div>
+        </header>
+
+        <div className="flex-1 relative">
+           <AnimatePresence mode="wait">
+             <motion.div
+               key={activeTab}
+               initial={{ opacity: 0, scale: 0.99, filter: 'blur(10px)' }}
+               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+               exit={{ opacity: 0, scale: 1.01, filter: 'blur(10px)' }}
+               transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+               className="h-full w-full"
+             >
+                {activeTab === 'flow' && (
+                  <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    nodeTypes={nodeTypes}
+                    fitView
+                  >
+                    <Background color="#111" gap={24} size={1} />
+                    <Controls className="!bg-zinc-900 !border-white/10 !fill-white glass" />
+                    <Panel position="top-right" className="p-2 space-x-2">
+                       <button className="glass px-4 py-2 rounded-xl text-[11px] font-bold border-white/10 hover:bg-white/5">Auto Layout</button>
+                       <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-lg shadow-blue-600/20">Save Flow</button>
+                    </Panel>
+                  </ReactFlow>
+                )}
+
+                {activeTab === 'trace' && <div className="p-8 h-full"><TracePanel /></div>}
+                {activeTab === 'search' && <div className="p-8 h-full"><AgentSandbox /></div>}
+                
+                {activeTab === 'assets' && (
+                   <div className="p-10 h-full overflow-auto space-y-10">
+                      <div className="max-w-5xl mx-auto">
+                        <h2 className="text-4xl font-bold tracking-tighter mb-8">Memory Matrix</h2>
+                        <div className="grid grid-cols-2 gap-6">
+                           {/* 此处可根据真实资产接口渲染 */}
+                           <div className="glass p-10 rounded-3xl border-dashed flex items-center justify-center text-zinc-600 italic font-mono text-sm">
+                              Select a track to browse records...
+                           </div>
+                        </div>
+                      </div>
+                   </div>
+                )}
+             </motion.div>
+           </AnimatePresence>
+        </div>
+      </main>
     </div>
   );
 };
