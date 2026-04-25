@@ -43,30 +43,40 @@ export async function startApiServer(kernel: any) {
   });
 
   // 2. 核心数据反射与编排接口
-  server.get('/api/inspect', async () => {
+  server.get('/api/inspect', async (request, reply) => {
     try {
       const config = kernel.getConfig();
-      const tools = (await kernel.listTools()).map((t: any) => ({ 
+      const tools = (await kernel.listTools().catch(() => [])).map((t: any) => ({ 
         id: t.id, 
         type: t.type,
         description: t.description
       }));
-      const tracks = (await kernel.listTracks()).map((t: any) => ({ 
+      const tracks = (await kernel.listTracks().catch(() => [])).map((t: any) => ({ 
         id: t.id, 
         name: t.name || t.id,
-        flows: t.flows 
+        flows: t.flows || {}
       }));
-      return { config: { system: config.system }, tools, tracks };
+      return { 
+        config: { system: config.system || {} }, 
+        tools: tools || [], 
+        tracks: tracks || [] 
+      };
     } catch (e) {
-      return { error: 'Failed to inspect kernel' };
+      return { config: {}, tools: [], tracks: [] };
     }
   });
 
   server.get('/api/workspaces', async () => {
-    const root = path.resolve(os.homedir(), '.memohub');
-    if (!fs.existsSync(root)) return { workspaces: ['default'] };
-    const dirs = fs.readdirSync(root).filter(f => fs.statSync(path.join(root, f)).isDirectory());
-    return { workspaces: ['default', ...dirs.filter(d => d !== 'blobs' && d !== 'data')] };
+    try {
+      const root = path.resolve(os.homedir(), '.memohub');
+      if (!fs.existsSync(root)) return { workspaces: ['default'] };
+      const dirs = fs.readdirSync(root).filter(f => {
+        try { return fs.statSync(path.join(root, f)).isDirectory(); } catch { return false; }
+      });
+      return { workspaces: ['default', ...dirs.filter(d => d !== 'blobs' && d !== 'data')] };
+    } catch {
+      return { workspaces: ['default'] };
+    }
   });
 
   server.post('/api/search', async (request: any) => {
