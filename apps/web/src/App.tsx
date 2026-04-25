@@ -50,13 +50,81 @@ const nodeTypes = {
   tool: ToolNode,
 };
 
+// --- 属性面板组件 ---
+const PropertyPanel = ({ node, tools, onSave }: { node: any, tools: any[], onSave: (id: string, data: any) => void }) => {
+  const toolManifest = tools.find(t => t.id === node.data.tool);
+  const [formData, setFormData] = useState(node.data.input || {});
+
+  useEffect(() => {
+    setFormData(node.data.input || {});
+  }, [node.id]);
+
+  return (
+    <motion.div 
+      initial={{ x: 300 }} animate={{ x: 0 }} exit={{ x: 300 }}
+      className="w-80 glass border-l border-white/5 p-6 h-full flex flex-col z-50 bg-black/40 backdrop-blur-2xl"
+    >
+      <div className="flex items-center gap-2 mb-6">
+        <Settings size={16} className="text-blue-400" />
+        <h3 className="font-bold text-sm uppercase tracking-widest">Node Properties</h3>
+      </div>
+
+      <div className="flex-1 space-y-6 overflow-auto">
+        <div>
+          <label className="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Step ID</label>
+          <input readOnly value={node.data.step} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-zinc-400 outline-none" />
+        </div>
+
+        <div>
+          <label className="text-[10px] text-zinc-500 uppercase font-bold mb-2 block">Atomic Tool</label>
+          <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs">
+            <Cpu size={12} className="text-blue-400" />
+            <span className="font-mono">{node.data.tool}</span>
+          </div>
+        </div>
+
+        <div className="pt-4 border-t border-white/5">
+           <label className="text-[10px] text-zinc-500 uppercase font-bold mb-3 block">Input Mapping (JSONPath)</label>
+           {Object.keys(formData).map(key => (
+             <div key={key} className="mb-4">
+               <span className="text-[11px] text-zinc-300 font-mono mb-1 block">{key}</span>
+               <input 
+                 value={formData[key]} 
+                 onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
+                 className="w-full bg-black/40 border border-white/10 focus:border-blue-500/50 rounded-xl px-4 py-2.5 text-xs outline-none transition-all"
+               />
+             </div>
+           ))}
+        </div>
+      </div>
+
+      <button 
+        onClick={() => onSave(node.id, formData)}
+        className="mt-6 w-full py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-xs shadow-lg shadow-blue-600/20 active:scale-95 transition-all"
+      >
+        Update Shadow Config
+      </button>
+    </motion.div>
+  );
+};
+
 // --- 主应用 ---
 const App = () => {
   const [activeTab, setActiveTab] = useState('flow');
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [sysInfo, setSysInfo] = useState({ tracks: [], tools: [], config: {} });
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const onNodeClick = useCallback((_: any, node: any) => setSelectedNodeId(node.id), []);
+  const onPaneClick = useCallback(() => setSelectedNodeId(null), []);
+
+  const updateNodeInput = (nodeId: string, inputData: any) => {
+    setNodes(nds => nds.map(n => n.id === nodeId ? { ...n, data: { ...n.data, input: inputData } } : n));
+    // 发送影子更新到后端
+    console.log('Syncing shadow config for node:', nodeId, inputData);
+  };
 
   // 1. 从后端同步数据
   useEffect(() => {
@@ -187,7 +255,7 @@ const App = () => {
            </div>
         </header>
 
-        <div className="flex-1 relative">
+        <div className="flex-1 relative flex">
            <AnimatePresence mode="wait">
              <motion.div
                key={activeTab}
@@ -195,7 +263,7 @@ const App = () => {
                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
                exit={{ opacity: 0, scale: 1.01, filter: 'blur(10px)' }}
                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-               className="h-full w-full"
+               className="flex-1 h-full w-full"
              >
                 {activeTab === 'flow' && (
                   <ReactFlow
@@ -203,6 +271,8 @@ const App = () => {
                     edges={edges}
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
+                    onNodeClick={onNodeClick}
+                    onPaneClick={onPaneClick}
                     nodeTypes={nodeTypes}
                     fitView
                   >
@@ -210,11 +280,18 @@ const App = () => {
                     <Controls className="!bg-zinc-900 !border-white/10 !fill-white glass" />
                     <Panel position="top-right" className="p-2 space-x-2">
                        <button className="glass px-4 py-2 rounded-xl text-[11px] font-bold border-white/10 hover:bg-white/5">Auto Layout</button>
-                       <button className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-lg shadow-blue-600/20">Save Flow</button>
+                       <button 
+                        onClick={async () => {
+                          const res = await fetch('/api/config/commit', { method: 'POST' });
+                          if(res.ok) alert('Configuration committed to disk.');
+                        }}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[11px] font-bold shadow-lg shadow-blue-600/20"
+                       >
+                         Commit Changes
+                       </button>
                     </Panel>
                   </ReactFlow>
                 )}
-
                 {activeTab === 'trace' && <div className="p-8 h-full"><TracePanel /></div>}
                 {activeTab === 'search' && <div className="p-8 h-full"><AgentSandbox /></div>}
                 
@@ -223,15 +300,23 @@ const App = () => {
                       <div className="max-w-5xl mx-auto">
                         <h2 className="text-4xl font-bold tracking-tighter mb-8">Memory Matrix</h2>
                         <div className="grid grid-cols-2 gap-6">
-                           {/* 此处可根据真实资产接口渲染 */}
-                           <div className="glass p-10 rounded-3xl border-dashed flex items-center justify-center text-zinc-600 italic font-mono text-sm">
-                              Select a track to browse records...
-                           </div>
+                           <AssetCard item={{ trackId: 'track-insight', timestamp: Date.now(), text: 'Sample memory entry from kernel...' }} />
                         </div>
                       </div>
                    </div>
                 )}
              </motion.div>
+           </AnimatePresence>
+
+           {/* 侧边属性面板 */}
+           <AnimatePresence>
+             {selectedNodeId && (
+               <PropertyPanel 
+                 node={nodes.find(n => n.id === selectedNodeId)} 
+                 tools={sysInfo.tools}
+                 onSave={updateNodeInput}
+               />
+             )}
            </AnimatePresence>
         </div>
       </main>
