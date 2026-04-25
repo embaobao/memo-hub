@@ -29,7 +29,7 @@ const AssetCard = ({ item, onClick }: { item: any, onClick?: () => void }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} onClick={onClick} className="glass p-6 rounded-[2.5rem] group cursor-pointer hover:border-blue-500/20 transition-all border border-white/5">
     <div className="flex justify-between items-center mb-4"><span className="px-3 py-1 rounded-full bg-white/5 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{item.trackId}</span><span className="text-[10px] text-zinc-600 font-mono italic">{new Date(item.timestamp).toLocaleDateString()}</span></div>
     <p className="text-sm line-clamp-3 text-zinc-300 leading-relaxed font-medium mb-4">{item.text || item.content}</p>
-    <div className="flex flex-wrap gap-2">{(item.entities || []).map((e: string) => <span key={e} className="text-[9px] px-2 py-1 rounded-full bg-blue-500/5 text-blue-400 border border-blue-500/10">{e}</span>)}</div>
+    <div className="flex flex-wrap gap-2">{(item.entities || []).map((e: string) => <span key={e} className="text-[9px] px-2.5 py-1 rounded-full bg-blue-500/5 text-blue-400 border border-blue-500/10">{e}</span>)}</div>
   </motion.div>
 );
 
@@ -44,17 +44,19 @@ const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  const [activeWorkspace, setActiveWorkspace] = useState('default');
+  const [isEntryModalOpen, setIsEntryModalOpen] = useState(false);
+  const [activeTraceNode, setActiveTraceNode] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
   const [logs, setLogs] = useState<any[]>([]);
   const [workspaces, setWorkspaces] = useState<string[]>(['default']);
+  const [activeWorkspace, setActiveWorkspace] = useState('default');
 
   useEffect(() => {
     const init = async () => {
       try {
         const [metaRes, wsRes] = await Promise.all([
-          fetch('/api/inspect').then(r => r.json()),
-          fetch('/api/workspaces').then(r => r.json())
+          fetch('/api/inspect').then(r => r.json()).catch(() => ({ tracks: [], tools: [] })),
+          fetch('/api/workspaces').then(r => r.json()).catch(() => ({ workspaces: ['default'] }))
         ]);
         setSysInfo(metaRes);
         setWorkspaces(wsRes.workspaces || ['default']);
@@ -69,19 +71,23 @@ const App = () => {
 
     const ws = new WebSocket(`ws://${window.location.host}/ws/trace`);
     ws.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === 'KERNEL_EVENT') {
-        setLogs(prev => [{ ...data.payload, time: new Date(data.timestamp).toLocaleTimeString() }, ...prev].slice(0, 100));
-        if (data.payload.stage === 'start') {
-          setActiveTraceNode(data.payload.trackId);
-          setTimeout(() => setActiveTraceNode(null), 2000);
+      try {
+        const data = JSON.parse(e.data);
+        if (data.type === 'KERNEL_EVENT') {
+          setLogs(prev => [{ ...data.payload, time: new Date(data.timestamp).toLocaleTimeString() }, ...prev].slice(0, 100));
+          if (data.payload.stage === 'start') {
+            setActiveTraceNode(data.payload.trackId);
+            setTimeout(() => setActiveTraceNode(null), 2000);
+          }
         }
-      }
+      } catch {}
     };
     return () => ws.close();
   }, []);
 
-  const [activeTraceNode, setActiveTraceNode] = useState<string | null>(null);
+  useEffect(() => {
+    if (activeTab === 'assets') fetch('/api/assets').then(r => r.json()).then(d => setAssets(d.items || [])).catch(() => {});
+  }, [activeTab]);
 
   const mapFlowToGraph = (track: any, op: string) => {
     const flow = track?.flows?.[op] || [];
@@ -93,15 +99,24 @@ const App = () => {
 
   const processedNodes = useMemo(() => nodes.map(n => ({ ...n, data: { ...n.data, isRunning: activeTraceNode === n.id.split('-')[0] } })), [nodes, activeTraceNode]);
 
+  // 使用内联样式作为“保底布局”，防止 CSS 加载失败导致白屏
+  const containerStyle: React.CSSProperties = {
+    display: 'flex',
+    height: '100vh',
+    width: '100vw',
+    overflow: 'hidden',
+    backgroundColor: '#000',
+    color: '#fff',
+    fontFamily: 'system-ui, sans-serif'
+  };
+
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-black text-zinc-100">
-      <div className="noise-overlay" />
-      
-      {/* 侧边栏: 始终可见 */}
-      <aside className="w-72 glass border-r border-white/5 flex flex-col z-50">
-        <div className="p-10 flex items-center gap-4">
-           <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-emerald-400 shadow-2xl flex items-center justify-center"><Zap size={22} className="text-white fill-white" /></div>
-           <span className="font-black tracking-tighter text-2xl">MemoHub</span>
+    <div style={containerStyle}>
+      {/* 侧边栏 */}
+      <aside style={{ width: '280px', borderRight: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', zIndex: 50 }} className="glass">
+        <div style={{ padding: '40px' }} className="flex items-center gap-4">
+           <div className="h-10 w-10 rounded-2xl bg-blue-600 flex items-center justify-center"><Zap size={22} className="text-white fill-white" /></div>
+           <span style={{ fontSize: '1.5rem', fontWeight: 900, letterSpacing: '-0.05em' }}>MemoHub</span>
         </div>
         <nav className="flex-1 px-6 space-y-2">
           {[
@@ -110,37 +125,36 @@ const App = () => {
             { id: 'assets', icon: <Database size={20} />, label: 'Matrix' }, 
             { id: 'trace', icon: <Activity size={20} />, label: 'Logs' }
           ].map((item) => (
-            <button key={item.id} onClick={() => setActiveTab(item.id)} className={cn("w-full flex items-center gap-6 px-6 py-4 rounded-[1.5rem] transition-all duration-500 group relative", activeTab === item.id ? 'bg-white/5 text-white' : 'text-zinc-600 hover:text-zinc-200')}>
-              <span className={activeTab === item.id ? 'scale-110 text-blue-500' : 'group-hover:scale-110'}>{item.icon}</span>
+            <button key={item.id} onClick={() => setActiveTab(item.id)} className={cn("w-full flex items-center gap-6 px-6 py-5 rounded-[1.5rem] transition-all duration-500 group relative", activeTab === item.id ? 'bg-white/5 text-white' : 'text-zinc-600 hover:text-zinc-200')}>
+              {item.icon}
               <span className="font-bold text-sm tracking-tight">{item.label}</span>
-              {activeTab === item.id && <motion.div layoutId="nav" className="absolute left-0 w-1.5 h-8 rounded-full bg-blue-600" />}
+              {activeTab === item.id && <div className="absolute left-0 w-1.5 h-8 rounded-full bg-blue-600" />}
             </button>
           ))}
         </nav>
-        <div className="p-8"><div className="glass p-5 rounded-[2rem] border-emerald-500/10 bg-emerald-500/5"><div className="flex items-center gap-3 mb-1"><div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse glow" /><span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Live Kernel</span></div><p className="text-[9px] text-zinc-700 font-mono italic">Node: darwin-arm64-v1</p></div></div>
       </aside>
 
-      {/* 主界面 */}
-      <main className="flex-1 relative flex flex-col overflow-hidden">
+      {/* 内容区 */}
+      <main style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <header className="h-24 flex items-center justify-between px-12 border-b border-white/5 z-40 bg-black/40 backdrop-blur-3xl">
            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-600">Workspaces / <span className="text-white">{activeWorkspace}</span></div>
-           <div className="flex items-center gap-8"><button className="h-10 w-10 rounded-full glass border border-white/10 flex items-center justify-center hover:scale-110 transition-all"><Plus size={18} /></button></div>
+           <div className="flex items-center gap-8"><button onClick={() => setIsEntryModalOpen(true)} className="h-12 w-12 rounded-full glass border border-white/10 flex items-center justify-center hover:scale-110 transition-all"><Plus size={20} /></button></div>
         </header>
 
-        <div className="flex-1 relative">
-           {!isLoaded ? (
-             <div className="h-full flex items-center justify-center font-mono text-blue-500 animate-pulse uppercase tracking-[0.3em]">Booting OS...</div>
-           ) : (
+        {!isLoaded ? (
+          <div className="flex-1 flex items-center justify-center font-mono text-blue-500 animate-pulse">Booting Memory OS...</div>
+        ) : (
+          <div className="flex-1 relative">
              <AnimatePresence mode="wait">
                 <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
-                    {activeTab === 'flow' && <ReactFlow nodes={processedNodes} edges={edges} nodeTypes={{ tool: ToolNode }} fitView className="h-full w-full"><Background color="#111" gap={30} size={1} /></ReactFlow>}
-                    {activeTab === 'trace' && <div className="p-12 h-full"><TracePanel logs={logs} /></div>}
+                    {activeTab === 'flow' && <ReactFlow nodes={processedNodes} edges={edges} nodeTypes={{ tool: ToolNode }} fitView className="h-full w-full"><Background color="#222" gap={30} size={1} /></ReactFlow>}
+                    {activeTab === 'trace' && <div className="p-12 h-full overflow-auto"><TracePanel logs={logs} /></div>}
                     {activeTab === 'search' && <div className="p-12 h-full"><AgentSandbox /></div>}
-                    {activeTab === 'assets' && <div className="p-12 h-full overflow-auto text-center pt-32 text-zinc-600 italic">No assets connected.</div>}
+                    {activeTab === 'assets' && <div className="p-12 h-full overflow-auto"><div className="max-w-5xl mx-auto grid grid-cols-2 gap-6">{assets.map((asset, i) => <AssetCard key={i} item={asset} />)}</div></div>}
                 </motion.div>
              </AnimatePresence>
-           )}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );
