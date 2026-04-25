@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { ITool, ExecutionContext } from '@memohub/core/src/index';
 import { IHostResources } from '@memohub/core/src/index';
-import * as Parser from 'web-tree-sitter';
+import { Parser } from 'web-tree-sitter';
 
 /**
  * 代码解析原子工具 (AST Code Analyzer)
@@ -24,7 +24,7 @@ export class CodeAnalyzerTool implements ITool {
     }),
   };
 
-  private parser!: any;
+  private parser!: Parser;
   private isReady = false;
 
   async execute(input: any, resources: IHostResources, context: ExecutionContext): Promise<any> {

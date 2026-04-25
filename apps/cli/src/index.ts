@@ -6,9 +6,9 @@ import ora from 'ora';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
-import { MemoryKernel } from '../../packages/core/src/kernel';
-import { MemoOp } from '../../packages/protocol/src/types';
-import { ConfigLoader } from '../../packages/config/src/index';
+import { MemoryKernel } from '../../../packages/core/src/kernel.ts';
+import { MemoOp } from '../../../packages/protocol/src/types.ts';
+import { ConfigLoader } from '../../../packages/config/src/index.ts';
 import { 
   CasTool, 
   VectorTool, 
@@ -19,13 +19,13 @@ import {
   EntityLinkerTool, 
   GraphStoreTool,
   CodeAnalyzerTool
-} from '../../packages/builtin-tools/src/index';
-import { DeduplicatorTool } from '../../packages/librarian/src/tools';
+} from '../../../packages/builtin-tools/src/index.ts';
+import { DeduplicatorTool } from '../../../packages/librarian/src/tools.ts';
 
-import { InsightTrack } from '../../tracks/track-insight/src/index';
-import { SourceTrack } from '../../tracks/track-source/src/index';
-import { StreamTrack } from '../../tracks/track-stream/src/index';
-import { WikiTrack } from '../../tracks/track-wiki/src/index';
+import { InsightTrack } from '../../../tracks/track-insight/src/index.ts';
+import { SourceTrack } from '../../../tracks/track-source/src/index.ts';
+import { StreamTrack } from '../../../tracks/track-stream/src/index.ts';
+import { WikiTrack } from '../../../tracks/track-wiki/src/index.ts';
 
 export async function createKernel(): Promise<MemoryKernel> {
   const loader = new ConfigLoader();
@@ -67,7 +67,7 @@ program
   .command('ui')
   .description('Start MemoHub Web Console')
   .action(async () => {
-    const { startApiServer } = await import('./api');
+    const { startApiServer } = await import('./api.ts');
     const kernel = await createKernel();
     await startApiServer(kernel);
   });

@@ -31,5 +31,9 @@
     "url": "https://github.com/embaobao/memo-hub.git"
   },
   "author": "zhumeng",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "comment-json": "^5.0.0",
+    "esprima": "^4.0.1"
+  }
 }

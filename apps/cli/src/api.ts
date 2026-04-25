@@ -9,17 +9,28 @@ export async function startApiServer(kernel: any) {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
   
-  // 适配 src 和 dist 两种运行模式
-  const webDistPath = fs.existsSync(path.resolve(__dirname, '../../web/dist'))
-    ? path.resolve(__dirname, '../../web/dist')
-    : path.resolve(__dirname, '../dist'); // 如果在 dist 跑
+  // 适配开发环境 (src) 和 编译环境 (dist)
+  // 开发环境下: apps/cli/src/api.ts -> apps/web/dist
+  const webDistPath = path.resolve(__dirname, '../../web/dist');
 
   if (fs.existsSync(webDistPath)) {
     console.log('[API] Serving Web UI from: ' + webDistPath);
     await server.register(fastifyStatic, {
       root: webDistPath,
       prefix: '/',
+      index: ['index.html'],
     });
+
+    // SPA Fallback
+    server.setNotFoundHandler(async (request, reply) => {
+      if (request.url.startsWith('/api')) {
+        reply.code(404).send({ error: 'API route not found' });
+        return;
+      }
+      return reply.sendFile('index.html');
+    });
+  } else {
+    console.warn('[Warning] apps/web/dist not found. Did you run "bun run build"?');
   }
 
   // 核心数据反射接口
@@ -34,9 +45,10 @@ export async function startApiServer(kernel: any) {
   server.get('/api/health', async () => ({ status: 'ok' }));
 
   try {
-    await server.listen({ port: 3000, host: '0.0.0.0' });
-    console.log('\n🚀 MemoHub Web Console: http://localhost:3000');
+    const address = await server.listen({ port: 3000, host: '0.0.0.0' });
+    console.log(`\n🚀 MemoHub Web Console: ${address}`);
   } catch (err) {
+    console.error(chalk.red(`[Error] Failed to start API server: ${err}`));
     process.exit(1);
   }
 }

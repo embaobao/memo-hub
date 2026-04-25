@@ -1,6 +1,6 @@
 import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider } from '@memohub/protocol';
 import { MemoOp } from '@memohub/protocol';
-import * as Parser from 'web-tree-sitter';
+import { Parser } from 'web-tree-sitter';
 
 /**
  * 源码资产轨道 (Source Track)
@@ -11,7 +11,7 @@ export class SourceTrack implements ITrackProvider {
   name = 'Source Track';
 
   private kernel!: IKernel;
-  private parser!: any;
+  private parser!: Parser;
   private isParserReady = false;
 
   /**
