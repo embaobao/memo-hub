@@ -89,6 +89,28 @@ const App = () => {
     if (activeTab === 'assets') fetch('/api/assets').then(r => r.json()).then(d => setAssets(d.items || [])).catch(() => {});
   }, [activeTab]);
 
+  // 切换工作区
+  const onWorkspaceChange = async (newWs: string) => {
+    setActiveWorkspace(newWs);
+    setIsLoaded(false);
+    try {
+      await fetch('/api/workspace/switch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newWs })
+      });
+      // 重新加载系统信息
+      const res = await fetch('/api/inspect');
+      const data = await res.json();
+      setSysInfo(data);
+      if (data.tracks?.length > 0) mapFlowToGraph(data.tracks[0], 'ADD');
+    } catch (e) {
+      console.error('Switch failed:', e);
+    } finally {
+      setIsLoaded(true);
+    }
+  };
+
   const mapFlowToGraph = (track: any, op: string) => {
     const flow = track?.flows?.[op] || [];
     const newNodes = flow.map((step: any, i: number) => ({ id: `${track.id}-${op}-${i}`, type: 'tool', position: { x: 250, y: i * 150 }, data: { step: step.step, tool: step.tool, input: step.input } }));

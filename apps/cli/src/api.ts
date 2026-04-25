@@ -79,6 +79,12 @@ export async function startApiServer(kernel: any) {
     }
   });
 
+  server.post('/api/workspace/switch', async (request: any) => {
+    const { name } = request.body;
+    console.log(chalk.magenta(`[API] Switching active workspace context to: ${name}`));
+    return { success: true, current: name };
+  });
+
   server.post('/api/search', async (request: any) => {
     const { query, trackId, limit = 10 } = request.body;
     return await kernel.dispatch({
@@ -90,7 +96,6 @@ export async function startApiServer(kernel: any) {
 
   server.post('/api/chat', async (request: any) => {
     const { message } = request.body;
-    // 模拟 Agent 思考逻辑：先检索再回答
     const result = await kernel.dispatch({
       op: 'RETRIEVE' as any,
       trackId: 'track-insight',
@@ -125,14 +130,21 @@ export async function startApiServer(kernel: any) {
   });
 
   server.get('/api/assets', async (request: any) => {
-    const storage = kernel.getVectorStorage();
-    const cas = kernel.getCAS();
-    const records = await storage.list('', 50);
-    const items = await Promise.all(records.map(async (r: any) => ({
-      ...r,
-      text: await cas.read(r.hash).catch(() => 'Content Missing')
-    })));
-    return { items };
+    try {
+      const { trackId } = request.query as any;
+      const storage = kernel.getVectorStorage();
+      const cas = kernel.getCAS();
+      let filter = '';
+      if (trackId) filter = `track_id = '${trackId}'`;
+      const records = await storage.list(filter, 100);
+      const items = await Promise.all(records.map(async (r: any) => ({
+        ...r,
+        text: await cas.read(r.hash).catch(() => 'Content Missing')
+      })));
+      return { items };
+    } catch (e) {
+      return { items: [], error: String(e) };
+    }
   });
 
   // 3. 托管静态资源
