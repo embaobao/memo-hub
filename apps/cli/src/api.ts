@@ -71,6 +71,29 @@ export async function startApiServer(kernel: any) {
     });
   });
 
+  server.get('/api/assets', async (request: any) => {
+    const { trackId } = request.query;
+    try {
+      const storage = kernel.getVectorStorage();
+      const cas = kernel.getCAS();
+      
+      let filter = '';
+      if (trackId) filter = `track_id = '${trackId}'`;
+      
+      const records = await storage.list(filter, 100);
+      
+      // 并行脱壳内容
+      const hydrated = await Promise.all(records.map(async (r: any) => ({
+        ...r,
+        text: await cas.read(r.hash).catch(() => 'Content not found in CAS')
+      })));
+
+      return { items: hydrated };
+    } catch (e) {
+      return { items: [], error: String(e) };
+    }
+  });
+
   // 3. 托管静态资源
   if (fs.existsSync(webDistPath)) {
     console.log(chalk.gray(`[API] Serving React UI from: ${webDistPath}`));

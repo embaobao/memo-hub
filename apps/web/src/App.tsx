@@ -300,14 +300,48 @@ const App = () => {
                   </ReactFlow>
                 )}
                 {activeTab === 'trace' && <div className="p-8 h-full"><TracePanel /></div>}
-                {activeTab === 'search' && <div className="p-8 h-full"><AgentSandbox /></div>}
+                {activeTab === 'search' && (
+                  <div className="h-full flex flex-col p-8 overflow-hidden">
+                     <div className="max-w-3xl mx-auto w-full flex flex-col h-full">
+                        {/* Omni Search Bar */}
+                        <form onSubmit={handleSearch} className="mb-10">
+                          <div className="glass p-6 rounded-[2.5rem] shadow-2xl flex items-center gap-5 border-border/50 group focus-within:border-blue-500/50 transition-all">
+                             <Search className={cn("text-zinc-500 transition-colors", isSearching && "animate-pulse text-blue-400")} size={24} />
+                             <input 
+                                autoFocus
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search anything from your digital brain..." 
+                                className="bg-transparent border-none outline-none text-xl w-full placeholder:text-zinc-700 font-medium"
+                             />
+                          </div>
+                        </form>
+
+                        {/* Results */}
+                        <div className="flex-1 overflow-auto space-y-6 pb-10 pr-2">
+                           {searchResults.length === 0 && !isSearching && (
+                              <div className="h-full flex flex-col items-center justify-center opacity-20 grayscale">
+                                 <Globe size={80} strokeWidth={1} />
+                                 <p className="mt-4 font-mono text-sm uppercase tracking-widest">Global Bus Standby</p>
+                              </div>
+                           )}
+                           {searchResults.map((item, i) => (
+                              <AssetCard key={i} item={item} />
+                           ))}
+                        </div>
+                     </div>
+                  </div>
+                )}
                 
                 {activeTab === 'assets' && (
                    <div className="p-10 h-full overflow-auto space-y-10">
                       <div className="max-w-5xl mx-auto">
                         <h2 className="text-4xl font-bold tracking-tighter mb-8">Memory Matrix</h2>
-                        <div className="grid grid-cols-2 gap-6">
-                           <AssetCard item={{ trackId: 'track-insight', timestamp: Date.now(), text: 'Sample memory entry from kernel...' }} />
+                        <div className="grid grid-cols-2 gap-6 pb-20">
+                           {assets.length === 0 && <p className="text-zinc-500 italic font-mono text-sm">No records found yet...</p>}
+                           {assets.map((asset, i) => (
+                             <AssetCard key={i} item={asset} />
+                           ))}
                         </div>
                       </div>
                    </div>
