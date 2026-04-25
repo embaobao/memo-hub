@@ -16,9 +16,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Box, Search, Database, Activity, Settings, 
   Cpu, Zap, ChevronRight, History, ShieldCheck, 
-  Plus, Terminal, Globe, Send, Layers
+  Plus, Terminal, Globe, Send, Layers, Share2, ShieldAlert, ArrowRightLeft, GitMerge, Check, X
 } from 'lucide-react';
 import { TracePanel, AgentSandbox } from './components/Sandbox';
+import { ClarifyCenter, RelationGraph } from './components/Clarify';
 
 // --- 工具函数 ---
 const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
@@ -152,14 +153,18 @@ const App = () => {
   const [activeTraceNode, setActiveTraceNode] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
   const [logs, setLogs] = useState<any[]>([]);
+  const [workspaces, setWorkspaces] = useState<string[]>(['default']);
+  const [activeWorkspace, setActiveWorkspace] = useState('default');
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const init = async () => {
-      const res = await fetch('/api/inspect');
-      const data = await res.json();
-      setSysInfo(data);
-      if (data.tracks?.length > 0) mapFlowToGraph(data.tracks[0], 'ADD');
+      const [metaRes, wsRes] = await Promise.all([fetch('/api/inspect'), fetch('/api/workspaces')]);
+      const meta = await metaRes.json();
+      const wsData = await wsRes.json();
+      setSysInfo(meta);
+      setWorkspaces(wsData.workspaces || ['default']);
+      if (meta.tracks?.length > 0) mapFlowToGraph(meta.tracks[0], 'ADD');
       setIsLoaded(true);
     };
     init();
@@ -215,7 +220,13 @@ const App = () => {
       <aside className="w-72 glass border-r border-white/5 flex flex-col z-50">
         <div className="p-12"><div className="flex items-center gap-4"><div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-emerald-400 shadow-2xl flex items-center justify-center"><Zap size={22} className="text-white fill-white" /></div><span className="font-black tracking-tighter text-2xl">MemoHub</span></div></div>
         <nav className="flex-1 px-6 space-y-2">
-          {[{ id: 'flow', icon: <Box size={20} />, label: 'Studio' }, { id: 'search', icon: <Globe size={20} />, label: 'Sandbox' }, { id: 'assets', icon: <Database size={20} />, label: 'Matrix' }, { id: 'trace', icon: <Activity size={20} />, label: 'Log Stream' }].map((item) => (
+          {[
+            { id: 'flow', icon: <Box size={20} />, label: 'Studio' }, 
+            { id: 'search', icon: <Globe size={20} />, label: 'Sandbox' }, 
+            { id: 'assets', icon: <Database size={20} />, label: 'Matrix' }, 
+            { id: 'clarify', icon: <ShieldAlert size={20} />, label: 'Clarify' }, 
+            { id: 'trace', icon: <Activity size={20} />, label: 'Log Stream' }
+          ].map((item) => (
             <button key={item.id} onClick={() => setActiveTab(item.id)} className={cn("w-full flex items-center gap-6 px-6 py-5 rounded-[1.5rem] transition-all duration-500 group relative", activeTab === item.id ? 'bg-white/5 text-white' : 'text-zinc-600 hover:text-zinc-200')}>
               <span className={activeTab === item.id ? 'scale-110 text-blue-500' : 'group-hover:scale-110'}>{item.icon}</span>
               <span className="font-bold text-sm tracking-tight">{item.label}</span>
@@ -228,7 +239,7 @@ const App = () => {
 
       <main className="flex-1 relative flex flex-col overflow-hidden">
         <header className="h-28 flex items-center justify-between px-14 border-b border-white/5 z-40 bg-black/40 backdrop-blur-3xl">
-           <div className="flex items-center gap-4"><History size={18} className="text-zinc-700" /><div className="text-xs font-bold uppercase tracking-widest text-zinc-600">Workspaces / <span className="text-white">Default</span></div><ChevronRight size={14} className="text-zinc-800" /><div className="text-xs font-bold uppercase tracking-widest text-zinc-600">Active / <select className="bg-transparent border-none outline-none text-blue-500 ml-2 cursor-pointer" onChange={(e) => { const t = sysInfo.tracks.find((t: any) => t.id === e.target.value); if(t) mapFlowToGraph(t, 'ADD'); }}>{sysInfo.tracks.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}</select></div></div>
+           <div className="flex items-center gap-4"><History size={18} className="text-zinc-700" /><div className="text-xs font-bold uppercase tracking-widest text-zinc-600">Workspaces / <select value={activeWorkspace} onChange={e => setActiveWorkspace(e.target.value)} className="bg-transparent border-none outline-none text-white font-bold ml-2 cursor-pointer hover:underline">{workspaces.map(w => <option key={w} value={w}>{w}</option>)}</select></div><ChevronRight size={14} className="text-zinc-800" /><div className="text-xs font-bold uppercase tracking-widest text-zinc-600">Active / <select className="bg-transparent border-none outline-none text-blue-500 ml-2 cursor-pointer" onChange={(e) => { const t = sysInfo.tracks.find((t: any) => t.id === e.target.value); if(t) mapFlowToGraph(t, 'ADD'); }}>{sysInfo.tracks.map((t: any) => <option key={t.id} value={t.id}>{t.name}</option>)}</select></div></div>
            <div className="flex items-center gap-8"><div className="flex items-center gap-3 text-[10px] font-black text-zinc-500 bg-white/5 px-6 py-3 rounded-2xl border border-white/5 uppercase tracking-widest"><ShieldCheck size={16} className="text-emerald-500" /><span>Encrypted</span></div><button onClick={() => setIsEntryModalOpen(true)} className="h-14 w-14 rounded-full glass border border-white/10 flex items-center justify-center hover:scale-110 active:scale-90 transition-all shadow-2xl shadow-white/5"><Plus size={24} /></button></div>
         </header>
 
@@ -246,6 +257,7 @@ const App = () => {
                   </div>
                 )}
                 {activeTab === 'trace' && <div className="p-14 h-full"><TracePanel logs={logs} /></div>}
+                {activeTab === 'clarify' && <div className="p-14 h-full overflow-auto"><ClarifyCenter /></div>}
                 {activeTab === 'search' && (
                    <div className="h-full flex flex-col p-14 max-w-6xl mx-auto w-full">
                       <form onSubmit={handleSearch} className="mb-14"><div className="glass p-10 rounded-[3.5rem] shadow-2xl flex items-center gap-8 border-white/5 focus-within:border-blue-500/40 transition-all"><Search className={cn("text-zinc-800", isSearching && "animate-pulse text-blue-500")} size={32} /><input autoFocus value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search digital brain..." className="bg-transparent border-none outline-none text-3xl w-full placeholder:text-zinc-900 font-black tracking-tight" /></div></form>
@@ -265,12 +277,20 @@ const App = () => {
                <motion.div initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: 'spring', damping: 35, stiffness: 180 }} className="absolute right-0 top-0 bottom-0 w-[600px] glass z-[60] border-l border-white/5 p-16 flex flex-col bg-black/90 backdrop-blur-3xl shadow-2xl">
                   <div className="flex justify-between items-center mb-16"><span className="text-[11px] font-black text-blue-500 uppercase tracking-[0.5em]">{selectedAsset.trackId}</span><button onClick={() => setSelectedAsset(null)} className="text-zinc-700 hover:text-white transition-colors text-xs font-black uppercase tracking-widest">Close</button></div>
                   <h3 className="text-4xl font-black mb-12 text-white leading-tight italic">{selectedAsset.title || 'Fragment'}</h3>
-                  <div className="flex-1 overflow-auto space-y-12 pr-6"><div className="space-y-6"><span className="text-[10px] text-zinc-800 font-black uppercase tracking-widest block">CONTENT_PREVIEW</span><div className="p-10 rounded-[3rem] bg-white/[0.01] border border-white/5 text-lg leading-relaxed text-zinc-400 font-mono italic shadow-inner">{selectedAsset.text || selectedAsset.content}</div></div></div>
+                  <div className="flex-1 overflow-auto space-y-12 pr-6">
+                     {selectedAsset.trackId === 'track-wiki' && (
+                        <div className="space-y-6 mb-10">
+                           <span className="text-[10px] text-zinc-800 font-black uppercase tracking-widest block">ENTITY_GRAPH</span>
+                           <RelationGraph entity={selectedAsset.title || selectedAsset.id} />
+                        </div>
+                     )}
+                     <div className="space-y-6"><span className="text-[10px] text-zinc-800 font-black uppercase tracking-widest block">RAW_CONTENT</span><div className="p-10 rounded-[3rem] bg-white/[0.01] border border-white/5 text-lg leading-relaxed text-zinc-400 font-mono italic shadow-inner">{selectedAsset.text || selectedAsset.content}</div></div>
+                  </div>
                </motion.div>
              )}
            </AnimatePresence>
         </div>
-        <EntryModal isOpen={isEntryModalOpen} onClose={() => setIsEntryModalOpen(false)} onAdd={async (data) => { const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Distill this: ${data.text}` }) }); if(res.ok) alert('Injection requested.'); }} />
+        <EntryModal isOpen={isEntryModalOpen} onClose={() => setIsEntryModalOpen(false)} onAdd={async (data) => { const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: `Add this to memory: ${data.text}` }) }); if(res.ok) alert('Injection requested.'); }} />
       </main>
     </div>
   );

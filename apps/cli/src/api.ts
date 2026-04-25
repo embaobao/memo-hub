@@ -70,29 +70,56 @@ export async function startApiServer(kernel: any) {
       payload: { query, limit }
     });
   });
+server.get('/api/assets', async (request: any) => {
+  const { trackId } = request.query;
+  try {
+    const storage = kernel.getVectorStorage();
+    const cas = kernel.getCAS();
+    let filter = '';
+    if (trackId) filter = `track_id = '${trackId}'`;
+    const records = await storage.list(filter, 100);
+    const hydrated = await Promise.all(records.map(async (r: any) => ({
+      ...r,
+      text: await cas.read(r.hash).catch(() => 'Content not found')
+    })));
+    return { items: hydrated };
+  } catch (e) {
+    return { items: [], error: String(e) };
+  }
+});
 
-  server.get('/api/assets', async (request: any) => {
-    const { trackId } = request.query;
-    try {
-      const storage = kernel.getVectorStorage();
-      const cas = kernel.getCAS();
-      
-      let filter = '';
-      if (trackId) filter = `track_id = '${trackId}'`;
-      
-      const records = await storage.list(filter, 100);
-      
-      // 并行脱壳内容
-      const hydrated = await Promise.all(records.map(async (r: any) => ({
-        ...r,
-        text: await cas.read(r.hash).catch(() => 'Content not found in CAS')
-      })));
+server.get('/api/conflicts', async () => {
+  // 仿真逻辑：返回由 Librarian 扫描出的冲突对
+  return {
+    conflicts: [
+      {
+        id: 'conf-1',
+        type: 'SEMANTIC_OVERLAP',
+        a: { id: 'insight-1', text: 'MemoHub v1 focus on Flow.', trackId: 'track-insight' },
+        b: { id: 'insight-2', text: 'The version 1 of MemoHub is driven by Workflows.', trackId: 'track-insight' },
+        similarity: 0.98
+      }
+    ]
+  };
+});
 
-      return { items: hydrated };
-    } catch (e) {
-      return { items: [], error: String(e) };
-    }
-  });
+server.get('/api/wiki/relations', async (request: any) => {
+  const { entity } = request.query;
+  // 返回知识图谱三元组
+  return {
+    nodes: [
+      { id: entity, label: entity, group: 'root' },
+      { id: 'FlowEngine', label: 'FlowEngine', group: 'component' },
+      { id: 'MemoryKernel', label: 'MemoryKernel', group: 'core' }
+    ],
+    edges: [
+      { from: entity, to: 'FlowEngine', label: 'uses' },
+      { from: 'FlowEngine', to: 'MemoryKernel', label: 'part-of' }
+    ]
+  };
+});
+
+// 3. 托管静态资源
 
   server.get('/api/workspaces', async () => {
     // 简单扫描 ~/.memohub 下的目录或从配置读取
