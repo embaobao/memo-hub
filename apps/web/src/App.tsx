@@ -126,25 +126,32 @@ const App = () => {
     console.log('Syncing shadow config for node:', nodeId, inputData);
   };
 
-  // 1. 从后端同步数据
+  const [logs, setLogs] = useState<any[]>([]);
+  const [activeTraceNode, setActiveTraceNode] = useState<string | null>(null);
+
+  // 3. WebSocket 实时监听
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('/api/inspect');
-        const data = await res.json();
-        setSysInfo(data);
+    const ws = new WebSocket(`ws://${window.location.host}/ws/trace`);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'KERNEL_EVENT') {
+        setLogs(prev => [{ ...data.payload, time: new Date(data.timestamp).toLocaleTimeString() }, ...prev].slice(0, 100));
         
-        // 默认解析第一个轨道的 ADD 操作展示在画布上
-        if (data.tracks?.length > 0) {
-           mapFlowToGraph(data.tracks[0], 'ADD');
+        // 驱动画布脉冲: 简单匹配 trackId
+        if (data.payload.stage === 'start') {
+          setActiveTraceNode(data.payload.trackId);
+          setTimeout(() => setActiveTraceNode(null), 2000);
         }
-        setIsLoaded(true);
-      } catch (e) {
-        console.error('Failed to fetch system metadata', e);
       }
     };
-    fetchData();
+    return () => ws.close();
   }, []);
+
+  // 修改 nodeTypes 数据流转，支持脉冲
+  const processedNodes = useMemo(() => nodes.map(n => ({
+    ...n,
+    data: { ...n.data, isRunning: activeTraceNode === n.data.trackId || n.id === activeTraceNode }
+  })), [nodes, activeTraceNode]);
 
   // 2. 将 JSONC Flow 转换为图形
   const mapFlowToGraph = (track: any, op: string) => {

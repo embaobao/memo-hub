@@ -19,12 +19,13 @@ import { SessionCacheLayer } from './session-cache.js';
 import { ContentAddressableStorage } from '@memohub/storage-flesh';
 import { VectorStorage } from '@memohub/storage-soul';
 import { IHostResources } from './types-host.js';
+import { EventEmitter } from 'node:events';
 
 /**
  * MemoHub 核心内核 (Memory Kernel)
  * 职责: 协调原子工具与流编排引擎。
  */
-export class MemoryKernel implements IKernel {
+export class MemoryKernel extends EventEmitter implements IKernel {
   private config: MemoHubConfig;
   private aiHub: AIHub;
   private toolRegistry: ToolRegistry;
@@ -39,6 +40,7 @@ export class MemoryKernel implements IKernel {
   private tracks: Map<string, ITrackProvider> = new Map();
 
   constructor(config: MemoHubConfig) {
+    super();
     this.config = config;
     this.aiHub = new AIHub(config.ai.providers, config.ai.agents);
     this.toolRegistry = new ToolRegistry();
@@ -92,6 +94,9 @@ export class MemoryKernel implements IKernel {
     const traceId = this.observation.createTraceId();
     const trackId = instruction.trackId || this.config.dispatcher.fallback;
     
+    // 发射调度开始事件
+    this.emit('dispatch', { traceId, trackId, op: instruction.op, stage: 'start' });
+
     try {
       // 1. 优先尝试配置驱动的 Flow
       const trackConfig = this.config.tracks.find(t => t.id === trackId);
@@ -99,6 +104,7 @@ export class MemoryKernel implements IKernel {
         const flow = (trackConfig.flows && trackConfig.flows[instruction.op]) || trackConfig.flow;
         if (flow && flow.length > 0) {
           const output = await this.flowEngine.executeFlow(flow, instruction.payload, traceId);
+          this.emit('dispatch', { traceId, trackId, op: instruction.op, stage: 'end', success: true });
           return { success: true, data: output, meta: { traceId, trackId } };
         }
       }
@@ -107,11 +113,13 @@ export class MemoryKernel implements IKernel {
       const provider = this.tracks.get(trackId);
       if (provider) {
         const result = await provider.execute(instruction);
+        this.emit('dispatch', { traceId, trackId, op: instruction.op, stage: 'end', success: result.success });
         return { ...result, meta: { ...result.meta, traceId, trackId } };
       }
 
       throw new Error(`[Kernel] 轨道定义不存在或未配置流: ${trackId}`);
     } catch (error: any) {
+      this.emit('dispatch', { traceId, trackId, op: instruction.op, stage: 'end', success: false, error: error.message });
       return { success: false, error: error.message || String(error), meta: { traceId } };
     }
   }

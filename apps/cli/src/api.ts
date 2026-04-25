@@ -18,26 +18,57 @@ export async function startApiServer(kernel: any) {
   // 核心：精准定位静态资源路径（兼容开发与编译环境）
   const webDistPath = path.resolve(__dirname, '../../web/dist');
 
-  // 1. 注册 WebSocket 插件
+  // 1. 注册 WebSocket 插件用于实时 Trace
   await server.register(fastifyWebsocket);
 
   server.get('/ws/trace', { websocket: true }, (connection: any) => {
-    const interval = setInterval(() => {
-        connection.socket.send(JSON.stringify({ type: 'HEARTBEAT', timestamp: Date.now() }));
-    }, 5000);
-    connection.socket.on('close', () => clearInterval(interval));
+    console.log(chalk.blue('[WS] Client connected for Trace Stream'));
+    
+    // 监听内核分发事件并广播
+    const eventHandler = (event: any) => {
+      connection.socket.send(JSON.stringify({
+        type: 'KERNEL_EVENT',
+        payload: event,
+        timestamp: Date.now()
+      }));
+    };
+
+    kernel.on('dispatch', eventHandler);
+
+    const heartbeat = setInterval(() => {
+      connection.socket.send(JSON.stringify({ type: 'HEARTBEAT' }));
+    }, 10000);
+
+    connection.socket.on('close', () => {
+      clearInterval(heartbeat);
+      kernel.off('dispatch', eventHandler);
+    });
   });
 
-  // 2. 注册 REST 路由
+  // 2. 核心数据反射与检索接口
   server.get('/api/inspect', async () => {
-    try {
-      const config = kernel.getConfig();
-      const tools = (await kernel.listTools()).map((t: any) => ({ id: t.id, type: t.type }));
-      const tracks = (await kernel.listTracks()).map((t: any) => ({ id: t.id, name: t.name || t.id }));
-      return { config: { system: config.system }, tools, tracks };
-    } catch (e) {
-      return { error: 'Failed to inspect kernel' };
-    }
+    const config = kernel.getConfig();
+    const tools = (await kernel.listTools()).map((t: any) => ({ 
+      id: t.id, 
+      type: t.type,
+      description: t.description,
+      inputSchema: t.inputSchema 
+    }));
+    const tracks = (await kernel.listTracks()).map((t: any) => ({ 
+      id: t.id, 
+      name: t.name || t.id,
+      flows: t.flows 
+    }));
+    return { config, tools, tracks };
+  });
+
+  server.post('/api/search', async (request: any) => {
+    const { query, trackId, limit = 10 } = request.body;
+    return await kernel.dispatch({
+      op: 'RETRIEVE' as any,
+      trackId: trackId || 'track-insight',
+      payload: { query, limit }
+    });
   });
 
   // 3. 托管静态资源

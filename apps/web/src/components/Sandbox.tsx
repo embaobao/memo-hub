@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Terminal, Send, Cpu, Globe } from 'lucide-react';
 
-const TracePanel = () => {
-  const [logs, setLogs] = useState([
-    { id: '1', type: 'INFO', msg: 'Kernel starting...', time: '10:00:01' },
-    { id: '2', type: 'TRACE', msg: 'Flow track-insight:ADD initialized', time: '10:00:02' },
-    { id: '3', type: 'DEBUG', msg: 'Resolved payload.text: "Hello World"', time: '10:00:03' },
-  ]);
-
+const TracePanel = ({ logs = [] }: { logs?: any[] }) => {
   return (
     <div className="h-full flex flex-col glass rounded-3xl overflow-hidden border-border/50">
       <div className="p-5 border-b border-border flex items-center justify-between">
@@ -19,11 +13,16 @@ const TracePanel = () => {
         <span className="text-[10px] font-mono text-zinc-500">NDJSON_STREAM_ACTIVE</span>
       </div>
       <div className="flex-1 p-6 overflow-auto font-mono text-xs space-y-3">
-         {logs.map(log => (
-            <div key={log.id} className="flex gap-4 group">
+         {logs.length === 0 && <div className="text-zinc-700 italic">Waiting for kernel events...</div>}
+         {logs.map((log, i) => (
+            <div key={i} className="flex gap-4 group">
                <span className="text-zinc-600 shrink-0">{log.time}</span>
-               <span className={log.type === 'ERROR' ? 'text-red-500' : 'text-accent-source opacity-80'}>[{log.type}]</span>
-               <span className="text-zinc-300 group-hover:text-white transition-colors">{log.msg}</span>
+               <span className={log.success === false ? 'text-red-500' : 'text-accent-source opacity-80'}>
+                 [{log.op}]
+               </span>
+               <span className="text-zinc-300 group-hover:text-white transition-colors">
+                 {log.trackId} - Stage: {log.stage} {log.error ? `- Error: ${log.error}` : ''}
+               </span>
             </div>
          ))}
       </div>
