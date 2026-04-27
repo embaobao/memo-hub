@@ -134,7 +134,7 @@ export async function startApiServer(kernel: any) {
     return { success: true };
   });
 
-  // 4. 静态资源托管逻辑...
+  server.get('/api/inspect', async (request, reply) => {
     try {
       const config = kernel.getConfig();
       const tools = (await kernel.listTools().catch(() => [])).map((t: any) => ({ 
