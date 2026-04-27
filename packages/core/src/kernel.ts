@@ -1,85 +1,83 @@
-import { MemoHubConfig } from "@memohub/config";
-import {
-  IKernel,
-  Text2MemInstruction,
-  Text2MemResult,
-  ITrackProvider,
+import { EventEmitter } from "node:events";
+import { 
+  IKernel, 
+  ITrackProvider, 
+  ITool, 
+  IToolManifest,
+  Text2MemInstruction, 
+  Text2MemResult, 
+  MemoErrorCode, 
+  InstructionState,
   ICAS,
   IVectorStorage,
   IEmbedder,
-  ICompleter,
+  ICompleter
 } from "@memohub/protocol";
-import { AIHub } from "./ai-hub.js";
 import { ToolRegistry } from "./tool-registry.js";
-import { FlowEngine } from "./flow-engine.js";
 import { ObservationKernel } from "./observation.js";
 import { CacheManager } from "./cache.js";
-import { SessionCacheLayer } from "./session-cache.js";
-
-import { ContentAddressableStorage } from "@memohub/storage-flesh";
-import { VectorStorage } from "@memohub/storage-soul";
-import { IHostResources } from "./types-host.js";
-import { EventEmitter } from "node:events";
 
 /**
- * MemoHub 核心内核 (Memory Kernel)
- * 职责: 协调原子工具与流编排引擎。
+ * 宿主资源接口 (DI Container)
+ */
+export interface IHostResources {
+  kernel: IKernel;
+  flesh: ICAS;
+  soul: IVectorStorage;
+  ai: {
+    getEmbedder: (id?: string) => IEmbedder;
+    getCompleter: (id?: string) => ICompleter;
+  };
+  logger: {
+    log: (msg: string, level?: string) => void;
+  };
+}
+
+/**
+ * MemoHub 核心内核 (Memory OS Kernel)
+ * 职责: 协调轨道与工具，维护指令流转状态机。
  */
 export class MemoryKernel extends EventEmitter implements IKernel {
-  private config: MemoHubConfig;
-  private aiHub: AIHub;
+  private config: Record<string, any>;
   private toolRegistry: ToolRegistry;
-  private flowEngine: FlowEngine;
   private observation: ObservationKernel;
   private cache: CacheManager;
-  private sessionCache: SessionCacheLayer;
-  private cas: ContentAddressableStorage;
-  private vectorStorage: VectorStorage;
-  private hostResources: IHostResources;
+  
+  // 核心资源 (DI 注入)
+  private cas!: ICAS;
+  private vectorStorage!: IVectorStorage;
+  private embedder!: IEmbedder;
+  private completer!: ICompleter | null;
 
   private tracks: Map<string, ITrackProvider> = new Map();
 
-  constructor(config: MemoHubConfig) {
+  constructor(config: any) {
     super();
     this.config = config;
-    this.aiHub = new AIHub(config.ai.providers, config.ai.agents);
     this.toolRegistry = new ToolRegistry();
-    this.observation = new ObservationKernel(config.system.root);
-    this.cache = new CacheManager(config.system.root);
-    this.sessionCache = new SessionCacheLayer();
+    this.observation = new ObservationKernel(config.system?.root || './.memohub');
+    this.cache = new CacheManager(config.system?.root || './.memohub');
+  }
 
-    this.cas = new ContentAddressableStorage(config.system.root + "/blobs");
-    this.vectorStorage = new VectorStorage({
-      dbPath: config.system.root + "/data/memohub.lancedb",
-      tableName: "memohub",
-      dimensions: config.ai.agents.embedder?.dimensions || 768,
-    });
-
-    this.hostResources = {
-      kernel: this,
-      flesh: this.cas,
-      soul: this.vectorStorage,
-      sessionCache: this.sessionCache,
-      ai: {
-        getEmbedder: (id) => this.aiHub.getEmbedder(id || "embedder"),
-        getCompleter: (id) => this.aiHub.getCompleter(id || "summarizer"),
-      },
-      logger: {
-        log: (msg, level = "info") =>
-          console.log(`[${level.toUpperCase()}] ${msg}`),
-      },
-    };
-
-    this.flowEngine = new FlowEngine(
-      this.toolRegistry,
-      this.observation,
-      this.aiHub,
-      this.cache,
-      this.hostResources,
-    );
+  /**
+   * 手动注入核心组件 (Manual DI)
+   */
+  public setComponents(components: {
+    cas: ICAS;
+    vector: IVectorStorage;
+    embedder: IEmbedder;
+    completer?: ICompleter;
+  }): void {
+    this.cas = components.cas;
+    this.vectorStorage = components.vector;
+    this.embedder = components.embedder;
+    this.completer = components.completer || null;
   }
 
   public async initialize(): Promise<void> {
+    if (!this.cas || !this.vectorStorage) {
+      throw new Error("[Kernel] 核心资源未注入，请先调用 setComponents");
+    }
     await this.vectorStorage.initialize();
   }
 
@@ -91,124 +89,91 @@ export class MemoryKernel extends EventEmitter implements IKernel {
     await track.initialize(this);
   }
 
-  public async dispatch(
-    instruction: Text2MemInstruction,
-  ): Promise<Text2MemResult> {
-    const traceId = this.observation.createTraceId();
-    const trackId = instruction.trackId || this.config.dispatcher.fallback;
+  /**
+   * 指令调度 (State Machine Driven)
+   */
+  public async dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult> {
+    const startTime = Date.now();
+    const traceId = instruction.meta?.traceId || this.observation.createTraceId();
+    const trackId = instruction.trackId;
+    
+    let currentState = InstructionState.RECEIVED;
 
-    // 发射调度开始事件
-    this.emit("dispatch", {
-      traceId,
-      trackId,
-      op: instruction.op,
-      stage: "start",
-    });
+    // 1. 发射接收事件
+    this.emit("dispatch", { traceId, trackId, op: instruction.op, state: currentState });
 
     try {
-      // 1. 优先尝试配置驱动的 Flow
-      const trackConfig = this.config.tracks.find((t) => t.id === trackId);
-      console.log(
-        `[Kernel] Dispatching ${instruction.op} to track: ${trackId}. Config found: ${!!trackConfig}`,
-      );
-      if (trackConfig) {
-        const flow =
-          (trackConfig.flows && trackConfig.flows[instruction.op]) ||
-          trackConfig.flow;
-        console.log(
-          `[Kernel] Selected flow: ${flow ? "Array(" + flow.length + ")" : "NONE"}`,
-        );
-        if (flow && flow.length > 0) {
-          const output = await this.flowEngine.executeFlow(
-            flow,
-            instruction.payload,
-            traceId,
-          );
-          this.emit("dispatch", {
-            traceId,
-            trackId,
-            op: instruction.op,
-            stage: "end",
-            success: true,
-          });
-          return { success: true, data: output, meta: { traceId, trackId } };
-        }
+      // 2. 状态流转: PARSED (校验)
+      currentState = InstructionState.PARSED;
+      const provider = this.tracks.get(trackId);
+      if (!provider) {
+        return this.fail(MemoErrorCode.ERR_TRACK_NOT_FOUND, `Track not found: ${trackId}`, traceId, trackId, startTime);
       }
 
-      // 2. 兜底尝试编程式轨道
-      const provider = this.tracks.get(trackId);
-      if (provider) {
-        const result = await provider.execute(instruction);
-        this.emit("dispatch", {
+      // 3. 执行轨道逻辑 (轨道内部负责后续的状态反馈)
+      const result = await provider.execute({
+        ...instruction,
+        meta: { ...instruction.meta, traceId, timestamp: new Date().toISOString(), state: currentState }
+      });
+
+      const latencyMs = Date.now() - startTime;
+      
+      // 4. 发射完成事件
+      this.emit("dispatch", { traceId, trackId, op: instruction.op, state: result.meta?.state || InstructionState.COMMITTED, latencyMs });
+
+      return {
+        ...result,
+        meta: {
           traceId,
           trackId,
-          op: instruction.op,
-          stage: "end",
-          success: result.success,
-        });
-        return { ...result, meta: { ...result.meta, traceId, trackId } };
-      }
-
-      throw new Error(`[Kernel] 轨道定义不存在或未配置流: ${trackId}`);
-    } catch (error: any) {
-      this.emit("dispatch", {
-        traceId,
-        trackId,
-        op: instruction.op,
-        stage: "end",
-        success: false,
-        error: error.message,
-      });
-      return {
-        success: false,
-        error: error.message || String(error),
-        meta: { traceId },
+          state: result.meta?.state || InstructionState.COMMITTED,
+          latencyMs
+        }
       };
+
+    } catch (error: any) {
+      return this.fail(
+        MemoErrorCode.ERR_KERNEL_OFFLINE, 
+        error.message || "Internal Kernel Error", 
+        traceId, 
+        trackId, 
+        startTime,
+        error.stack
+      );
     }
   }
 
-  public getEmbedder(agentId: string = "embedder") {
-    return this.aiHub.getEmbedder(agentId);
+  private fail(code: MemoErrorCode, message: string, traceId: string, trackId: string, start: number, stack?: string): Text2MemResult {
+    const latencyMs = Date.now() - start;
+    this.emit("dispatch", { traceId, trackId, state: InstructionState.FAILED, error: message });
+    return {
+      success: false,
+      error: { code, message, stack },
+      meta: { traceId, trackId, state: InstructionState.FAILED, latencyMs }
+    };
   }
-  public getCompleter(agentId: string = "summarizer") {
-    return this.aiHub.getCompleter(agentId);
+
+  // --- 资源暴露接口 (符合 IKernel 协议) ---
+
+  public getEmbedder() { return this.embedder; }
+  public getCompleter() { return this.completer; }
+  public getCAS() { return this.cas; }
+  public getVectorStorage() { return this.vectorStorage; }
+  public getConfig() { return this.config; }
+  
+  public getTool(id: string) {
+    const tool = this.toolRegistry.get(id);
+    if (!tool) throw new Error(`Tool not found: ${id}`);
+    return tool;
   }
-  public getCAS() {
-    return this.cas;
+
+  public listTools(): IToolManifest[] {
+    return this.toolRegistry.list().map(t => t.manifest);
   }
-  public getVectorStorage() {
-    return this.vectorStorage;
-  }
-  public getConfig() {
-    return this.config;
-  }
-  public getToolRegistry() {
-    return this.toolRegistry;
-  }
-  public async listTools() {
-    return this.toolRegistry.list().map((t) => t.manifest);
-  }
-  public async listTracks() {
-    return Array.from(this.tracks.values());
-  }
+
+  public getToolRegistry() { return this.toolRegistry; }
+
   public clearCache(): void {
     this.cache.clear();
-    this.sessionCache.clear();
-  }
-
-  public setComponents(components: {
-    cas: ICAS;
-    vector: IVectorStorage;
-    embedder: IEmbedder;
-    completer?: ICompleter;
-  }): void {
-    this.cas = components.cas as any;
-    this.vectorStorage = components.vector as any;
-    this.hostResources.flesh = components.cas;
-    this.hostResources.soul = components.vector;
-    this.hostResources.ai.getEmbedder = () => components.embedder;
-    if (components.completer) {
-      this.hostResources.ai.getCompleter = () => components.completer as any;
-    }
   }
 }

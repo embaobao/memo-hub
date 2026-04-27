@@ -5,7 +5,6 @@ import type {
   ITrackProvider,
 } from "@memohub/protocol";
 import { MemoOp } from "@memohub/protocol";
-import { Parser } from "web-tree-sitter";
 
 /**
  * 源码资产轨道 (Source Track)
@@ -16,26 +15,12 @@ export class SourceTrack implements ITrackProvider {
   name = "Source Track";
 
   private kernel!: IKernel;
-  private parser!: Parser;
-  private isParserReady = false;
 
   /**
    * 初始化轨道
    */
   async initialize(kernel: IKernel): Promise<void> {
     this.kernel = kernel;
-    try {
-      // @ts-ignore
-      await Parser.init();
-      // @ts-ignore
-      this.parser = new Parser();
-      this.isParserReady = true;
-    } catch (e) {
-      console.warn(
-        "[track-source] Tree-sitter initialization failed, will fallback to regex:",
-        e,
-      );
-    }
   }
 
   /**
@@ -76,116 +61,6 @@ export class SourceTrack implements ITrackProvider {
   }
 
   /**
-   * 符号提取 (支持 Tree-sitter 与正则 Fallback)
-   */
-  private async extractSymbols(
-    code: string,
-    language: string,
-    filePath: string,
-  ): Promise<
-    Array<{
-      symbol_name: string;
-      ast_type: string;
-      parent_symbol: string | null;
-      text: string;
-    }>
-  > {
-    if (
-      this.isParserReady &&
-      (language === "typescript" ||
-        language === "javascript" ||
-        language === "tsx")
-    ) {
-      try {
-        return this.extractSymbolsWithTreeSitter(code, language, filePath);
-      } catch (e) {
-        console.warn(
-          "[track-source] Tree-sitter extraction failed, fallback to regex:",
-          e,
-        );
-      }
-    }
-    return this.extractSymbolsRegex(code, language, filePath);
-  }
-
-  private extractSymbolsWithTreeSitter(
-    code: string,
-    language: string,
-    filePath: string,
-  ): Array<any> {
-    // 简单实现 Tree-sitter 遍历 (由于缺少实际 WASM 绑定加载逻辑，这里演示查询模式)
-    // 假设 parser 已经绑定了正确的 language
-    // 为了不在这里抛错中断，如果不完全支持，抛出 fallback
-    throw new Error(
-      "Full Tree-sitter WASM binding requires path resolution in Monorepo. Fallback used temporarily.",
-    );
-  }
-
-  private extractSymbolsRegex(
-    code: string,
-    language: string,
-    filePath: string,
-  ): Array<any> {
-    const symbols: Array<any> = [];
-    const patterns: Record<string, RegExp[]> = {
-      typescript: [
-        /export\s+(?:async\s+)?function\s+(\w+)/g,
-        /export\s+(?:default\s+)?(?:class|interface|type|enum)\s+(\w+)/g,
-      ],
-      javascript: [
-        /export\s+(?:async\s+)?function\s+(\w+)/g,
-        /export\s+(?:default\s+)?class\s+(\w+)/g,
-      ],
-    };
-
-    const lang = language === "typescript" ? "typescript" : "javascript";
-    const regexes = patterns[lang] ?? patterns.javascript;
-
-    for (const regex of regexes) {
-      let match;
-      while ((match = regex.exec(code)) !== null) {
-        const name = match[1];
-        symbols.push({
-          symbol_name: name,
-          ast_type: this.inferAstType(match[0]),
-          parent_symbol: null,
-          text: this.extractBlock(code, match.index),
-        });
-      }
-    }
-    return symbols;
-  }
-
-  private inferAstType(declaration: string): string {
-    if (/function/.test(declaration)) return "function";
-    if (/class/.test(declaration)) return "class";
-    if (/interface/.test(declaration)) return "interface";
-    if (/type\s/.test(declaration)) return "type";
-    if (/enum/.test(declaration)) return "enum";
-    return "variable";
-  }
-
-  private extractBlock(code: string, startIndex: number): string {
-    let braceCount = 0;
-    let inBlock = false;
-    let blockStart = startIndex;
-    for (let i = startIndex; i < code.length; i++) {
-      if (code[i] === "{") {
-        if (!inBlock) blockStart = i;
-        braceCount++;
-        inBlock = true;
-      } else if (code[i] === "}") {
-        braceCount--;
-        if (braceCount === 0 && inBlock) return code.slice(startIndex, i + 1);
-      }
-    }
-    const lineEnd = code.indexOf("\n", startIndex);
-    return lineEnd === -1
-      ? code.slice(startIndex)
-      : code.slice(startIndex, lineEnd);
-  }
-
-  /**
    * 添加代码资产
    */
   private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
@@ -198,58 +73,52 @@ export class SourceTrack implements ITrackProvider {
       } = inst.payload ?? {};
       if (!code) return { success: false, error: "payload.code 不能为空" };
 
-      const cas = this.kernel.getCAS();
-      const embedder = this.kernel.getEmbedder();
-      const storage = this.kernel.getVectorStorage();
+      // 1. 调用代码分析工具提取符号
+      const analyzer = this.kernel.getTool('builtin:code-analyzer');
+      const { entities = [] } = await analyzer.execute({ code, language }, {}, { traceId: inst.meta?.traceId });
 
-      const symbols = await this.extractSymbols(code, language, file_path);
+      const casTool = this.kernel.getTool('builtin:cas');
+      const embedderTool = this.kernel.getTool('builtin:embedder');
+      const vectorTool = this.kernel.getTool('builtin:vector');
+
+      // 存储全文及提取的符号
+      const blocks = [
+        { text: code, type: 'file', name: '' },
+        ...entities.map((e: any) => ({ text: e.text, type: e.ast_type, name: e.symbol_name }))
+      ];
+
       const results = [];
-
-      // 如果没有解析出符号，则存储全文
-      if (symbols.length === 0) {
-        const hash = await cas.write(code);
-        const vector = await embedder.embed(code);
+      for (const block of blocks) {
+        const { hash } = await casTool.execute({ content: block.text }, {}, { traceId: inst.meta?.traceId });
+        const { vector } = await embedderTool.execute({ text: block.text }, {}, { traceId: inst.meta?.traceId });
         const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        await storage.add({
+        
+        await vectorTool.execute({
           id,
           vector,
           hash,
           track_id: this.id,
-          language,
-          ast_type: "file",
-          symbol_name: "",
-          file_path,
-          importance,
-          timestamp: new Date().toISOString(),
-        });
-        return { success: true, data: [{ id, hash }] };
-      }
-
-      // 存储每个提取出的符号
-      for (const sym of symbols) {
-        const hash = await cas.write(sym.text);
-        const vector = await embedder.embed(sym.text);
-        const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        await storage.add({
-          id,
-          vector,
-          hash,
-          track_id: this.id,
-          language,
-          ast_type: sym.ast_type,
-          symbol_name: sym.symbol_name,
-          file_path,
-          importance,
-          timestamp: new Date().toISOString(),
-        });
-        results.push({ id, hash, symbol_name: sym.symbol_name });
+          entities: block.name ? [block.name] : [],
+          meta: {
+            language,
+            ast_type: block.type,
+            symbol_name: block.name,
+            file_path,
+            importance
+          }
+        }, {}, { traceId: inst.meta?.traceId });
+        
+        results.push({ id, hash, symbol_name: block.name });
       }
 
       return { success: true, data: results };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -262,33 +131,29 @@ export class SourceTrack implements ITrackProvider {
   ): Promise<Text2MemResult> {
     try {
       const { query, limit = 5, filters } = inst.payload ?? {};
-      const storage = this.kernel.getVectorStorage();
-      const embedder = this.kernel.getEmbedder();
-      const cas = this.kernel.getCAS();
+      
+      const embedderTool = this.kernel.getTool('builtin:embedder');
+      const { vector } = await embedderTool.execute({ text: query }, {}, { traceId: inst.meta?.traceId });
 
-      const vector = await embedder.embed(query);
-      let filterParts = [`track_id = '${this.id}'`];
-      if (filters?.language)
-        filterParts.push(`language = '${filters.language}'`);
-      if (filters?.symbol_name)
-        filterParts.push(`symbol_name = '${filters.symbol_name}'`);
-
-      const results = await storage.search(vector, {
+      const retrieverTool = this.kernel.getTool('builtin:retriever');
+      let filterStr = `track_id = '${this.id}'`;
+      if (filters?.language) filterStr += ` AND language = '${filters.language}'`;
+      
+      const { results } = await retrieverTool.execute({
+        vector,
         limit,
-        filter: filterParts.join(" AND "),
-      });
-      const hydrated = await Promise.all(
-        results.map(async (r: any) => ({
-          ...r,
-          text: await cas.read(r.hash).catch(() => ""),
-        })),
-      );
+        filter: filterStr,
+        hydrate: true
+      }, {}, { traceId: inst.meta?.traceId });
 
-      return { success: true, data: hydrated };
+      return { success: true, data: results };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }

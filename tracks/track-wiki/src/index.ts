@@ -4,7 +4,7 @@ import type {
   IKernel,
   ITrackProvider,
 } from "@memohub/protocol";
-import { MemoOp } from "@memohub/protocol";
+import { MemoOp, MemoErrorCode } from "@memohub/protocol";
 
 /**
  * 真理库轨道 (Wiki Track)
@@ -39,7 +39,10 @@ export class WikiTrack implements ITrackProvider {
       default:
         return {
           success: false,
-          error: `Wiki 轨道不支持操作: ${instruction.op}`,
+          error: {
+            code: MemoErrorCode.ERR_TRACK_NOT_FOUND,
+            message: `Wiki 轨道不支持操作: ${instruction.op}`,
+          },
         };
     }
   }
@@ -53,7 +56,13 @@ export class WikiTrack implements ITrackProvider {
         version = "1.0.0",
       } = inst.payload ?? {};
       if (!title || !content)
-        return { success: false, error: "title 和 content 均为必填项" };
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "title 和 content 均为必填项",
+          },
+        };
 
       const hash = await this.kernel.getCAS().write(content);
       const vector = await this.kernel
@@ -75,69 +84,125 @@ export class WikiTrack implements ITrackProvider {
 
       return { success: true, data: { id, hash } };
     } catch (error) {
-      return { success: false, error: String(error) };
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: String(error),
+        },
+      };
     }
   }
 
   private async handleRetrieve(
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
-    const { query, limit = 5 } = inst.payload ?? {};
-    const vector = await this.kernel.getEmbedder().embed(query);
-    const results = await this.kernel.getVectorStorage().search(vector, {
-      limit,
-      filter: `track_id = '${this.id}'`,
-    });
+    try {
+      const { query, limit = 5 } = inst.payload ?? {};
+      const vector = await this.kernel.getEmbedder().embed(query);
+      const results = await this.kernel.getVectorStorage().search(vector, {
+        limit,
+        filter: `track_id = '${this.id}'`,
+      });
 
-    const hydrated = await Promise.all(
-      results.map(async (r: any) => ({
-        ...r,
-        text: await this.kernel
-          .getCAS()
-          .read(r.hash)
-          .catch(() => ""),
-      })),
-    );
+      const hydrated = await Promise.all(
+        results.map(async (r: any) => ({
+          ...r,
+          text: await this.kernel
+            .getCAS()
+            .read(r.hash)
+            .catch(() => ""),
+        })),
+      );
 
-    return { success: true, data: hydrated };
+      return { success: true, data: hydrated };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: String(error),
+        },
+      };
+    }
   }
 
   private async handleUpdate(
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
-    const { id, content, version } = inst.payload ?? {};
-    const updates: any = { version };
-    if (content) {
-      updates.hash = await this.kernel.getCAS().write(content);
-      updates.vector = await this.kernel.getEmbedder().embed(content);
+    try {
+      const { id, content, version } = inst.payload ?? {};
+      const updates: any = { version };
+      if (content) {
+        updates.hash = await this.kernel.getCAS().write(content);
+        updates.vector = await this.kernel.getEmbedder().embed(content);
+      }
+      await this.kernel.getVectorStorage().update(id, updates);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: String(error),
+        },
+      };
     }
-    await this.kernel.getVectorStorage().update(id, updates);
-    return { success: true };
   }
 
   private async handleDelete(
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
-    const { ids } = inst.payload ?? {};
-    for (const id of ids)
-      await this.kernel.getVectorStorage().delete(`id = '${id}'`);
-    return { success: true };
+    try {
+      const { ids } = inst.payload ?? {};
+      for (const id of ids)
+        await this.kernel.getVectorStorage().delete(`id = '${id}'`);
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: String(error),
+        },
+      };
+    }
   }
 
   private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel
-      .getVectorStorage()
-      .list(`track_id = '${this.id}'`);
-    return { success: true, data: records };
+    try {
+      const records = await this.kernel
+        .getVectorStorage()
+        .list(`track_id = '${this.id}'`);
+      return { success: true, data: records };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: String(error),
+        },
+      };
+    }
   }
 
   private async handleExport(
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
-    const records = await this.kernel
-      .getVectorStorage()
-      .list(`track_id = '${this.id}'`);
-    return { success: true, data: records };
+    try {
+      const records = await this.kernel
+        .getVectorStorage()
+        .list(`track_id = '${this.id}'`);
+      return { success: true, data: records };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: String(error),
+        },
+      };
+    }
   }
 
   private async handleAnchor(

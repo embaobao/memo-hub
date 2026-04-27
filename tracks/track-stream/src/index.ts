@@ -7,13 +7,11 @@ import type {
 import { MemoOp } from "@memohub/protocol";
 
 /**
- * 时序流轨道 (Stream Track)
- * 职责: 记录原始对话 Log，管理 TTL。
+ * 会话原始记录流 (Stream Track)
  */
 export class StreamTrack implements ITrackProvider {
   id = "track-stream";
   name = "Stream Track";
-
   private kernel!: IKernel;
 
   async initialize(kernel: IKernel): Promise<void> {
@@ -21,89 +19,33 @@ export class StreamTrack implements ITrackProvider {
   }
 
   async execute(instruction: Text2MemInstruction): Promise<Text2MemResult> {
-    switch (instruction.op) {
-      case MemoOp.ADD:
-        return this.handleAdd(instruction);
-      case MemoOp.RETRIEVE:
-        return this.handleRetrieve(instruction);
-      case MemoOp.DELETE:
-        return this.handleDelete(instruction);
-      case MemoOp.LIST:
-        return this.handleList(instruction);
-      default:
-        return {
-          success: false,
-          error: `Operation ${instruction.op} not supported by track-stream`,
-        };
-    }
-  }
+    const { op, payload, meta } = instruction;
+    
+    if (op === MemoOp.ADD) {
+      const cas = this.kernel.getTool('builtin:cas');
+      const embedder = this.kernel.getTool('builtin:embedder');
+      const vector = this.kernel.getTool('builtin:vector');
 
-  private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    try {
-      const {
-        content,
-        role = "user",
-        session_id = "default",
-      } = inst.payload ?? {};
-      const storage = this.kernel.getVectorStorage();
-      const embedder = this.kernel.getEmbedder();
-      const cas = this.kernel.getCAS();
-
-      const hash = await cas.write(content);
-      const vector = await embedder.embed(content);
-      const id = `stream-${Date.now()}`;
-
-      await storage.add({
-        id,
-        vector,
+      const { hash } = await cas.execute({ content: payload.text }, {}, { traceId: meta?.traceId });
+      const { vector: v } = await embedder.execute({ text: payload.text }, {}, { traceId: meta?.traceId });
+      
+      await vector.execute({
+        id: `stream-${Date.now()}`,
+        vector: v,
         hash,
         track_id: this.id,
-        session_id,
-        role,
-        timestamp: new Date().toISOString(),
-        distilled: false,
-      });
+        meta: { role: payload.role, session_id: payload.session_id }
+      }, {}, { traceId: meta?.traceId });
 
-      return { success: true, data: { id, hash } };
-    } catch (e) {
-      return { success: false, error: String(e) };
+      return { success: true, data: { hash } };
     }
-  }
 
-  private async handleRetrieve(
-    inst: Text2MemInstruction,
-  ): Promise<Text2MemResult> {
-    const { query, limit = 5 } = inst.payload ?? {};
-    const vector = await this.kernel.getEmbedder().embed(query);
-    const results = await this.kernel.getVectorStorage().search(vector, {
-      limit,
-      filter: `track_id = '${this.id}'`,
-    });
-    const hydrated = await Promise.all(
-      results.map(async (r: any) => ({
-        ...r,
-        text: await this.kernel
-          .getCAS()
-          .read(r.hash)
-          .catch(() => ""),
-      })),
-    );
-    return { success: true, data: hydrated };
-  }
-
-  private async handleDelete(
-    inst: Text2MemInstruction,
-  ): Promise<Text2MemResult> {
-    const { ids } = inst.payload ?? {};
-    for (const id of ids)
-      await this.kernel.getVectorStorage().delete(`id = '${id}'`);
-    return { success: true };
-  }
-
-  private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel
-      .getVectorStorage()
-      .list(`track_id = '${this.id}'`);
-    return { success: true, data: records };
+    return { 
+      success: false, 
+      error: {
+        code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+        message: "Op not supported in stream track MVP"
+      }
+    };
   }
 }

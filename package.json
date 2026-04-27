@@ -4,7 +4,7 @@
   "description": "MemoHub - Agent 智能记忆管理系统 - 多轨道动态矩阵架构",
   "private": true,
   "type": "module",
-  "workspaces": ["apps/*", "packages/*", "tracks/*"],
+  "workspaces": ["apps/cli", "packages/*", "tracks/*"],
   "scripts": {
     "build": "bun run --filter '*' build",
     "test": "bun run --filter '*' test",

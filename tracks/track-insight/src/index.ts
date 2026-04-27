@@ -75,40 +75,46 @@ export class InsightTrack implements ITrackProvider {
       } = inst.payload ?? {};
       if (!text) return { success: false, error: "payload.text 不能为空" };
 
-      const cas = this.kernel.getCAS();
-      const storage = this.kernel.getVectorStorage();
-      const embedder = this.kernel.getEmbedder();
+      // 1. 获取并执行 CAS 工具
+      const casTool = this.kernel.getTool('builtin:cas');
+      const { hash } = await casTool.execute({ content: text }, {}, { traceId: inst.meta?.traceId });
 
-      const hash = await cas.write(text);
-      const vector = await embedder.embed(text);
+      // 2. 获取并执行 Embedder 工具
+      const embedderTool = this.kernel.getTool('builtin:embedder');
+      const { vector } = await embedderTool.execute({ text }, {}, { traceId: inst.meta?.traceId });
+
+      // 3. 获取并执行 Vector 存储工具
+      const vectorTool = this.kernel.getTool('builtin:vector');
       const id = `insight-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-
+      
       const entities =
         Array.isArray(providedEntities) && providedEntities.length > 0
           ? providedEntities
           : extractEntitiesFromText(text);
 
-      await storage.add({
+      await vectorTool.execute({
         id,
         vector,
         hash,
         track_id: this.id,
         entities,
-        category,
-        importance,
-        tags,
-        confidence,
-        source: inst.context?.source ?? "cli",
-        timestamp: new Date().toISOString(),
-        access_count: 0,
-        last_accessed: new Date().toISOString(),
-      });
+        meta: { 
+          category, 
+          importance, 
+          tags, 
+          confidence, 
+          source: inst.context?.source ?? "cli" 
+        }
+      }, {}, { traceId: inst.meta?.traceId });
 
       return { success: true, data: { id, hash } };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -123,35 +129,30 @@ export class InsightTrack implements ITrackProvider {
       const { query, limit = 5, filters } = inst.payload ?? {};
       if (!query) return { success: false, error: "payload.query 不能为空" };
 
-      const storage = this.kernel.getVectorStorage();
-      const embedder = this.kernel.getEmbedder();
-      const cas = this.kernel.getCAS();
+      // 1. 生成向量
+      const embedderTool = this.kernel.getTool('builtin:embedder');
+      const { vector } = await embedderTool.execute({ text: query }, {}, { traceId: inst.meta?.traceId });
 
-      const vector = await embedder.embed(query);
-      let filterParts = [`track_id = '${this.id}'`];
-
-      if (filters?.category)
-        filterParts.push(`category = '${filters.category}'`);
-      if (filters?.min_importance)
-        filterParts.push(`importance >= ${filters.min_importance}`);
-
-      const results = await storage.search(vector, {
+      // 2. 语义搜索 (开启回填)
+      const retrieverTool = this.kernel.getTool('builtin:retriever');
+      let filterStr = `track_id = '${this.id}'`;
+      if (filters?.category) filterStr += ` AND category = '${filters.category}'`;
+      
+      const { results } = await retrieverTool.execute({
+        vector,
         limit,
-        filter: filterParts.join(" AND "),
-      });
+        filter: filterStr,
+        hydrate: true
+      }, {}, { traceId: inst.meta?.traceId });
 
-      const hydrated = await Promise.all(
-        results.map(async (r: any) => {
-          const content = await cas.read(r.hash).catch(() => "");
-          return { ...r, text: content };
-        }),
-      );
-
-      return { success: true, data: hydrated };
+      return { success: true, data: results };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -177,7 +178,10 @@ export class InsightTrack implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -201,7 +205,10 @@ export class InsightTrack implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -249,7 +256,10 @@ export class InsightTrack implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -308,7 +318,10 @@ export class InsightTrack implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
@@ -442,7 +455,10 @@ export class InsightTrack implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        }
       };
     }
   }
