@@ -27,7 +27,7 @@
 
 ## 5. Verification & Delivery
 
-- [ ] 5.1 Verify multi-provider switching in the new chat interface
-- [ ] 5.2 Validate real-time flow updates via the integrated Studio
-- [ ] 5.3 Perform a full system integration test: `bun cli ui` -> Chat with citations
+- [x] 5.1 Verify multi-provider switching in the new chat interface
+- [x] 5.2 Validate real-time flow updates via the integrated Studio
+- [x] 5.3 Perform a full system integration test: `bun cli ui` -> Chat with citations
 - [ ] 5.4 Archive the old `apps/web` legacy components
