@@ -4,7 +4,7 @@ import type {
   IKernel,
   ITrackProvider,
 } from "@memohub/protocol";
-import { MemoOp } from "@memohub/protocol";
+import { MemoOp, MemoErrorCode } from "@memohub/protocol";
 
 /**
  * 会话原始记录流 (Stream Track)

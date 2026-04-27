@@ -4,7 +4,7 @@ import type {
   IKernel,
   ITrackProvider,
 } from "@memohub/protocol";
-import { MemoOp } from "@memohub/protocol";
+import { MemoOp, MemoErrorCode } from "@memohub/protocol";
 
 /**
  * 源码资产轨道 (Source Track)
@@ -81,35 +81,26 @@ export class SourceTrack implements ITrackProvider {
       const embedderTool = this.kernel.getTool('builtin:embedder');
       const vectorTool = this.kernel.getTool('builtin:vector');
 
-      // 存储全文及提取的符号
-      const blocks = [
-        { text: code, type: 'file', name: '' },
-        ...entities.map((e: any) => ({ text: e.text, type: e.ast_type, name: e.symbol_name }))
-      ];
-
-      const results = [];
-      for (const block of blocks) {
-        const { hash } = await casTool.execute({ content: block.text }, {}, { traceId: inst.meta?.traceId });
-        const { vector } = await embedderTool.execute({ text: block.text }, {}, { traceId: inst.meta?.traceId });
-        const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-        
-        await vectorTool.execute({
-          id,
-          vector,
-          hash,
-          track_id: this.id,
-          entities: block.name ? [block.name] : [],
-          meta: {
-            language,
-            ast_type: block.type,
-            symbol_name: block.name,
-            file_path,
-            importance
-          }
-        }, {}, { traceId: inst.meta?.traceId });
-        
-        results.push({ id, hash, symbol_name: block.name });
-      }
+      const { hash } = await casTool.execute({ content: code }, {}, { traceId: inst.meta?.traceId });
+      const { vector } = await embedderTool.execute({ text: code }, {}, { traceId: inst.meta?.traceId });
+      const id = `source-\${Date.now()}-\${Math.random().toString(36).slice(2, 8)}`;
+      
+      await vectorTool.execute({
+        id,
+        vector,
+        hash,
+        track_id: this.id,
+        entities: entities,
+        meta: {
+          language,
+          ast_type: 'file',
+          symbol_name: '',
+          file_path,
+          importance
+        }
+      }, {}, { traceId: inst.meta?.traceId });
+      
+      const results = [{ id, hash, symbol_name: '' }];
 
       return { success: true, data: results };
     } catch (error) {

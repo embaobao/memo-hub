@@ -4,19 +4,13 @@ import { MemoOp, validateInstruction } from "./index.js";
 const ALL_OPS = Object.values(MemoOp);
 
 describe("MemoOp", () => {
-  it("contains all 12 operations", () => {
-    expect(ALL_OPS).toHaveLength(12);
+  it("contains 6 operations", () => {
+    expect(ALL_OPS).toHaveLength(6);
     expect(ALL_OPS).toContain(MemoOp.ADD);
     expect(ALL_OPS).toContain(MemoOp.RETRIEVE);
     expect(ALL_OPS).toContain(MemoOp.UPDATE);
     expect(ALL_OPS).toContain(MemoOp.DELETE);
-    expect(ALL_OPS).toContain(MemoOp.MERGE);
-    expect(ALL_OPS).toContain(MemoOp.CLARIFY);
     expect(ALL_OPS).toContain(MemoOp.LIST);
-    expect(ALL_OPS).toContain(MemoOp.EXPORT);
-    expect(ALL_OPS).toContain(MemoOp.DISTILL);
-    expect(ALL_OPS).toContain(MemoOp.ANCHOR);
-    expect(ALL_OPS).toContain(MemoOp.DIFF);
     expect(ALL_OPS).toContain(MemoOp.SYNC);
   });
 });

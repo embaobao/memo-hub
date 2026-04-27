@@ -1,83 +1,78 @@
-# MemoHub Architecture Overview (v1.0.0)
+# MemoHub Architecture Overview (v1.1.0)
 
-MemoHub 采用 **多轨道动态矩阵架构 (Multi-Track Dynamic Matrix)**，是一个基于“流编排”逻辑的 Agent 记忆操作系统。
+MemoHub 采用 **多轨道动态矩阵架构 (Multi-Track Dynamic Matrix)**，并在 V1.1 版本完成了向**极简工业级内核**的重构。系统摒弃了脆弱的 JSONC 流程编排，转向基于**状态机**和**极简依赖注入 (DI)** 的纯代码驱动架构。
 
 ---
 
 ## 🏗️ 核心架构图
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
-│             Ether UI (React Flow Console)                │
-├──────────────────────────────────────────────────────────┤
-│    Studio      |     Sandbox      |      Matrix          │
+│              Client Layer (CLI / MCP / Daemon)           │
 └───────────────┬──────────────────────────┬───────────────┘
-                │                          │
-        (WebSocket/REST)           (CLI / MCP)
-                │                          │
+                │ Text2Mem Protocol        │
 ┌───────────────▼──────────────────────────▼───────────────┐
-│                    Memory Kernel (Orchestrator)          │
+│                    Memory Kernel                         │
 ├──────────────────────────────────────────────────────────┤
-│  Flow Engine (n8n Style)  |    Tool Registry (Decoupled) │
+│ State Machine Dispatcher  |    Tool Registry (Decoupled) │
 ├──────────────────────────────────────────────────────────┤
 │   Track Insight  |  Track Source  | Track Stream | Wiki  │
 └──────────────────────────┬───────────────────────────────┘
                            │
-                 (Text2Mem Protocol)
+             (Manual DI: Soul, Flesh, AI)
                            │
 ┌──────────────────────────▼───────────────────────────────┐
-│                   Storage Layers (Flesh & Soul)          │
+│                   Storage Layers                         │
 ├──────────────────────────┬───────────────────────────────┤
-│   CAS Content Store      │   LanceDB Vector Storage      │
+│   CAS (storage-flesh)    │   LanceDB (storage-soul)      │
 └──────────────────────────┴───────────────────────────────┘
 ```
 
 ---
 
-## 🧩 关键组件详解
+## 🧩 关键工程化组件详解
 
-### 1. Memory Kernel (调度内核)
-内核是 MemoHub 的大脑。在 V1.0.0 中，它已进化为**纯粹的调度器**：
-- **不持有具体逻辑**: 所有记忆操作通过 `FlowEngine` 执行。
-- **事件驱动**: 继承 `EventEmitter`，实时发射 `dispatch` 事件，驱动 UI 脉冲动画。
-- **插件化注册**: 通过 `ToolRegistry` 挂载原子工具，通过 `registerTrack` 挂载业务轨道。
+### 1. Observability (统一可观测性)
+在 `protocol` 层定义了“宪法级”的统一错误码（如 `ERR_TRACK_NOT_FOUND`, `ERR_CAS_CORRUPT`, `ERR_AI_TIMEOUT`）。
+无论是 CLI 报错、日志打印，还是 MCP 返回给外部 Agent，均使用这套标准错误对象，消除了字符串报错带来的不确定性。
 
-### 2. Flow Engine (编排引擎)
-这是 V1 的核心突破。它允许通过 `config.jsonc` 动态定义记忆流水线：
-- **原子工具调用**: 如 `builtin:cas`, `builtin:vector`, `builtin:code-analyzer`。
-- **多级跳跃**: 一个 ADD 操作可以被编排为：`提取实体 -> 写入 CAS -> 写入向量库 -> 建立关联`。
-- **影子同步**: UI 修改的 Flow 会立即加载到内核内存中（Shadow Config），无需重启。
+### 2. State Machine (状态机驱动的指令流)
+一条 `Text2MemInstruction` 进入 Kernel 后，其生命周期被严格追踪：
+`RECEIVED` -> `PARSED` -> `HASHED` -> `INDEXED` -> `COMMITTED`
+如果中间出现异常，状态流转会记录在 `Text2MemResult.meta.state` 中，确保操作的原子性与可恢复性。
 
-### 3. Decoupled Registry (解耦注册表)
-- **Built-in Tools**: 位于 `packages/builtin-tools`，与内核物理隔离，避免循环依赖。
-- **Tracks**: 四大核心轨道已全面就绪：
-  - `track-insight`: 逻辑与事实沉淀。
-  - `track-source`: 源代码 AST 深度解析。
-  - `track-stream`: 原始会话流记录。
-  - `track-wiki`: 经过治理的真理库。
+### 3. Lightweight DI (极简依赖注入)
+摒弃了复杂的 DI 框架。在 CLI/Daemon 启动时，手动初始化 `ContentAddressableStorage` (Flesh)、`VectorStorage` (Soul) 和 `OllamaAdapter` (AI)，并通过 `kernel.setComponents()` 显式注入。这使得内核与具体的基础设施实现完全物理隔离。
 
-### 4. Storage Architecture (灵肉分离)
-- **Flesh (CAS)**: 基于 `packages/storage-flesh`，确保存储的物理去重。
-- **Soul (Vector)**: 基于 `packages/storage-soul` (LanceDB)，提供毫秒级的语义召回能力。
+### 4. Testability (接口驱动的自动化测试)
+每一个 `track-*` 插件都自带一套标准测试（如 `track-insight/src/index.test.ts`）。
+通过注入 `MockCAS`, `MockVectorStorage`, `MockEmbedder`，在无任何真实外部依赖的情况下，输入 Mock 负载，即可预期输出确定的 Hash 与 Vector。这是保证动态注册制不崩盘的基石。
+
+### 5. Track-Tool Direct (代码级直接编排)
+废弃了原有的 `FlowEngine` 与 JSONC 编排逻辑。
+现在，轨道内部拥有自主权，通过 `this.kernel.getTool('builtin:cas').execute(...)` 直接获取并调用原子工具，利用 TypeScript 的强类型确保逻辑严密。
 
 ---
 
-## 📜 Text2Mem 协议
+## 📜 核心工作流：从启动到落盘
 
-所有组件通信严格遵循 Text2Mem 协议，该协议定义了 12 个原子操作（如 `ADD`, `RETRIEVE`, `DELETE`, `VERSION` 等）。
-- **统一接口**: 无论后端是代码还是文档，前端只需发送标准的 `Instruction`。
-- **元数据透传**: 自动携带 `traceId` 和 `trackId`，实现全链路链路追踪。
+1. **Boot**: `apps/cli/src/index.ts` 读取 `config.jsonc`。
+2. **DI**: 实例化 `Soul` 和 `Flesh`，注入到 `MemoryKernel`。
+3. **Register**: `ToolRegistry` 注册原子工具，`Kernel` 挂载业务轨道。
+4. **Dispatch**: 接收 `ADD` 指令，状态变为 `RECEIVED`。
+5. **Execute**: 轨道内部直接调用 `builtin:cas` 计算文本 Hash，调用 `builtin:embedder` 生成向量。
+6. **Commit**: 调用 `builtin:vector` 落盘，状态变为 `COMMITTED`，返回包含 `traceId` 和延迟的响应。
 
 ---
 
 ## 🎨 设计哲学
 
-1. **灵肉分离**: 内容与索引解耦，确保数据的一致性与可移植性。
-2. **编排优先**: 拒绝硬编码，逻辑交给 Flow。
-3. **硬核极简**: UI 必须在提供强大功能的同时，保持 iOS 级的视觉纯净度。
+1. **代码即逻辑**: 拒绝外部 JSON 编排，业务逻辑必须在 TS 源码中强类型闭环。
+2. **灵肉分离**: 内容与索引解耦，CAS 确保数据物理去重，LanceDB 确保毫秒级召回。
+3. **全栈单出口**: 基于 Bun 的 `build --compile` 与 `external` 机制，实现包含所有工作区源码的单二进制分发。
 
 ---
 
-**版本**: 1.0.0  
+**版本**: 1.1.0  
 **更新日期**: 2026-04-25  
 **维护者**: MemoHub Core Team
