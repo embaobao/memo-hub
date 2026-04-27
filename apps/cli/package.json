@@ -11,13 +11,16 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "bun build src/index.ts --outdir dist --target node && bun build src/mcp.ts --outdir dist --target node && bun build src/api.ts --outdir dist --target node && bun run copy-wasm",
+    "copy-wasm": "mkdir -p dist && cp $(find ../../node_modules -name 'tree-sitter.wasm' | head -1) dist/ || echo 'WASM file not found, skipping...'",
+    "dev": "bun run build --watch",
     "test": "bun test",
     "prepack": "bun run build",
     "pack": "npm pack",
     "prepublishOnly": "bun run build",
     "publish:public": "npm publish --access public",
-    "update": "node dist/update.js"
+    "update": "node dist/update.js",
+    "ui": "node dist/index.js ui"
   },
   "dependencies": {
     "@fastify/static": "^9.1.3",

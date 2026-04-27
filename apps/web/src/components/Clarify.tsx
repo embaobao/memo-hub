@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ShieldAlert, ArrowRightLeft, Check, X, GitMerge, Share2 } from 'lucide-react';
+import { ShieldAlert, ArrowRightLeft, Check, X, GitMerge, Share2, Box } from 'lucide-react';
 
 /**
  * 澄清中心 - 解决记忆冲突

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Terminal, Send, Cpu, Globe } from 'lucide-react';
+import { Terminal, Send, Cpu, Globe, ShieldCheck } from 'lucide-react';
 
 const TracePanel = ({ logs = [] }: { logs?: any[] }) => {
   return (
@@ -33,7 +33,7 @@ const TracePanel = ({ logs = [] }: { logs?: any[] }) => {
 const AgentSandbox = () => {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Array<{ role: string; text: string; sources?: any[] }>>([
     { role: 'assistant', text: 'Hello! I am your MemoHub Assistant. How can I help you manage your memory today?' }
   ]);
 

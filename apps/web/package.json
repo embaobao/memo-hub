@@ -9,9 +9,13 @@
     "preview": "bun x --bun vite preview"
   },
   "dependencies": {
-    "@memohub/protocol": "workspace:*",
     "@memohub/config": "workspace:*",
+    "@memohub/protocol": "workspace:*",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@tanstack/react-query": "^5.62.7",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.13.1",
     "lodash": "^4.17.21",
@@ -19,7 +23,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "reactflow": "^11.11.4",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss-radix": "^4.0.2",
     "zod": "^3.23.8",
     "zustand": "^5.0.2"
   },
