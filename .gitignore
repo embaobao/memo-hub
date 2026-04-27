@@ -44,4 +44,11 @@ coverage/
 .cache/
 temp/
 tmp/
+.tmp/
 dist/
+
+# 源码净化：严禁提交 src 目录下的编译产物
+**/src/**/*.js
+**/src/**/*.js.map
+**/src/**/*.d.ts
+**/src/**/*.d.ts.map
