@@ -4,10 +4,10 @@ import {
   isAgentsEndpoint,
   isEphemeralAgentId,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
-import type { TConversation, EndpointSchemaKey } from 'librechat-data-provider';
-import { clearModelForNonEphemeralAgent } from './endpoints';
-import { getLocalStorageItems } from './localStorage';
+} from "librechat-data-provider";
+import type { TConversation, EndpointSchemaKey } from "librechat-data-provider";
+import { clearModelForNonEphemeralAgent } from "./endpoints";
+import { getLocalStorageItems } from "./localStorage";
 
 const buildDefaultConvo = ({
   models,
@@ -23,7 +23,8 @@ const buildDefaultConvo = ({
   defaultParamsEndpoint?: string | null;
 }): TConversation => {
   const { lastSelectedModel, lastSelectedTools } = getLocalStorageItems();
-  const endpointType = lastConversationSetup?.endpointType ?? conversation.endpointType;
+  const endpointType =
+    lastConversationSetup?.endpointType ?? conversation.endpointType;
 
   if (!endpoint) {
     return {
@@ -34,7 +35,8 @@ const buildDefaultConvo = ({
   }
 
   const availableModels = models;
-  const model = lastConversationSetup?.model ?? lastSelectedModel?.[endpoint] ?? '';
+  const model =
+    lastConversationSetup?.model ?? lastSelectedModel?.[endpoint] ?? "";
 
   let possibleModels: string[];
 
@@ -62,15 +64,15 @@ const buildDefaultConvo = ({
   };
 
   // Ensures assistant_id is always defined
-  const assistantId = convo?.assistant_id ?? conversation?.assistant_id ?? '';
-  const defaultAssistantId = lastConversationSetup?.assistant_id ?? '';
+  const assistantId = convo?.assistant_id ?? conversation?.assistant_id ?? "";
+  const defaultAssistantId = lastConversationSetup?.assistant_id ?? "";
   if (isAssistantsEndpoint(endpoint) && !defaultAssistantId && assistantId) {
     defaultConvo.assistant_id = assistantId;
   }
 
   // Ensures agent_id is always defined
-  const agentId = convo?.agent_id ?? '';
-  const defaultAgentId = lastConversationSetup?.agent_id ?? '';
+  const agentId = convo?.agent_id ?? "";
+  const defaultAgentId = lastConversationSetup?.agent_id ?? "";
   if (
     isAgentsEndpoint(endpoint) &&
     agentId &&
@@ -82,7 +84,8 @@ const buildDefaultConvo = ({
   // Clear model for non-ephemeral agents - agents use their configured model internally
   clearModelForNonEphemeralAgent(defaultConvo);
 
-  defaultConvo.tools = lastConversationSetup?.tools ?? lastSelectedTools ?? defaultConvo.tools;
+  defaultConvo.tools =
+    lastConversationSetup?.tools ?? lastSelectedTools ?? defaultConvo.tools;
 
   return defaultConvo;
 };

@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useMCPServersQuery } from '~/data-provider';
+import { useMemo } from "react";
+import { useMCPServersQuery } from "~/data-provider";
 
 export function useMCPIconMap(): Map<string, string> {
   const { data: servers } = useMCPServersQuery();

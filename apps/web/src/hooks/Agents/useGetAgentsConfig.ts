@@ -1,13 +1,18 @@
-import { useMemo } from 'react';
-import { EModelEndpoint, AgentCapabilities } from 'librechat-data-provider';
-import type { TAgentsEndpoint, TEndpointsConfig } from 'librechat-data-provider';
-import { useGetEndpointsQuery } from '~/data-provider';
+import { useMemo } from "react";
+import { EModelEndpoint, AgentCapabilities } from "librechat-data-provider";
+import type {
+  TAgentsEndpoint,
+  TEndpointsConfig,
+} from "librechat-data-provider";
+import { useGetEndpointsQuery } from "~/data-provider";
 
 interface UseGetAgentsConfigOptions {
   endpointsConfig?: TEndpointsConfig;
 }
 
-export default function useGetAgentsConfig(options?: UseGetAgentsConfigOptions): {
+export default function useGetAgentsConfig(
+  options?: UseGetAgentsConfigOptions,
+): {
   agentsConfig?: TAgentsEndpoint | null;
   endpointsConfig?: TEndpointsConfig | null;
 } {
@@ -21,7 +26,8 @@ export default function useGetAgentsConfig(options?: UseGetAgentsConfigOptions):
 
   const agentsConfig = useMemo<TAgentsEndpoint | null>(() => {
     const config: TAgentsEndpoint | null =
-      (endpointsConfig?.[EModelEndpoint.agents] as TAgentsEndpoint | null) ?? null;
+      (endpointsConfig?.[EModelEndpoint.agents] as TAgentsEndpoint | null) ??
+      null;
     if (!config) return null;
 
     return {

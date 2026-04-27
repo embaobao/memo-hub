@@ -100,7 +100,11 @@ function clampMaxEntities(value: unknown, fallback: number): number {
   return Math.min(int, 256);
 }
 
-function isTokenLengthValid(token: string, minLength: number, maxLength: number): boolean {
+function isTokenLengthValid(
+  token: string,
+  minLength: number,
+  maxLength: number,
+): boolean {
   const len = token.length;
   return len >= minLength && len <= maxLength;
 }
@@ -111,7 +115,11 @@ function pushMatches(
   regex: RegExp,
   minLength: number,
   maxLength: number,
-  shouldKeep?: (payload: { token: string; index: number; source: string }) => boolean
+  shouldKeep?: (payload: {
+    token: string;
+    index: number;
+    source: string;
+  }) => boolean,
 ) {
   regex.lastIndex = 0;
   let match: RegExpExecArray | null;
@@ -145,38 +153,44 @@ function pushMatches(
  */
 export function extractEntitiesFromText(
   text: string,
-  options: TextEntityExtractorOptions = {}
+  options: TextEntityExtractorOptions = {},
 ): string[] {
   const source = String(text ?? "");
 
-  const enabled = options.enabled ?? DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.enabled;
+  const enabled =
+    options.enabled ?? DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.enabled;
   if (!enabled) {
     return [];
   }
 
   const maxEntities = clampMaxEntities(
     options.maxEntities,
-    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.maxEntities
+    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.maxEntities,
   );
   if (maxEntities === 0) {
     return [];
   }
 
   const includeCamelCase =
-    options.includeCamelCase ?? DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeCamelCase;
+    options.includeCamelCase ??
+    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeCamelCase;
   const includeDottedIdentifier =
     options.includeDottedIdentifier ??
     DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeDottedIdentifier;
-  const includeVersion = options.includeVersion ?? DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeVersion;
-  const includeAcronym = options.includeAcronym ?? DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeAcronym;
+  const includeVersion =
+    options.includeVersion ??
+    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeVersion;
+  const includeAcronym =
+    options.includeAcronym ??
+    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.includeAcronym;
 
   const minLength = clampMaxEntities(
     options.minLength,
-    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.minLength
+    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.minLength,
   );
   const maxLengthRaw = clampMaxEntities(
     options.maxLength,
-    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.maxLength
+    DEFAULT_TEXT_ENTITY_EXTRACTOR_OPTIONS.maxLength,
   );
   const maxLength = Math.max(maxLengthRaw, minLength);
 
@@ -192,16 +206,24 @@ export function extractEntitiesFromText(
      * - 允许下划线与中划线，尽量覆盖 package/config 的真实命名
      * - 不支持 URL（含 ://）——这类 token 噪声更大，且通常不作为实体纽带
      */
-    const dottedRegex = /\b([A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z_][A-Za-z0-9_-]*)+)\b/g;
-    pushMatches(matched, source, dottedRegex, minLength, maxLength, ({ index, source }) => {
-      /**
-       * 过滤 URL 场景（例如 http://a.b.com）：
-       * - URL 的 host 部分看起来也像"带点标识符"，但作为实体纽带价值较低、噪声较高
-       */
-      const prefix3 = source.slice(Math.max(0, index - 3), index);
-      const prefix2 = source.slice(Math.max(0, index - 2), index);
-      return prefix3 !== "://" && prefix2 !== "//";
-    });
+    const dottedRegex =
+      /\b([A-Za-z_][A-Za-z0-9_-]*(?:\.[A-Za-z_][A-Za-z0-9_-]*)+)\b/g;
+    pushMatches(
+      matched,
+      source,
+      dottedRegex,
+      minLength,
+      maxLength,
+      ({ index, source }) => {
+        /**
+         * 过滤 URL 场景（例如 http://a.b.com）：
+         * - URL 的 host 部分看起来也像"带点标识符"，但作为实体纽带价值较低、噪声较高
+         */
+        const prefix3 = source.slice(Math.max(0, index - 3), index);
+        const prefix2 = source.slice(Math.max(0, index - 2), index);
+        return prefix3 !== "://" && prefix2 !== "//";
+      },
+    );
   }
 
   if (includeVersion) {

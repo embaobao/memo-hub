@@ -1,4 +1,8 @@
-import type { MemoriesResponse, TUserMemory, MemoryArtifact } from 'librechat-data-provider';
+import type {
+  MemoriesResponse,
+  TUserMemory,
+  MemoryArtifact,
+} from "librechat-data-provider";
 
 type HandleMemoryArtifactParams = {
   memoryArtifact: MemoryArtifact;
@@ -16,14 +20,14 @@ export function handleMemoryArtifact({
 }: HandleMemoryArtifactParams): MemoriesResponse | undefined {
   const { type, key, value, tokenCount = 0 } = memoryArtifact;
 
-  if (type === 'update' && !value) {
+  if (type === "update" && !value) {
     return undefined;
   }
 
   const memories = currentData.memories;
   const existingIndex = memories.findIndex((m) => m.key === key);
 
-  if (type === 'delete') {
+  if (type === "delete") {
     if (existingIndex === -1) {
       return undefined;
     }
@@ -32,7 +36,8 @@ export function handleMemoryArtifact({
     const newMemories = [...memories];
     newMemories.splice(existingIndex, 1);
 
-    const totalTokens = currentData.totalTokens - (deletedMemory.tokenCount || 0);
+    const totalTokens =
+      currentData.totalTokens - (deletedMemory.tokenCount || 0);
     const usagePercentage = currentData.tokenLimit
       ? Math.min(100, Math.round((totalTokens / currentData.tokenLimit) * 100))
       : null;
@@ -45,7 +50,7 @@ export function handleMemoryArtifact({
     };
   }
 
-  if (type === 'update') {
+  if (type === "update") {
     const timestamp = new Date().toISOString();
     let totalTokens = currentData.totalTokens;
     let newMemories: TUserMemory[];

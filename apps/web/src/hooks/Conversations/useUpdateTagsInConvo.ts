@@ -1,8 +1,8 @@
-import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys } from 'librechat-data-provider';
-import type { ConversationListResponse } from 'librechat-data-provider';
-import type { InfiniteData } from '@tanstack/react-query';
-import type t from 'librechat-data-provider';
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeys } from "librechat-data-provider";
+import type { ConversationListResponse } from "librechat-data-provider";
+import type { InfiniteData } from "@tanstack/react-query";
+import type t from "librechat-data-provider";
 
 const useUpdateTagsInConvo = () => {
   const queryClient = useQueryClient();
@@ -22,7 +22,10 @@ const useUpdateTagsInConvo = () => {
       ...currentConvo,
       tags,
     } as t.TConversation;
-    queryClient.setQueryData([QueryKeys.conversation, conversationId], updatedConvo);
+    queryClient.setQueryData(
+      [QueryKeys.conversation, conversationId],
+      updatedConvo,
+    );
     queryClient.setQueryData<InfiniteData<ConversationListResponse>>(
       [QueryKeys.allConversations],
       (convoData) => {
@@ -34,7 +37,8 @@ const useUpdateTagsInConvo = () => {
           pages: convoData.pages.map((page) => ({
             ...page,
             conversations: page.conversations.map((conversation) =>
-              conversation.conversationId === (currentConvo.conversationId ?? '')
+              conversation.conversationId ===
+              (currentConvo.conversationId ?? "")
                 ? { ...conversation, tags: updatedConvo.tags }
                 : conversation,
             ),
@@ -48,18 +52,20 @@ const useUpdateTagsInConvo = () => {
   // The difference with updateTagsInConversation is that it adds or removes tags for a specific conversation,
   // whereas this function is for changing the title of a specific tag.
   const replaceTagsInAllConversations = (tag: string, newTag: string) => {
-    const data = queryClient.getQueryData<InfiniteData<ConversationListResponse>>([
-      QueryKeys.allConversations,
-    ]);
+    const data = queryClient.getQueryData<
+      InfiniteData<ConversationListResponse>
+    >([QueryKeys.allConversations]);
 
     if (data) {
-      const newData = JSON.parse(JSON.stringify(data)) as InfiniteData<ConversationListResponse>;
+      const newData = JSON.parse(
+        JSON.stringify(data),
+      ) as InfiniteData<ConversationListResponse>;
       for (let pageIndex = 0; pageIndex < newData.pages.length; pageIndex++) {
         const page = newData.pages[pageIndex];
         page.conversations = page.conversations.map((conversation) => {
           if (
             conversation.conversationId &&
-            'tags' in conversation &&
+            "tags" in conversation &&
             Array.isArray((conversation as { tags?: string[] }).tags) &&
             (conversation as { tags?: string[] }).tags?.includes(tag)
           ) {

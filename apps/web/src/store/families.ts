@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { createSearchParams } from 'react-router-dom';
+import { useEffect } from "react";
+import { createSearchParams } from "react-router-dom";
 import {
   atom,
   selector,
@@ -9,92 +9,108 @@ import {
   useRecoilValue,
   useSetRecoilState,
   useRecoilCallback,
-} from 'recoil';
-import { LocalStorageKeys, isEphemeralAgentId, Constants } from 'librechat-data-provider';
+} from "recoil";
+import {
+  LocalStorageKeys,
+  isEphemeralAgentId,
+  Constants,
+} from "librechat-data-provider";
 import type {
   EModelEndpoint,
   TConversation,
   TSubmission,
   TMessage,
   TPreset,
-} from 'librechat-data-provider';
-import type { TOptionSettings, ExtendedFile } from '~/common';
+} from "librechat-data-provider";
+import type { TOptionSettings, ExtendedFile } from "~/common";
 import {
   clearModelForNonEphemeralAgent,
   createChatSearchParams,
   storeEndpointSettings,
   logger,
-} from '~/utils';
-import { useSetConvoContext } from '~/Providers/SetConvoContext';
+} from "~/utils";
+import { useSetConvoContext } from "~/Providers/SetConvoContext";
 
 const latestMessageKeysAtom = atom<(string | number)[]>({
-  key: 'latestMessageKeys',
+  key: "latestMessageKeys",
   default: [],
 });
 
 const submissionKeysAtom = atom<(string | number)[]>({
-  key: 'submissionKeys',
+  key: "submissionKeys",
   default: [],
 });
 
-const latestMessageFamily = atomFamily<TMessage | null, string | number | null>({
-  key: 'latestMessageByIndex',
-  default: null,
-  effects: [
-    ({ onSet, node }) => {
-      onSet(async (newValue) => {
-        const key = Number(node.key.split(Constants.COMMON_DIVIDER)[1]);
-        logger.log('Recoil Effect: Setting latestMessage', { key, newValue });
-      });
-    },
-  ] as const,
-});
+const latestMessageFamily = atomFamily<TMessage | null, string | number | null>(
+  {
+    key: "latestMessageByIndex",
+    default: null,
+    effects: [
+      ({ onSet, node }) => {
+        onSet(async (newValue) => {
+          const key = Number(node.key.split(Constants.COMMON_DIVIDER)[1]);
+          logger.log("Recoil Effect: Setting latestMessage", { key, newValue });
+        });
+      },
+    ] as const,
+  },
+);
 
 const submissionByIndex = atomFamily<TSubmission | null, string | number>({
-  key: 'submissionByIndex',
+  key: "submissionByIndex",
   default: null,
 });
 
 const latestMessageKeysSelector = selector<(string | number)[]>({
-  key: 'latestMessageKeysSelector',
+  key: "latestMessageKeysSelector",
   get: ({ get }) => {
     const keys = get(conversationKeysAtom);
     return keys.filter((key) => get(latestMessageFamily(key)) !== null);
   },
   set: ({ set }, newKeys) => {
-    logger.log('setting latestMessageKeys', { newKeys });
+    logger.log("setting latestMessageKeys", { newKeys });
     set(latestMessageKeysAtom, newKeys);
   },
 });
 
 const submissionKeysSelector = selector<(string | number)[]>({
-  key: 'submissionKeysSelector',
+  key: "submissionKeysSelector",
   get: ({ get }) => {
     const keys = get(conversationKeysAtom);
     return keys.filter((key) => get(submissionByIndex(key)) !== null);
   },
   set: ({ set }, newKeys) => {
-    logger.log('setting submissionKeysAtom', newKeys);
+    logger.log("setting submissionKeysAtom", newKeys);
     set(submissionKeysAtom, newKeys);
   },
 });
 
 const conversationByIndex = atomFamily<TConversation | null, string | number>({
-  key: 'conversationByIndex',
+  key: "conversationByIndex",
   default: null,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue, oldValue) => {
-        const index = Number(node.key.split('__')[1]);
-        logger.log('conversation', 'Setting conversation:', { index, newValue, oldValue });
+        const index = Number(node.key.split("__")[1]);
+        logger.log("conversation", "Setting conversation:", {
+          index,
+          newValue,
+          oldValue,
+        });
         if (newValue?.assistant_id != null && newValue.assistant_id) {
           localStorage.setItem(
             `${LocalStorageKeys.ASST_ID_PREFIX}${index}${newValue.endpoint}`,
             newValue.assistant_id,
           );
         }
-        if (newValue?.agent_id != null && !isEphemeralAgentId(newValue.agent_id)) {
-          localStorage.setItem(`${LocalStorageKeys.AGENT_ID_PREFIX}${index}`, newValue.agent_id);
+        if (
+          newValue?.agent_id != null &&
+          !isEphemeralAgentId(newValue.agent_id)
+        ) {
+          localStorage.setItem(
+            `${LocalStorageKeys.AGENT_ID_PREFIX}${index}`,
+            newValue.agent_id,
+          );
         }
         if (newValue?.spec != null && newValue.spec) {
           localStorage.setItem(LocalStorageKeys.LAST_SPEC, newValue.spec);
@@ -123,7 +139,7 @@ const conversationByIndex = atomFamily<TConversation | null, string | number>({
         const shouldUpdateParams =
           index === 0 &&
           !disableParams &&
-          newValue.createdAt === '' &&
+          newValue.createdAt === "" &&
           JSON.stringify(newValue) !== JSON.stringify(oldValue) &&
           (oldValue as TConversation)?.conversationId === Constants.NEW_CONVO;
 
@@ -131,7 +147,7 @@ const conversationByIndex = atomFamily<TConversation | null, string | number>({
           const newParams = createChatSearchParams(newValue);
           const searchParams = createSearchParams(newParams);
           const url = `${window.location.pathname}?${searchParams.toString()}`;
-          window.history.pushState({}, '', url);
+          window.history.pushState({}, "", url);
         }
       });
     },
@@ -139,33 +155,38 @@ const conversationByIndex = atomFamily<TConversation | null, string | number>({
 });
 
 const filesByIndex = atomFamily<Map<string, ExtendedFile>, string | number>({
-  key: 'filesByIndex',
+  key: "filesByIndex",
   default: new Map(),
 });
 
 const conversationKeysAtom = atom<(string | number)[]>({
-  key: 'conversationKeys',
+  key: "conversationKeys",
   default: [],
 });
 
 const allConversationsSelector = selector({
-  key: 'allConversationsSelector',
+  key: "allConversationsSelector",
   get: ({ get }) => {
     const keys = get(conversationKeysAtom);
-    return keys.map((key) => get(conversationByIndex(key))).map((convo) => convo?.conversationId);
+    return keys
+      .map((key) => get(conversationByIndex(key)))
+      .map((convo) => convo?.conversationId);
   },
 });
 
 const conversationIdByIndex = selectorFamily<string | null, string | number>({
-  key: 'conversationIdByIndex',
+  key: "conversationIdByIndex",
   get:
     (index: string | number) =>
     ({ get }) =>
       get(conversationByIndex(index))?.conversationId ?? null,
 });
 
-const conversationEndpointByIndex = selectorFamily<EModelEndpoint | null, string | number>({
-  key: 'conversationEndpointByIndex',
+const conversationEndpointByIndex = selectorFamily<
+  EModelEndpoint | null,
+  string | number
+>({
+  key: "conversationEndpointByIndex",
   get:
     (index: string | number) =>
     ({ get }) =>
@@ -173,8 +194,11 @@ const conversationEndpointByIndex = selectorFamily<EModelEndpoint | null, string
 });
 
 /** Returns `endpointType ?? endpoint`, matching the effective endpoint used for feature gating. */
-const effectiveEndpointByIndex = selectorFamily<EModelEndpoint | null, string | number>({
-  key: 'effectiveEndpointByIndex',
+const effectiveEndpointByIndex = selectorFamily<
+  EModelEndpoint | null,
+  string | number
+>({
+  key: "effectiveEndpointByIndex",
   get:
     (index: string | number) =>
     ({ get }) => {
@@ -183,32 +207,40 @@ const effectiveEndpointByIndex = selectorFamily<EModelEndpoint | null, string | 
     },
 });
 
-const conversationModelByIndex = selectorFamily<string | null, string | number>({
-  key: 'conversationModelByIndex',
-  get:
-    (index: string | number) =>
-    ({ get }) =>
-      get(conversationByIndex(index))?.model ?? null,
-});
+const conversationModelByIndex = selectorFamily<string | null, string | number>(
+  {
+    key: "conversationModelByIndex",
+    get:
+      (index: string | number) =>
+      ({ get }) =>
+        get(conversationByIndex(index))?.model ?? null,
+  },
+);
 
 const conversationSpecByIndex = selectorFamily<string | null, string | number>({
-  key: 'conversationSpecByIndex',
+  key: "conversationSpecByIndex",
   get:
     (index: string | number) =>
     ({ get }) =>
       get(conversationByIndex(index))?.spec ?? null,
 });
 
-const conversationAgentIdByIndex = selectorFamily<string | null, string | number>({
-  key: 'conversationAgentIdByIndex',
+const conversationAgentIdByIndex = selectorFamily<
+  string | null,
+  string | number
+>({
+  key: "conversationAgentIdByIndex",
   get:
     (index: string | number) =>
     ({ get }) =>
       get(conversationByIndex(index))?.agent_id ?? null,
 });
 
-const conversationAssistantIdByIndex = selectorFamily<string | null, string | number>({
-  key: 'conversationAssistantIdByIndex',
+const conversationAssistantIdByIndex = selectorFamily<
+  string | null,
+  string | number
+>({
+  key: "conversationAssistantIdByIndex",
   get:
     (index: string | number) =>
     ({ get }) =>
@@ -216,54 +248,62 @@ const conversationAssistantIdByIndex = selectorFamily<string | null, string | nu
 });
 
 const presetByIndex = atomFamily<TPreset | null, string | number>({
-  key: 'presetByIndex',
+  key: "presetByIndex",
   default: null,
 });
 
 const textByIndex = atomFamily<string, string | number>({
-  key: 'textByIndex',
-  default: '',
+  key: "textByIndex",
+  default: "",
 });
 
 const showStopButtonByIndex = atomFamily<boolean, string | number>({
-  key: 'showStopButtonByIndex',
+  key: "showStopButtonByIndex",
   default: false,
 });
 
 const abortScrollFamily = atomFamily<boolean, string | number>({
-  key: 'abortScrollByIndex',
+  key: "abortScrollByIndex",
   default: false,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue) => {
         const key = Number(node.key.split(Constants.COMMON_DIVIDER)[1]);
-        logger.log('message_scrolling', 'Recoil Effect: Setting abortScrollByIndex', {
-          key,
-          newValue,
-        });
+        logger.log(
+          "message_scrolling",
+          "Recoil Effect: Setting abortScrollByIndex",
+          {
+            key,
+            newValue,
+          },
+        );
       });
     },
   ] as const,
 });
 
 const isSubmittingFamily = atomFamily({
-  key: 'isSubmittingByIndex',
+  key: "isSubmittingByIndex",
   default: false,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue) => {
         const key = Number(node.key.split(Constants.COMMON_DIVIDER)[1]);
-        logger.log('message_stream', 'Recoil Effect: Setting isSubmittingByIndex', {
-          key,
-          newValue,
-        });
+        logger.log(
+          "message_stream",
+          "Recoil Effect: Setting isSubmittingByIndex",
+          {
+            key,
+            newValue,
+          },
+        );
       });
     },
   ],
 });
 
 const anySubmittingSelector = selector<boolean>({
-  key: 'anySubmittingSelector',
+  key: "anySubmittingSelector",
   get: ({ get }) => {
     const keys = get(conversationKeysAtom);
     return keys.some((key) => get(isSubmittingFamily(key)) === true);
@@ -271,62 +311,65 @@ const anySubmittingSelector = selector<boolean>({
 });
 
 const optionSettingsFamily = atomFamily<TOptionSettings, string | number>({
-  key: 'optionSettingsByIndex',
+  key: "optionSettingsByIndex",
   default: {},
 });
 
 const showPopoverFamily = atomFamily({
-  key: 'showPopoverByIndex',
+  key: "showPopoverByIndex",
   default: false,
 });
 
-const activePromptByIndex = atomFamily<string | undefined, string | number | null>({
-  key: 'activePromptByIndex',
+const activePromptByIndex = atomFamily<
+  string | undefined,
+  string | number | null
+>({
+  key: "activePromptByIndex",
   default: undefined,
 });
 
 const showMentionPopoverFamily = atomFamily<boolean, string | number | null>({
-  key: 'showMentionPopoverByIndex',
+  key: "showMentionPopoverByIndex",
   default: false,
 });
 
 const showPlusPopoverFamily = atomFamily<boolean, string | number | null>({
-  key: 'showPlusPopoverByIndex',
+  key: "showPlusPopoverByIndex",
   default: false,
 });
 
 const showPromptsPopoverFamily = atomFamily<boolean, string | number | null>({
-  key: 'showPromptsPopoverByIndex',
+  key: "showPromptsPopoverByIndex",
   default: false,
 });
 
 const globalAudioURLFamily = atomFamily<string | null, string | number | null>({
-  key: 'globalAudioURLByIndex',
+  key: "globalAudioURLByIndex",
   default: null,
 });
 
 const globalAudioFetchingFamily = atomFamily<boolean, string | number | null>({
-  key: 'globalAudioisFetchingByIndex',
+  key: "globalAudioisFetchingByIndex",
   default: false,
 });
 
 const globalAudioPlayingFamily = atomFamily<boolean, string | number | null>({
-  key: 'globalAudioisPlayingByIndex',
+  key: "globalAudioisPlayingByIndex",
   default: false,
 });
 
 const activeRunFamily = atomFamily<string | null, string | number | null>({
-  key: 'activeRunByIndex',
+  key: "activeRunByIndex",
   default: null,
 });
 
 const audioRunFamily = atomFamily<string | null, string | number | null>({
-  key: 'audioRunByIndex',
+  key: "audioRunByIndex",
   default: null,
 });
 
 const messagesSiblingIdxFamily = atomFamily<number, string | null | undefined>({
-  key: 'messagesSiblingIdx',
+  key: "messagesSiblingIdx",
   default: 0,
 });
 
@@ -358,7 +401,8 @@ function useClearConvoState() {
   const clearAllConversations = useRecoilCallback(
     ({ reset, snapshot }) =>
       async (skipFirst?: boolean) => {
-        const conversationKeys = await snapshot.getPromise(conversationKeysAtom);
+        const conversationKeys =
+          await snapshot.getPromise(conversationKeysAtom);
 
         for (const conversationKey of conversationKeys) {
           if (skipFirst === true && conversationKey == 0) {
@@ -367,7 +411,9 @@ function useClearConvoState() {
 
           reset(conversationByIndex(conversationKey));
 
-          const conversation = await snapshot.getPromise(conversationByIndex(conversationKey));
+          const conversation = await snapshot.getPromise(
+            conversationByIndex(conversationKey),
+          );
           if (conversation) {
             reset(latestMessageFamily(conversationKey));
           }
@@ -387,15 +433,17 @@ function useClearSubmissionState() {
   const clearAllSubmissions = useRecoilCallback(
     ({ reset, set, snapshot }) =>
       async (skipFirst?: boolean) => {
-        const submissionKeys = await snapshot.getPromise(submissionKeysSelector);
-        logger.log('submissionKeys', submissionKeys);
+        const submissionKeys = await snapshot.getPromise(
+          submissionKeysSelector,
+        );
+        logger.log("submissionKeys", submissionKeys);
 
         for (const key of submissionKeys) {
           if (skipFirst === true && key == 0) {
             continue;
           }
 
-          logger.log('resetting submission', key);
+          logger.log("resetting submission", key);
           reset(submissionByIndex(key));
         }
 
@@ -411,8 +459,13 @@ function useClearLatestMessages(context?: string) {
   const clearAllLatestMessages = useRecoilCallback(
     ({ reset, set, snapshot }) =>
       async (skipFirst?: boolean) => {
-        const latestMessageKeys = await snapshot.getPromise(latestMessageKeysSelector);
-        logger.log('[clearAllLatestMessages] latestMessageKeys', latestMessageKeys);
+        const latestMessageKeys = await snapshot.getPromise(
+          latestMessageKeysSelector,
+        );
+        logger.log(
+          "[clearAllLatestMessages] latestMessageKeys",
+          latestMessageKeys,
+        );
         if (context != null && context) {
           logger.log(`[clearAllLatestMessages] context: ${context}`);
         }
@@ -422,7 +475,9 @@ function useClearLatestMessages(context?: string) {
             continue;
           }
 
-          logger.log(`[clearAllLatestMessages] resetting latest message; key: ${key}`);
+          logger.log(
+            `[clearAllLatestMessages] resetting latest message; key: ${key}`,
+          );
           reset(latestMessageFamily(key));
         }
 
@@ -435,7 +490,7 @@ function useClearLatestMessages(context?: string) {
 }
 
 const updateConversationSelector = selectorFamily({
-  key: 'updateConversationSelector',
+  key: "updateConversationSelector",
   get: () => () => null as Partial<TConversation> | null,
   set:
     (conversationId: string) =>
@@ -447,7 +502,10 @@ const updateConversationSelector = selectorFamily({
       const keys = get(conversationKeysAtom);
       keys.forEach((key) => {
         set(conversationByIndex(key), (prevConversation) => {
-          if (prevConversation && prevConversation.conversationId === conversationId) {
+          if (
+            prevConversation &&
+            prevConversation.conversationId === conversationId
+          ) {
             return {
               ...prevConversation,
               ...newPartialConversation,

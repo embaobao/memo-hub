@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import type { TPlugin } from 'librechat-data-provider';
+import { useState, useCallback } from "react";
+import type { TPlugin } from "librechat-data-provider";
 
 function usePluginDialogHelpers() {
   const [maxPage, setMaxPage] = useState(1);
@@ -7,11 +7,13 @@ function usePluginDialogHelpers() {
   const [itemsPerPage, setItemsPerPage] = useState(1);
   const [searchChanged, setSearchChanged] = useState(false);
 
-  const [searchValue, setSearchValue] = useState('');
+  const [searchValue, setSearchValue] = useState("");
   const [error, setError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [showPluginAuthForm, setShowPluginAuthForm] = useState<boolean>(false);
-  const [selectedPlugin, setSelectedPlugin] = useState<TPlugin | undefined>(undefined);
+  const [selectedPlugin, setSelectedPlugin] = useState<TPlugin | undefined>(
+    undefined,
+  );
 
   const calculateColumns = (node: HTMLElement) => {
     const width = node.offsetWidth;

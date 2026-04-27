@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { useRecoilState } from 'recoil';
-import { usePromptGroupsInfiniteQuery } from '~/data-provider';
-import store from '~/store';
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useRecoilState } from "recoil";
+import { usePromptGroupsInfiniteQuery } from "~/data-provider";
+import store from "~/store";
 
 export default function usePromptGroupsNav(hasAccess = true) {
   const [pageSize] = useRecoilState(store.promptsPageSize);
@@ -27,11 +27,18 @@ export default function usePromptGroupsNav(hasAccess = true) {
 
   // Get the current page data
   const currentPageData = useMemo(() => {
-    if (!hasAccess || !groupsQuery.data?.pages || groupsQuery.data.pages.length === 0) {
+    if (
+      !hasAccess ||
+      !groupsQuery.data?.pages ||
+      groupsQuery.data.pages.length === 0
+    ) {
       return null;
     }
     // Ensure we don't go out of bounds
-    const pageIndex = Math.min(currentPageIndex, groupsQuery.data.pages.length - 1);
+    const pageIndex = Math.min(
+      currentPageIndex,
+      groupsQuery.data.pages.length - 1,
+    );
     return groupsQuery.data.pages[pageIndex];
   }, [hasAccess, groupsQuery.data?.pages, currentPageIndex]);
 
@@ -70,7 +77,10 @@ export default function usePromptGroupsNav(hasAccess = true) {
       if (result.isSuccess && result.data?.pages) {
         // Update cursor history with the cursor for the next page
         const lastPage = result.data.pages[result.data.pages.length - 2]; // Get the page before the newly fetched one
-        if (lastPage?.after && !cursorHistoryRef.current.includes(lastPage.after)) {
+        if (
+          lastPage?.after &&
+          !cursorHistoryRef.current.includes(lastPage.after)
+        ) {
           cursorHistoryRef.current.push(lastPage.after);
         }
       }
@@ -90,7 +100,8 @@ export default function usePromptGroupsNav(hasAccess = true) {
     if (!hasAccess) return;
 
     const filtersChanged =
-      prevFiltersRef.current.name !== name || prevFiltersRef.current.category !== category;
+      prevFiltersRef.current.name !== name ||
+      prevFiltersRef.current.category !== category;
 
     if (filtersChanged) {
       setCurrentPageIndex(0);

@@ -1,6 +1,6 @@
-import { useRecoilCallback } from 'recoil';
-import { clearLocalStorage } from '~/utils/localStorage';
-import store from '~/store';
+import { useRecoilCallback } from "recoil";
+import { clearLocalStorage } from "~/utils/localStorage";
+import store from "~/store";
 
 export default function useClearStates() {
   const clearConversations = store.useClearConvoState();

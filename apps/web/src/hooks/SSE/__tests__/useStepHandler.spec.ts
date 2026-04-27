@@ -1,5 +1,10 @@
-import { renderHook, act } from '@testing-library/react';
-import { StepTypes, StepEvents, ContentTypes, ToolCallTypes } from 'librechat-data-provider';
+import { renderHook, act } from "@testing-library/react";
+import {
+  StepTypes,
+  StepEvents,
+  ContentTypes,
+  ToolCallTypes,
+} from "librechat-data-provider";
 import type {
   TMessageContentParts,
   SummaryContentPart,
@@ -8,8 +13,8 @@ import type {
   TConversation,
   TMessage,
   Agents,
-} from 'librechat-data-provider';
-import useStepHandler from '~/hooks/SSE/useStepHandler';
+} from "librechat-data-provider";
+import useStepHandler from "~/hooks/SSE/useStepHandler";
 
 type TSubmissionForTest = {
   userMessage: TMessage;
@@ -21,10 +26,14 @@ type TSubmissionForTest = {
   conversation: Partial<TConversation>;
   endpointOption: TEndpointOption;
   initialResponse: TMessage;
-  editedContent?: { index: number; type: string; [key: string]: unknown } | null;
+  editedContent?: {
+    index: number;
+    type: string;
+    [key: string]: unknown;
+  } | null;
 };
 
-describe('useStepHandler', () => {
+describe("useStepHandler", () => {
   const mockSetMessages = jest.fn();
   const mockGetMessages = jest.fn();
   const mockAnnouncePolite = jest.fn();
@@ -38,27 +47,31 @@ describe('useStepHandler', () => {
   });
 
   const createUserMessage = (overrides: Partial<TMessage> = {}): TMessage => ({
-    messageId: 'user-msg-1',
-    conversationId: 'conv-1',
-    parentMessageId: '00000000-0000-0000-0000-000000000000',
+    messageId: "user-msg-1",
+    conversationId: "conv-1",
+    parentMessageId: "00000000-0000-0000-0000-000000000000",
     isCreatedByUser: true,
-    text: 'Hello',
-    sender: 'User',
+    text: "Hello",
+    sender: "User",
     ...overrides,
   });
 
-  const createResponseMessage = (overrides: Partial<TMessage> = {}): TMessage => ({
-    messageId: 'response-msg-1',
-    conversationId: 'conv-1',
-    parentMessageId: 'user-msg-1',
+  const createResponseMessage = (
+    overrides: Partial<TMessage> = {},
+  ): TMessage => ({
+    messageId: "response-msg-1",
+    conversationId: "conv-1",
+    parentMessageId: "user-msg-1",
     isCreatedByUser: false,
-    text: '',
-    sender: 'Assistant',
+    text: "",
+    sender: "Assistant",
     content: [],
     ...overrides,
   });
 
-  const createSubmission = (overrides: Partial<TSubmissionForTest> = {}): EventSubmission =>
+  const createSubmission = (
+    overrides: Partial<TSubmissionForTest> = {},
+  ): EventSubmission =>
     ({
       userMessage: createUserMessage(),
       isRegenerate: false,
@@ -72,31 +85,35 @@ describe('useStepHandler', () => {
       ...overrides,
     }) as unknown as EventSubmission;
 
-  const createRunStep = (overrides: Partial<Agents.RunStep> = {}): Agents.RunStep => ({
-    id: 'step-1',
-    runId: 'response-msg-1',
+  const createRunStep = (
+    overrides: Partial<Agents.RunStep> = {},
+  ): Agents.RunStep => ({
+    id: "step-1",
+    runId: "response-msg-1",
     index: 0,
     type: StepTypes.MESSAGE_CREATION,
     stepDetails: {
       type: StepTypes.MESSAGE_CREATION,
-      message_creation: { message_id: 'msg-1' },
+      message_creation: { message_id: "msg-1" },
     },
     usage: null,
     ...overrides,
   });
 
-  const createToolCallRunStep = (overrides: Partial<Agents.RunStep> = {}): Agents.RunStep => ({
-    id: 'step-tool-1',
-    runId: 'response-msg-1',
+  const createToolCallRunStep = (
+    overrides: Partial<Agents.RunStep> = {},
+  ): Agents.RunStep => ({
+    id: "step-tool-1",
+    runId: "response-msg-1",
     index: 0,
     type: StepTypes.TOOL_CALLS,
     stepDetails: {
       type: StepTypes.TOOL_CALLS,
       tool_calls: [
         {
-          id: 'tool-call-1',
-          name: 'test_tool',
-          args: '{}',
+          id: "tool-call-1",
+          name: "test_tool",
+          args: "{}",
           type: ToolCallTypes.TOOL_CALL,
         },
       ],
@@ -135,18 +152,18 @@ describe('useStepHandler', () => {
     mockGetMessages.mockReturnValue([]);
   });
 
-  describe('initialization', () => {
-    it('should return stepHandler, clearStepMaps, and syncStepMessage functions', () => {
+  describe("initialization", () => {
+    it("should return stepHandler, clearStepMaps, and syncStepMessage functions", () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
-      expect(typeof result.current.stepHandler).toBe('function');
-      expect(typeof result.current.clearStepMaps).toBe('function');
-      expect(typeof result.current.syncStepMessage).toBe('function');
+      expect(typeof result.current.stepHandler).toBe("function");
+      expect(typeof result.current.clearStepMaps).toBe("function");
+      expect(typeof result.current.syncStepMessage).toBe("function");
     });
   });
 
-  describe('on_run_step event', () => {
-    it('should create response message when not in messageMap', () => {
+  describe("on_run_step event", () => {
+    it("should create response message when not in messageMap", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -156,52 +173,67 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
       const setMessagesCall = mockSetMessages.mock.calls[0][0];
       expect(setMessagesCall).toContainEqual(
-        expect.objectContaining({ messageId: 'response-msg-1' }),
+        expect.objectContaining({ messageId: "response-msg-1" }),
       );
     });
 
-    it('should warn and return early when no responseMessageId', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it("should warn and return early when no responseMessageId", () => {
+      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
-      const runStep = createRunStep({ runId: '' });
+      const runStep = createRunStep({ runId: "" });
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('No message id found in run step event');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "No message id found in run step event",
+      );
       expect(mockSetMessages).not.toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
 
-    it('should handle USE_PRELIM_RESPONSE_MESSAGE_ID by using initialResponse', () => {
-      const initialResponse = createResponseMessage({ messageId: 'initial-response-id' });
+    it("should handle USE_PRELIM_RESPONSE_MESSAGE_ID by using initialResponse", () => {
+      const initialResponse = createResponseMessage({
+        messageId: "initial-response-id",
+      });
       mockGetMessages.mockReturnValue([initialResponse]);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
-      const runStep = createRunStep({ runId: 'USE_PRELIM_RESPONSE_MESSAGE_ID' });
+      const runStep = createRunStep({
+        runId: "USE_PRELIM_RESPONSE_MESSAGE_ID",
+      });
       const submission = createSubmission({
         initialResponse,
       });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
     });
 
-    it('should handle tool call steps and store tool call IDs', () => {
+    it("should handle tool call steps and store tool call IDs", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -211,32 +243,39 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall.find((m: TMessage) => !m.isCreatedByUser);
       expect(responseMsg?.content).toContainEqual(
         expect.objectContaining({
           type: ContentTypes.TOOL_CALL,
-          tool_call: expect.objectContaining({ name: 'test_tool' }),
+          tool_call: expect.objectContaining({ name: "test_tool" }),
         }),
       );
     });
 
-    it('should replay buffered deltas after registering step', () => {
+    it("should replay buffered deltas after registering step", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const submission = createSubmission();
-      const stepId = 'step-buffered';
+      const stepId = "step-buffered";
 
       act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta(stepId, 'Hello') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta(stepId, "Hello"),
+          },
           submission,
         );
       });
@@ -246,18 +285,22 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({ id: stepId });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall.find((m: TMessage) => !m.isCreatedByUser);
       expect(responseMsg?.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.TEXT, text: 'Hello' }),
+        expect.objectContaining({ type: ContentTypes.TEXT, text: "Hello" }),
       );
     });
 
-    it('should ensure userMessage is present in multi-tab scenarios', () => {
+    it("should ensure userMessage is present in multi-tab scenarios", () => {
       const userMsg = createUserMessage();
       mockGetMessages.mockReturnValue([]);
 
@@ -267,7 +310,10 @@ describe('useStepHandler', () => {
       const submission = createSubmission({ userMessage: userMsg });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
@@ -277,36 +323,40 @@ describe('useStepHandler', () => {
       );
     });
 
-    it('should propagate step metadata (agentId, groupId) for parallel rendering', () => {
+    it("should propagate step metadata (agentId, groupId) for parallel rendering", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const runStep = createToolCallRunStep({
-        agentId: 'agent-1',
+        agentId: "agent-1",
         groupId: 2,
       });
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall.find((m: TMessage) => !m.isCreatedByUser);
       const toolCallContent = responseMsg?.content?.find(
         (c: TMessageContentParts) => c.type === ContentTypes.TOOL_CALL,
       );
       expect(toolCallContent).toMatchObject({
-        agentId: 'agent-1',
+        agentId: "agent-1",
         groupId: 2,
       });
     });
   });
 
-  describe('on_agent_update event', () => {
-    it('should update message with agent update content', () => {
+  describe("on_agent_update event", () => {
+    it("should update message with agent update content", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -316,7 +366,10 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
@@ -324,9 +377,9 @@ describe('useStepHandler', () => {
       const agentUpdate: Agents.AgentUpdate = {
         type: ContentTypes.AGENT_UPDATE,
         agent_update: {
-          runId: 'response-msg-1',
+          runId: "response-msg-1",
           index: 1,
-          agentId: 'agent-1',
+          agentId: "agent-1",
         },
       };
 
@@ -340,17 +393,17 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).toHaveBeenCalled();
     });
 
-    it('should warn when no responseMessageId for agent update', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it("should warn when no responseMessageId for agent update", () => {
+      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const agentUpdate: Agents.AgentUpdate = {
         type: ContentTypes.AGENT_UPDATE,
         agent_update: {
-          runId: '',
+          runId: "",
           index: 0,
-          agentId: 'agent-1',
+          agentId: "agent-1",
         },
       };
       const submission = createSubmission();
@@ -362,13 +415,15 @@ describe('useStepHandler', () => {
         );
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('No message id found in agent update event');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "No message id found in agent update event",
+      );
       consoleSpy.mockRestore();
     });
   });
 
-  describe('on_message_delta event', () => {
-    it('should append text delta to existing content', () => {
+  describe("on_message_delta event", () => {
+    it("should append text delta to existing content", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -378,12 +433,15 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
-      const messageDelta = createMessageDelta('step-1', 'Hello');
+      const messageDelta = createMessageDelta("step-1", "Hello");
 
       act(() => {
         result.current.stepHandler(
@@ -393,17 +451,18 @@ describe('useStepHandler', () => {
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall[lastCall.length - 1];
       expect(responseMsg.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.TEXT, text: 'Hello' }),
+        expect.objectContaining({ type: ContentTypes.TEXT, text: "Hello" }),
       );
     });
 
-    it('should buffer delta when step does not exist', () => {
+    it("should buffer delta when step does not exist", () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
-      const messageDelta = createMessageDelta('nonexistent-step', 'Buffered');
+      const messageDelta = createMessageDelta("nonexistent-step", "Buffered");
       const submission = createSubmission();
 
       act(() => {
@@ -416,7 +475,7 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).not.toHaveBeenCalled();
     });
 
-    it('should concatenate multiple text deltas', () => {
+    it("should concatenate multiple text deltas", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -426,31 +485,44 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
-      });
-
-      act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta('step-1', 'Hello ') },
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
           submission,
         );
       });
 
       act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta('step-1', 'World') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta("step-1", "Hello "),
+          },
           submission,
         );
       });
 
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      act(() => {
+        result.current.stepHandler(
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta("step-1", "World"),
+          },
+          submission,
+        );
+      });
+
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall[lastCall.length - 1];
       expect(responseMsg.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.TEXT, text: 'Hello World' }),
+        expect.objectContaining({
+          type: ContentTypes.TEXT,
+          text: "Hello World",
+        }),
       );
     });
 
-    it('should return early when contentPart is null', () => {
+    it("should return early when contentPart is null", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -460,13 +532,16 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
       const messageDelta: Agents.MessageDeltaEvent = {
-        id: 'step-1',
+        id: "step-1",
         delta: { content: [] },
       };
 
@@ -481,8 +556,8 @@ describe('useStepHandler', () => {
     });
   });
 
-  describe('on_reasoning_delta event', () => {
-    it('should append reasoning delta to existing content', () => {
+  describe("on_reasoning_delta event", () => {
+    it("should append reasoning delta to existing content", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -492,12 +567,15 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
-      const reasoningDelta = createReasoningDelta('step-1', 'Thinking...');
+      const reasoningDelta = createReasoningDelta("step-1", "Thinking...");
 
       act(() => {
         result.current.stepHandler(
@@ -507,17 +585,24 @@ describe('useStepHandler', () => {
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall[lastCall.length - 1];
       expect(responseMsg.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.THINK, think: 'Thinking...' }),
+        expect.objectContaining({
+          type: ContentTypes.THINK,
+          think: "Thinking...",
+        }),
       );
     });
 
-    it('should buffer reasoning delta when step does not exist', () => {
+    it("should buffer reasoning delta when step does not exist", () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
-      const reasoningDelta = createReasoningDelta('nonexistent-step', 'Buffered');
+      const reasoningDelta = createReasoningDelta(
+        "nonexistent-step",
+        "Buffered",
+      );
       const submission = createSubmission();
 
       act(() => {
@@ -530,7 +615,7 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).not.toHaveBeenCalled();
     });
 
-    it('should concatenate multiple reasoning deltas', () => {
+    it("should concatenate multiple reasoning deltas", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -540,33 +625,46 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
-      });
-
-      act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_REASONING_DELTA, data: createReasoningDelta('step-1', 'First ') },
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
           submission,
         );
       });
 
       act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_REASONING_DELTA, data: createReasoningDelta('step-1', 'thought') },
+          {
+            event: StepEvents.ON_REASONING_DELTA,
+            data: createReasoningDelta("step-1", "First "),
+          },
           submission,
         );
       });
 
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      act(() => {
+        result.current.stepHandler(
+          {
+            event: StepEvents.ON_REASONING_DELTA,
+            data: createReasoningDelta("step-1", "thought"),
+          },
+          submission,
+        );
+      });
+
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall[lastCall.length - 1];
       expect(responseMsg.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.THINK, think: 'First thought' }),
+        expect.objectContaining({
+          type: ContentTypes.THINK,
+          think: "First thought",
+        }),
       );
     });
   });
 
-  describe('on_run_step_delta event', () => {
-    it('should update tool call with delta args', () => {
+  describe("on_run_step_delta event", () => {
+    it("should update tool call with delta args", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -576,16 +674,19 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
       const runStepDelta: Agents.RunStepDeltaEvent = {
-        id: 'step-tool-1',
+        id: "step-tool-1",
         delta: {
           type: StepTypes.TOOL_CALLS,
-          tool_calls: [{ name: 'test_tool', args: '{"key": "value"}' }],
+          tool_calls: [{ name: "test_tool", args: '{"key": "value"}' }],
         },
       };
 
@@ -599,14 +700,14 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).toHaveBeenCalled();
     });
 
-    it('should buffer run step delta when step does not exist', () => {
+    it("should buffer run step delta when step does not exist", () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const runStepDelta: Agents.RunStepDeltaEvent = {
-        id: 'nonexistent-step',
+        id: "nonexistent-step",
         delta: {
           type: StepTypes.TOOL_CALLS,
-          tool_calls: [{ name: 'test_tool', args: '{}' }],
+          tool_calls: [{ name: "test_tool", args: "{}" }],
         },
       };
       const submission = createSubmission();
@@ -621,7 +722,7 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).not.toHaveBeenCalled();
     });
 
-    it('should handle auth information in run step delta', () => {
+    it("should handle auth information in run step delta", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -631,17 +732,20 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
       const runStepDelta: Agents.RunStepDeltaEvent = {
-        id: 'step-tool-1',
+        id: "step-tool-1",
         delta: {
           type: StepTypes.TOOL_CALLS,
-          tool_calls: [{ name: 'test_tool', args: '{}' }],
-          auth: 'oauth-token-123',
+          tool_calls: [{ name: "test_tool", args: "{}" }],
+          auth: "oauth-token-123",
           expires_at: 1704067200,
         },
       };
@@ -654,17 +758,18 @@ describe('useStepHandler', () => {
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall.find((m: TMessage) => !m.isCreatedByUser);
       const toolCallContent = responseMsg?.content?.find(
         (c: TMessageContentParts) => c.type === ContentTypes.TOOL_CALL,
       );
-      expect(toolCallContent?.tool_call?.auth).toEqual('oauth-token-123');
+      expect(toolCallContent?.tool_call?.auth).toEqual("oauth-token-123");
     });
   });
 
-  describe('on_run_step_completed event', () => {
-    it('should finalize tool call with output', () => {
+  describe("on_run_step_completed event", () => {
+    it("should finalize tool call with output", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -674,20 +779,23 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
       const completedEvent = {
         result: {
-          id: 'step-tool-1',
+          id: "step-tool-1",
           index: 0,
           tool_call: {
-            id: 'tool-call-1',
-            name: 'test_tool',
-            args: '{}',
-            output: 'Tool result output',
+            id: "tool-call-1",
+            name: "test_tool",
+            args: "{}",
+            output: "Tool result output",
             type: ToolCallTypes.TOOL_CALL,
           },
         },
@@ -704,28 +812,29 @@ describe('useStepHandler', () => {
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall.find((m: TMessage) => !m.isCreatedByUser);
       const toolCallContent = responseMsg?.content?.find(
         (c: TMessageContentParts) => c.type === ContentTypes.TOOL_CALL,
       );
-      expect(toolCallContent?.tool_call?.output).toBe('Tool result output');
+      expect(toolCallContent?.tool_call?.output).toBe("Tool result output");
       expect(toolCallContent?.tool_call?.progress).toBe(1);
     });
 
-    it('should warn when step not found for completed event', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+    it("should warn when step not found for completed event", () => {
+      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const completedEvent = {
         result: {
-          id: 'nonexistent-step',
+          id: "nonexistent-step",
           index: 0,
           tool_call: {
-            id: 'tool-call-1',
-            name: 'test_tool',
-            args: '{}',
+            id: "tool-call-1",
+            name: "test_tool",
+            args: "{}",
             type: ToolCallTypes.TOOL_CALL,
           },
         },
@@ -743,14 +852,14 @@ describe('useStepHandler', () => {
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'No run step or runId found for completed tool call event',
+        "No run step or runId found for completed tool call event",
       );
       consoleSpy.mockRestore();
     });
   });
 
-  describe('clearStepMaps', () => {
-    it('should clear all internal maps', () => {
+  describe("clearStepMaps", () => {
+    it("should clear all internal maps", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -760,7 +869,10 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       act(() => {
@@ -771,7 +883,10 @@ describe('useStepHandler', () => {
 
       act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta('step-1', 'Test') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta("step-1", "Test"),
+          },
           submission,
         );
       });
@@ -780,10 +895,10 @@ describe('useStepHandler', () => {
     });
   });
 
-  describe('syncStepMessage', () => {
-    it('should sync message into messageMap', () => {
+  describe("syncStepMessage", () => {
+    it("should sync message into messageMap", () => {
       const responseMessage = createResponseMessage({
-        content: [{ type: ContentTypes.TEXT, text: 'Synced content' }],
+        content: [{ type: ContentTypes.TEXT, text: "Synced content" }],
       });
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -797,24 +912,34 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
-      });
-
-      act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta('step-1', ' more') },
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
           submission,
         );
       });
 
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      act(() => {
+        result.current.stepHandler(
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta("step-1", " more"),
+          },
+          submission,
+        );
+      });
+
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall[lastCall.length - 1];
       expect(responseMsg.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.TEXT, text: 'Synced content more' }),
+        expect.objectContaining({
+          type: ContentTypes.TEXT,
+          text: "Synced content more",
+        }),
       );
     });
 
-    it('should handle null message gracefully', () => {
+    it("should handle null message gracefully", () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       expect(() => {
@@ -824,21 +949,25 @@ describe('useStepHandler', () => {
       }).not.toThrow();
     });
 
-    it('should handle message without messageId gracefully', () => {
+    it("should handle message without messageId gracefully", () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       expect(() => {
         act(() => {
-          result.current.syncStepMessage({ ...createResponseMessage(), messageId: '' });
+          result.current.syncStepMessage({
+            ...createResponseMessage(),
+            messageId: "",
+          });
         });
       }).not.toThrow();
     });
   });
 
-  describe('announcePolite for accessibility', () => {
-    it('should announce composing after MESSAGE_UPDATE_INTERVAL', () => {
+  describe("announcePolite for accessibility", () => {
+    it("should announce composing after MESSAGE_UPDATE_INTERVAL", () => {
       const MESSAGE_UPDATE_INTERVAL = 7000;
-      mockLastAnnouncementTimeRef.current = Date.now() - MESSAGE_UPDATE_INTERVAL - 1;
+      mockLastAnnouncementTimeRef.current =
+        Date.now() - MESSAGE_UPDATE_INTERVAL - 1;
 
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -849,13 +978,19 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
-      expect(mockAnnouncePolite).toHaveBeenCalledWith({ message: 'composing', isStatus: true });
+      expect(mockAnnouncePolite).toHaveBeenCalledWith({
+        message: "composing",
+        isStatus: true,
+      });
     });
 
-    it('should not announce if within MESSAGE_UPDATE_INTERVAL', () => {
+    it("should not announce if within MESSAGE_UPDATE_INTERVAL", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
 
       const responseMessage = createResponseMessage();
@@ -867,20 +1002,23 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockAnnouncePolite).not.toHaveBeenCalled();
     });
   });
 
-  describe('edited content scenarios', () => {
-    it('should use initialResponse content for index offsetting in edit scenarios', () => {
+  describe("edited content scenarios", () => {
+    it("should use initialResponse content for index offsetting in edit scenarios", () => {
       const existingContent: TMessageContentParts[] = [
-        { type: ContentTypes.TEXT, text: 'Previous content' },
+        { type: ContentTypes.TEXT, text: "Previous content" },
       ];
       const initialResponse = createResponseMessage({
-        messageId: 'initial-response-id',
+        messageId: "initial-response-id",
         content: existingContent,
       });
       mockGetMessages.mockReturnValue([initialResponse]);
@@ -888,43 +1026,59 @@ describe('useStepHandler', () => {
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const runStep = createRunStep({
-        runId: 'initial-response-id',
+        runId: "initial-response-id",
         index: 0,
       });
       const submission = createSubmission({
-        editedContent: { index: 0, type: ContentTypes.TEXT, text: 'Previous content' },
+        editedContent: {
+          index: 0,
+          type: ContentTypes.TEXT,
+          text: "Previous content",
+        },
         initialResponse,
       });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
     });
   });
 
-  describe('delta buffering and replay', () => {
-    it('should buffer multiple deltas and replay in order', () => {
+  describe("delta buffering and replay", () => {
+    it("should buffer multiple deltas and replay in order", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const submission = createSubmission();
-      const stepId = 'step-multi-buffer';
+      const stepId = "step-multi-buffer";
 
       act(() => {
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta(stepId, 'First ') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta(stepId, "First "),
+          },
           submission,
         );
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta(stepId, 'Second ') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta(stepId, "Second "),
+          },
           submission,
         );
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta(stepId, 'Third') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta(stepId, "Third"),
+          },
           submission,
         );
       });
@@ -934,36 +1088,46 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({ id: stepId });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall.find((m: TMessage) => !m.isCreatedByUser);
       expect(responseMsg?.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.TEXT, text: 'First Second Third' }),
+        expect.objectContaining({
+          type: ContentTypes.TEXT,
+          text: "First Second Third",
+        }),
       );
     });
 
-    it('should buffer mixed delta types and replay correctly', () => {
+    it("should buffer mixed delta types and replay correctly", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
 
       const submission = createSubmission();
-      const stepId = 'step-mixed-buffer';
+      const stepId = "step-mixed-buffer";
 
       act(() => {
         result.current.stepHandler(
           {
             event: StepEvents.ON_REASONING_DELTA,
-            data: createReasoningDelta(stepId, 'Thinking...'),
+            data: createReasoningDelta(stepId, "Thinking..."),
           },
           submission,
         );
         result.current.stepHandler(
-          { event: StepEvents.ON_MESSAGE_DELTA, data: createMessageDelta(stepId, 'Response') },
+          {
+            event: StepEvents.ON_MESSAGE_DELTA,
+            data: createMessageDelta(stepId, "Response"),
+          },
           submission,
         );
       });
@@ -973,19 +1137,22 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({ id: stepId });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
     });
   });
 
-  describe('content type mismatch handling', () => {
-    it('should warn on content type mismatch and not overwrite', () => {
-      const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+  describe("content type mismatch handling", () => {
+    it("should warn on content type mismatch and not overwrite", () => {
+      const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
 
       const responseMessage = createResponseMessage({
-        content: [{ type: ContentTypes.THINK, think: 'Existing thought' }],
+        content: [{ type: ContentTypes.THINK, think: "Existing thought" }],
       });
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -999,12 +1166,15 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       const textDelta: Agents.MessageDeltaEvent = {
-        id: 'step-1',
-        delta: { content: [{ type: ContentTypes.TEXT, text: 'New text' }] },
+        id: "step-1",
+        delta: { content: [{ type: ContentTypes.TEXT, text: "New text" }] },
       };
 
       act(() => {
@@ -1015,7 +1185,7 @@ describe('useStepHandler', () => {
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Content type mismatch',
+        "Content type mismatch",
         expect.objectContaining({
           existingType: ContentTypes.THINK,
           contentType: ContentTypes.TEXT,
@@ -1025,8 +1195,8 @@ describe('useStepHandler', () => {
     });
   });
 
-  describe('summarization events', () => {
-    it('ON_SUMMARIZE_START calls announcePolite', () => {
+  describe("summarization events", () => {
+    it("ON_SUMMARIZE_START calls announcePolite", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1039,9 +1209,9 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_START,
             data: {
-              agentId: 'agent-1',
-              provider: 'test-provider',
-              model: 'test-model',
+              agentId: "agent-1",
+              provider: "test-provider",
+              model: "test-model",
               messagesToRefineCount: 5,
               summaryVersion: 1,
             },
@@ -1051,12 +1221,12 @@ describe('useStepHandler', () => {
       });
 
       expect(mockAnnouncePolite).toHaveBeenCalledWith({
-        message: 'summarize_started',
+        message: "summarize_started",
         isStatus: true,
       });
     });
 
-    it('ON_SUMMARIZE_DELTA accumulates content on known run step', async () => {
+    it("ON_SUMMARIZE_DELTA accumulates content on known run step", async () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1067,13 +1237,16 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({
         summary: {
           type: ContentTypes.SUMMARY,
-          model: 'test-model',
-          provider: 'test-provider',
+          model: "test-model",
+          provider: "test-provider",
         } as TMessageContentParts & { type: typeof ContentTypes.SUMMARY },
       });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
@@ -1083,13 +1256,13 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_DELTA,
             data: {
-              id: 'step-1',
+              id: "step-1",
               delta: {
                 summary: {
                   type: ContentTypes.SUMMARY,
-                  content: [{ type: ContentTypes.TEXT, text: 'chunk1' }],
-                  provider: 'test-provider',
-                  model: 'test-model',
+                  content: [{ type: ContentTypes.TEXT, text: "chunk1" }],
+                  provider: "test-provider",
+                  model: "test-model",
                   summarizing: true,
                 },
               },
@@ -1104,18 +1277,19 @@ describe('useStepHandler', () => {
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
       const responseMsg = lastCall[lastCall.length - 1];
       const summaryPart = responseMsg.content?.find(
         (c: TMessageContentParts) => c.type === ContentTypes.SUMMARY,
       );
       expect(summaryPart).toBeDefined();
       expect(summaryPart.content).toContainEqual(
-        expect.objectContaining({ type: ContentTypes.TEXT, text: 'chunk1' }),
+        expect.objectContaining({ type: ContentTypes.TEXT, text: "chunk1" }),
       );
     });
 
-    it('ON_SUMMARIZE_DELTA buffers when run step is not yet known', () => {
+    it("ON_SUMMARIZE_DELTA buffers when run step is not yet known", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1128,13 +1302,15 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_DELTA,
             data: {
-              id: 'step-1',
+              id: "step-1",
               delta: {
                 summary: {
                   type: ContentTypes.SUMMARY,
-                  content: [{ type: ContentTypes.TEXT, text: 'buffered chunk' }],
-                  provider: 'test-provider',
-                  model: 'test-model',
+                  content: [
+                    { type: ContentTypes.TEXT, text: "buffered chunk" },
+                  ],
+                  provider: "test-provider",
+                  model: "test-model",
                   summarizing: true,
                 },
               },
@@ -1147,7 +1323,7 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).not.toHaveBeenCalled();
     });
 
-    it('ON_SUMMARIZE_COMPLETE success replaces summarizing part with finalized summary', () => {
+    it("ON_SUMMARIZE_COMPLETE success replaces summarizing part with finalized summary", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1158,13 +1334,16 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({
         summary: {
           type: ContentTypes.SUMMARY,
-          model: 'test-model',
-          provider: 'test-provider',
+          model: "test-model",
+          provider: "test-provider",
         } as TMessageContentParts & { type: typeof ContentTypes.SUMMARY },
       });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       act(() => {
@@ -1172,13 +1351,13 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_DELTA,
             data: {
-              id: 'step-1',
+              id: "step-1",
               delta: {
                 summary: {
                   type: ContentTypes.SUMMARY,
-                  content: [{ type: ContentTypes.TEXT, text: 'partial' }],
-                  provider: 'test-provider',
-                  model: 'test-model',
+                  content: [{ type: ContentTypes.TEXT, text: "partial" }],
+                  provider: "test-provider",
+                  model: "test-model",
                   summarizing: true,
                 },
               },
@@ -1191,7 +1370,8 @@ describe('useStepHandler', () => {
       mockSetMessages.mockClear();
       mockAnnouncePolite.mockClear();
 
-      const lastSetCall = mockGetMessages.mock.results[mockGetMessages.mock.results.length - 1];
+      const lastSetCall =
+        mockGetMessages.mock.results[mockGetMessages.mock.results.length - 1];
       const latestMessages = lastSetCall?.value ?? [];
       mockGetMessages.mockReturnValue(
         latestMessages.length > 0 ? latestMessages : [responseMessage],
@@ -1202,11 +1382,11 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_COMPLETE,
             data: {
-              id: 'step-1',
-              agentId: 'agent-1',
+              id: "step-1",
+              agentId: "agent-1",
               summary: {
                 type: ContentTypes.SUMMARY,
-                content: [{ type: ContentTypes.TEXT, text: 'Final summary' }],
+                content: [{ type: ContentTypes.TEXT, text: "Final summary" }],
                 tokenCount: 100,
                 summarizing: false,
               },
@@ -1217,19 +1397,22 @@ describe('useStepHandler', () => {
       });
 
       expect(mockAnnouncePolite).toHaveBeenCalledWith({
-        message: 'summarize_completed',
+        message: "summarize_completed",
         isStatus: true,
       });
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
-      const responseMsg = lastCall.find((m: TMessage) => m.messageId === 'response-msg-1');
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const responseMsg = lastCall.find(
+        (m: TMessage) => m.messageId === "response-msg-1",
+      );
       const summaryPart = responseMsg?.content?.find(
         (c: TMessageContentParts) => c.type === ContentTypes.SUMMARY,
       );
       expect(summaryPart).toMatchObject({ summarizing: false });
     });
 
-    it('ON_SUMMARIZE_COMPLETE error removes summarizing parts', () => {
+    it("ON_SUMMARIZE_COMPLETE error removes summarizing parts", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1240,13 +1423,16 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({
         summary: {
           type: ContentTypes.SUMMARY,
-          model: 'test-model',
-          provider: 'test-provider',
+          model: "test-model",
+          provider: "test-provider",
         } as TMessageContentParts & { type: typeof ContentTypes.SUMMARY },
       });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       act(() => {
@@ -1254,13 +1440,13 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_DELTA,
             data: {
-              id: 'step-1',
+              id: "step-1",
               delta: {
                 summary: {
                   type: ContentTypes.SUMMARY,
-                  content: [{ type: ContentTypes.TEXT, text: 'partial' }],
-                  provider: 'test-provider',
-                  model: 'test-model',
+                  content: [{ type: ContentTypes.TEXT, text: "partial" }],
+                  provider: "test-provider",
+                  model: "test-model",
                   summarizing: true,
                 },
               },
@@ -1273,7 +1459,8 @@ describe('useStepHandler', () => {
       mockSetMessages.mockClear();
       mockAnnouncePolite.mockClear();
 
-      const lastSetCall = mockGetMessages.mock.results[mockGetMessages.mock.results.length - 1];
+      const lastSetCall =
+        mockGetMessages.mock.results[mockGetMessages.mock.results.length - 1];
       const latestMessages = lastSetCall?.value ?? [];
       mockGetMessages.mockReturnValue(
         latestMessages.length > 0 ? latestMessages : [responseMessage],
@@ -1284,9 +1471,9 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_COMPLETE,
             data: {
-              id: 'step-1',
-              agentId: 'agent-1',
-              error: 'LLM failed',
+              id: "step-1",
+              agentId: "agent-1",
+              error: "LLM failed",
             },
           },
           submission,
@@ -1294,12 +1481,15 @@ describe('useStepHandler', () => {
       });
 
       expect(mockAnnouncePolite).toHaveBeenCalledWith({
-        message: 'summarize_failed',
+        message: "summarize_failed",
         isStatus: true,
       });
       expect(mockSetMessages).toHaveBeenCalled();
-      const lastCall = mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
-      const responseMsg = lastCall.find((m: TMessage) => m.messageId === 'response-msg-1');
+      const lastCall =
+        mockSetMessages.mock.calls[mockSetMessages.mock.calls.length - 1][0];
+      const responseMsg = lastCall.find(
+        (m: TMessage) => m.messageId === "response-msg-1",
+      );
       const summaryParts =
         responseMsg?.content?.filter(
           (c: TMessageContentParts) => c.type === ContentTypes.SUMMARY,
@@ -1307,7 +1497,7 @@ describe('useStepHandler', () => {
       expect(summaryParts).toHaveLength(0);
     });
 
-    it('ON_SUMMARIZE_COMPLETE returns early when target message not in messageMap', () => {
+    it("ON_SUMMARIZE_COMPLETE returns early when target message not in messageMap", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1320,11 +1510,11 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_COMPLETE,
             data: {
-              id: 'step-1',
-              agentId: 'agent-1',
+              id: "step-1",
+              agentId: "agent-1",
               summary: {
                 type: ContentTypes.SUMMARY,
-                content: [{ type: ContentTypes.TEXT, text: 'Final summary' }],
+                content: [{ type: ContentTypes.TEXT, text: "Final summary" }],
                 tokenCount: 100,
                 summarizing: false,
               },
@@ -1338,7 +1528,7 @@ describe('useStepHandler', () => {
       expect(mockAnnouncePolite).not.toHaveBeenCalled();
     });
 
-    it('ON_SUMMARIZE_COMPLETE with undefined summary finalizes existing part with summarizing=false', () => {
+    it("ON_SUMMARIZE_COMPLETE with undefined summary finalizes existing part with summarizing=false", () => {
       mockLastAnnouncementTimeRef.current = Date.now();
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
@@ -1349,13 +1539,16 @@ describe('useStepHandler', () => {
       const runStep = createRunStep({
         summary: {
           type: ContentTypes.SUMMARY,
-          model: 'test-model',
-          provider: 'test-provider',
+          model: "test-model",
+          provider: "test-provider",
         } as TMessageContentParts & { type: typeof ContentTypes.SUMMARY },
       });
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       act(() => {
@@ -1363,13 +1556,13 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_DELTA,
             data: {
-              id: 'step-1',
+              id: "step-1",
               delta: {
                 summary: {
                   type: ContentTypes.SUMMARY,
-                  content: [{ type: ContentTypes.TEXT, text: 'partial' }],
-                  provider: 'test-provider',
-                  model: 'test-model',
+                  content: [{ type: ContentTypes.TEXT, text: "partial" }],
+                  provider: "test-provider",
+                  model: "test-model",
                   summarizing: true,
                 },
               },
@@ -1382,7 +1575,8 @@ describe('useStepHandler', () => {
       mockSetMessages.mockClear();
       mockAnnouncePolite.mockClear();
 
-      const lastSetCall = mockGetMessages.mock.results[mockGetMessages.mock.results.length - 1];
+      const lastSetCall =
+        mockGetMessages.mock.results[mockGetMessages.mock.results.length - 1];
       const latestMessages = lastSetCall?.value ?? [];
       mockGetMessages.mockReturnValue(
         latestMessages.length > 0 ? latestMessages : [responseMessage],
@@ -1393,8 +1587,8 @@ describe('useStepHandler', () => {
           {
             event: StepEvents.ON_SUMMARIZE_COMPLETE,
             data: {
-              id: 'step-1',
-              agentId: 'agent-1',
+              id: "step-1",
+              agentId: "agent-1",
             },
           },
           submission,
@@ -1402,7 +1596,7 @@ describe('useStepHandler', () => {
       });
 
       expect(mockAnnouncePolite).toHaveBeenCalledWith({
-        message: 'summarize_completed',
+        message: "summarize_completed",
         isStatus: true,
       });
       expect(mockSetMessages).toHaveBeenCalledTimes(1);
@@ -1414,8 +1608,8 @@ describe('useStepHandler', () => {
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle empty messages array', () => {
+  describe("edge cases", () => {
+    it("should handle empty messages array", () => {
       mockGetMessages.mockReturnValue([]);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
@@ -1424,13 +1618,16 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
     });
 
-    it('should handle undefined messages from getMessages', () => {
+    it("should handle undefined messages from getMessages", () => {
       mockGetMessages.mockReturnValue(undefined);
 
       const { result } = renderHook(() => useStepHandler(createHookParams()));
@@ -1439,13 +1636,16 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       expect(mockSetMessages).toHaveBeenCalled();
     });
 
-    it('should handle delta with array content', () => {
+    it("should handle delta with array content", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -1455,15 +1655,18 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       const messageDelta: Agents.MessageDeltaEvent = {
-        id: 'step-1',
+        id: "step-1",
         delta: {
           content: [
-            { type: ContentTypes.TEXT, text: 'First' },
-            { type: ContentTypes.TEXT, text: 'Second' },
+            { type: ContentTypes.TEXT, text: "First" },
+            { type: ContentTypes.TEXT, text: "Second" },
           ],
         },
       };
@@ -1478,7 +1681,7 @@ describe('useStepHandler', () => {
       expect(mockSetMessages).toHaveBeenCalled();
     });
 
-    it('should handle message delta without content', () => {
+    it("should handle message delta without content", () => {
       const responseMessage = createResponseMessage();
       mockGetMessages.mockReturnValue([responseMessage]);
 
@@ -1488,13 +1691,16 @@ describe('useStepHandler', () => {
       const submission = createSubmission();
 
       act(() => {
-        result.current.stepHandler({ event: StepEvents.ON_RUN_STEP, data: runStep }, submission);
+        result.current.stepHandler(
+          { event: StepEvents.ON_RUN_STEP, data: runStep },
+          submission,
+        );
       });
 
       mockSetMessages.mockClear();
 
       const messageDelta: Agents.MessageDeltaEvent = {
-        id: 'step-1',
+        id: "step-1",
         delta: {},
       };
 

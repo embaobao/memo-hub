@@ -1,5 +1,5 @@
-import { specialVariables } from 'librechat-data-provider';
-import type { TPromptGroup } from 'librechat-data-provider';
+import { specialVariables } from "librechat-data-provider";
+import type { TPromptGroup } from "librechat-data-provider";
 
 /**
  * Detects the presence of variables in the given text, excluding those found in `specialVariables`.
@@ -69,10 +69,10 @@ export function formatDateTime(dateTimeString: string) {
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
 
-  const formattedMinutes = minutes.toString().padStart(2, '0');
-  const formattedSeconds = seconds.toString().padStart(2, '0');
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const formattedSeconds = seconds.toString().padStart(2, "0");
 
-  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const ampm = hours >= 12 ? "PM" : "AM";
 
   const formattedHours = hours % 12 || 12;
 
@@ -82,7 +82,9 @@ export function formatDateTime(dateTimeString: string) {
   return `${formattedDate}, ${formattedTime}`;
 }
 
-export const mapPromptGroups = (groups: TPromptGroup[]): Record<string, TPromptGroup> => {
+export const mapPromptGroups = (
+  groups: TPromptGroup[],
+): Record<string, TPromptGroup> => {
   return groups.reduce(
     (acc, group) => {
       if (!group._id) {

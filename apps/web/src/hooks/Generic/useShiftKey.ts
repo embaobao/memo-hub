@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Hook to track whether the shift key is currently being held down.
@@ -12,17 +12,17 @@ export default function useShiftKey(): boolean {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Only set shift if Alt is not pressed (Alt+Shift is used for a11y)
-      if (e.key === 'Shift' && !e.altKey) {
+      if (e.key === "Shift" && !e.altKey) {
         setIsShiftHeld(true);
       }
       // If Alt is pressed while shift is held, reset shift state
-      if (e.key === 'Alt' && e.shiftKey) {
+      if (e.key === "Alt" && e.shiftKey) {
         setIsShiftHeld(false);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Shift') {
+      if (e.key === "Shift") {
         setIsShiftHeld(false);
       }
     };
@@ -32,14 +32,14 @@ export default function useShiftKey(): boolean {
       setIsShiftHeld(false);
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('blur', handleBlur);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('blur', handleBlur);
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
     };
   }, []);
 

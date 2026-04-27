@@ -1,6 +1,9 @@
-import throttle from 'lodash/throttle';
-import React, { useCallback, useEffect, useRef } from 'react';
-import type { FetchNextPageOptions, InfiniteQueryObserverResult } from '@tanstack/react-query';
+import throttle from "lodash/throttle";
+import React, { useCallback, useEffect, useRef } from "react";
+import type {
+  FetchNextPageOptions,
+  InfiniteQueryObserverResult,
+} from "@tanstack/react-query";
 
 export default function useNavScrolling<TData>({
   nextCursor,
@@ -50,12 +53,12 @@ export default function useNavScrolling<TData>({
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      container.addEventListener('scroll', handleScroll);
+      container.addEventListener("scroll", handleScroll);
     }
 
     return () => {
       if (container) {
-        container.removeEventListener('scroll', handleScroll);
+        container.removeEventListener("scroll", handleScroll);
       }
     };
   }, [handleScroll]);

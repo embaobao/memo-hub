@@ -52,8 +52,8 @@ describe("ConfigLoader", () => {
   test("should mask secrets", () => {
     const config = {
       ai: {
-        providers: [{ id: "test", apiKey: "secret-key-123" }]
-      }
+        providers: [{ id: "test", apiKey: "secret-key-123" }],
+      },
     };
     const loader = new ConfigLoader();
     // @ts-ignore - reaching into private state for test

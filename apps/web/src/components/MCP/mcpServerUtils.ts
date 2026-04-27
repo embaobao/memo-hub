@@ -1,6 +1,6 @@
-import type { MCPServerStatus } from 'librechat-data-provider';
-import type { MCPServerDefinition } from '~/hooks/MCP/useMCPServerManager';
-import type { MCPServerStatusIconProps } from './MCPServerStatusIcon';
+import type { MCPServerStatus } from "librechat-data-provider";
+import type { MCPServerDefinition } from "~/hooks/MCP/useMCPServerManager";
+import type { MCPServerStatusIconProps } from "./MCPServerStatusIcon";
 
 export type { MCPServerStatus };
 
@@ -22,7 +22,11 @@ export type ConnectionStatusMap = Record<string, MCPServerStatus>;
 export function getSelectedServerIcons(
   selectedServers: MCPServerDefinition[],
   maxIcons: number = 3,
-): { icons: SelectedIconInfo[]; overflowCount: number; defaultServerNames: string[] } {
+): {
+  icons: SelectedIconInfo[];
+  overflowCount: number;
+  defaultServerNames: string[];
+} {
   const customIcons: SelectedIconInfo[] = [];
   const defaultServerNames: string[] = [];
 
@@ -47,10 +51,10 @@ export function getSelectedServerIcons(
       ? [
           ...customIcons,
           {
-            key: '_default_',
+            key: "_default_",
             serverName: defaultServerNames[0],
             iconPath: null,
-            displayName: 'MCP',
+            displayName: "MCP",
           },
         ]
       : customIcons;
@@ -79,42 +83,42 @@ export function getStatusColor(
 ): string {
   // In-progress states: blue
   if (isInitializing?.(serverName)) {
-    return 'bg-blue-500';
+    return "bg-blue-500";
   }
 
   const status = connectionStatus?.[serverName];
   if (!status) {
-    return 'bg-gray-400';
+    return "bg-gray-400";
   }
 
   const { connectionState, requiresOAuth } = status;
 
   // Connecting: blue (in progress)
-  if (connectionState === 'connecting') {
-    return 'bg-blue-500';
+  if (connectionState === "connecting") {
+    return "bg-blue-500";
   }
 
   // Connected: green (success)
-  if (connectionState === 'connected') {
-    return 'bg-green-500';
+  if (connectionState === "connected") {
+    return "bg-green-500";
   }
 
   // Error: red
-  if (connectionState === 'error') {
-    return 'bg-red-500';
+  if (connectionState === "error") {
+    return "bg-red-500";
   }
 
   // Disconnected: check if needs action or just inactive
-  if (connectionState === 'disconnected') {
+  if (connectionState === "disconnected") {
     // Needs OAuth = amber (requires user action)
     if (requiresOAuth) {
-      return 'bg-amber-500';
+      return "bg-amber-500";
     }
     // Simply disconnected = gray (neutral/inactive)
-    return 'bg-gray-400';
+    return "bg-gray-400";
   }
 
-  return 'bg-gray-400';
+  return "bg-gray-400";
 }
 
 export function getStatusTextKey(
@@ -123,29 +127,29 @@ export function getStatusTextKey(
   isInitializing?: (serverName: string) => boolean,
 ): string {
   if (isInitializing?.(serverName)) {
-    return 'com_nav_mcp_status_initializing';
+    return "com_nav_mcp_status_initializing";
   }
 
   const status = connectionStatus?.[serverName];
   if (!status) {
-    return 'com_nav_mcp_status_unknown';
+    return "com_nav_mcp_status_unknown";
   }
 
   const { connectionState, requiresOAuth } = status;
 
   // Special case: disconnected but needs OAuth shows different text
-  if (connectionState === 'disconnected' && requiresOAuth) {
-    return 'com_nav_mcp_status_needs_auth';
+  if (connectionState === "disconnected" && requiresOAuth) {
+    return "com_nav_mcp_status_needs_auth";
   }
 
   const keyMap: Record<string, string> = {
-    connected: 'com_nav_mcp_status_connected',
-    connecting: 'com_nav_mcp_status_connecting',
-    disconnected: 'com_nav_mcp_status_disconnected',
-    error: 'com_nav_mcp_status_error',
+    connected: "com_nav_mcp_status_connected",
+    connecting: "com_nav_mcp_status_connecting",
+    disconnected: "com_nav_mcp_status_disconnected",
+    error: "com_nav_mcp_status_error",
   };
 
-  return keyMap[connectionState] || 'com_nav_mcp_status_unknown';
+  return keyMap[connectionState] || "com_nav_mcp_status_unknown";
 }
 
 /**
@@ -160,10 +164,10 @@ export function serverNeedsAction(
   const { connectionState, requiresOAuth } = serverStatus;
 
   // Needs OAuth authentication
-  if (connectionState === 'disconnected' && requiresOAuth) return true;
+  if (connectionState === "disconnected" && requiresOAuth) return true;
 
   // Has error - needs retry
-  if (connectionState === 'error') return true;
+  if (connectionState === "error") return true;
 
   return false;
 }
@@ -172,10 +176,13 @@ export function serverNeedsAction(
  * Determines if an action button should be shown for a server status.
  * Returns true only when the button would be actionable (not just informational).
  */
-export function shouldShowActionButton(statusIconProps?: MCPServerStatusIconProps | null): boolean {
+export function shouldShowActionButton(
+  statusIconProps?: MCPServerStatusIconProps | null,
+): boolean {
   if (!statusIconProps) return false;
 
-  const { serverStatus, canCancel, hasCustomUserVars, isInitializing } = statusIconProps;
+  const { serverStatus, canCancel, hasCustomUserVars, isInitializing } =
+    statusIconProps;
 
   // Show cancel button during OAuth flow
   if (isInitializing && canCancel) return true;
@@ -186,11 +193,13 @@ export function shouldShowActionButton(statusIconProps?: MCPServerStatusIconProp
   const { connectionState, requiresOAuth } = serverStatus;
 
   // Show for disconnected/error (can reconnect/configure)
-  if (connectionState === 'disconnected' || connectionState === 'error') return true;
+  if (connectionState === "disconnected" || connectionState === "error")
+    return true;
   // Don't show connecting spinner (no action)
-  if (connectionState === 'connecting') return false;
+  if (connectionState === "connecting") return false;
   // Connected: only show if there's config to manage
-  if (connectionState === 'connected') return hasCustomUserVars || requiresOAuth;
+  if (connectionState === "connected")
+    return hasCustomUserVars || requiresOAuth;
 
   return false;
 }

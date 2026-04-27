@@ -1,2 +1,2 @@
 /* Memories */
-export * from './queries';
+export * from "./queries";

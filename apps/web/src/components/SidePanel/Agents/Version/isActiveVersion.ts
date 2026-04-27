@@ -1,4 +1,4 @@
-import type { AgentState, VersionRecord } from './types';
+import type { AgentState, VersionRecord } from "./types";
 
 export const isActiveVersion = (
   version: VersionRecord,
@@ -21,7 +21,8 @@ export const isActiveVersion = (
 
   const matchesName = version.name === currentAgent.name;
   const matchesDescription = version.description === currentAgent.description;
-  const matchesInstructions = version.instructions === currentAgent.instructions;
+  const matchesInstructions =
+    version.instructions === currentAgent.instructions;
   const matchesArtifacts = version.artifacts === currentAgent.artifacts;
 
   const toolsMatch = () => {
@@ -32,13 +33,16 @@ export const isActiveVersion = (
     const sortedVersionTools = [...version.tools].sort();
     const sortedCurrentTools = [...currentAgent.tools].sort();
 
-    return sortedVersionTools.every((tool, i) => tool === sortedCurrentTools[i]);
+    return sortedVersionTools.every(
+      (tool, i) => tool === sortedCurrentTools[i],
+    );
   };
 
   const capabilitiesMatch = () => {
     if (!version.capabilities && !currentAgent.capabilities) return true;
     if (!version.capabilities || !currentAgent.capabilities) return false;
-    if (version.capabilities.length !== currentAgent.capabilities.length) return false;
+    if (version.capabilities.length !== currentAgent.capabilities.length)
+      return false;
 
     const sortedVersionCapabilities = [...version.capabilities].sort();
     const sortedCurrentCapabilities = [...currentAgent.capabilities].sort();

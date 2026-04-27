@@ -8,6 +8,13 @@ export {
   type ICompleter,
   type ICAS,
   type IVectorStorage,
-} from './types.js';
-export { validateInstruction, Text2MemInstructionSchema, MemoOpSchema } from './schema.js';
-export { extractEntitiesFromText, type TextEntityExtractorOptions } from './text-entities.js';
+} from "./types.js";
+export {
+  validateInstruction,
+  Text2MemInstructionSchema,
+  MemoOpSchema,
+} from "./schema.js";
+export {
+  extractEntitiesFromText,
+  type TextEntityExtractorOptions,
+} from "./text-entities.js";

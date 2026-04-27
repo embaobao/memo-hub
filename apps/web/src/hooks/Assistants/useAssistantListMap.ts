@@ -1,13 +1,18 @@
-import { useMemo } from 'react';
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { AssistantListResponse, AssistantsEndpoint } from 'librechat-data-provider';
-import type { AssistantListItem } from '~/common';
-import { useListAssistantsQuery } from '~/data-provider';
+import { useMemo } from "react";
+import { EModelEndpoint } from "librechat-data-provider";
+import type {
+  AssistantListResponse,
+  AssistantsEndpoint,
+} from "librechat-data-provider";
+import type { AssistantListItem } from "~/common";
+import { useListAssistantsQuery } from "~/data-provider";
 
-const selectAssistantsResponse = (res: AssistantListResponse): AssistantListItem[] =>
+const selectAssistantsResponse = (
+  res: AssistantListResponse,
+): AssistantListItem[] =>
   res.data.map(({ id, name, metadata, model }) => ({
     id,
-    name: name ?? '',
+    name: name ?? "",
     metadata,
     model,
   }));

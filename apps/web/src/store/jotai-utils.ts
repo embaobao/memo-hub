@@ -1,6 +1,6 @@
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
-import type { SyncStorage } from 'jotai/vanilla/utils/atomWithStorage';
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import type { SyncStorage } from "jotai/vanilla/utils/atomWithStorage";
 
 /**
  * Create a simple atom with localStorage persistence
@@ -36,7 +36,7 @@ export function createStorageAtomWithEffect<T>(
     (get) => get(baseAtom),
     (get, set, newValue: T) => {
       set(baseAtom, newValue);
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         onWrite(newValue);
       }
     },
@@ -54,7 +54,7 @@ export function createStorageAtomWithEffect<T>(
 export function createTabIsolatedStorage<Value>(): SyncStorage<Value> {
   return {
     getItem(key: string, initialValue: Value): Value {
-      if (typeof window === 'undefined') {
+      if (typeof window === "undefined") {
         return initialValue;
       }
       try {
@@ -68,7 +68,7 @@ export function createTabIsolatedStorage<Value>(): SyncStorage<Value> {
       }
     },
     setItem(key: string, newValue: Value): void {
-      if (typeof window === 'undefined') {
+      if (typeof window === "undefined") {
         return;
       }
       try {
@@ -78,7 +78,7 @@ export function createTabIsolatedStorage<Value>(): SyncStorage<Value> {
       }
     },
     removeItem(key: string): void {
-      if (typeof window === 'undefined') {
+      if (typeof window === "undefined") {
         return;
       }
       try {
@@ -119,7 +119,7 @@ export function initializeFromStorage<T>(
   defaultValue: T,
   onInit?: (value: T) => void,
 ): T {
-  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+  if (typeof window === "undefined" || typeof localStorage === "undefined") {
     return defaultValue;
   }
 
@@ -133,13 +133,19 @@ export function initializeFromStorage<T>(
 
     return value;
   } catch (error) {
-    console.error(`Error initializing ${key} from localStorage, using default. Error:`, error);
+    console.error(
+      `Error initializing ${key} from localStorage, using default. Error:`,
+      error,
+    );
 
     // Reset corrupted value
     try {
       localStorage.setItem(key, JSON.stringify(defaultValue));
     } catch (setError) {
-      console.error(`Error resetting corrupted ${key} in localStorage:`, setError);
+      console.error(
+        `Error resetting corrupted ${key} in localStorage:`,
+        setError,
+      );
     }
 
     if (onInit) {

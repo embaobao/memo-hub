@@ -1,17 +1,17 @@
-import { isAssistantsEndpoint } from 'librechat-data-provider';
-import type { TSubmission } from 'librechat-data-provider';
-import type { EventHandlerParams } from './useEventHandlers';
-import useResumableSSE from './useResumableSSE';
-import useSSE from './useSSE';
+import { isAssistantsEndpoint } from "librechat-data-provider";
+import type { TSubmission } from "librechat-data-provider";
+import type { EventHandlerParams } from "./useEventHandlers";
+import useResumableSSE from "./useResumableSSE";
+import useSSE from "./useSSE";
 
 type ChatHelpers = Pick<
   EventHandlerParams,
-  | 'setMessages'
-  | 'getMessages'
-  | 'setConversation'
-  | 'setIsSubmitting'
-  | 'newConversation'
-  | 'resetLatestMessage'
+  | "setMessages"
+  | "getMessages"
+  | "setConversation"
+  | "setIsSubmitting"
+  | "newConversation"
+  | "resetLatestMessage"
 >;
 
 /**
@@ -33,7 +33,12 @@ export default function useAdaptiveSSE(
   const isAssistants = isAssistantsEndpoint(actualEndpoint);
   const resumableEnabled = !isAssistants;
 
-  useSSE(resumableEnabled ? null : submission, chatHelpers, isAddedRequest, runIndex);
+  useSSE(
+    resumableEnabled ? null : submission,
+    chatHelpers,
+    isAddedRequest,
+    runIndex,
+  );
 
   const { streamId } = useResumableSSE(
     resumableEnabled ? submission : null,

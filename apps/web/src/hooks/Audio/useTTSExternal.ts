@@ -1,13 +1,13 @@
 // client/src/hooks/Audio/useTTSExternal.ts
-import { useRef, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { parseTextParts } from 'librechat-data-provider';
-import type { TMessageContentParts } from 'librechat-data-provider';
-import useTextToSpeechExternal from '~/hooks/Input/useTextToSpeechExternal';
-import usePauseGlobalAudio from '~/hooks/Audio/usePauseGlobalAudio';
-import useAudioRef from '~/hooks/Audio/useAudioRef';
-import { logger } from '~/utils';
-import store from '~/store';
+import { useRef, useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { parseTextParts } from "librechat-data-provider";
+import type { TMessageContentParts } from "librechat-data-provider";
+import useTextToSpeechExternal from "~/hooks/Input/useTextToSpeechExternal";
+import usePauseGlobalAudio from "~/hooks/Audio/usePauseGlobalAudio";
+import useAudioRef from "~/hooks/Audio/useAudioRef";
+import { logger } from "~/utils";
+import store from "~/store";
 
 type TUseTextToSpeech = {
   messageId?: string;
@@ -47,11 +47,14 @@ const useTTSExternal = (props?: TUseTextToSpeech) => {
     if (voices.length) {
       const lastSelectedVoice = voices.find((v) => v === voice);
       if (lastSelectedVoice != null) {
-        logger.log('useTextToSpeech.ts - Effect:', { voices, voice: lastSelectedVoice });
+        logger.log("useTextToSpeech.ts - Effect:", {
+          voices,
+          voice: lastSelectedVoice,
+        });
         setVoice(lastSelectedVoice.toString());
         return;
       }
-      logger.log('useTextToSpeech.ts - Effect:', { voices, voice: firstVoice });
+      logger.log("useTextToSpeech.ts - Effect:", { voices, voice: firstVoice });
       setVoice(firstVoice.toString());
     }
   }, [setVoice, voice, voices]);
@@ -60,9 +63,11 @@ const useTTSExternal = (props?: TUseTextToSpeech) => {
     isMouseDownRef.current = true;
     timerRef.current = window.setTimeout(() => {
       if (isMouseDownRef.current) {
-        const messageContent = content ?? '';
+        const messageContent = content ?? "";
         const parsedMessage =
-          typeof messageContent === 'string' ? messageContent : parseTextParts(messageContent);
+          typeof messageContent === "string"
+            ? messageContent
+            : parseTextParts(messageContent);
         generateSpeech(parsedMessage, false);
       }
     }, 1000);
@@ -80,9 +85,11 @@ const useTTSExternal = (props?: TUseTextToSpeech) => {
       cancelSpeech();
       pauseGlobalAudio();
     } else {
-      const messageContent = content ?? '';
+      const messageContent = content ?? "";
       const parsedMessage =
-        typeof messageContent === 'string' ? messageContent : parseTextParts(messageContent);
+        typeof messageContent === "string"
+          ? messageContent
+          : parseTextParts(messageContent);
       generateSpeech(parsedMessage, false);
     }
   };

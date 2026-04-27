@@ -1,7 +1,9 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
-import copy from 'copy-to-clipboard';
+import { useRef, useState, useCallback, useEffect } from "react";
+import copy from "copy-to-clipboard";
 
-export default function useCopyCode(codeRef: React.RefObject<HTMLElement | null>) {
+export default function useCopyCode(
+  codeRef: React.RefObject<HTMLElement | null>,
+) {
   const [isCopied, setIsCopied] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -18,7 +20,7 @@ export default function useCopyCode(codeRef: React.RefObject<HTMLElement | null>
 
     const wasFocused = document.activeElement === buttonRef.current;
     setIsCopied(true);
-    copy(codeString.trim(), { format: 'text/plain' });
+    copy(codeString.trim(), { format: "text/plain" });
 
     if (wasFocused) {
       requestAnimationFrame(() => buttonRef.current?.focus());

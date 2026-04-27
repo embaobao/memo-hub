@@ -1,5 +1,9 @@
-import { Permissions, PermissionBits, PermissionTypes } from 'librechat-data-provider';
-import { useHasAccess } from '~/hooks/Roles';
+import {
+  Permissions,
+  PermissionBits,
+  PermissionTypes,
+} from "librechat-data-provider";
+import { useHasAccess } from "~/hooks/Roles";
 
 /**
  * Hook to determine the appropriate permission level for agent queries based on marketplace configuration

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 /**
  * Extended Navigator type that includes the Screen Wake Lock API
@@ -15,9 +15,9 @@ type WakeLockCapableNavigator = Navigator & {
  * Prevents SSR issues by verifying window, navigator, and document exist
  */
 const isClientEnvironment =
-  typeof window !== 'undefined' &&
-  typeof navigator !== 'undefined' &&
-  typeof document !== 'undefined';
+  typeof window !== "undefined" &&
+  typeof navigator !== "undefined" &&
+  typeof document !== "undefined";
 
 const getNavigator = () => navigator as WakeLockCapableNavigator;
 
@@ -25,7 +25,7 @@ const getNavigator = () => navigator as WakeLockCapableNavigator;
  * Determines if the browser supports the Screen Wake Lock API
  * Checking outside component scope for better performance
  */
-const supportsWakeLock = isClientEnvironment && 'wakeLock' in navigator;
+const supportsWakeLock = isClientEnvironment && "wakeLock" in navigator;
 
 /**
  * Enable/disable debug logging for wake lock operations
@@ -58,7 +58,7 @@ export const useWakeLock = (shouldHold: boolean) => {
   useEffect(() => {
     if (!supportsWakeLock) {
       if (DEBUG_WAKE_LOCK) {
-        console.log('[WakeLock] API not supported in this browser');
+        console.log("[WakeLock] API not supported in this browser");
       }
       return;
     }
@@ -89,10 +89,10 @@ export const useWakeLock = (shouldHold: boolean) => {
       try {
         await wakeLockRef.current.release();
         if (DEBUG_WAKE_LOCK) {
-          console.log('[WakeLock] Lock released successfully');
+          console.log("[WakeLock] Lock released successfully");
         }
       } catch (error) {
-        console.warn('[WakeLock] release failed', error);
+        console.warn("[WakeLock] release failed", error);
       } finally {
         wakeLockRef.current = null;
       }
@@ -110,18 +110,18 @@ export const useWakeLock = (shouldHold: boolean) => {
       if (
         !shouldHold ||
         cancelled ||
-        document.visibilityState !== 'visible' ||
+        document.visibilityState !== "visible" ||
         wakeLockRef.current
       ) {
         return;
       }
 
       try {
-        const sentinel = await wakeLock.request('screen');
+        const sentinel = await wakeLock.request("screen");
         wakeLockRef.current = sentinel;
 
         if (DEBUG_WAKE_LOCK) {
-          console.log('[WakeLock] Lock acquired successfully');
+          console.log("[WakeLock] Lock acquired successfully");
         }
 
         /**
@@ -144,23 +144,29 @@ export const useWakeLock = (shouldHold: boolean) => {
          */
         const handleRelease = () => {
           wakeLockRef.current = null;
-          sentinel.removeEventListener('release', handleRelease);
+          sentinel.removeEventListener("release", handleRelease);
 
           if (DEBUG_WAKE_LOCK) {
-            console.log('[WakeLock] Lock released, checking if re-acquire needed');
+            console.log(
+              "[WakeLock] Lock released, checking if re-acquire needed",
+            );
           }
 
-          if (!cancelled && shouldHold && document.visibilityState === 'visible') {
+          if (
+            !cancelled &&
+            shouldHold &&
+            document.visibilityState === "visible"
+          ) {
             if (DEBUG_WAKE_LOCK) {
-              console.log('[WakeLock] Re-acquiring lock');
+              console.log("[WakeLock] Re-acquiring lock");
             }
             void requestLock();
           }
         };
 
-        sentinel.addEventListener('release', handleRelease);
+        sentinel.addEventListener("release", handleRelease);
       } catch (error) {
-        console.warn('[WakeLock] request failed', error);
+        console.warn("[WakeLock] request failed", error);
       }
     };
 
@@ -175,17 +181,17 @@ export const useWakeLock = (shouldHold: boolean) => {
       }
 
       if (DEBUG_WAKE_LOCK) {
-        console.log('[WakeLock] Visibility changed:', document.visibilityState);
+        console.log("[WakeLock] Visibility changed:", document.visibilityState);
       }
 
-      if (document.visibilityState === 'visible' && shouldHold) {
+      if (document.visibilityState === "visible" && shouldHold) {
         void requestLock();
       }
     };
 
     if (shouldHold) {
       void requestLock();
-      document.addEventListener('visibilitychange', handleVisibilityChange);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
     } else {
       void releaseLock();
     }
@@ -202,7 +208,7 @@ export const useWakeLock = (shouldHold: boolean) => {
      */
     return () => {
       cancelled = true;
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       void releaseLock();
     };
   }, [shouldHold]);

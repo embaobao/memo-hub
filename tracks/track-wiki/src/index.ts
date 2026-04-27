@@ -1,13 +1,18 @@
-import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider } from '@memohub/protocol';
-import { MemoOp } from '@memohub/protocol';
+import type {
+  Text2MemInstruction,
+  Text2MemResult,
+  IKernel,
+  ITrackProvider,
+} from "@memohub/protocol";
+import { MemoOp } from "@memohub/protocol";
 
 /**
  * 真理库轨道 (Wiki Track)
  * 职责: 存储经过 Librarian 整理且通过“澄清环节”确认的权威知识。
  */
 export class WikiTrack implements ITrackProvider {
-  id = 'track-wiki';
-  name = 'Wiki Track';
+  id = "track-wiki";
+  name = "Wiki Track";
 
   private kernel!: IKernel;
 
@@ -32,24 +37,40 @@ export class WikiTrack implements ITrackProvider {
       case MemoOp.ANCHOR:
         return this.handleAnchor(instruction);
       default:
-        return { success: false, error: `Wiki 轨道不支持操作: ${instruction.op}` };
+        return {
+          success: false,
+          error: `Wiki 轨道不支持操作: ${instruction.op}`,
+        };
     }
   }
 
   private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { title, content, category = 'wiki', version = '1.0.0' } = inst.payload ?? {};
-      if (!title || !content) return { success: false, error: 'title 和 content 均为必填项' };
+      const {
+        title,
+        content,
+        category = "wiki",
+        version = "1.0.0",
+      } = inst.payload ?? {};
+      if (!title || !content)
+        return { success: false, error: "title 和 content 均为必填项" };
 
       const hash = await this.kernel.getCAS().write(content);
-      const vector = await this.kernel.getEmbedder().embed(`${title}\n${content}`);
+      const vector = await this.kernel
+        .getEmbedder()
+        .embed(`${title}\n${content}`);
       const id = `wiki-${Date.now()}`;
 
       await this.kernel.getVectorStorage().add({
-        id, vector, hash, track_id: this.id,
-        title, category, version,
+        id,
+        vector,
+        hash,
+        track_id: this.id,
+        title,
+        category,
+        version,
         verified: true,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
 
       return { success: true, data: { id, hash } };
@@ -58,22 +79,32 @@ export class WikiTrack implements ITrackProvider {
     }
   }
 
-  private async handleRetrieve(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleRetrieve(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { query, limit = 5 } = inst.payload ?? {};
     const vector = await this.kernel.getEmbedder().embed(query);
     const results = await this.kernel.getVectorStorage().search(vector, {
-      limit, filter: `track_id = '${this.id}'`
+      limit,
+      filter: `track_id = '${this.id}'`,
     });
-    
-    const hydrated = await Promise.all(results.map(async (r: any) => ({
-      ...r,
-      text: await this.kernel.getCAS().read(r.hash).catch(() => '')
-    })));
+
+    const hydrated = await Promise.all(
+      results.map(async (r: any) => ({
+        ...r,
+        text: await this.kernel
+          .getCAS()
+          .read(r.hash)
+          .catch(() => ""),
+      })),
+    );
 
     return { success: true, data: hydrated };
   }
 
-  private async handleUpdate(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleUpdate(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { id, content, version } = inst.payload ?? {};
     const updates: any = { version };
     if (content) {
@@ -84,23 +115,34 @@ export class WikiTrack implements ITrackProvider {
     return { success: true };
   }
 
-  private async handleDelete(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleDelete(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { ids } = inst.payload ?? {};
-    for (const id of ids) await this.kernel.getVectorStorage().delete(`id = '${id}'`);
+    for (const id of ids)
+      await this.kernel.getVectorStorage().delete(`id = '${id}'`);
     return { success: true };
   }
 
   private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+    const records = await this.kernel
+      .getVectorStorage()
+      .list(`track_id = '${this.id}'`);
     return { success: true, data: records };
   }
 
-  private async handleExport(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+  private async handleExport(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
+    const records = await this.kernel
+      .getVectorStorage()
+      .list(`track_id = '${this.id}'`);
     return { success: true, data: records };
   }
 
-  private async handleAnchor(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleAnchor(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     return { success: true };
   }
 }

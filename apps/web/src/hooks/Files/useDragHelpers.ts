@@ -1,9 +1,9 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
-import { useDrop } from 'react-dnd';
-import { useToastContext } from '@librechat/client';
-import { NativeTypes } from 'react-dnd-html5-backend';
-import { useQueryClient } from '@tanstack/react-query';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useState, useMemo, useCallback, useRef } from "react";
+import { useDrop } from "react-dnd";
+import { useToastContext } from "@librechat/client";
+import { NativeTypes } from "react-dnd-html5-backend";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import {
   Tools,
   QueryKeys,
@@ -17,13 +17,13 @@ import {
   isAssistantsEndpoint,
   getEndpointFileConfig,
   defaultAgentCapabilities,
-} from 'librechat-data-provider';
-import type { DropTargetMonitor } from 'react-dnd';
-import type * as t from 'librechat-data-provider';
-import store, { ephemeralAgentByConvoId } from '~/store';
-import useFileHandling from './useFileHandling';
-import { isEphemeralAgent } from '~/common';
-import useLocalize from '../useLocalize';
+} from "librechat-data-provider";
+import type { DropTargetMonitor } from "react-dnd";
+import type * as t from "librechat-data-provider";
+import store, { ephemeralAgentByConvoId } from "~/store";
+import useFileHandling from "./useFileHandling";
+import { isEphemeralAgent } from "~/common";
+import useLocalize from "../useLocalize";
 
 export default function useDragHelpers() {
   const queryClient = useQueryClient();
@@ -31,9 +31,12 @@ export default function useDragHelpers() {
   const localize = useLocalize();
   const [showModal, setShowModal] = useState(false);
   const [draggedFiles, setDraggedFiles] = useState<File[]>([]);
-  const conversation = useRecoilValue(store.conversationByIndex(0)) || undefined;
+  const conversation =
+    useRecoilValue(store.conversationByIndex(0)) || undefined;
   const setEphemeralAgent = useSetRecoilState(
-    ephemeralAgentByConvoId(conversation?.conversationId ?? Constants.NEW_CONVO),
+    ephemeralAgentByConvoId(
+      conversation?.conversationId ?? Constants.NEW_CONVO,
+    ),
   );
 
   const isAssistants = useMemo(
@@ -69,8 +72,10 @@ export default function useDragHelpers() {
   const handleDrop = useCallback(
     (item: { files: File[] }) => {
       /** Early block: leverage endpoint file config to prevent drag/drop on disabled endpoints */
-      const currentEndpoint = conversationRef.current?.endpoint ?? 'default';
-      const endpointsConfig = queryClient.getQueryData<t.TEndpointsConfig>([QueryKeys.endpoints]);
+      const currentEndpoint = conversationRef.current?.endpoint ?? "default";
+      const endpointsConfig = queryClient.getQueryData<t.TEndpointsConfig>([
+        QueryKeys.endpoints,
+      ]);
 
       /** Get agent data from cache; if absent, provider-specific file config restrictions are bypassed client-side */
       const agentId = conversationRef.current?.agent_id;
@@ -83,7 +88,9 @@ export default function useDragHelpers() {
         currentEndpoint,
         agent?.provider,
       );
-      const cfg = queryClient.getQueryData<t.FileConfig>([QueryKeys.fileConfig]);
+      const cfg = queryClient.getQueryData<t.FileConfig>([
+        QueryKeys.fileConfig,
+      ]);
       if (cfg) {
         const mergedCfg = mergeFileConfig(cfg);
         const endpointCfg = getEndpointFileConfig({
@@ -93,8 +100,8 @@ export default function useDragHelpers() {
         });
         if (endpointCfg?.disabled === true) {
           showToast({
-            message: localize('com_ui_attach_error_disabled'),
-            status: 'error',
+            message: localize("com_ui_attach_error_disabled"),
+            status: "error",
           });
           return;
         }
@@ -106,10 +113,14 @@ export default function useDragHelpers() {
       }
 
       const agentsConfig = endpointsConfig?.[EModelEndpoint.agents];
-      const capabilities = agentsConfig?.capabilities ?? defaultAgentCapabilities;
-      const fileSearchEnabled = capabilities.includes(AgentCapabilities.file_search) === true;
-      const codeEnabled = capabilities.includes(AgentCapabilities.execute_code) === true;
-      const contextEnabled = capabilities.includes(AgentCapabilities.context) === true;
+      const capabilities =
+        agentsConfig?.capabilities ?? defaultAgentCapabilities;
+      const fileSearchEnabled =
+        capabilities.includes(AgentCapabilities.file_search) === true;
+      const codeEnabled =
+        capabilities.includes(AgentCapabilities.execute_code) === true;
+      const contextEnabled =
+        capabilities.includes(AgentCapabilities.context) === true;
 
       let fileSearchAllowedByAgent = true;
       let codeAllowedByAgent = true;
@@ -117,8 +128,10 @@ export default function useDragHelpers() {
       if (agentId && !isEphemeralAgent(agentId)) {
         if (agent) {
           const agentTools = agent.tools as string[] | undefined;
-          fileSearchAllowedByAgent = agentTools?.includes(Tools.file_search) ?? false;
-          codeAllowedByAgent = agentTools?.includes(Tools.execute_code) ?? false;
+          fileSearchAllowedByAgent =
+            agentTools?.includes(Tools.file_search) ?? false;
+          codeAllowedByAgent =
+            agentTools?.includes(Tools.execute_code) ?? false;
         } else {
           fileSearchAllowedByAgent = false;
           codeAllowedByAgent = false;
@@ -127,7 +140,7 @@ export default function useDragHelpers() {
 
       /** Determine if dragged files are all images (enables the base image option) */
       const allImages = item.files.every((f) =>
-        inferMimeType(f.name, f.type)?.startsWith('image/'),
+        inferMimeType(f.name, f.type)?.startsWith("image/"),
       );
 
       const shouldShowModal =

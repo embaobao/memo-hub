@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from "react";
 
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -24,9 +24,9 @@ export default function useFocusTrap(
     }
 
     const getFocusableElements = () =>
-      Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-        (el) => !el.closest('[aria-hidden="true"]'),
-      );
+      Array.from(
+        container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter((el) => !el.closest('[aria-hidden="true"]'));
 
     // Focus first focusable element on open
     const focusableElements = getFocusableElements();
@@ -35,13 +35,13 @@ export default function useFocusTrap(
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         onEscapeRef.current?.();
         return;
       }
 
-      if (e.key !== 'Tab') {
+      if (e.key !== "Tab") {
         return;
       }
 
@@ -62,7 +62,7 @@ export default function useFocusTrap(
       }
     };
 
-    container.addEventListener('keydown', handleKeyDown);
-    return () => container.removeEventListener('keydown', handleKeyDown);
+    container.addEventListener("keydown", handleKeyDown);
+    return () => container.removeEventListener("keydown", handleKeyDown);
   }, [active, containerRef]);
 }

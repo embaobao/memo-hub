@@ -1,2 +1,2 @@
-export * from './plugin';
-export type * from './types';
+export * from "./plugin";
+export type * from "./types";

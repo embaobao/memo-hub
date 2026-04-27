@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import type { Location } from 'react-router-dom';
+import { useCallback, useEffect, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import type { Location } from "react-router-dom";
 
 export function useCustomLink<T = HTMLAnchorElement>(
   route: string,
@@ -25,7 +25,9 @@ export function useCustomLink<T = HTMLAnchorElement>(
 
 export const usePreviousLocation = () => {
   const location = useLocation();
-  const previousLocationRef: React.MutableRefObject<Location<unknown> | undefined> = useRef();
+  const previousLocationRef: React.MutableRefObject<
+    Location<unknown> | undefined
+  > = useRef();
 
   useEffect(() => {
     previousLocationRef.current = location.state?.prevLocation;

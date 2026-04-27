@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import type { RefObject } from "react";
 
 const MAX_HEIGHT_VH = 0.45;
 
@@ -13,7 +13,7 @@ export function scaleImage({
 }): { width: string; height: string } {
   const container = containerRef.current;
   if (!container) {
-    return { width: 'auto', height: 'auto' };
+    return { width: "auto", height: "auto" };
   }
 
   const containerWidth = container.clientWidth;

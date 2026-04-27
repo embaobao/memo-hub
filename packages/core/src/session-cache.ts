@@ -1,5 +1,5 @@
-import { LRUCache } from 'lru-cache';
-import { VectorRecord } from '@memohub/storage-soul';
+import { LRUCache } from "lru-cache";
+import { VectorRecord } from "@memohub/storage-soul";
 
 export class SessionCacheLayer {
   private cache: LRUCache<string, VectorRecord>;

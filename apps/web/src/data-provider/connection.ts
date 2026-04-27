@@ -1,7 +1,7 @@
-import { useCallback, useRef, useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { QueryKeys, Time, dataService } from 'librechat-data-provider';
-import { logger } from '~/utils';
+import { useCallback, useRef, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeys, Time, dataService } from "librechat-data-provider";
+import { logger } from "~/utils";
 
 export const useHealthCheck = (isAuthenticated = false) => {
   const queryClient = useQueryClient();
@@ -25,13 +25,17 @@ export const useHealthCheck = (isAuthenticated = false) => {
     const initTimer = setTimeout(() => {
       const performHealthCheck = async () => {
         try {
-          await queryClient.fetchQuery([QueryKeys.health], () => dataService.healthCheck(), {
-            retry: false,
-            cacheTime: 0,
-            staleTime: 0,
-          });
+          await queryClient.fetchQuery(
+            [QueryKeys.health],
+            () => dataService.healthCheck(),
+            {
+              retry: false,
+              cacheTime: 0,
+              staleTime: 0,
+            },
+          );
         } catch (error) {
-          console.error('Health check failed:', error);
+          console.error("Health check failed:", error);
         }
       };
 
@@ -63,7 +67,7 @@ export const useHealthCheck = (isAuthenticated = false) => {
 
       // Store handler for cleanup
       focusHandlerRef.current = handleWindowFocus;
-      window.addEventListener('focus', handleWindowFocus);
+      window.addEventListener("focus", handleWindowFocus);
     }, 500);
 
     return () => {
@@ -74,7 +78,7 @@ export const useHealthCheck = (isAuthenticated = false) => {
       }
       // Remove focus event listener if it was added
       if (focusHandlerRef.current) {
-        window.removeEventListener('focus', focusHandlerRef.current);
+        window.removeEventListener("focus", focusHandlerRef.current);
         focusHandlerRef.current = null;
       }
     };
@@ -89,7 +93,7 @@ export const useInteractionHealthCheck = () => {
     const currentTime = Date.now();
     if (currentTime - lastInteractionTimeRef.current > Time.FIVE_MINUTES) {
       logger.log(
-        'Checking health on interaction. Time elapsed:',
+        "Checking health on interaction. Time elapsed:",
         currentTime - lastInteractionTimeRef.current,
       );
       queryClient.invalidateQueries([QueryKeys.health]);

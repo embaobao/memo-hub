@@ -1,4 +1,10 @@
-import { ICAS, IVectorStorage, IEmbedder, ICompleter, IKernel } from '@memohub/protocol';
+import {
+  ICAS,
+  IVectorStorage,
+  IEmbedder,
+  ICompleter,
+  IKernel,
+} from "@memohub/protocol";
 
 /**
  * Host resources injected into tools during execution.
@@ -17,6 +23,6 @@ export interface IHostResources {
     getCompleter(agentId?: string): ICompleter;
   };
   logger: {
-    log(msg: string, level?: 'info' | 'warn' | 'error'): void;
+    log(msg: string, level?: "info" | "warn" | "error"): void;
   };
 }

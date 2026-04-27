@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export default function useCustomAudioRef({
   setIsPlaying,
@@ -9,7 +9,7 @@ export default function useCustomAudioRef({
   useEffect(() => {
     const handleEnded = () => {
       setIsPlaying(false);
-      console.log('message audio ended');
+      console.log("message audio ended");
       if (audioRef.current) {
         URL.revokeObjectURL(audioRef.current.src);
       }
@@ -17,28 +17,28 @@ export default function useCustomAudioRef({
 
     const handleStart = () => {
       setIsPlaying(true);
-      console.log('message audio started');
+      console.log("message audio started");
     };
 
     const handlePause = () => {
       setIsPlaying(false);
-      console.log('message audio paused');
+      console.log("message audio paused");
     };
 
     const audioElement = audioRef.current;
 
     if (audioRef.current) {
       audioRef.current.muted = true;
-      audioRef.current.addEventListener('ended', handleEnded);
-      audioRef.current.addEventListener('play', handleStart);
-      audioRef.current.addEventListener('pause', handlePause);
+      audioRef.current.addEventListener("ended", handleEnded);
+      audioRef.current.addEventListener("play", handleStart);
+      audioRef.current.addEventListener("pause", handlePause);
     }
 
     return () => {
       if (audioElement) {
-        audioElement.removeEventListener('ended', handleEnded);
-        audioElement.removeEventListener('play', handleStart);
-        audioElement.removeEventListener('pause', handlePause);
+        audioElement.removeEventListener("ended", handleEnded);
+        audioElement.removeEventListener("play", handleStart);
+        audioElement.removeEventListener("pause", handlePause);
         URL.revokeObjectURL(audioElement.src);
       }
     };

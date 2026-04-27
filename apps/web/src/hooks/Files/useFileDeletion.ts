@@ -1,11 +1,15 @@
-import debounce from 'lodash/debounce';
-import { FileSources, EToolResources, removeNullishValues } from 'librechat-data-provider';
-import { useCallback, useState, useEffect } from 'react';
-import type * as t from 'librechat-data-provider';
-import type { UseMutateAsyncFunction } from '@tanstack/react-query';
-import type { ExtendedFile, GenericSetter } from '~/common';
-import useSetFilesToDelete from './useSetFilesToDelete';
-import { deletePreview } from '~/utils';
+import debounce from "lodash/debounce";
+import {
+  FileSources,
+  EToolResources,
+  removeNullishValues,
+} from "librechat-data-provider";
+import { useCallback, useState, useEffect } from "react";
+import type * as t from "librechat-data-provider";
+import type { UseMutateAsyncFunction } from "@tanstack/react-query";
+import type { ExtendedFile, GenericSetter } from "~/common";
+import useSetFilesToDelete from "./useSetFilesToDelete";
+import { deletePreview } from "~/utils";
 
 type FileMapSetter = GenericSetter<Map<string, ExtendedFile>>;
 
@@ -15,7 +19,12 @@ const useFileDeletion = ({
   assistant_id,
   tool_resource,
 }: {
-  mutateAsync: UseMutateAsyncFunction<t.DeleteFilesResponse, unknown, t.DeleteFilesBody, unknown>;
+  mutateAsync: UseMutateAsyncFunction<
+    t.DeleteFilesResponse,
+    unknown,
+    t.DeleteFilesBody,
+    unknown
+  >;
   agent_id?: string;
   assistant_id?: string;
   tool_resource?: EToolResources;
@@ -40,7 +49,7 @@ const useFileDeletion = ({
         assistant_id,
         tool_resource,
       });
-      console.log('Deleting files:', filesToDelete, payload);
+      console.log("Deleting files:", filesToDelete, payload);
       mutateAsync({ files: filesToDelete, ...payload });
       setFileDeleteBatch([]);
     },
@@ -56,17 +65,23 @@ const useFileDeletion = ({
   }, [debouncedDelete]);
 
   const deleteFile = useCallback(
-    ({ file: _file, setFiles }: { file: ExtendedFile | t.TFile; setFiles?: FileMapSetter }) => {
+    ({
+      file: _file,
+      setFiles,
+    }: {
+      file: ExtendedFile | t.TFile;
+      setFiles?: FileMapSetter;
+    }) => {
       const {
         file_id,
-        temp_file_id = '',
-        filepath = '',
+        temp_file_id = "",
+        filepath = "",
         source = FileSources.local,
         embedded,
         attached = false,
       } = _file as t.TFile & { attached?: boolean };
 
-      const progress = _file['progress'] ?? 1;
+      const progress = _file["progress"] ?? 1;
 
       if (progress < 1) {
         return;
@@ -113,14 +128,20 @@ const useFileDeletion = ({
   );
 
   const deleteFiles = useCallback(
-    ({ files, setFiles }: { files: ExtendedFile[] | t.TFile[]; setFiles?: FileMapSetter }) => {
+    ({
+      files,
+      setFiles,
+    }: {
+      files: ExtendedFile[] | t.TFile[];
+      setFiles?: FileMapSetter;
+    }) => {
       const batchFiles: t.BatchFile[] = [];
       for (const _file of files) {
         const {
           file_id,
           embedded,
           temp_file_id,
-          filepath = '',
+          filepath = "",
           source = FileSources.local,
         } = _file;
 

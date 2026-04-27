@@ -4,7 +4,7 @@ export interface IEmbedder {
 }
 
 export interface ChatMessage {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -20,6 +20,6 @@ export class AIProviderError extends Error {
     public readonly cause?: Error,
   ) {
     super(message);
-    this.name = 'AIProviderError';
+    this.name = "AIProviderError";
   }
 }

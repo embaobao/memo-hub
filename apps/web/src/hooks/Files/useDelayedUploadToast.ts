@@ -1,11 +1,13 @@
-import { useState } from 'react';
-import { useToastContext } from '@librechat/client';
-import { useLocalize } from '~/hooks';
+import { useState } from "react";
+import { useToastContext } from "@librechat/client";
+import { useLocalize } from "~/hooks";
 
 export const useDelayedUploadToast = () => {
   const localize = useLocalize();
   const { showToast } = useToastContext();
-  const [uploadTimers, setUploadTimers] = useState<Record<string, NodeJS.Timeout>>({});
+  const [uploadTimers, setUploadTimers] = useState<
+    Record<string, NodeJS.Timeout>
+  >({});
 
   const determineDelay = (fileSize: number): number => {
     const baseDelay = 5000;
@@ -13,7 +15,11 @@ export const useDelayedUploadToast = () => {
     return baseDelay + additionalDelay;
   };
 
-  const startUploadTimer = (fileId: string, fileName: string, fileSize: number) => {
+  const startUploadTimer = (
+    fileId: string,
+    fileName: string,
+    fileSize: number,
+  ) => {
     const delay = determineDelay(fileSize);
 
     if (uploadTimers[fileId]) {
@@ -21,10 +27,10 @@ export const useDelayedUploadToast = () => {
     }
 
     const timer = setTimeout(() => {
-      const message = localize('com_ui_upload_delay', { 0: fileName });
+      const message = localize("com_ui_upload_delay", { 0: fileName });
       showToast({
         message,
-        status: 'warning',
+        status: "warning",
         duration: 10000,
       });
     }, delay);

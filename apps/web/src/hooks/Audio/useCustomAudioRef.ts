@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface CustomAudioElement extends HTMLAudioElement {
   customStarted?: boolean;
@@ -11,7 +11,9 @@ interface CustomAudioElement extends HTMLAudioElement {
   };
 }
 
-type TCustomAudioResult = { audioRef: React.MutableRefObject<CustomAudioElement | null> };
+type TCustomAudioResult = {
+  audioRef: React.MutableRefObject<CustomAudioElement | null>;
+};
 
 export default function useCustomAudioRef({
   setIsPlaying,
@@ -25,7 +27,7 @@ export default function useCustomAudioRef({
 
     const handleEnded = () => {
       setIsPlaying(false);
-      console.log('global audio ended');
+      console.log("global audio ended");
       if (audioRef.current) {
         audioRef.current.customEnded = true;
         URL.revokeObjectURL(audioRef.current.src);
@@ -34,14 +36,14 @@ export default function useCustomAudioRef({
 
     const handleStart = () => {
       setIsPlaying(true);
-      console.log('global audio started');
+      console.log("global audio started");
       if (audioRef.current) {
         audioRef.current.customStarted = true;
       }
     };
 
     const handlePause = () => {
-      console.log('global audio paused');
+      console.log("global audio paused");
       if (audioRef.current) {
         audioRef.current.customPaused = true;
       }
@@ -61,7 +63,7 @@ export default function useCustomAudioRef({
         lastTimeUpdate = currentTime;
 
         if (sameTimeUpdateCount >= 1) {
-          console.log('Detected end of audio based on time update');
+          console.log("Detected end of audio based on time update");
           audioRef.current.pause();
           handleEnded();
         }
@@ -71,10 +73,10 @@ export default function useCustomAudioRef({
     const audioElement = audioRef.current;
 
     if (audioRef.current) {
-      audioRef.current.addEventListener('ended', handleEnded);
-      audioRef.current.addEventListener('play', handleStart);
-      audioRef.current.addEventListener('pause', handlePause);
-      audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
+      audioRef.current.addEventListener("ended", handleEnded);
+      audioRef.current.addEventListener("play", handleStart);
+      audioRef.current.addEventListener("pause", handlePause);
+      audioRef.current.addEventListener("timeupdate", handleTimeUpdate);
 
       audioRef.current.customProps = {
         customStarted: false,
@@ -85,10 +87,10 @@ export default function useCustomAudioRef({
 
     return () => {
       if (audioElement) {
-        audioElement.removeEventListener('ended', handleEnded);
-        audioElement.removeEventListener('play', handleStart);
-        audioElement.removeEventListener('pause', handlePause);
-        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
+        audioElement.removeEventListener("ended", handleEnded);
+        audioElement.removeEventListener("play", handleStart);
+        audioElement.removeEventListener("pause", handlePause);
+        audioElement.removeEventListener("timeupdate", handleTimeUpdate);
         URL.revokeObjectURL(audioElement.src);
       }
     };

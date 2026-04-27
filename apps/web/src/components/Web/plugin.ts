@@ -1,7 +1,12 @@
-import { visit } from 'unist-util-visit';
-import type { Node } from 'unist';
-import type { Citation, CitationNode } from './types';
-import { SPAN_REGEX, STANDALONE_PATTERN, CLEANUP_REGEX, COMPOSITE_REGEX } from '~/utils/citations';
+import { visit } from "unist-util-visit";
+import type { Node } from "unist";
+import type { Citation, CitationNode } from "./types";
+import {
+  SPAN_REGEX,
+  STANDALONE_PATTERN,
+  CLEANUP_REGEX,
+  COMPOSITE_REGEX,
+} from "~/utils/citations";
 
 /**
  * Checks if a standalone marker is truly standalone (not inside a composite block).
@@ -17,13 +22,13 @@ function isStandaloneMarker(text: string, position: number): boolean {
   const beforeText = text.substring(0, position);
 
   // Find rightmost composite block start (either format)
-  const lastUe200Literal = beforeText.lastIndexOf('\\ue200');
-  const lastUe200Char = beforeText.lastIndexOf('\ue200');
+  const lastUe200Literal = beforeText.lastIndexOf("\\ue200");
+  const lastUe200Char = beforeText.lastIndexOf("\ue200");
   const lastUe200 = Math.max(lastUe200Literal, lastUe200Char);
 
   // Find rightmost composite block end (either format)
-  const lastUe201Literal = beforeText.lastIndexOf('\\ue201');
-  const lastUe201Char = beforeText.lastIndexOf('\ue201');
+  const lastUe201Literal = beforeText.lastIndexOf("\\ue201");
+  const lastUe201Char = beforeText.lastIndexOf("\ue201");
   const lastUe201 = Math.max(lastUe201Literal, lastUe201Char);
 
   // Standalone if: no opening marker OR closing marker appears after opening
@@ -60,28 +65,37 @@ function findNextMatch(
 
   // Find closest match
   let nextMatch: RegExpExecArray | null = null;
-  let matchType = '';
+  let matchType = "";
   let matchIndex = -1;
   let typeIndex = -1;
 
-  if (spanMatch && (!nextMatch || spanMatch.index < matchIndex || matchIndex === -1)) {
+  if (
+    spanMatch &&
+    (!nextMatch || spanMatch.index < matchIndex || matchIndex === -1)
+  ) {
     nextMatch = spanMatch;
-    matchType = 'span';
+    matchType = "span";
     matchIndex = spanMatch.index;
     // We can use a counter for typeIndex if needed
     typeIndex = 0;
   }
 
-  if (compositeMatch && (!nextMatch || compositeMatch.index < matchIndex || matchIndex === -1)) {
+  if (
+    compositeMatch &&
+    (!nextMatch || compositeMatch.index < matchIndex || matchIndex === -1)
+  ) {
     nextMatch = compositeMatch;
-    matchType = 'composite';
+    matchType = "composite";
     matchIndex = compositeMatch.index;
     typeIndex = 0;
   }
 
-  if (standaloneMatch && (!nextMatch || standaloneMatch.index < matchIndex || matchIndex === -1)) {
+  if (
+    standaloneMatch &&
+    (!nextMatch || standaloneMatch.index < matchIndex || matchIndex === -1)
+  ) {
     nextMatch = standaloneMatch;
-    matchType = 'standalone';
+    matchType = "standalone";
     matchIndex = standaloneMatch.index;
     typeIndex = 0;
   }
@@ -92,11 +106,11 @@ function findNextMatch(
 }
 
 function processTree(tree: Node) {
-  visit(tree, 'text', (node, index, parent) => {
+  visit(tree, "text", (node, index, parent) => {
     const textNode = node as CitationNode;
     const parentNode = parent as CitationNode;
 
-    if (typeof textNode.value !== 'string') return;
+    if (typeof textNode.value !== "string") return;
 
     const originalValue = textNode.value;
     const segments: Array<CitationNode> = [];
@@ -114,9 +128,11 @@ function processTree(tree: Node) {
 
       if (!nextMatchInfo) {
         // No more matches, add remaining content with cleanup
-        const remainingText = originalValue.substring(currentPosition).replace(CLEANUP_REGEX, '');
+        const remainingText = originalValue
+          .substring(currentPosition)
+          .replace(CLEANUP_REGEX, "");
         if (remainingText) {
-          segments.push({ type: 'text', value: remainingText });
+          segments.push({ type: "text", value: remainingText });
         }
         break;
       }
@@ -129,10 +145,10 @@ function processTree(tree: Node) {
       if (matchIndex > currentPosition) {
         const textBeforeMatch = originalValue
           .substring(currentPosition, matchIndex)
-          .replace(CLEANUP_REGEX, '');
+          .replace(CLEANUP_REGEX, "");
 
         if (textBeforeMatch) {
-          segments.push({ type: 'text', value: textBeforeMatch });
+          segments.push({ type: "text", value: textBeforeMatch });
         }
       }
 
@@ -142,9 +158,9 @@ function processTree(tree: Node) {
 
       // Process based on match type
       switch (type) {
-        case 'span': {
+        case "span": {
           const spanText = matchText;
-          const cleanText = spanText.replace(/\\ue203|\\ue204/g, '');
+          const cleanText = spanText.replace(/\\ue203|\\ue204/g, "");
 
           // Look ahead for associated citation
           let associatedCitationId: string | null = null;
@@ -154,7 +170,8 @@ function processTree(tree: Node) {
           const nextCitation = findNextMatch(originalValue, endOfSpan);
           if (
             nextCitation &&
-            (nextCitation.type === 'standalone' || nextCitation.type === 'composite') &&
+            (nextCitation.type === "standalone" ||
+              nextCitation.type === "composite") &&
             nextCitation.match!.index - endOfSpan < 5
           ) {
             // Use the ID that will be generated for the next citation
@@ -164,23 +181,23 @@ function processTree(tree: Node) {
           }
 
           segments.push({
-            type: 'highlighted-text',
+            type: "highlighted-text",
             data: {
-              hName: 'highlighted-text',
+              hName: "highlighted-text",
               hProperties: { citationId: associatedCitationId },
             },
-            children: [{ type: 'text', value: cleanText }],
+            children: [{ type: "text", value: cleanText }],
           });
 
           typeCounts.span++;
           break;
         }
 
-        case 'composite': {
+        case "composite": {
           const compositeText = matchText;
 
           // Use a regular expression to extract reference indices
-          const compositeRefRegex = new RegExp(STANDALONE_PATTERN.source, 'g');
+          const compositeRefRegex = new RegExp(STANDALONE_PATTERN.source, "g");
           let refMatch: RegExpExecArray | null;
           const citations: Array<Citation> = [];
 
@@ -198,9 +215,9 @@ function processTree(tree: Node) {
 
           if (citations.length > 0) {
             segments.push({
-              type: 'composite-citation',
+              type: "composite-citation",
               data: {
-                hName: 'composite-citation',
+                hName: "composite-citation",
                 hProperties: {
                   citations,
                   citationId: citationId,
@@ -213,23 +230,23 @@ function processTree(tree: Node) {
           break;
         }
 
-        case 'standalone': {
+        case "standalone": {
           // Extract reference info
           const turn = Number(match![1]);
           const refType = match![2];
           const refIndex = Number(match![3]);
 
           segments.push({
-            type: 'citation',
+            type: "citation",
             data: {
-              hName: 'citation',
+              hName: "citation",
               hProperties: {
                 citation: {
                   turn,
                   refType,
                   index: refIndex,
                 },
-                citationType: 'standalone',
+                citationType: "standalone",
                 citationId: citationId,
               },
             },
@@ -248,9 +265,9 @@ function processTree(tree: Node) {
     if (segments.length > 0 && index !== undefined) {
       parentNode.children?.splice(index, 1, ...segments);
       return index + segments.length;
-    } else if (textNode.value !== textNode.value.replace(CLEANUP_REGEX, '')) {
+    } else if (textNode.value !== textNode.value.replace(CLEANUP_REGEX, "")) {
       // If we didn't create segments but there are markers to clean up
-      textNode.value = textNode.value.replace(CLEANUP_REGEX, '');
+      textNode.value = textNode.value.replace(CLEANUP_REGEX, "");
     }
   });
 }

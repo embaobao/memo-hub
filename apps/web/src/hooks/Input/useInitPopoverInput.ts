@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
 /** Creates a callback ref that focuses the popover input, transfers the command text as a search prefix, and clears the textarea. */
 const useInitPopoverInput = ({
@@ -31,9 +31,9 @@ const useInitPopoverInput = ({
         if (text.length > 1) {
           setSearchValue(text.slice(1));
         }
-        textarea.value = '';
+        textarea.value = "";
         textarea.setSelectionRange(0, 0);
-        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        textarea.dispatchEvent(new Event("input", { bubbles: true }));
       }
     },
     [inputRef, textAreaRef, commandChar, setSearchValue, setOpen],

@@ -1,10 +1,14 @@
-import { useCallback } from 'react';
-import { isAssistantsEndpoint } from 'librechat-data-provider';
-import type { AssistantsEndpoint, TConversation, TPreset } from 'librechat-data-provider';
-import useDefaultConvo from '~/hooks/Conversations/useDefaultConvo';
-import { useChatContext } from '~/Providers/ChatContext';
-import useAssistantListMap from './useAssistantListMap';
-import { mapAssistants, logger } from '~/utils';
+import { useCallback } from "react";
+import { isAssistantsEndpoint } from "librechat-data-provider";
+import type {
+  AssistantsEndpoint,
+  TConversation,
+  TPreset,
+} from "librechat-data-provider";
+import useDefaultConvo from "~/hooks/Conversations/useDefaultConvo";
+import { useChatContext } from "~/Providers/ChatContext";
+import useAssistantListMap from "./useAssistantListMap";
+import { mapAssistants, logger } from "~/utils";
 
 export default function useSelectAssistant(endpoint: AssistantsEndpoint) {
   const getDefaultConversation = useDefaultConvo();
@@ -21,10 +25,14 @@ export default function useSelectAssistant(endpoint: AssistantsEndpoint) {
         endpoint,
         assistant_id: assistant.id,
         model: assistant.model,
-        conversationId: 'new',
+        conversationId: "new",
       };
 
-      logger.log('conversation', 'Updating conversation with assistant', assistant);
+      logger.log(
+        "conversation",
+        "Updating conversation with assistant",
+        assistant,
+      );
       if (isAssistantsEndpoint(conversation?.endpoint)) {
         const currentConvo = getDefaultConversation({
           conversation: { ...(conversation ?? {}) },
@@ -43,7 +51,13 @@ export default function useSelectAssistant(endpoint: AssistantsEndpoint) {
         preset: template as Partial<TPreset>,
       });
     },
-    [endpoint, assistantMap, conversation, getDefaultConversation, newConversation],
+    [
+      endpoint,
+      assistantMap,
+      conversation,
+      getDefaultConversation,
+      newConversation,
+    ],
   );
 
   return { onSelect };

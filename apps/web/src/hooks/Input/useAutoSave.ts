@@ -1,13 +1,13 @@
-import debounce from 'lodash/debounce';
-import { SetterOrUpdater, useRecoilValue } from 'recoil';
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { LocalStorageKeys, Constants } from 'librechat-data-provider';
-import type { TFile } from 'librechat-data-provider';
-import type { ExtendedFile } from '~/common';
-import { clearDraft, getDraft, setDraft } from '~/utils';
-import { useChatFormContext } from '~/Providers';
-import { useGetFiles } from '~/data-provider';
-import store from '~/store';
+import debounce from "lodash/debounce";
+import { SetterOrUpdater, useRecoilValue } from "recoil";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { LocalStorageKeys, Constants } from "librechat-data-provider";
+import type { TFile } from "librechat-data-provider";
+import type { ExtendedFile } from "~/common";
+import { clearDraft, getDraft, setDraft } from "~/utils";
+import { useChatFormContext } from "~/Providers";
+import { useGetFiles } from "~/data-provider";
+import store from "~/store";
 
 export const useAutoSave = ({
   isSubmitting,
@@ -25,16 +25,21 @@ export const useAutoSave = ({
   // setting for auto-save
   const { setValue } = useChatFormContext();
   const saveDrafts = useRecoilValue<boolean>(store.saveDrafts);
-  const conversationId = isSubmitting ? Constants.PENDING_CONVO : _conversationId;
+  const conversationId = isSubmitting
+    ? Constants.PENDING_CONVO
+    : _conversationId;
 
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<
+    string | null
+  >(null);
   const fileIds = useMemo(() => Array.from(files.keys()), [files]);
   const { data: fileList } = useGetFiles<TFile[]>();
 
   const restoreFiles = useCallback(
     (id: string) => {
       const filesDraft = JSON.parse(
-        (localStorage.getItem(`${LocalStorageKeys.FILES_DRAFT}${id}`) ?? '') || '[]',
+        (localStorage.getItem(`${LocalStorageKeys.FILES_DRAFT}${id}`) ?? "") ||
+          "[]",
       ) as string[];
 
       if (filesDraft.length === 0) {
@@ -51,7 +56,7 @@ export const useAutoSave = ({
           ? { fileToRecover: fileData, fileIdToRecover: fileId }
           : {
               fileToRecover: tempFileData,
-              fileIdToRecover: (tempFileData?.temp_file_id ?? '') || fileId,
+              fileIdToRecover: (tempFileData?.temp_file_id ?? "") || fileId,
             };
 
         if (fileToRecover) {
@@ -73,7 +78,7 @@ export const useAutoSave = ({
 
   const restoreText = useCallback(
     (id: string) => {
-      setValue('text', getDraft(id) ?? '');
+      setValue("text", getDraft(id) ?? "");
     },
     [setValue],
   );
@@ -84,7 +89,10 @@ export const useAutoSave = ({
         return;
       }
       // Save the draft of the current conversation before switching
-      if (textAreaRef.current.value === '' || textAreaRef.current.value.length === 1) {
+      if (
+        textAreaRef.current.value === "" ||
+        textAreaRef.current.value.length === 1
+      ) {
         clearDraft(id);
       } else {
         setDraft({ id, value: textAreaRef.current.value });
@@ -97,7 +105,7 @@ export const useAutoSave = ({
     // This useEffect is responsible for setting up and cleaning up the auto-save functionality
     // for the text area input. It saves the text to localStorage with a debounce to prevent
     // excessive writes.
-    if (!saveDrafts || conversationId == null || conversationId === '') {
+    if (!saveDrafts || conversationId == null || conversationId === "") {
       return;
     }
 
@@ -123,7 +131,7 @@ export const useAutoSave = ({
 
       /** If empty, use long delay to prevent accidental clearing
        * Otherwise use short delay to capture rapid typing */
-      if (value === '') {
+      if (value === "") {
         handleInputSlow(value);
       } else {
         handleInputFast(value);
@@ -132,12 +140,12 @@ export const useAutoSave = ({
 
     const textArea = textAreaRef?.current;
     if (textArea) {
-      textArea.addEventListener('input', eventListener);
+      textArea.addEventListener("input", eventListener);
     }
 
     return () => {
       if (textArea) {
-        textArea.removeEventListener('input', eventListener);
+        textArea.removeEventListener("input", eventListener);
       }
       handleInputFast.cancel();
       handleInputSlow.cancel();
@@ -152,7 +160,7 @@ export const useAutoSave = ({
     // It handles both text and file drafts, ensuring that the user's input is preserved
     // across different conversations.
 
-    if (!saveDrafts || conversationId == null || conversationId === '') {
+    if (!saveDrafts || conversationId == null || conversationId === "") {
       return;
     }
     if (conversationId === currentConversationId) {
@@ -175,9 +183,14 @@ export const useAutoSave = ({
 
         // Clear the pending text draft, if it exists, and save the current draft to the new conversationId;
         // otherwise, save the current text area value to the new conversationId
-        localStorage.removeItem(`${LocalStorageKeys.TEXT_DRAFT}${Constants.PENDING_CONVO}`);
+        localStorage.removeItem(
+          `${LocalStorageKeys.TEXT_DRAFT}${Constants.PENDING_CONVO}`,
+        );
         if (pendingDraft) {
-          localStorage.setItem(`${LocalStorageKeys.TEXT_DRAFT}${conversationId}`, pendingDraft);
+          localStorage.setItem(
+            `${LocalStorageKeys.TEXT_DRAFT}${conversationId}`,
+            pendingDraft,
+          );
         } else if (textAreaRef?.current?.value) {
           setDraft({ id: conversationId, value: textAreaRef.current.value });
         }
@@ -190,8 +203,10 @@ export const useAutoSave = ({
             `${LocalStorageKeys.FILES_DRAFT}${conversationId}`,
             pendingFileDraft,
           );
-          localStorage.removeItem(`${LocalStorageKeys.FILES_DRAFT}${Constants.PENDING_CONVO}`);
-          const filesDraft = JSON.parse(pendingFileDraft || '[]') as string[];
+          localStorage.removeItem(
+            `${LocalStorageKeys.FILES_DRAFT}${Constants.PENDING_CONVO}`,
+          );
+          const filesDraft = JSON.parse(pendingFileDraft || "[]") as string[];
           if (filesDraft.length > 0) {
             restoreFiles(conversationId);
           }
@@ -228,14 +243,16 @@ export const useAutoSave = ({
     if (
       !saveDrafts ||
       conversationId == null ||
-      conversationId === '' ||
+      conversationId === "" ||
       currentConversationId !== conversationId
     ) {
       return;
     }
 
     if (fileIds.length === 0) {
-      localStorage.removeItem(`${LocalStorageKeys.FILES_DRAFT}${conversationId}`);
+      localStorage.removeItem(
+        `${LocalStorageKeys.FILES_DRAFT}${conversationId}`,
+      );
     } else {
       localStorage.setItem(
         `${LocalStorageKeys.FILES_DRAFT}${conversationId}`,

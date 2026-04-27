@@ -1,6 +1,10 @@
-import { useMemo } from 'react';
-import { PermissionTypes, PrincipalType, Permissions } from 'librechat-data-provider';
-import { useHasAccess } from '~/hooks';
+import { useMemo } from "react";
+import {
+  PermissionTypes,
+  PrincipalType,
+  Permissions,
+} from "librechat-data-provider";
+import { useHasAccess } from "~/hooks";
 
 /**
  * Hook to check people picker permissions and return the appropriate type filter
@@ -28,7 +32,9 @@ export const usePeoplePickerPermissions = () => {
   const peoplePickerTypeFilter: Array<
     PrincipalType.USER | PrincipalType.GROUP | PrincipalType.ROLE
   > | null = useMemo(() => {
-    const allowedTypes: Array<PrincipalType.USER | PrincipalType.GROUP | PrincipalType.ROLE> = [];
+    const allowedTypes: Array<
+      PrincipalType.USER | PrincipalType.GROUP | PrincipalType.ROLE
+    > = [];
 
     if (canViewUsers) {
       allowedTypes.push(PrincipalType.USER);

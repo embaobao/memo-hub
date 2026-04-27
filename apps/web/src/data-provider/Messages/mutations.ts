@@ -1,7 +1,10 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { dataService, QueryKeys, Constants } from 'librechat-data-provider';
-import type { UseMutationResult, UseMutationOptions } from '@tanstack/react-query';
-import type * as t from 'librechat-data-provider';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { dataService, QueryKeys, Constants } from "librechat-data-provider";
+import type {
+  UseMutationResult,
+  UseMutationOptions,
+} from "@tanstack/react-query";
+import type * as t from "librechat-data-provider";
 
 type EditArtifactContext = {
   previousMessages: Record<string, t.TMessage[] | undefined>;
@@ -17,7 +20,12 @@ export const useEditArtifact = (
   EditArtifactContext
 > => {
   const queryClient = useQueryClient();
-  const { onSuccess, onError, onMutate: userOnMutate, ...options } = _options ?? {};
+  const {
+    onSuccess,
+    onError,
+    onMutate: userOnMutate,
+    ...options
+  } = _options ?? {};
 
   const mutationOptions: UseMutationOptions<
     t.TEditArtifactResponse,
@@ -25,7 +33,8 @@ export const useEditArtifact = (
     t.TEditArtifactRequest,
     EditArtifactContext
   > = {
-    mutationFn: (variables: t.TEditArtifactRequest) => dataService.editArtifact(variables),
+    mutationFn: (variables: t.TEditArtifactRequest) =>
+      dataService.editArtifact(variables),
     /**
      * onMutate: No optimistic updates for artifact editing
      * The code editor shows changes instantly via local Sandpack state
@@ -53,39 +62,42 @@ export const useEditArtifact = (
         if (!conversationId) {
           return;
         }
-        queryClient.setQueryData<t.TMessage[]>([QueryKeys.messages, conversationId], (prev) => {
-          if (!prev) {
-            return prev;
-          }
-
-          const newArray = [...prev];
-          let targetIndex: number | undefined;
-
-          for (let i = newArray.length - 1; i >= 0; i--) {
-            if (newArray[i].messageId === vars.messageId) {
-              targetIndex = i;
-              targetNotFound = false;
-              break;
+        queryClient.setQueryData<t.TMessage[]>(
+          [QueryKeys.messages, conversationId],
+          (prev) => {
+            if (!prev) {
+              return prev;
             }
-          }
 
-          if (targetIndex == null) {
-            return prev;
-          }
+            const newArray = [...prev];
+            let targetIndex: number | undefined;
 
-          newArray[targetIndex] = {
-            ...newArray[targetIndex],
-            content: data.content,
-            text: data.text,
-          };
+            for (let i = newArray.length - 1; i >= 0; i--) {
+              if (newArray[i].messageId === vars.messageId) {
+                targetIndex = i;
+                targetNotFound = false;
+                break;
+              }
+            }
 
-          return newArray;
-        });
+            if (targetIndex == null) {
+              return prev;
+            }
+
+            newArray[targetIndex] = {
+              ...newArray[targetIndex],
+              content: data.content,
+              text: data.text,
+            };
+
+            return newArray;
+          },
+        );
       };
       setMessageData(data.conversationId);
       if (targetNotFound) {
         console.warn(
-          'Edited Artifact Message not found in cache, trying `new` as `conversationId`',
+          "Edited Artifact Message not found in cache, trying `new` as `conversationId`",
         );
         setMessageData(Constants.NEW_CONVO as string);
       }
@@ -113,7 +125,12 @@ export const useBranchMessageMutation = (
   BranchMessageContext
 > => {
   const queryClient = useQueryClient();
-  const { onSuccess, onError, onMutate: userOnMutate, ...options } = _options ?? {};
+  const {
+    onSuccess,
+    onError,
+    onMutate: userOnMutate,
+    ...options
+  } = _options ?? {};
 
   const mutationOptions: UseMutationOptions<
     t.TBranchMessageResponse,
@@ -121,7 +138,8 @@ export const useBranchMessageMutation = (
     t.TBranchMessageRequest,
     BranchMessageContext
   > = {
-    mutationFn: (variables: t.TBranchMessageRequest) => dataService.branchMessage(variables),
+    mutationFn: (variables: t.TBranchMessageRequest) =>
+      dataService.branchMessage(variables),
     onMutate: async (vars) => {
       // Call user's onMutate if provided
       if (userOnMutate) {
@@ -135,7 +153,10 @@ export const useBranchMessageMutation = (
 
       // Get the previous messages for rollback
       const previousMessages = conversationId
-        ? queryClient.getQueryData<t.TMessage[]>([QueryKeys.messages, conversationId])
+        ? queryClient.getQueryData<t.TMessage[]>([
+            QueryKeys.messages,
+            conversationId,
+          ])
         : undefined;
 
       return { previousMessages, conversationId };
@@ -152,7 +173,8 @@ export const useBranchMessageMutation = (
     },
     onSuccess: (data, vars, context) => {
       // Add the new message to the cache
-      const targetConversationId = data.conversationId || context?.conversationId;
+      const targetConversationId =
+        data.conversationId || context?.conversationId;
       if (targetConversationId) {
         queryClient.setQueryData<t.TMessage[]>(
           [QueryKeys.messages, targetConversationId],

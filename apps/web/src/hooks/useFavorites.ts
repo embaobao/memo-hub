@@ -1,11 +1,14 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useAtom } from 'jotai';
-import { useToastContext } from '@librechat/client';
-import type { Favorite } from '~/store/favorites';
-import { useGetFavoritesQuery, useUpdateFavoritesMutation } from '~/data-provider';
-import { favoritesAtom } from '~/store';
-import { useLocalize } from '~/hooks';
-import { logger } from '~/utils';
+import { useEffect, useCallback, useRef } from "react";
+import { useAtom } from "jotai";
+import { useToastContext } from "@librechat/client";
+import type { Favorite } from "~/store/favorites";
+import {
+  useGetFavoritesQuery,
+  useUpdateFavoritesMutation,
+} from "~/data-provider";
+import { favoritesAtom } from "~/store";
+import { useLocalize } from "~/hooks";
+import { logger } from "~/utils";
 
 /** Maximum number of favorites allowed (must match backend MAX_FAVORITES) */
 const MAX_FAVORITES = 50;
@@ -72,17 +75,19 @@ export default function useFavorites() {
 
   const getErrorMessage = useCallback(
     (error: unknown): string => {
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const axiosError = error as {
           response?: { data?: { code?: string; limit?: number } };
         };
         const { code, limit } = axiosError.response?.data ?? {};
 
-        if (code === 'MAX_FAVORITES_EXCEEDED') {
-          return localize('com_ui_max_favorites_reached', { 0: String(limit ?? MAX_FAVORITES) });
+        if (code === "MAX_FAVORITES_EXCEEDED") {
+          return localize("com_ui_max_favorites_reached", {
+            0: String(limit ?? MAX_FAVORITES),
+          });
         }
       }
-      return localize('com_ui_error');
+      return localize("com_ui_error");
     },
     [localize],
   );
@@ -95,8 +100,8 @@ export default function useFavorites() {
       try {
         await updateFavoritesMutation.mutateAsync(cleaned);
       } catch (error) {
-        logger.error('Error updating favorites:', error);
-        showToast({ message: getErrorMessage(error), status: 'error' });
+        logger.error("Error updating favorites:", error);
+        showToast({ message: getErrorMessage(error), status: "error" });
         // Refetch to resync state with server
         getFavoritesQuery.refetch();
       } finally {
@@ -107,7 +112,13 @@ export default function useFavorites() {
         }, 100);
       }
     },
-    [setFavorites, updateFavoritesMutation, showToast, getErrorMessage, getFavoritesQuery],
+    [
+      setFavorites,
+      updateFavoritesMutation,
+      showToast,
+      getErrorMessage,
+      getFavoritesQuery,
+    ],
   );
 
   const addFavoriteAgent = (agentId: string) => {
@@ -122,13 +133,23 @@ export default function useFavorites() {
   };
 
   const addFavoriteModel = (model: { model: string; endpoint: string }) => {
-    if (favorites.some((f) => f.model === model.model && f.endpoint === model.endpoint)) return;
-    const newFavorites = [...favorites, { model: model.model, endpoint: model.endpoint }];
+    if (
+      favorites.some(
+        (f) => f.model === model.model && f.endpoint === model.endpoint,
+      )
+    )
+      return;
+    const newFavorites = [
+      ...favorites,
+      { model: model.model, endpoint: model.endpoint },
+    ];
     saveFavorites(newFavorites);
   };
 
   const removeFavoriteModel = (model: string, endpoint: string) => {
-    const newFavorites = favorites.filter((f) => !(f.model === model && f.endpoint === endpoint));
+    const newFavorites = favorites.filter(
+      (f) => !(f.model === model && f.endpoint === endpoint),
+    );
     saveFavorites(newFavorites);
   };
 
@@ -201,8 +222,8 @@ export default function useFavorites() {
         try {
           await updateFavoritesMutation.mutateAsync(cleaned);
         } catch (error) {
-          logger.error('Error reordering favorites:', error);
-          showToast({ message: getErrorMessage(error), status: 'error' });
+          logger.error("Error reordering favorites:", error);
+          showToast({ message: getErrorMessage(error), status: "error" });
           // Refetch to resync state with server
           getFavoritesQuery.refetch();
         } finally {
@@ -212,7 +233,13 @@ export default function useFavorites() {
         }
       }
     },
-    [setFavorites, updateFavoritesMutation, showToast, getErrorMessage, getFavoritesQuery],
+    [
+      setFavorites,
+      updateFavoritesMutation,
+      showToast,
+      getErrorMessage,
+      getFavoritesQuery,
+    ],
   );
 
   return {

@@ -1,9 +1,9 @@
-import { renderHook } from '@testing-library/react';
-import { AgentCapabilities } from 'librechat-data-provider';
-import useAgentCapabilities from '../useAgentCapabilities';
+import { renderHook } from "@testing-library/react";
+import { AgentCapabilities } from "librechat-data-provider";
+import useAgentCapabilities from "../useAgentCapabilities";
 
-describe('useAgentCapabilities', () => {
-  it('should return all capabilities as false when capabilities is undefined', () => {
+describe("useAgentCapabilities", () => {
+  it("should return all capabilities as false when capabilities is undefined", () => {
     const { result } = renderHook(() => useAgentCapabilities(undefined));
 
     expect(result.current.toolsEnabled).toBe(false);
@@ -18,7 +18,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.programmaticToolsEnabled).toBe(false);
   });
 
-  it('should return all capabilities as false when capabilities is empty array', () => {
+  it("should return all capabilities as false when capabilities is empty array", () => {
     const { result } = renderHook(() => useAgentCapabilities([]));
 
     expect(result.current.toolsEnabled).toBe(false);
@@ -26,7 +26,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.programmaticToolsEnabled).toBe(false);
   });
 
-  it('should return true for enabled capabilities', () => {
+  it("should return true for enabled capabilities", () => {
     const capabilities = [
       AgentCapabilities.tools,
       AgentCapabilities.deferred_tools,
@@ -42,7 +42,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.webSearchEnabled).toBe(false);
   });
 
-  it('should return deferredToolsEnabled as true when deferred_tools is in capabilities', () => {
+  it("should return deferredToolsEnabled as true when deferred_tools is in capabilities", () => {
     const capabilities = [AgentCapabilities.deferred_tools];
 
     const { result } = renderHook(() => useAgentCapabilities(capabilities));
@@ -50,7 +50,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.deferredToolsEnabled).toBe(true);
   });
 
-  it('should return deferredToolsEnabled as false when deferred_tools is not in capabilities', () => {
+  it("should return deferredToolsEnabled as false when deferred_tools is not in capabilities", () => {
     const capabilities = [
       AgentCapabilities.tools,
       AgentCapabilities.actions,
@@ -62,7 +62,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.deferredToolsEnabled).toBe(false);
   });
 
-  it('should return programmaticToolsEnabled as true when programmatic_tools is in capabilities', () => {
+  it("should return programmaticToolsEnabled as true when programmatic_tools is in capabilities", () => {
     const capabilities = [AgentCapabilities.programmatic_tools];
 
     const { result } = renderHook(() => useAgentCapabilities(capabilities));
@@ -70,7 +70,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.programmaticToolsEnabled).toBe(true);
   });
 
-  it('should return programmaticToolsEnabled as false when programmatic_tools is not in capabilities', () => {
+  it("should return programmaticToolsEnabled as false when programmatic_tools is not in capabilities", () => {
     const capabilities = [
       AgentCapabilities.tools,
       AgentCapabilities.actions,
@@ -82,7 +82,7 @@ describe('useAgentCapabilities', () => {
     expect(result.current.programmaticToolsEnabled).toBe(false);
   });
 
-  it('should handle all capabilities being enabled', () => {
+  it("should handle all capabilities being enabled", () => {
     const capabilities = [
       AgentCapabilities.tools,
       AgentCapabilities.actions,

@@ -1,13 +1,18 @@
-import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider } from '@memohub/protocol';
-import { MemoOp } from '@memohub/protocol';
+import type {
+  Text2MemInstruction,
+  Text2MemResult,
+  IKernel,
+  ITrackProvider,
+} from "@memohub/protocol";
+import { MemoOp } from "@memohub/protocol";
 
 /**
  * 时序流轨道 (Stream Track)
  * 职责: 记录原始对话 Log，管理 TTL。
  */
 export class StreamTrack implements ITrackProvider {
-  id = 'track-stream';
-  name = 'Stream Track';
+  id = "track-stream";
+  name = "Stream Track";
 
   private kernel!: IKernel;
 
@@ -26,13 +31,20 @@ export class StreamTrack implements ITrackProvider {
       case MemoOp.LIST:
         return this.handleList(instruction);
       default:
-        return { success: false, error: `Operation ${instruction.op} not supported by track-stream` };
+        return {
+          success: false,
+          error: `Operation ${instruction.op} not supported by track-stream`,
+        };
     }
   }
 
   private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { content, role = 'user', session_id = 'default' } = inst.payload ?? {};
+      const {
+        content,
+        role = "user",
+        session_id = "default",
+      } = inst.payload ?? {};
       const storage = this.kernel.getVectorStorage();
       const embedder = this.kernel.getEmbedder();
       const cas = this.kernel.getCAS();
@@ -42,9 +54,14 @@ export class StreamTrack implements ITrackProvider {
       const id = `stream-${Date.now()}`;
 
       await storage.add({
-        id, vector, hash, track_id: this.id,
-        session_id, role, timestamp: new Date().toISOString(),
-        distilled: false
+        id,
+        vector,
+        hash,
+        track_id: this.id,
+        session_id,
+        role,
+        timestamp: new Date().toISOString(),
+        distilled: false,
       });
 
       return { success: true, data: { id, hash } };
@@ -53,27 +70,40 @@ export class StreamTrack implements ITrackProvider {
     }
   }
 
-  private async handleRetrieve(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleRetrieve(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { query, limit = 5 } = inst.payload ?? {};
     const vector = await this.kernel.getEmbedder().embed(query);
     const results = await this.kernel.getVectorStorage().search(vector, {
-      limit, filter: `track_id = '${this.id}'`
+      limit,
+      filter: `track_id = '${this.id}'`,
     });
-    const hydrated = await Promise.all(results.map(async (r: any) => ({
-      ...r,
-      text: await this.kernel.getCAS().read(r.hash).catch(() => '')
-    })));
+    const hydrated = await Promise.all(
+      results.map(async (r: any) => ({
+        ...r,
+        text: await this.kernel
+          .getCAS()
+          .read(r.hash)
+          .catch(() => ""),
+      })),
+    );
     return { success: true, data: hydrated };
   }
 
-  private async handleDelete(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleDelete(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { ids } = inst.payload ?? {};
-    for (const id of ids) await this.kernel.getVectorStorage().delete(`id = '${id}'`);
+    for (const id of ids)
+      await this.kernel.getVectorStorage().delete(`id = '${id}'`);
     return { success: true };
   }
 
   private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
+    const records = await this.kernel
+      .getVectorStorage()
+      .list(`track_id = '${this.id}'`);
     return { success: true, data: records };
   }
 }

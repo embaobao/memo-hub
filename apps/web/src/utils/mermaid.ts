@@ -1,4 +1,4 @@
-import dedent from 'dedent';
+import dedent from "dedent";
 
 interface MermaidButtonStyles {
   bg: string;
@@ -11,30 +11,30 @@ interface MermaidButtonStyles {
 }
 
 const darkButtonStyles: MermaidButtonStyles = {
-  bg: 'rgba(40, 40, 40, 0.95)',
-  bgHover: 'rgba(60, 60, 60, 0.95)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  text: '#D1D5DB',
-  textSecondary: '#9CA3AF',
-  shadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
-  divider: 'rgba(255, 255, 255, 0.1)',
+  bg: "rgba(40, 40, 40, 0.95)",
+  bgHover: "rgba(60, 60, 60, 0.95)",
+  border: "1px solid rgba(255, 255, 255, 0.1)",
+  text: "#D1D5DB",
+  textSecondary: "#9CA3AF",
+  shadow: "0 2px 8px rgba(0, 0, 0, 0.4)",
+  divider: "rgba(255, 255, 255, 0.1)",
 };
 
 const lightButtonStyles: MermaidButtonStyles = {
-  bg: 'rgba(255, 255, 255, 0.95)',
-  bgHover: 'rgba(243, 244, 246, 0.95)',
-  border: '1px solid rgba(0, 0, 0, 0.1)',
-  text: '#374151',
-  textSecondary: '#6B7280',
-  shadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-  divider: 'rgba(0, 0, 0, 0.1)',
+  bg: "rgba(255, 255, 255, 0.95)",
+  bgHover: "rgba(243, 244, 246, 0.95)",
+  border: "1px solid rgba(0, 0, 0, 0.1)",
+  text: "#374151",
+  textSecondary: "#6B7280",
+  shadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+  divider: "rgba(0, 0, 0, 0.1)",
 };
 
 const getButtonStyles = (isDarkMode: boolean): MermaidButtonStyles =>
   isDarkMode ? darkButtonStyles : lightButtonStyles;
 
 const baseFlowchartConfig = {
-  curve: 'basis' as const,
+  curve: "basis" as const,
   nodeSpacing: 50,
   rankSpacing: 50,
   diagramPadding: 8,
@@ -59,7 +59,7 @@ export { inlineFlowchartConfig, artifactFlowchartConfig };
 
 /** Perceived luminance (0 = black, 1 = white) via BT.601 luma coefficients */
 const hexLuminance = (hex: string): number => {
-  let h = hex.replace('#', '');
+  let h = hex.replace("#", "");
   if (h.length === 3) {
     h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
   }
@@ -80,17 +80,18 @@ const hexLuminance = (hex: string): number => {
  * This walks cluster groups and overrides the text fill attribute when contrast is poor.
  */
 export const fixSubgraphTitleContrast = (svgElement: Element): void => {
-  const clusters = svgElement.querySelectorAll('g.cluster');
+  const clusters = svgElement.querySelectorAll("g.cluster");
   for (const cluster of clusters) {
-    const rect = cluster.querySelector(':scope > rect, :scope > polygon');
+    const rect = cluster.querySelector(":scope > rect, :scope > polygon");
     if (!rect) {
       continue;
     }
 
-    const inlineStyle = rect.getAttribute('style') || '';
-    const attrFill = rect.getAttribute('fill') || '';
+    const inlineStyle = rect.getAttribute("style") || "";
+    const attrFill = rect.getAttribute("fill") || "";
     const styleFillMatch = inlineStyle.match(/fill\s*:\s*(#[0-9a-fA-F]{3,8})/);
-    const hex = styleFillMatch?.[1] ?? (attrFill.startsWith('#') ? attrFill : '');
+    const hex =
+      styleFillMatch?.[1] ?? (attrFill.startsWith("#") ? attrFill : "");
     if (!hex) {
       continue;
     }
@@ -101,19 +102,20 @@ export const fixSubgraphTitleContrast = (svgElement: Element): void => {
     }
 
     const textElements = cluster.querySelectorAll(
-      ':scope > g.cluster-label text, :scope > text, :scope > g > text',
+      ":scope > g.cluster-label text, :scope > text, :scope > g > text",
     );
     for (const textEl of textElements) {
-      const textFill = textEl.getAttribute('fill') || '';
-      const textStyle = textEl.getAttribute('style') || '';
+      const textFill = textEl.getAttribute("fill") || "";
+      const textStyle = textEl.getAttribute("style") || "";
       const textStyleFill = textStyle.match(/fill\s*:\s*(#[0-9a-fA-F]{3,8})/);
-      const currentHex = textStyleFill?.[1] ?? (textFill.startsWith('#') ? textFill : '');
+      const currentHex =
+        textStyleFill?.[1] ?? (textFill.startsWith("#") ? textFill : "");
       const isLightBg = bgLum > 0.5;
 
-      let newFill = '';
+      let newFill = "";
       if (!currentHex) {
         if (isLightBg) {
-          newFill = '#1a1a1a';
+          newFill = "#1a1a1a";
         }
       } else {
         const textLum = hexLuminance(currentHex);
@@ -121,18 +123,18 @@ export const fixSubgraphTitleContrast = (svgElement: Element): void => {
           continue;
         }
         if (isLightBg && textLum > 0.5) {
-          newFill = '#1a1a1a';
+          newFill = "#1a1a1a";
         } else if (!isLightBg && textLum < 0.4) {
-          newFill = '#f0f0f0';
+          newFill = "#f0f0f0";
         }
       }
 
       if (newFill) {
-        let sep = '';
+        let sep = "";
         if (textStyle) {
-          sep = textStyle.trimEnd().endsWith(';') ? ' ' : '; ';
+          sep = textStyle.trimEnd().endsWith(";") ? " " : "; ";
         }
-        textEl.setAttribute('style', `${textStyle}${sep}fill: ${newFill}`);
+        textEl.setAttribute("style", `${textStyle}${sep}fill: ${newFill}`);
       }
     }
   }
@@ -458,9 +460,9 @@ export default App = () => (
 };
 
 export const getMermaidFiles = (content: string, isDarkMode = true) => {
-  const mermaidTheme = isDarkMode ? 'dark' : 'neutral';
+  const mermaidTheme = isDarkMode ? "dark" : "neutral";
   const btnStyles = getButtonStyles(isDarkMode);
-  const bgColor = isDarkMode ? '#212121' : '#FFFFFF';
+  const bgColor = isDarkMode ? "#212121" : "#FFFFFF";
   const mermaidCSS = `
 body {
   background-color: ${bgColor};
@@ -468,9 +470,9 @@ body {
 `;
 
   return {
-    'diagram.mmd': content || '# No mermaid diagram content provided',
-    'App.tsx': wrapMermaidDiagram(content),
-    'index.tsx': dedent(`import React, { StrictMode } from "react";
+    "diagram.mmd": content || "# No mermaid diagram content provided",
+    "App.tsx": wrapMermaidDiagram(content),
+    "index.tsx": dedent(`import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 import "./mermaid.css";
@@ -480,7 +482,11 @@ import App from "./App";
 const root = createRoot(document.getElementById("root"));
 root.render(<App />);
 ;`),
-    '/components/ui/MermaidDiagram.tsx': buildMermaidComponent(mermaidTheme, bgColor, btnStyles),
-    'mermaid.css': mermaidCSS,
+    "/components/ui/MermaidDiagram.tsx": buildMermaidComponent(
+      mermaidTheme,
+      bgColor,
+      btnStyles,
+    ),
+    "mermaid.css": mermaidCSS,
   };
 };

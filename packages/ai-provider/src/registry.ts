@@ -1,4 +1,4 @@
-import type { IEmbedder, ICompleter } from './types.js';
+import type { IEmbedder, ICompleter } from "./types.js";
 
 export type AdapterFactory<T> = (config: any) => T;
 
@@ -22,7 +22,9 @@ export class AIProviderRegistry {
 
     const factory = this.embedderFactories.get(name);
     if (!factory) {
-      throw new Error(`Embedder adapter '${name}' not registered. Available: ${Array.from(this.embedderFactories.keys()).join(', ')}`);
+      throw new Error(
+        `Embedder adapter '${name}' not registered. Available: ${Array.from(this.embedderFactories.keys()).join(", ")}`,
+      );
     }
 
     const instance = factory(config);
@@ -36,7 +38,9 @@ export class AIProviderRegistry {
 
     const factory = this.completerFactories.get(name);
     if (!factory) {
-      throw new Error(`Completer adapter '${name}' not registered. Available: ${Array.from(this.completerFactories.keys()).join(', ')}`);
+      throw new Error(
+        `Completer adapter '${name}' not registered. Available: ${Array.from(this.completerFactories.keys()).join(", ")}`,
+      );
     }
 
     const instance = factory(config);

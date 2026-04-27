@@ -1,16 +1,22 @@
-import { Constants } from 'librechat-data-provider';
-import { atomFamily, useRecoilCallback } from 'recoil';
-import type { TEphemeralAgent } from 'librechat-data-provider';
-import { logger } from '~/utils';
+import { Constants } from "librechat-data-provider";
+import { atomFamily, useRecoilCallback } from "recoil";
+import type { TEphemeralAgent } from "librechat-data-provider";
+import { logger } from "~/utils";
 
-export const ephemeralAgentByConvoId = atomFamily<TEphemeralAgent | null, string>({
-  key: 'ephemeralAgentByConvoId',
+export const ephemeralAgentByConvoId = atomFamily<
+  TEphemeralAgent | null,
+  string
+>({
+  key: "ephemeralAgentByConvoId",
   default: null,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue) => {
-        const conversationId = node.key.split('__')[1]?.replaceAll('"', '');
-        logger.log('agents', 'Setting ephemeral agent:', { conversationId, newValue });
+        const conversationId = node.key.split("__")[1]?.replaceAll('"', "");
+        logger.log("agents", "Setting ephemeral agent:", {
+          conversationId,
+          newValue,
+        });
       });
     },
   ] as const,
@@ -41,10 +47,16 @@ export function useApplyNewAgentTemplate() {
         ephemeralAgentState?: TEphemeralAgent | null,
       ) => {
         const sourceId = _sourceId || Constants.NEW_CONVO;
-        logger.log('agents', `Attempting to apply template from "${sourceId}" to "${targetId}"`);
+        logger.log(
+          "agents",
+          `Attempting to apply template from "${sourceId}" to "${targetId}"`,
+        );
 
         if (targetId === sourceId) {
-          logger.warn('agents', `Attempted to apply template to itself ("${sourceId}"). Skipping.`);
+          logger.warn(
+            "agents",
+            `Attempted to apply template to itself ("${sourceId}"). Skipping.`,
+          );
           return;
         }
 
@@ -52,17 +64,22 @@ export function useApplyNewAgentTemplate() {
           // 1. Get the current agent state from the "new" conversation template using snapshot
           // getPromise reads the value without subscribing
           const agentTemplate =
-            ephemeralAgentState ?? (await snapshot.getPromise(ephemeralAgentByConvoId(sourceId)));
+            ephemeralAgentState ??
+            (await snapshot.getPromise(ephemeralAgentByConvoId(sourceId)));
 
           // 2. Check if a template state actually exists
           if (agentTemplate) {
-            logger.log('agents', `Applying agent template to "${targetId}":`, agentTemplate);
+            logger.log(
+              "agents",
+              `Applying agent template to "${targetId}":`,
+              agentTemplate,
+            );
             // 3. Set the state for the target conversation ID using the template value
             set(ephemeralAgentByConvoId(targetId), agentTemplate);
           } else {
             // 4. Handle the case where the "new" template has no agent state (is null)
             logger.warn(
-              'agents',
+              "agents",
               `Agent template from "${sourceId}" is null or unset. Setting agent for "${targetId}" to null.`,
             );
             // Explicitly set to null (or a default empty state if preferred)
@@ -72,7 +89,7 @@ export function useApplyNewAgentTemplate() {
           }
         } catch (error) {
           logger.error(
-            'agents',
+            "agents",
             `Error applying agent template from "${sourceId}" to "${targetId}":`,
             error,
           );
@@ -94,8 +111,13 @@ export function useGetEphemeralAgent() {
   const getEphemeralAgent = useRecoilCallback(
     ({ snapshot }) =>
       (conversationId: string): TEphemeralAgent | null => {
-        logger.log('agents', `[useGetEphemeralAgent] Getting loadable for ID: ${conversationId}`);
-        const agentLoadable = snapshot.getLoadable(ephemeralAgentByConvoId(conversationId));
+        logger.log(
+          "agents",
+          `[useGetEphemeralAgent] Getting loadable for ID: ${conversationId}`,
+        );
+        const agentLoadable = snapshot.getLoadable(
+          ephemeralAgentByConvoId(conversationId),
+        );
         return agentLoadable.contents as TEphemeralAgent | null;
       },
     [],

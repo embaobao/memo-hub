@@ -1,5 +1,5 @@
-import type { ExtendedFile, FileSetter } from '~/common';
-import useSetFilesToDelete from './useSetFilesToDelete';
+import type { ExtendedFile, FileSetter } from "~/common";
+import useSetFilesToDelete from "./useSetFilesToDelete";
 
 export default function useUpdateFiles(setFiles: FileSetter) {
   const setFilesToDelete = useSetFilesToDelete();
@@ -20,7 +20,11 @@ export default function useUpdateFiles(setFiles: FileSetter) {
     });
   };
 
-  const updateFileById = (fileId: string, updates: Partial<ExtendedFile>, isEntityFile = false) => {
+  const updateFileById = (
+    fileId: string,
+    updates: Partial<ExtendedFile>,
+    isEntityFile = false,
+  ) => {
     setFiles((currentFiles) => {
       if (!currentFiles.has(fileId)) {
         console.warn(`File with id ${fileId} not found.`);
@@ -34,8 +38,8 @@ export default function useUpdateFiles(setFiles: FileSetter) {
         return currentFiles;
       }
       updatedFiles.set(fileId, { ...currentFile, ...updates });
-      const filepath = updates['filepath'] ?? '';
-      if (filepath && updates['progress'] !== 1 && !isEntityFile) {
+      const filepath = updates["filepath"] ?? "";
+      if (filepath && updates["progress"] !== 1 && !isEntityFile) {
         const files = Object.fromEntries(updatedFiles);
         setFilesToDelete(files);
       }

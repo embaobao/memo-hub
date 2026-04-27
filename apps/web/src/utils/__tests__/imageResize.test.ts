@@ -2,10 +2,10 @@
  * Tests for client-side image resizing utility
  */
 
-import { shouldResizeImage, supportsClientResize } from '../imageResize';
+import { shouldResizeImage, supportsClientResize } from "../imageResize";
 
 // Mock browser APIs for testing
-Object.defineProperty(global, 'HTMLCanvasElement', {
+Object.defineProperty(global, "HTMLCanvasElement", {
   value: function () {
     return {
       getContext: () => ({
@@ -17,7 +17,7 @@ Object.defineProperty(global, 'HTMLCanvasElement', {
   writable: true,
 });
 
-Object.defineProperty(global, 'FileReader', {
+Object.defineProperty(global, "FileReader", {
   value: function () {
     return {
       readAsDataURL: jest.fn(),
@@ -26,21 +26,21 @@ Object.defineProperty(global, 'FileReader', {
   writable: true,
 });
 
-Object.defineProperty(global, 'Image', {
+Object.defineProperty(global, "Image", {
   value: function () {
     return {};
   },
   writable: true,
 });
 
-describe('imageResize utility', () => {
-  describe('supportsClientResize', () => {
-    it('should return true when all required APIs are available', () => {
+describe("imageResize utility", () => {
+  describe("supportsClientResize", () => {
+    it("should return true when all required APIs are available", () => {
       const result = supportsClientResize();
       expect(result).toBe(true);
     });
 
-    it('should return false when HTMLCanvasElement is not available', () => {
+    it("should return false when HTMLCanvasElement is not available", () => {
       const originalCanvas = global.HTMLCanvasElement;
       // @ts-ignore
       delete global.HTMLCanvasElement;
@@ -52,15 +52,15 @@ describe('imageResize utility', () => {
     });
   });
 
-  describe('shouldResizeImage', () => {
-    it('should return true for large image files', () => {
-      const largeImageFile = new File([''], 'test.jpg', {
-        type: 'image/jpeg',
+  describe("shouldResizeImage", () => {
+    it("should return true for large image files", () => {
+      const largeImageFile = new File([""], "test.jpg", {
+        type: "image/jpeg",
         lastModified: Date.now(),
       });
 
       // Mock large file size
-      Object.defineProperty(largeImageFile, 'size', {
+      Object.defineProperty(largeImageFile, "size", {
         value: 100 * 1024 * 1024, // 100MB
         writable: false,
       });
@@ -69,14 +69,14 @@ describe('imageResize utility', () => {
       expect(result).toBe(true);
     });
 
-    it('should return false for small image files', () => {
-      const smallImageFile = new File([''], 'test.jpg', {
-        type: 'image/jpeg',
+    it("should return false for small image files", () => {
+      const smallImageFile = new File([""], "test.jpg", {
+        type: "image/jpeg",
         lastModified: Date.now(),
       });
 
       // Mock small file size
-      Object.defineProperty(smallImageFile, 'size', {
+      Object.defineProperty(smallImageFile, "size", {
         value: 1024, // 1KB
         writable: false,
       });
@@ -85,9 +85,9 @@ describe('imageResize utility', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false for non-image files', () => {
-      const textFile = new File([''], 'test.txt', {
-        type: 'text/plain',
+    it("should return false for non-image files", () => {
+      const textFile = new File([""], "test.txt", {
+        type: "text/plain",
         lastModified: Date.now(),
       });
 
@@ -95,9 +95,9 @@ describe('imageResize utility', () => {
       expect(result).toBe(false);
     });
 
-    it('should return false for GIF files', () => {
-      const gifFile = new File([''], 'test.gif', {
-        type: 'image/gif',
+    it("should return false for GIF files", () => {
+      const gifFile = new File([""], "test.gif", {
+        type: "image/gif",
         lastModified: Date.now(),
       });
 

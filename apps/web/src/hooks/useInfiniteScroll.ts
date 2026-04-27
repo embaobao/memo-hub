@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { throttle } from 'lodash';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { throttle } from "lodash";
 
 interface UseInfiniteScrollOptions {
   hasNextPage?: boolean;
@@ -22,7 +22,9 @@ export const useInfiniteScroll = ({
 }: UseInfiniteScrollOptions) => {
   // Monitor resizing of the scroll container
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const [scrollElement, setScrollElementState] = useState<HTMLElement | null>(null);
+  const [scrollElement, setScrollElementState] = useState<HTMLElement | null>(
+    null,
+  );
 
   // Handler to check if we need to fetch more data
   const handleNeedToFetch = useCallback(() => {
@@ -34,7 +36,8 @@ export const useInfiniteScroll = ({
     const scrollPosition = (scrollTop + clientHeight) / scrollHeight;
 
     // Check if we've scrolled past the threshold and conditions are met
-    const shouldFetch = scrollPosition >= threshold && hasNextPage && !isLoading;
+    const shouldFetch =
+      scrollPosition >= threshold && hasNextPage && !isLoading;
 
     if (shouldFetch) {
       fetchNextPage();
@@ -71,7 +74,9 @@ export const useInfiniteScroll = ({
     if (!element) return;
 
     // Add the scroll listener
-    element.addEventListener('scroll', throttledHandleNeedToFetch, { passive: true });
+    element.addEventListener("scroll", throttledHandleNeedToFetch, {
+      passive: true,
+    });
 
     // Set up ResizeObserver to detect size changes
     if (resizeObserverRef.current) {
@@ -89,7 +94,7 @@ export const useInfiniteScroll = ({
     throttledHandleNeedToFetch();
 
     return () => {
-      element.removeEventListener('scroll', throttledHandleNeedToFetch);
+      element.removeEventListener("scroll", throttledHandleNeedToFetch);
       // Clean up ResizeObserver
       if (resizeObserverRef.current) {
         resizeObserverRef.current.disconnect();

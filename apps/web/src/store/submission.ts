@@ -1,5 +1,5 @@
-import { atom } from 'recoil';
-import { TSubmission } from 'librechat-data-provider';
+import { atom } from "recoil";
+import { TSubmission } from "librechat-data-provider";
 
 // current submission
 // submit any new value to this state will cause new message to be send.
@@ -13,12 +13,12 @@ import { TSubmission } from 'librechat-data-provider';
 // }
 
 const submission = atom<TSubmission | null>({
-  key: 'submission',
+  key: "submission",
   default: null,
 });
 
 const isSubmitting = atom({
-  key: 'isSubmitting',
+  key: "isSubmitting",
   default: false,
 });
 

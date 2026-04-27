@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useRef } from 'react';
-import copy from 'copy-to-clipboard';
-import { ContentTypes, SearchResultData } from 'librechat-data-provider';
-import type { TMessage } from 'librechat-data-provider';
+import { useCallback, useEffect, useRef } from "react";
+import copy from "copy-to-clipboard";
+import { ContentTypes, SearchResultData } from "librechat-data-provider";
+import type { TMessage } from "librechat-data-provider";
 import {
   SPAN_REGEX,
   CLEANUP_REGEX,
   COMPOSITE_REGEX,
   STANDALONE_PATTERN,
   INVALID_CITATION_REGEX,
-} from '~/utils/citations';
+} from "~/utils/citations";
 
 type Source = {
   link: string;
@@ -20,18 +20,18 @@ type Source = {
 };
 
 const refTypeMap: Record<string, string> = {
-  search: 'organic',
-  ref: 'references',
-  news: 'topStories',
-  image: 'images',
-  video: 'videos',
+  search: "organic",
+  ref: "references",
+  news: "topStories",
+  image: "images",
+  video: "videos",
 };
 
 export default function useCopyToClipboard({
   text,
   content,
   searchResults,
-}: Partial<Pick<TMessage, 'text' | 'content'>> & {
+}: Partial<Pick<TMessage, "text" | "content">> & {
   searchResults?: { [key: string]: SearchResultData };
 }) {
   const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -52,25 +52,26 @@ export default function useCopyToClipboard({
       setIsCopied(true);
 
       // Get the message text from content or text
-      let messageText = text ?? '';
+      let messageText = text ?? "";
       if (content) {
         messageText = content.reduce((acc, curr, i) => {
           if (curr.type === ContentTypes.TEXT) {
-            const text = typeof curr.text === 'string' ? curr.text : curr.text.value;
-            return acc + text + (i === content.length - 1 ? '' : '\n');
+            const text =
+              typeof curr.text === "string" ? curr.text : curr.text.value;
+            return acc + text + (i === content.length - 1 ? "" : "\n");
           }
           return acc;
-        }, '');
+        }, "");
       }
 
       // Early return if no search data
       if (!searchResults || Object.keys(searchResults).length === 0) {
         // Clean up any citation markers before returning
         const cleanedText = messageText
-          .replace(INVALID_CITATION_REGEX, '')
-          .replace(CLEANUP_REGEX, '');
+          .replace(INVALID_CITATION_REGEX, "")
+          .replace(CLEANUP_REGEX, "");
 
-        copy(cleanedText, { format: 'text/plain' });
+        copy(cleanedText, { format: "text/plain" });
         copyTimeoutRef.current = setTimeout(() => {
           setIsCopied(false);
         }, 3000);
@@ -83,11 +84,11 @@ export default function useCopyToClipboard({
 
       // Add citations list at the end if we have any
       if (citationManager.citations.size > 0) {
-        processedText += '\n\nCitations:\n';
+        processedText += "\n\nCitations:\n";
         // Sort citations by their reference number
-        const sortedCitations = Array.from(citationManager.citations.entries()).sort(
-          (a, b) => a[1].referenceNumber - b[1].referenceNumber,
-        );
+        const sortedCitations = Array.from(
+          citationManager.citations.entries(),
+        ).sort((a, b) => a[1].referenceNumber - b[1].referenceNumber);
 
         // Add each citation to the text
         for (const [_, citation] of sortedCitations) {
@@ -95,7 +96,7 @@ export default function useCopyToClipboard({
         }
       }
 
-      copy(processedText, { format: 'text/plain' });
+      copy(processedText, { format: "text/plain" });
       copyTimeoutRef.current = setTimeout(() => {
         setIsCopied(false);
       }, 3000);
@@ -109,7 +110,10 @@ export default function useCopyToClipboard({
 /**
  * Process citations in the text and format them properly
  */
-function processCitations(text: string, searchResults: { [key: string]: SearchResultData }) {
+function processCitations(
+  text: string,
+  searchResults: { [key: string]: SearchResultData },
+) {
   // Maps citation keys to their info including reference numbers
   const citations = new Map<
     string,
@@ -129,7 +133,7 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
 
   // Step 1: Process highlighted text first (simplify by just making it bold in markdown)
   formattedText = formattedText.replace(SPAN_REGEX, (match) => {
-    const text = match.replace(/\\ue203|\\ue204|\ue203|\ue204/g, '');
+    const text = match.replace(/\\ue203|\\ue204|\ue203|\ue204/g, "");
     return `**${text}**`;
   });
 
@@ -145,7 +149,7 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
 
   // Find standalone citations
   let standaloneMatch: RegExpExecArray | null;
-  const standaloneCopy = new RegExp(STANDALONE_PATTERN.source, 'g');
+  const standaloneCopy = new RegExp(STANDALONE_PATTERN.source, "g");
   while ((standaloneMatch = standaloneCopy.exec(formattedText)) !== null) {
     allCitations.push({
       turn: standaloneMatch[1],
@@ -159,14 +163,14 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
 
   // Find composite citation blocks
   let compositeMatch: RegExpExecArray | null;
-  const compositeCopy = new RegExp(COMPOSITE_REGEX.source, 'g');
+  const compositeCopy = new RegExp(COMPOSITE_REGEX.source, "g");
   while ((compositeMatch = compositeCopy.exec(formattedText)) !== null) {
     const block = compositeMatch[0];
     const blockStart = compositeMatch.index;
 
     // Extract individual citations within the composite block
     let citationMatch: RegExpExecArray | null;
-    const citationPattern = new RegExp(STANDALONE_PATTERN.source, 'g');
+    const citationPattern = new RegExp(STANDALONE_PATTERN.source, "g");
     while ((citationMatch = citationPattern.exec(block)) !== null) {
       allCitations.push({
         turn: citationMatch[1],
@@ -203,7 +207,7 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
 
     // Get source data
     const sourceData = searchData[dataType][idx];
-    const sourceUrl = sourceData.link || '';
+    const sourceUrl = sourceData.link || "";
 
     // Skip if no link
     if (!sourceUrl) continue;
@@ -219,8 +223,8 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
 
     const source: Source = {
       link: sourceUrl,
-      title: sourceData.title || sourceData.name || '',
-      attribution: sourceData.attribution || sourceData.source || '',
+      title: sourceData.title || sourceData.name || "",
+      attribution: sourceData.attribution || sourceData.source || "",
       type: dataType,
       typeIndex: idx,
       citationKey,
@@ -231,7 +235,7 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
       continue;
     }
 
-    let referenceText = '';
+    let referenceText = "";
 
     // Check if this source has been cited before
     let existingCitation = citations.get(citationKey);
@@ -254,15 +258,17 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
         if (!processedCitations.has(fullMatch)) {
           const compositeCitations: number[] = [];
           let citationMatch: RegExpExecArray | null;
-          const citationPattern = new RegExp(STANDALONE_PATTERN.source, 'g');
+          const citationPattern = new RegExp(STANDALONE_PATTERN.source, "g");
 
           while ((citationMatch = citationPattern.exec(fullMatch)) !== null) {
             const cTurn = citationMatch[1];
             const cType = citationMatch[2];
             const cIndex = citationMatch[3];
-            const cDataType = refTypeMap[cType.toLowerCase()] || cType.toLowerCase();
+            const cDataType =
+              refTypeMap[cType.toLowerCase()] || cType.toLowerCase();
 
-            const cSource = searchResults[cTurn]?.[cDataType]?.[parseInt(cIndex, 10)];
+            const cSource =
+              searchResults[cTurn]?.[cDataType]?.[parseInt(cIndex, 10)];
             if (cSource && cSource.link) {
               // Check if we've already created a citation for this URL
               const cUrl = cSource.link;
@@ -279,11 +285,11 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
                 cCitation = {
                   referenceNumber: nextReferenceNumber++,
                   link: cSource.link,
-                  title: cSource.title || cSource.name || '',
+                  title: cSource.title || cSource.name || "",
                   source: {
                     link: cSource.link,
-                    title: cSource.title || cSource.name || '',
-                    attribution: cSource.attribution || cSource.source || '',
+                    title: cSource.title || cSource.name || "",
+                    attribution: cSource.attribution || cSource.source || "",
                     type: cDataType,
                     typeIndex: parseInt(cIndex, 10),
                     citationKey: cKey,
@@ -299,13 +305,15 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
           }
 
           // Sort and deduplicate the composite citations
-          const uniqueSortedCitations = [...new Set(compositeCitations)].sort((a, b) => a - b);
+          const uniqueSortedCitations = [...new Set(compositeCitations)].sort(
+            (a, b) => a - b,
+          );
 
           // Create combined reference numbers for all citations in this composite
           referenceText =
             uniqueSortedCitations.length > 0
-              ? uniqueSortedCitations.map((num) => `[${num}]`).join('')
-              : '';
+              ? uniqueSortedCitations.map((num) => `[${num}]`).join("")
+              : "";
 
           processedCitations.add(fullMatch);
           compositeCitationsMap.set(fullMatch, uniqueSortedCitations);
@@ -330,11 +338,11 @@ function processCitations(text: string, searchResults: { [key: string]: SearchRe
 
   // Step 5: Remove any orphaned composite blocks at the end of the text
   // This prevents the [1][2][3][4] list that might appear at the end if there's a composite there
-  formattedText = formattedText.replace(/\n\s*\[\d+\](\[\d+\])*\s*$/g, '');
+  formattedText = formattedText.replace(/\n\s*\[\d+\](\[\d+\])*\s*$/g, "");
 
   // Step 6: Clean up any remaining citation markers
-  formattedText = formattedText.replace(INVALID_CITATION_REGEX, '');
-  formattedText = formattedText.replace(CLEANUP_REGEX, '');
+  formattedText = formattedText.replace(INVALID_CITATION_REGEX, "");
+  formattedText = formattedText.replace(CLEANUP_REGEX, "");
 
   return {
     formattedText,

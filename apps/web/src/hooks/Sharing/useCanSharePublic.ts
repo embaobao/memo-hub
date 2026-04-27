@@ -1,12 +1,17 @@
-import { ResourceType, PermissionTypes, Permissions } from 'librechat-data-provider';
-import { useHasAccess } from '~/hooks';
+import {
+  ResourceType,
+  PermissionTypes,
+  Permissions,
+} from "librechat-data-provider";
+import { useHasAccess } from "~/hooks";
 
-const resourceToPermissionMap: Partial<Record<ResourceType, PermissionTypes>> = {
-  [ResourceType.AGENT]: PermissionTypes.AGENTS,
-  [ResourceType.PROMPTGROUP]: PermissionTypes.PROMPTS,
-  [ResourceType.MCPSERVER]: PermissionTypes.MCP_SERVERS,
-  [ResourceType.REMOTE_AGENT]: PermissionTypes.REMOTE_AGENTS,
-};
+const resourceToPermissionMap: Partial<Record<ResourceType, PermissionTypes>> =
+  {
+    [ResourceType.AGENT]: PermissionTypes.AGENTS,
+    [ResourceType.PROMPTGROUP]: PermissionTypes.PROMPTS,
+    [ResourceType.MCPSERVER]: PermissionTypes.MCP_SERVERS,
+    [ResourceType.REMOTE_AGENT]: PermissionTypes.REMOTE_AGENTS,
+  };
 
 /**
  * Hook to check if a user can share a specific resource type publicly (with everyone)

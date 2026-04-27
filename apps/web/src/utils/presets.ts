@@ -1,5 +1,5 @@
-import type { TPreset, TPlugin } from 'librechat-data-provider';
-import { EModelEndpoint } from 'librechat-data-provider';
+import type { TPreset, TPlugin } from "librechat-data-provider";
+import { EModelEndpoint } from "librechat-data-provider";
 
 type TEndpoints = Array<string | EModelEndpoint>;
 
@@ -13,9 +13,9 @@ export const getPresetTitle = (preset: TPreset, mention?: boolean) => {
     chatGptLabel,
     modelLabel,
   } = preset;
-  const modelInfo = model ?? '';
-  let title = '';
-  let label = '';
+  const modelInfo = model ?? "";
+  let title = "";
+  let label = "";
 
   if (modelLabel) {
     label = modelLabel;
@@ -27,30 +27,34 @@ export const getPresetTitle = (preset: TPreset, mention?: boolean) => {
     presetTitle &&
     label.toLowerCase().includes(presetTitle.toLowerCase())
   ) {
-    title = label + ': ';
-    label = '';
-  } else if (presetTitle != null && presetTitle && presetTitle.trim() !== 'New Chat') {
-    title = presetTitle + ': ';
+    title = label + ": ";
+    label = "";
+  } else if (
+    presetTitle != null &&
+    presetTitle &&
+    presetTitle.trim() !== "New Chat"
+  ) {
+    title = presetTitle + ": ";
   }
 
   if (mention === true) {
-    return `${modelInfo}${label ? ` | ${label}` : ''}${
-      promptPrefix != null && promptPrefix ? ` | ${promptPrefix}` : ''
+    return `${modelInfo}${label ? ` | ${label}` : ""}${
+      promptPrefix != null && promptPrefix ? ` | ${promptPrefix}` : ""
     }${
       tools
         ? ` | ${tools
             .map((tool: TPlugin | string) => {
-              if (typeof tool === 'string') {
+              if (typeof tool === "string") {
                 return tool;
               }
               return tool.pluginKey;
             })
-            .join(', ')}`
-        : ''
+            .join(", ")}`
+        : ""
     }`;
   }
 
-  return `${title}${modelInfo}${label ? ` (${label})` : ''}`.trim();
+  return `${title}${modelInfo}${label ? ` (${label})` : ""}`.trim();
 };
 
 /** Remove unavailable tools from the preset */
@@ -64,7 +68,7 @@ export const removeUnavailableTools = (
     newPreset.tools = newPreset.tools
       .filter((tool) => {
         let pluginKey: string;
-        if (typeof tool === 'string') {
+        if (typeof tool === "string") {
           pluginKey = tool;
         } else {
           ({ pluginKey } = tool);
@@ -73,7 +77,7 @@ export const removeUnavailableTools = (
         return !!availableTools[pluginKey];
       })
       .map((tool) => {
-        if (typeof tool === 'string') {
+        if (typeof tool === "string") {
           return tool;
         }
         return tool.pluginKey;

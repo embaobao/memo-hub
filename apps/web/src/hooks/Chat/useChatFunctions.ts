@@ -1,8 +1,8 @@
-import { v4 } from 'uuid';
-import { cloneDeep } from 'lodash';
-import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
-import { useSetRecoilState, useResetRecoilState, useRecoilValue } from 'recoil';
+import { v4 } from "uuid";
+import { cloneDeep } from "lodash";
+import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSetRecoilState, useResetRecoilState, useRecoilValue } from "recoil";
 import {
   Constants,
   QueryKeys,
@@ -14,7 +14,7 @@ import {
   replaceSpecialVars,
   isAssistantsEndpoint,
   getDefaultParamsEndpoint,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import type {
   TMessage,
   TSubmission,
@@ -23,21 +23,23 @@ import type {
   TEndpointOption,
   TEndpointsConfig,
   EndpointSchemaKey,
-} from 'librechat-data-provider';
-import type { SetterOrUpdater } from 'recoil';
-import type { TAskFunction, ExtendedFile } from '~/common';
-import useSetFilesToDelete from '~/hooks/Files/useSetFilesToDelete';
-import useGetSender from '~/hooks/Conversations/useGetSender';
-import { logger, createDualMessageContent } from '~/utils';
-import store, { useGetEphemeralAgent } from '~/store';
-import { startupConfigKey } from '~/data-provider';
-import useUserKey from '~/hooks/Input/useUserKey';
-import { useAuthContext } from '~/hooks';
+} from "librechat-data-provider";
+import type { SetterOrUpdater } from "recoil";
+import type { TAskFunction, ExtendedFile } from "~/common";
+import useSetFilesToDelete from "~/hooks/Files/useSetFilesToDelete";
+import useGetSender from "~/hooks/Conversations/useGetSender";
+import { logger, createDualMessageContent } from "~/utils";
+import store, { useGetEphemeralAgent } from "~/store";
+import { startupConfigKey } from "~/data-provider";
+import useUserKey from "~/hooks/Input/useUserKey";
+import { useAuthContext } from "~/hooks";
 
 const logChatRequest = (request: Record<string, unknown>) => {
-  logger.log('=====================================\nAsk function called with:');
+  logger.log(
+    "=====================================\nAsk function called with:",
+  );
   logger.dir(request);
-  logger.log('=====================================');
+  logger.log("=====================================");
 };
 
 export default function useChatFunctions({
@@ -71,10 +73,14 @@ export default function useChatFunctions({
   const setFilesToDelete = useSetFilesToDelete();
   const getEphemeralAgent = useGetEphemeralAgent();
   const isTemporary = useRecoilValue(store.isTemporary);
-  const { getExpiry } = useUserKey(immutableConversation?.endpoint ?? '');
+  const { getExpiry } = useUserKey(immutableConversation?.endpoint ?? "");
   const setIsSubmitting = useSetRecoilState(store.isSubmittingFamily(index));
-  const setShowStopButton = useSetRecoilState(store.showStopButtonByIndex(index));
-  const resetLatestMultiMessage = useResetRecoilState(store.latestMessageFamily(index + 1));
+  const setShowStopButton = useSetRecoilState(
+    store.showStopButtonByIndex(index),
+  );
+  const resetLatestMultiMessage = useResetRecoilState(
+    store.latestMessageFamily(index + 1),
+  );
 
   const ask: TAskFunction = (
     {
@@ -100,7 +106,7 @@ export default function useChatFunctions({
     resetLatestMultiMessage();
 
     text = text.trim();
-    if (!!isSubmitting || text === '') {
+    if (!!isSubmitting || text === "") {
       return;
     }
 
@@ -108,25 +114,28 @@ export default function useChatFunctions({
 
     const endpoint = conversation?.endpoint;
     if (endpoint === null) {
-      console.error('No endpoint available');
+      console.error("No endpoint available");
       return;
     }
 
     conversationId = conversationId ?? conversation?.conversationId ?? null;
-    if (conversationId == 'search') {
-      console.error('cannot send any message under search view!');
+    if (conversationId == "search") {
+      console.error("cannot send any message under search view!");
       return;
     }
 
     if (isContinued && !latestMessage) {
-      console.error('cannot continue AI message without latestMessage!');
+      console.error("cannot continue AI message without latestMessage!");
       return;
     }
 
-    const ephemeralAgent = getEphemeralAgent(conversationId ?? Constants.NEW_CONVO);
+    const ephemeralAgent = getEphemeralAgent(
+      conversationId ?? Constants.NEW_CONVO,
+    );
     const isEditOrContinue = isEdited || isContinued;
 
-    let currentMessages: TMessage[] | null = overrideMessages ?? getMessages() ?? [];
+    let currentMessages: TMessage[] | null =
+      overrideMessages ?? getMessages() ?? [];
 
     if (conversation?.promptPrefix) {
       conversation.promptPrefix = replaceSpecialVars({
@@ -138,7 +147,8 @@ export default function useChatFunctions({
     // construct the query message
     // this is not a real messageId, it is used as placeholder before real messageId returned
     const intermediateId = overrideUserMessageId ?? v4();
-    parentMessageId = parentMessageId ?? latestMessage?.messageId ?? Constants.NO_PARENT;
+    parentMessageId =
+      parentMessageId ?? latestMessage?.messageId ?? Constants.NO_PARENT;
 
     logChatRequest({
       index,
@@ -154,10 +164,12 @@ export default function useChatFunctions({
       parentMessageId = Constants.NO_PARENT;
       currentMessages = [];
       conversationId = null;
-      navigate('/c/new', { state: { focusChat: true } });
+      navigate("/c/new", { state: { focusChat: true } });
     }
 
-    const targetParentMessageId = isRegenerate ? messageId : latestMessage?.parentMessageId;
+    const targetParentMessageId = isRegenerate
+      ? messageId
+      : latestMessage?.parentMessageId;
     /**
      * If the user regenerated or resubmitted the message, the current parent is technically
      * the latest user message, which is passed into `ask`; otherwise, we can rely on the
@@ -169,14 +181,23 @@ export default function useChatFunctions({
 
     let thread_id = targetParentMessage?.thread_id ?? latestMessage?.thread_id;
     if (thread_id == null) {
-      thread_id = currentMessages.find((message) => message.thread_id)?.thread_id;
+      thread_id = currentMessages.find(
+        (message) => message.thread_id,
+      )?.thread_id;
     }
 
-    const endpointsConfig = queryClient.getQueryData<TEndpointsConfig>([QueryKeys.endpoints]);
-    const startupConfig = queryClient.getQueryData<TStartupConfig>(startupConfigKey(true));
-    const endpointType = getEndpointField(endpointsConfig, endpoint, 'type');
+    const endpointsConfig = queryClient.getQueryData<TEndpointsConfig>([
+      QueryKeys.endpoints,
+    ]);
+    const startupConfig = queryClient.getQueryData<TStartupConfig>(
+      startupConfigKey(true),
+    );
+    const endpointType = getEndpointField(endpointsConfig, endpoint, "type");
     const iconURL = conversation?.iconURL;
-    const defaultParamsEndpoint = getDefaultParamsEndpoint(endpointsConfig, endpoint);
+    const defaultParamsEndpoint = getDefaultParamsEndpoint(
+      endpointsConfig,
+      endpoint,
+    );
 
     /** This becomes part of the `endpointOption` */
     const convo = parseCompactConvo({
@@ -186,7 +207,7 @@ export default function useChatFunctions({
       defaultParamsEndpoint,
     });
 
-    const { modelDisplayLabel } = endpointsConfig?.[endpoint ?? ''] ?? {};
+    const { modelDisplayLabel } = endpointsConfig?.[endpoint ?? ""] ?? {};
     const endpointOption = Object.assign(
       {
         endpoint,
@@ -203,16 +224,22 @@ export default function useChatFunctions({
     } else {
       endpointOption.key = new Date(Date.now() + 60 * 60 * 1000).toISOString();
     }
-    const responseSender = getSender({ model: conversation?.model, ...endpointOption });
+    const responseSender = getSender({
+      model: conversation?.model,
+      ...endpointOption,
+    });
 
     const currentMsg: TMessage = {
       text,
-      sender: 'User',
-      clientTimestamp: new Date().toLocaleString('sv').replace(' ', 'T'),
+      sender: "User",
+      clientTimestamp: new Date().toLocaleString("sv").replace(" ", "T"),
       isCreatedByUser: true,
       parentMessageId,
       conversationId,
-      messageId: isContinued && messageId != null && messageId ? messageId : intermediateId,
+      messageId:
+        isContinued && messageId != null && messageId
+          ? messageId
+          : intermediateId,
       thread_id,
       error: false,
     };
@@ -231,7 +258,7 @@ export default function useChatFunctions({
       currentMsg.files = Array.from(files.values()).map((file) => ({
         file_id: file.file_id,
         filepath: file.filepath,
-        type: file.type ?? '', // Ensure type is not undefined
+        type: file.type ?? "", // Ensure type is not undefined
         height: file.height,
         width: file.width,
       }));
@@ -242,16 +269,17 @@ export default function useChatFunctions({
     const responseMessageId =
       editedMessageId ??
       (latestMessage?.messageId && isRegenerate
-        ? latestMessage.messageId.replace(/_+$/, '') + '_'
+        ? latestMessage.messageId.replace(/_+$/, "") + "_"
         : null) ??
       null;
     const initialResponseId =
-      responseMessageId ?? `${isRegenerate ? messageId : intermediateId}`.replace(/_+$/, '') + '_';
+      responseMessageId ??
+      `${isRegenerate ? messageId : intermediateId}`.replace(/_+$/, "") + "_";
 
     const initialResponse: TMessage = {
       sender: responseSender,
-      text: '',
-      endpoint: endpoint ?? '',
+      text: "",
+      endpoint: endpoint ?? "",
       parentMessageId: isRegenerate ? messageId : intermediateId,
       messageId: initialResponseId,
       thread_id,
@@ -264,30 +292,40 @@ export default function useChatFunctions({
     };
 
     if (isAssistantsEndpoint(endpoint)) {
-      initialResponse.model = conversation?.assistant_id ?? '';
-      initialResponse.text = '';
+      initialResponse.model = conversation?.assistant_id ?? "";
+      initialResponse.text = "";
       initialResponse.content = [
         {
           type: ContentTypes.TEXT,
           [ContentTypes.TEXT]: {
-            value: '',
+            value: "",
           },
         },
       ];
     } else if (endpoint != null) {
       initialResponse.model = isAgentsEndpoint(endpoint)
-        ? (conversation?.agent_id ?? '')
-        : (conversation?.model ?? '');
-      initialResponse.text = '';
+        ? (conversation?.agent_id ?? "")
+        : (conversation?.model ?? "");
+      initialResponse.text = "";
 
       if (editedContent && latestMessage?.content) {
         initialResponse.content = cloneDeep(latestMessage.content);
         const { index, type, ...part } = editedContent;
-        if (initialResponse.content && index >= 0 && index < initialResponse.content.length) {
+        if (
+          initialResponse.content &&
+          index >= 0 &&
+          index < initialResponse.content.length
+        ) {
           const contentPart = initialResponse.content[index];
-          if (type === ContentTypes.THINK && contentPart.type === ContentTypes.THINK) {
+          if (
+            type === ContentTypes.THINK &&
+            contentPart.type === ContentTypes.THINK
+          ) {
             contentPart[ContentTypes.THINK] = part[ContentTypes.THINK];
-          } else if (type === ContentTypes.TEXT && contentPart.type === ContentTypes.TEXT) {
+          } else if (
+            type === ContentTypes.TEXT &&
+            contentPart.type === ContentTypes.TEXT
+          ) {
             contentPart[ContentTypes.TEXT] = part[ContentTypes.TEXT];
           }
         }
@@ -308,10 +346,12 @@ export default function useChatFunctions({
     }
 
     if (isContinued) {
-      currentMessages = currentMessages.filter((msg) => msg.messageId !== responseMessageId);
+      currentMessages = currentMessages.filter(
+        (msg) => msg.messageId !== responseMessageId,
+      );
     }
 
-    logger.log('message_state', initialResponse);
+    logger.log("message_state", initialResponse);
     const submission: TSubmission = {
       conversation: {
         ...conversation,
@@ -344,12 +384,17 @@ export default function useChatFunctions({
     }
 
     setSubmission(submission);
-    logger.dir('message_stream', submission, { depth: null });
+    logger.dir("message_stream", submission, { depth: null });
   };
 
-  const regenerate = ({ parentMessageId }, options?: { addedConvo?: TConversation | null }) => {
+  const regenerate = (
+    { parentMessageId },
+    options?: { addedConvo?: TConversation | null },
+  ) => {
     const messages = getMessages();
-    const parentMessage = messages?.find((element) => element.messageId == parentMessageId);
+    const parentMessage = messages?.find(
+      (element) => element.messageId == parentMessageId,
+    );
 
     if (parentMessage && parentMessage.isCreatedByUser) {
       ask(
@@ -358,7 +403,7 @@ export default function useChatFunctions({
       );
     } else {
       console.error(
-        'Failed to regenerate the message: parentMessage not found or not created by user.',
+        "Failed to regenerate the message: parentMessage not found or not created by user.",
       );
     }
   };

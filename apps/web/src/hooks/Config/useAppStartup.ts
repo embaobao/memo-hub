@@ -1,13 +1,17 @@
-import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
-import TagManager from 'react-gtm-module';
-import { LocalStorageKeys, PermissionTypes, Permissions } from 'librechat-data-provider';
-import type { TStartupConfig, TUser } from 'librechat-data-provider';
-import { useMCPToolsQuery, useMCPServersQuery } from '~/data-provider';
-import { cleanupTimestampedStorage } from '~/utils/timestamps';
-import useSpeechSettingsInit from './useSpeechSettingsInit';
-import { useHasAccess } from '~/hooks';
-import store from '~/store';
+import { useEffect } from "react";
+import { useRecoilState } from "recoil";
+import TagManager from "react-gtm-module";
+import {
+  LocalStorageKeys,
+  PermissionTypes,
+  Permissions,
+} from "librechat-data-provider";
+import type { TStartupConfig, TUser } from "librechat-data-provider";
+import { useMCPToolsQuery, useMCPServersQuery } from "~/data-provider";
+import { cleanupTimestampedStorage } from "~/utils/timestamps";
+import useSpeechSettingsInit from "./useSpeechSettingsInit";
+import { useHasAccess } from "~/hooks";
+import store from "~/store";
 
 export default function useAppStartup({
   startupConfig,
@@ -23,9 +27,11 @@ export default function useAppStartup({
   });
 
   useSpeechSettingsInit(!!user);
-  const { data: loadedServers, isLoading: serversLoading } = useMCPServersQuery({
-    enabled: canUseMcp,
-  });
+  const { data: loadedServers, isLoading: serversLoading } = useMCPServersQuery(
+    {
+      enabled: canUseMcp,
+    },
+  );
 
   useMCPToolsQuery({
     enabled:
@@ -43,7 +49,7 @@ export default function useAppStartup({
 
   /** Set the app title */
   useEffect(() => {
-    const appTitle = startupConfig?.appTitle ?? '';
+    const appTitle = startupConfig?.appTitle ?? "";
     if (!appTitle) {
       return;
     }
@@ -77,7 +83,10 @@ export default function useAppStartup({
   }, [defaultPreset, setDefaultPreset, startupConfig?.modelSpecs?.list]);
 
   useEffect(() => {
-    if (startupConfig?.analyticsGtmId != null && typeof window.google_tag_manager === 'undefined') {
+    if (
+      startupConfig?.analyticsGtmId != null &&
+      typeof window.google_tag_manager === "undefined"
+    ) {
       const tagManagerArgs = {
         gtmId: startupConfig.analyticsGtmId,
       };

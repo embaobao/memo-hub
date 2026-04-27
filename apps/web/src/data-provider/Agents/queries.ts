@@ -1,12 +1,21 @@
-import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { QueryKeys, dataService, EModelEndpoint, PermissionBits } from 'librechat-data-provider';
+import {
+  useQuery,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import {
+  QueryKeys,
+  dataService,
+  EModelEndpoint,
+  PermissionBits,
+} from "librechat-data-provider";
 import type {
   QueryObserverResult,
   UseQueryOptions,
   UseInfiniteQueryOptions,
-} from '@tanstack/react-query';
-import type t from 'librechat-data-provider';
-import { isEphemeralAgent } from '~/common';
+} from "@tanstack/react-query";
+import type t from "librechat-data-provider";
+import { isEphemeralAgent } from "~/common";
 
 /**
  * AGENTS
@@ -18,17 +27,25 @@ export const defaultAgentParams: t.AgentListParams = {
 /**
  * Hook for getting all available tools for A
  */
-export const useAvailableAgentToolsQuery = (): QueryObserverResult<t.TPlugin[]> => {
+export const useAvailableAgentToolsQuery = (): QueryObserverResult<
+  t.TPlugin[]
+> => {
   const queryClient = useQueryClient();
-  const endpointsConfig = queryClient.getQueryData<t.TEndpointsConfig>([QueryKeys.endpoints]);
+  const endpointsConfig = queryClient.getQueryData<t.TEndpointsConfig>([
+    QueryKeys.endpoints,
+  ]);
 
   const enabled = !!endpointsConfig?.[EModelEndpoint.agents];
-  return useQuery<t.TPlugin[]>([QueryKeys.tools], () => dataService.getAvailableAgentTools(), {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    enabled,
-  });
+  return useQuery<t.TPlugin[]>(
+    [QueryKeys.tools],
+    () => dataService.getAvailableAgentTools(),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      enabled,
+    },
+  );
 };
 
 /**
@@ -39,7 +56,9 @@ export const useListAgentsQuery = <TData = t.AgentListResponse>(
   config?: UseQueryOptions<t.AgentListResponse, unknown, TData>,
 ): QueryObserverResult<TData> => {
   const queryClient = useQueryClient();
-  const endpointsConfig = queryClient.getQueryData<t.TEndpointsConfig>([QueryKeys.endpoints]);
+  const endpointsConfig = queryClient.getQueryData<t.TEndpointsConfig>([
+    QueryKeys.endpoints,
+  ]);
 
   const enabled = !!endpointsConfig?.[EModelEndpoint.agents];
   return useQuery<t.AgentListResponse, unknown, TData>(
@@ -56,7 +75,8 @@ export const useListAgentsQuery = <TData = t.AgentListResponse>(
       refetchOnMount: false,
       retry: false,
       ...config,
-      enabled: config?.enabled !== undefined ? config.enabled && enabled : enabled,
+      enabled:
+        config?.enabled !== undefined ? config.enabled && enabled : enabled,
     },
   );
 };
@@ -95,7 +115,7 @@ export const useGetExpandedAgentByIdQuery = (
   config?: UseQueryOptions<t.Agent>,
 ): QueryObserverResult<t.Agent> => {
   return useQuery<t.Agent>(
-    [QueryKeys.agent, agent_id, 'expanded'],
+    [QueryKeys.agent, agent_id, "expanded"],
     () =>
       dataService.getExpandedAgentById({
         agent_id,

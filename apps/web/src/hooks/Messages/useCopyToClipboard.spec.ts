@@ -1,17 +1,17 @@
-import { renderHook, act } from '@testing-library/react';
-import copy from 'copy-to-clipboard';
-import { ContentTypes } from 'librechat-data-provider';
+import { renderHook, act } from "@testing-library/react";
+import copy from "copy-to-clipboard";
+import { ContentTypes } from "librechat-data-provider";
 import type {
   SearchResultData,
   ProcessedOrganic,
   TMessageContentParts,
-} from 'librechat-data-provider';
-import useCopyToClipboard from '~/hooks/Messages/useCopyToClipboard';
+} from "librechat-data-provider";
+import useCopyToClipboard from "~/hooks/Messages/useCopyToClipboard";
 
 // Mock the copy-to-clipboard module
-jest.mock('copy-to-clipboard');
+jest.mock("copy-to-clipboard");
 
-describe('useCopyToClipboard', () => {
+describe("useCopyToClipboard", () => {
   const mockSetIsCopied = jest.fn();
   const mockCopy = copy as jest.MockedFunction<typeof copy>;
 
@@ -25,11 +25,11 @@ describe('useCopyToClipboard', () => {
     jest.useRealTimers();
   });
 
-  describe('Basic functionality', () => {
-    it('should copy plain text without citations', () => {
+  describe("Basic functionality", () => {
+    it("should copy plain text without citations", () => {
       const { result } = renderHook(() =>
         useCopyToClipboard({
-          text: 'Simple text without citations',
+          text: "Simple text without citations",
         }),
       );
 
@@ -37,16 +37,16 @@ describe('useCopyToClipboard', () => {
         result.current(mockSetIsCopied);
       });
 
-      expect(mockCopy).toHaveBeenCalledWith('Simple text without citations', {
-        format: 'text/plain',
+      expect(mockCopy).toHaveBeenCalledWith("Simple text without citations", {
+        format: "text/plain",
       });
       expect(mockSetIsCopied).toHaveBeenCalledWith(true);
     });
 
-    it('should handle content array with text types', () => {
+    it("should handle content array with text types", () => {
       const content = [
-        { type: ContentTypes.TEXT, text: 'First line' },
-        { type: ContentTypes.TEXT, text: 'Second line' },
+        { type: ContentTypes.TEXT, text: "First line" },
+        { type: ContentTypes.TEXT, text: "Second line" },
       ];
 
       const { result } = renderHook(() =>
@@ -59,15 +59,15 @@ describe('useCopyToClipboard', () => {
         result.current(mockSetIsCopied);
       });
 
-      expect(mockCopy).toHaveBeenCalledWith('First line\nSecond line', {
-        format: 'text/plain',
+      expect(mockCopy).toHaveBeenCalledWith("First line\nSecond line", {
+        format: "text/plain",
       });
     });
 
-    it('should reset isCopied after timeout', () => {
+    it("should reset isCopied after timeout", () => {
       const { result } = renderHook(() =>
         useCopyToClipboard({
-          text: 'Test text',
+          text: "Test text",
         }),
       );
 
@@ -85,43 +85,43 @@ describe('useCopyToClipboard', () => {
     });
   });
 
-  describe('Citation formatting', () => {
+  describe("Citation formatting", () => {
     const mockSearchResults: { [key: string]: SearchResultData } = {
-      '0': {
+      "0": {
         organic: [
           {
-            link: 'https://example.com/search1',
-            title: 'Search Result 1',
-            snippet: 'This is a search result',
+            link: "https://example.com/search1",
+            title: "Search Result 1",
+            snippet: "This is a search result",
           },
         ],
         topStories: [
           {
-            link: 'https://example.com/news1',
-            title: 'News Story 1',
+            link: "https://example.com/news1",
+            title: "News Story 1",
           },
           {
-            link: 'https://example.com/news2',
-            title: 'News Story 2',
+            link: "https://example.com/news2",
+            title: "News Story 2",
           },
         ],
         images: [
           {
-            link: 'https://example.com/image1',
-            title: 'Image 1',
+            link: "https://example.com/image1",
+            title: "Image 1",
           },
         ],
         videos: [
           {
-            link: 'https://example.com/video1',
-            title: 'Video 1',
+            link: "https://example.com/video1",
+            title: "Video 1",
           },
         ],
       },
     };
 
-    it('should format standalone search citations', () => {
-      const text = 'This is a fact \\ue202turn0search0 from search.';
+    it("should format standalone search citations", () => {
+      const text = "This is a fact \\ue202turn0search0 from search.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -140,11 +140,14 @@ Citations:
 [1] https://example.com/search1
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
 
-    it('should format news citations with correct mapping', () => {
-      const text = 'Breaking news \\ue202turn0news0 and more news \\ue202turn0news1.';
+    it("should format news citations with correct mapping", () => {
+      const text =
+        "Breaking news \\ue202turn0news0 and more news \\ue202turn0news1.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -164,11 +167,14 @@ Citations:
 [2] https://example.com/news2
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
 
-    it('should handle highlighted text with citations', () => {
-      const text = '\\ue203This is highlighted text\\ue204 \\ue202turn0search0 with citation.';
+    it("should handle highlighted text with citations", () => {
+      const text =
+        "\\ue203This is highlighted text\\ue204 \\ue202turn0search0 with citation.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -187,12 +193,14 @@ Citations:
 [1] https://example.com/search1
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
 
-    it('should handle composite citations', () => {
+    it("should handle composite citations", () => {
       const text =
-        'Multiple sources \\ue200\\ue202turn0search0\\ue202turn0news0\\ue202turn0news1\\ue201.';
+        "Multiple sources \\ue200\\ue202turn0search0\\ue202turn0news0\\ue202turn0news1\\ue201.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -213,30 +221,33 @@ Citations:
 [3] https://example.com/news2
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
   });
 
-  describe('Citation deduplication', () => {
-    it('should use same number for duplicate URLs', () => {
+  describe("Citation deduplication", () => {
+    it("should use same number for duplicate URLs", () => {
       const mockSearchResultsWithDupes: { [key: string]: SearchResultData } = {
-        '0': {
+        "0": {
           organic: [
             {
-              link: 'https://example.com/article',
-              title: 'Article from search',
+              link: "https://example.com/article",
+              title: "Article from search",
             },
           ],
           topStories: [
             {
-              link: 'https://example.com/article', // Same URL
-              title: 'Article from news',
+              link: "https://example.com/article", // Same URL
+              title: "Article from news",
             },
           ],
         },
       };
 
-      const text = 'First citation \\ue202turn0search0 and second \\ue202turn0news0.';
+      const text =
+        "First citation \\ue202turn0search0 and second \\ue202turn0news0.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -255,23 +266,25 @@ Citations:
 [1] https://example.com/article
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
 
-    it('should handle multiple citations of the same source', () => {
+    it("should handle multiple citations of the same source", () => {
       const mockSearchResults: { [key: string]: SearchResultData } = {
-        '0': {
+        "0": {
           organic: [
             {
-              link: 'https://example.com/source1',
-              title: 'Source 1',
+              link: "https://example.com/source1",
+              title: "Source 1",
             },
           ],
         },
       };
 
       const text =
-        'First mention \\ue202turn0search0. Second mention \\ue202turn0search0. Third \\ue202turn0search0.';
+        "First mention \\ue202turn0search0. Second mention \\ue202turn0search0. Third \\ue202turn0search0.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -290,13 +303,15 @@ Citations:
 [1] https://example.com/source1
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
   });
 
-  describe('Edge cases', () => {
-    it('should handle missing search results gracefully', () => {
-      const text = 'Text with citation \\ue202turn0search0 but no data.';
+  describe("Edge cases", () => {
+    it("should handle missing search results gracefully", () => {
+      const text = "Text with citation \\ue202turn0search0 but no data.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -310,24 +325,25 @@ Citations:
       });
 
       // Updated expectation: Citation marker should be removed
-      expect(mockCopy).toHaveBeenCalledWith('Text with citation but no data.', {
-        format: 'text/plain',
+      expect(mockCopy).toHaveBeenCalledWith("Text with citation but no data.", {
+        format: "text/plain",
       });
     });
 
-    it('should handle invalid citation indices', () => {
+    it("should handle invalid citation indices", () => {
       const mockSearchResults: { [key: string]: SearchResultData } = {
-        '0': {
+        "0": {
           organic: [
             {
-              link: 'https://example.com/search1',
-              title: 'Search Result 1',
+              link: "https://example.com/search1",
+              title: "Search Result 1",
             },
           ],
         },
       };
 
-      const text = 'Valid citation \\ue202turn0search0 and invalid \\ue202turn0search5.';
+      const text =
+        "Valid citation \\ue202turn0search0 and invalid \\ue202turn0search5.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -347,22 +363,24 @@ Citations:
 [1] https://example.com/search1
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
 
-    it('should handle citations without links', () => {
+    it("should handle citations without links", () => {
       const mockSearchResults: { [key: string]: SearchResultData } = {
-        '0': {
+        "0": {
           organic: [
             {
-              title: 'No link source',
+              title: "No link source",
               // No link property
             } as ProcessedOrganic,
           ],
         },
       };
 
-      const text = 'Citation without link \\ue202turn0search0.';
+      const text = "Citation without link \\ue202turn0search0.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -376,22 +394,22 @@ Citations:
       });
 
       // Updated expectation: Citation marker without link should be removed
-      expect(mockCopy).toHaveBeenCalledWith('Citation without link.', {
-        format: 'text/plain',
+      expect(mockCopy).toHaveBeenCalledWith("Citation without link.", {
+        format: "text/plain",
       });
     });
 
-    it('should clean up orphaned citation lists at the end', () => {
+    it("should clean up orphaned citation lists at the end", () => {
       const mockSearchResults: { [key: string]: SearchResultData } = {
-        '0': {
+        "0": {
           organic: [
-            { link: 'https://example.com/1', title: 'Source 1' },
-            { link: 'https://example.com/2', title: 'Source 2' },
+            { link: "https://example.com/1", title: "Source 1" },
+            { link: "https://example.com/2", title: "Source 2" },
           ],
         },
       };
 
-      const text = 'Text with citations \\ue202turn0search0.\n\n[1][2]';
+      const text = "Text with citations \\ue202turn0search0.\n\n[1][2]";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -410,24 +428,28 @@ Citations:
 [1] https://example.com/1
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
   });
 
-  describe('All citation types', () => {
+  describe("All citation types", () => {
     const mockSearchResults: { [key: string]: SearchResultData } = {
-      '0': {
-        organic: [{ link: 'https://example.com/search', title: 'Search' }],
-        topStories: [{ link: 'https://example.com/news', title: 'News' }],
-        images: [{ link: 'https://example.com/image', title: 'Image' }],
-        videos: [{ link: 'https://example.com/video', title: 'Video' }],
-        references: [{ link: 'https://example.com/ref', title: 'Reference', type: 'link' }],
+      "0": {
+        organic: [{ link: "https://example.com/search", title: "Search" }],
+        topStories: [{ link: "https://example.com/news", title: "News" }],
+        images: [{ link: "https://example.com/image", title: "Image" }],
+        videos: [{ link: "https://example.com/video", title: "Video" }],
+        references: [
+          { link: "https://example.com/ref", title: "Reference", type: "link" },
+        ],
       },
     };
 
-    it('should handle all citation types correctly', () => {
+    it("should handle all citation types correctly", () => {
       const text =
-        'Search \\ue202turn0search0, news \\ue202turn0news0, image \\ue202turn0image0, video \\ue202turn0video0, ref \\ue202turn0ref0.';
+        "Search \\ue202turn0search0, news \\ue202turn0news0, image \\ue202turn0image0, video \\ue202turn0video0, ref \\ue202turn0ref0.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -450,24 +472,26 @@ Citations:
 [5] https://example.com/ref
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
   });
 
-  describe('Complex scenarios', () => {
-    it('should handle mixed highlighted text and composite citations', () => {
+  describe("Complex scenarios", () => {
+    it("should handle mixed highlighted text and composite citations", () => {
       const mockSearchResults: { [key: string]: SearchResultData } = {
-        '0': {
+        "0": {
           organic: [
-            { link: 'https://example.com/1', title: 'Source 1' },
-            { link: 'https://example.com/2', title: 'Source 2' },
+            { link: "https://example.com/1", title: "Source 1" },
+            { link: "https://example.com/2", title: "Source 2" },
           ],
-          topStories: [{ link: 'https://example.com/3', title: 'News 1' }],
+          topStories: [{ link: "https://example.com/3", title: "News 1" }],
         },
       };
 
       const text =
-        '\\ue203Highlighted text with citation\\ue204 \\ue202turn0search0 and composite \\ue200\\ue202turn0search1\\ue202turn0news0\\ue201.';
+        "\\ue203Highlighted text with citation\\ue204 \\ue202turn0search0 and composite \\ue200\\ue202turn0search1\\ue202turn0news0\\ue201.";
 
       const { result } = renderHook(() =>
         useCopyToClipboard({
@@ -488,7 +512,9 @@ Citations:
 [3] https://example.com/3
 `;
 
-      expect(mockCopy).toHaveBeenCalledWith(expectedText, { format: 'text/plain' });
+      expect(mockCopy).toHaveBeenCalledWith(expectedText, {
+        format: "text/plain",
+      });
     });
   });
 });

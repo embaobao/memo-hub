@@ -1,12 +1,16 @@
-import { z } from 'zod';
-import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index';
-import { IHostResources } from '@memohub/core/src/index';
-import { randomUUID } from 'node:crypto';
+import { z } from "zod";
+import {
+  ITool,
+  IToolManifest,
+  ExecutionContext,
+} from "@memohub/core/src/index";
+import { IHostResources } from "@memohub/core/src/index";
+import { randomUUID } from "node:crypto";
 
 export class VectorTool implements ITool {
   public manifest: IToolManifest = {
-    id: 'builtin:vector',
-    type: 'builtin',
+    id: "builtin:vector",
+    type: "builtin",
     exposed: true,
     optional: false,
     inputSchema: z.object({
@@ -23,12 +27,16 @@ export class VectorTool implements ITool {
     }),
   };
 
-  public async execute(input: any, resources: IHostResources, context: ExecutionContext): Promise<{ success: boolean }> {
+  public async execute(
+    input: any,
+    resources: IHostResources,
+    context: ExecutionContext,
+  ): Promise<{ success: boolean }> {
     const data = {
       id: input.id || randomUUID(),
       vector: input.vector,
       hash: input.hash,
-      track_id: input.track_id || 'default',
+      track_id: input.track_id || "default",
       entities: input.entities || [],
       timestamp: input.timestamp || new Date().toISOString(),
       ...input.meta,

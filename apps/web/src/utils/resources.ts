@@ -1,4 +1,4 @@
-import { AccessRoleIds, ResourceType } from 'librechat-data-provider';
+import { AccessRoleIds, ResourceType } from "librechat-data-provider";
 
 export interface ResourceConfig {
   resourceType: ResourceType;
@@ -18,34 +18,37 @@ export const RESOURCE_CONFIGS: Record<ResourceType, ResourceConfig> = {
     defaultViewerRoleId: AccessRoleIds.AGENT_VIEWER,
     defaultEditorRoleId: AccessRoleIds.AGENT_EDITOR,
     defaultOwnerRoleId: AccessRoleIds.AGENT_OWNER,
-    getResourceUrl: (agentId: string) => `${window.location.origin}/c/new?agent_id=${agentId}`,
-    getResourceName: (name?: string) => (name && name !== '' ? name : 'agent'),
-    getShareMessage: (name?: string) => (name && name !== '' ? name : 'agent'),
+    getResourceUrl: (agentId: string) =>
+      `${window.location.origin}/c/new?agent_id=${agentId}`,
+    getResourceName: (name?: string) => (name && name !== "" ? name : "agent"),
+    getShareMessage: (name?: string) => (name && name !== "" ? name : "agent"),
     getManageMessage: (name?: string) =>
-      `Manage permissions for ${name && name !== '' ? name : 'agent'}`,
-    getCopyUrlMessage: () => 'Agent URL copied',
+      `Manage permissions for ${name && name !== "" ? name : "agent"}`,
+    getCopyUrlMessage: () => "Agent URL copied",
   },
   [ResourceType.PROMPTGROUP]: {
     resourceType: ResourceType.PROMPTGROUP,
     defaultViewerRoleId: AccessRoleIds.PROMPTGROUP_VIEWER,
     defaultEditorRoleId: AccessRoleIds.PROMPTGROUP_EDITOR,
     defaultOwnerRoleId: AccessRoleIds.PROMPTGROUP_OWNER,
-    getResourceName: (name?: string) => (name && name !== '' ? name : 'prompt'),
-    getShareMessage: (name?: string) => (name && name !== '' ? name : 'prompt'),
+    getResourceName: (name?: string) => (name && name !== "" ? name : "prompt"),
+    getShareMessage: (name?: string) => (name && name !== "" ? name : "prompt"),
     getManageMessage: (name?: string) =>
-      `Manage permissions for ${name && name !== '' ? name : 'prompt'}`,
-    getCopyUrlMessage: () => 'Prompt URL copied',
+      `Manage permissions for ${name && name !== "" ? name : "prompt"}`,
+    getCopyUrlMessage: () => "Prompt URL copied",
   },
   [ResourceType.MCPSERVER]: {
     resourceType: ResourceType.MCPSERVER,
     defaultViewerRoleId: AccessRoleIds.MCPSERVER_VIEWER,
     defaultEditorRoleId: AccessRoleIds.MCPSERVER_EDITOR,
     defaultOwnerRoleId: AccessRoleIds.MCPSERVER_OWNER,
-    getResourceName: (name?: string) => (name && name !== '' ? name : 'MCP server'),
-    getShareMessage: (name?: string) => (name && name !== '' ? name : 'MCP server'),
+    getResourceName: (name?: string) =>
+      name && name !== "" ? name : "MCP server",
+    getShareMessage: (name?: string) =>
+      name && name !== "" ? name : "MCP server",
     getManageMessage: (name?: string) =>
-      `Manage permissions for ${name && name !== '' ? name : 'MCP server'}`,
-    getCopyUrlMessage: () => 'MCP Server URL copied',
+      `Manage permissions for ${name && name !== "" ? name : "MCP server"}`,
+    getCopyUrlMessage: () => "MCP Server URL copied",
   },
   [ResourceType.REMOTE_AGENT]: {
     resourceType: ResourceType.REMOTE_AGENT,
@@ -53,15 +56,18 @@ export const RESOURCE_CONFIGS: Record<ResourceType, ResourceConfig> = {
     defaultEditorRoleId: AccessRoleIds.REMOTE_AGENT_EDITOR,
     defaultOwnerRoleId: AccessRoleIds.REMOTE_AGENT_OWNER,
     getResourceUrl: () => `${window.location.origin}/api/v1/responses`,
-    getResourceName: (name?: string) => (name && name !== '' ? `"${name}"` : 'remote agent'),
+    getResourceName: (name?: string) =>
+      name && name !== "" ? `"${name}"` : "remote agent",
     getShareMessage: (name?: string) =>
-      name && name !== '' ? `"${name}" (API Access)` : 'remote agent access',
+      name && name !== "" ? `"${name}" (API Access)` : "remote agent access",
     getManageMessage: (name?: string) =>
-      `Manage API access for ${name && name !== '' ? `"${name}"` : 'agent'}`,
-    getCopyUrlMessage: () => 'API endpoint copied',
+      `Manage API access for ${name && name !== "" ? `"${name}"` : "agent"}`,
+    getCopyUrlMessage: () => "API endpoint copied",
   },
 };
 
-export const getResourceConfig = (resourceType: ResourceType): ResourceConfig | undefined => {
+export const getResourceConfig = (
+  resourceType: ResourceType,
+): ResourceConfig | undefined => {
   return RESOURCE_CONFIGS[resourceType];
 };

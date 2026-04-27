@@ -1,16 +1,16 @@
-import { useToastContext } from '@librechat/client';
-import { EToolResources } from 'librechat-data-provider';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToastContext } from "@librechat/client";
+import { EToolResources } from "librechat-data-provider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   QueryKeys,
   dataService,
   MutationKeys,
   defaultOrderQuery,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
-import type * as t from 'librechat-data-provider';
-import type { UseMutationResult } from '@tanstack/react-query';
-import { useLocalize } from '~/hooks';
+} from "librechat-data-provider";
+import type * as t from "librechat-data-provider";
+import type { UseMutationResult } from "@tanstack/react-query";
+import { useLocalize } from "~/hooks";
 
 export const useUploadFileMutation = (
   _options?: t.UploadMutationOptions,
@@ -25,15 +25,15 @@ export const useUploadFileMutation = (
   const { onSuccess, ...options } = _options || {};
   return useMutation([MutationKeys.fileUpload], {
     mutationFn: (body: FormData) => {
-      const width = body.get('width') ?? '';
-      const height = body.get('height') ?? '';
-      const version = body.get('version') ?? '';
-      const endpoint = (body.get('endpoint') ?? '') as string;
-      if (isAssistantsEndpoint(endpoint) && version === '2') {
+      const width = body.get("width") ?? "";
+      const height = body.get("height") ?? "";
+      const version = body.get("version") ?? "";
+      const endpoint = (body.get("endpoint") ?? "") as string;
+      if (isAssistantsEndpoint(endpoint) && version === "2") {
         return dataService.uploadFile(body, signal);
       }
 
-      if (width !== '' && height !== '') {
+      if (width !== "" && height !== "") {
         return dataService.uploadImage(body, signal);
       }
 
@@ -41,51 +41,55 @@ export const useUploadFileMutation = (
     },
     ...options,
     onSuccess: (data, formData, context) => {
-      queryClient.setQueryData<t.TFile[] | undefined>([QueryKeys.files], (_files) => [
-        data,
-        ...(_files ?? []),
-      ]);
+      queryClient.setQueryData<t.TFile[] | undefined>(
+        [QueryKeys.files],
+        (_files) => [data, ...(_files ?? [])],
+      );
 
-      const endpoint = formData.get('endpoint');
-      const message_file = formData.get('message_file');
-      const agent_id = (formData.get('agent_id') as string | undefined) ?? '';
-      const assistant_id = (formData.get('assistant_id') as string | undefined) ?? '';
-      const tool_resource = (formData.get('tool_resource') as string | undefined) ?? '';
+      const endpoint = formData.get("endpoint");
+      const message_file = formData.get("message_file");
+      const agent_id = (formData.get("agent_id") as string | undefined) ?? "";
+      const assistant_id =
+        (formData.get("assistant_id") as string | undefined) ?? "";
+      const tool_resource =
+        (formData.get("tool_resource") as string | undefined) ?? "";
 
-      if (message_file === 'true') {
+      if (message_file === "true") {
         onSuccess?.(data, formData, context);
         return;
       }
 
       if (agent_id && tool_resource) {
-        queryClient.setQueryData<t.Agent>([QueryKeys.agent, agent_id], (agent) => {
-          if (!agent) {
-            return agent;
-          }
+        queryClient.setQueryData<t.Agent>(
+          [QueryKeys.agent, agent_id],
+          (agent) => {
+            if (!agent) {
+              return agent;
+            }
 
-          const update = {};
-          const prevResources = agent.tool_resources ?? {};
-          const prevResource: t.ExecuteCodeResource | t.AgentFileResource = agent.tool_resources?.[
-            tool_resource
-          ] ?? {
-            file_ids: [],
-          };
-          if (!prevResource.file_ids) {
-            prevResource.file_ids = [];
-          }
-          prevResource.file_ids.push(data.file_id);
-          update['tool_resources'] = {
-            ...prevResources,
-            [tool_resource]: prevResource,
-          };
-          if (!agent.tools?.includes(tool_resource)) {
-            update['tools'] = [...(agent.tools ?? []), tool_resource];
-          }
-          return {
-            ...agent,
-            ...update,
-          };
-        });
+            const update = {};
+            const prevResources = agent.tool_resources ?? {};
+            const prevResource: t.ExecuteCodeResource | t.AgentFileResource =
+              agent.tool_resources?.[tool_resource] ?? {
+                file_ids: [],
+              };
+            if (!prevResource.file_ids) {
+              prevResource.file_ids = [];
+            }
+            prevResource.file_ids.push(data.file_id);
+            update["tool_resources"] = {
+              ...prevResources,
+              [tool_resource]: prevResource,
+            };
+            if (!agent.tools?.includes(tool_resource)) {
+              update["tools"] = [...(agent.tools ?? []), tool_resource];
+            }
+            return {
+              ...agent,
+              ...update,
+            };
+          },
+        );
       }
 
       if (!assistant_id) {
@@ -109,18 +113,23 @@ export const useUploadFileMutation = (
 
               const update = {};
               if (!tool_resource) {
-                update['file_ids'] = [...(assistant.file_ids ?? []), data.file_id];
+                update["file_ids"] = [
+                  ...(assistant.file_ids ?? []),
+                  data.file_id,
+                ];
               }
               if (tool_resource === EToolResources.code_interpreter) {
                 const prevResources = assistant.tool_resources ?? {};
-                const prevResource = assistant.tool_resources?.[tool_resource] ?? {
+                const prevResource = assistant.tool_resources?.[
+                  tool_resource
+                ] ?? {
                   file_ids: [],
                 };
                 if (!prevResource.file_ids) {
                   prevResource.file_ids = [];
                 }
                 prevResource.file_ids.push(data.file_id);
-                update['tool_resources'] = {
+                update["tool_resources"] = {
                   ...prevResources,
                   [tool_resource]: prevResource,
                 };
@@ -154,32 +163,37 @@ export const useDeleteFilesMutation = (
     mutationFn: (body: t.DeleteFilesBody) => dataService.deleteFiles(body),
     ...options,
     onError: (error, vars, context) => {
-      if (error && typeof error === 'object' && 'response' in error) {
+      if (error && typeof error === "object" && "response" in error) {
         const errorWithResponse = error as { response?: { status?: number } };
         if (errorWithResponse.response?.status === 403) {
           showToast({
-            message: localize('com_ui_delete_not_allowed'),
-            status: 'error',
+            message: localize("com_ui_delete_not_allowed"),
+            status: "error",
           });
         }
       }
       onError?.(error, vars, context);
     },
     onSuccess: (data, vars, context) => {
-      queryClient.setQueryData<t.TFile[] | undefined>([QueryKeys.files], (cachefiles) => {
-        const { files: filesDeleted } = vars;
+      queryClient.setQueryData<t.TFile[] | undefined>(
+        [QueryKeys.files],
+        (cachefiles) => {
+          const { files: filesDeleted } = vars;
 
-        const fileMap = filesDeleted.reduce((acc, file) => {
-          acc.set(file.file_id, file);
-          return acc;
-        }, new Map<string, t.BatchFile>());
+          const fileMap = filesDeleted.reduce((acc, file) => {
+            acc.set(file.file_id, file);
+            return acc;
+          }, new Map<string, t.BatchFile>());
 
-        return (cachefiles ?? []).filter((file) => !fileMap.has(file.file_id));
-      });
+          return (cachefiles ?? []).filter(
+            (file) => !fileMap.has(file.file_id),
+          );
+        },
+      );
 
       showToast({
-        message: localize('com_ui_delete_success'),
-        status: 'success',
+        message: localize("com_ui_delete_success"),
+        status: "success",
       });
 
       onSuccess?.(data, vars, context);

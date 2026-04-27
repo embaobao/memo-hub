@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 // Improved helper function to create atoms with localStorage
 export function atomWithLocalStorage<T>(key: string, defaultValue: T) {

@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { PermissionTypes, Permissions, isAssistantsEndpoint } from 'librechat-data-provider';
-import useHasAccess from '~/hooks/Roles/useHasAccess';
-import store from '~/store';
+import { useCallback, useEffect, useMemo } from "react";
+import { useSetRecoilState, useRecoilValue } from "recoil";
+import {
+  PermissionTypes,
+  Permissions,
+  isAssistantsEndpoint,
+} from "librechat-data-provider";
+import useHasAccess from "~/hooks/Roles/useHasAccess";
+import store from "~/store";
 
 /** Event keys that shouldn't trigger a command */
 const invalidKeys = {
@@ -31,16 +35,23 @@ const shouldTriggerCommand = (
   commandChar: string,
 ) => {
   const text = textAreaRef.current?.value;
-  if (typeof text !== 'string' || text.length === 0 || text[0] !== commandChar) {
+  if (
+    typeof text !== "string" ||
+    text.length === 0 ||
+    text[0] !== commandChar
+  ) {
     return false;
   }
 
   const startPos = textAreaRef.current?.selectionStart;
-  if (typeof startPos !== 'number') {
+  if (typeof startPos !== "number") {
     return false;
   }
 
-  return startPos === 1 || (startPos === text.length && text.length <= MAX_COMMAND_TRIGGER_LENGTH);
+  return (
+    startPos === 1 ||
+    (startPos === text.length && text.length <= MAX_COMMAND_TRIGGER_LENGTH)
+  );
 };
 
 /**
@@ -63,9 +74,15 @@ const useHandleKeyUp = ({
   });
   const latestMessage = useRecoilValue(store.latestMessageFamily(index));
   const endpoint = useRecoilValue(store.effectiveEndpointByIndex(index));
-  const setShowMentionPopover = useSetRecoilState(store.showMentionPopoverFamily(index));
-  const setShowPlusPopover = useSetRecoilState(store.showPlusPopoverFamily(index));
-  const setShowPromptsPopover = useSetRecoilState(store.showPromptsPopoverFamily(index));
+  const setShowMentionPopover = useSetRecoilState(
+    store.showMentionPopoverFamily(index),
+  );
+  const setShowPlusPopover = useSetRecoilState(
+    store.showPlusPopoverFamily(index),
+  );
+  const setShowPromptsPopover = useSetRecoilState(
+    store.showPromptsPopoverFamily(index),
+  );
 
   const atCommandEnabled = useRecoilValue(store.atCommand);
   const plusCommandEnabled = useRecoilValue(store.plusCommand);
@@ -78,34 +95,49 @@ const useHandleKeyUp = ({
   }, [endpoint, setShowPlusPopover]);
 
   const handleAtCommand = useCallback(() => {
-    if (atCommandEnabled && shouldTriggerCommand(textAreaRef, '@')) {
+    if (atCommandEnabled && shouldTriggerCommand(textAreaRef, "@")) {
       setShowMentionPopover(true);
     }
   }, [textAreaRef, setShowMentionPopover, atCommandEnabled]);
 
   const handlePlusCommand = useCallback(() => {
-    if (!hasMultiConvoAccess || !plusCommandEnabled || isAssistantsEndpoint(endpoint)) {
+    if (
+      !hasMultiConvoAccess ||
+      !plusCommandEnabled ||
+      isAssistantsEndpoint(endpoint)
+    ) {
       return;
     }
-    if (shouldTriggerCommand(textAreaRef, '+')) {
+    if (shouldTriggerCommand(textAreaRef, "+")) {
       setShowPlusPopover(true);
     }
-  }, [textAreaRef, setShowPlusPopover, plusCommandEnabled, hasMultiConvoAccess, endpoint]);
+  }, [
+    textAreaRef,
+    setShowPlusPopover,
+    plusCommandEnabled,
+    hasMultiConvoAccess,
+    endpoint,
+  ]);
 
   const handlePromptsCommand = useCallback(() => {
     if (!hasPromptsAccess || !slashCommandEnabled) {
       return;
     }
-    if (shouldTriggerCommand(textAreaRef, '/')) {
+    if (shouldTriggerCommand(textAreaRef, "/")) {
       setShowPromptsPopover(true);
     }
-  }, [textAreaRef, hasPromptsAccess, setShowPromptsPopover, slashCommandEnabled]);
+  }, [
+    textAreaRef,
+    hasPromptsAccess,
+    setShowPromptsPopover,
+    slashCommandEnabled,
+  ]);
 
   const commandHandlers = useMemo(
     () => ({
-      '@': handleAtCommand,
-      '+': handlePlusCommand,
-      '/': handlePromptsCommand,
+      "@": handleAtCommand,
+      "+": handlePlusCommand,
+      "/": handlePromptsCommand,
     }),
     [handleAtCommand, handlePlusCommand, handlePromptsCommand],
   );
@@ -116,7 +148,9 @@ const useHandleKeyUp = ({
         return;
       }
 
-      const element = document.getElementById(`edit-${latestMessage.parentMessageId}`);
+      const element = document.getElementById(
+        `edit-${latestMessage.parentMessageId}`,
+      );
       if (!element) {
         return;
       }
@@ -132,11 +166,11 @@ const useHandleKeyUp = ({
   const handleKeyUp = useCallback(
     (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
       const text = textAreaRef.current?.value;
-      if (event.key === 'ArrowUp' && text?.length === 0) {
+      if (event.key === "ArrowUp" && text?.length === 0) {
         handleUpArrow(event);
         return;
       }
-      if (typeof text !== 'string' || text.length === 0) {
+      if (typeof text !== "string" || text.length === 0) {
         return;
       }
 
@@ -145,9 +179,10 @@ const useHandleKeyUp = ({
       }
 
       const firstChar = text[0];
-      const handler = commandHandlers[firstChar as keyof typeof commandHandlers];
+      const handler =
+        commandHandlers[firstChar as keyof typeof commandHandlers];
 
-      if (typeof handler === 'function') {
+      if (typeof handler === "function") {
         handler();
       }
     },

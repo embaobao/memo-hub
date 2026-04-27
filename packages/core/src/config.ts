@@ -11,7 +11,12 @@ export interface RoutingRule {
 }
 
 export interface MemoHubConfig {
-  embedding: { url: string; model: string; dimensions: number; timeout: number };
+  embedding: {
+    url: string;
+    model: string;
+    dimensions: number;
+    timeout: number;
+  };
   storage: { dbPath: string; casPath: string; tableName: string };
   routing: {
     enabled: boolean;
@@ -20,7 +25,12 @@ export interface MemoHubConfig {
     rules?: RoutingRule[];
   };
   logging: { level: string; console: boolean };
-  mcpServer: { enabled: boolean; port: number; transport: string; timeout: number };
+  mcpServer: {
+    enabled: boolean;
+    port: number;
+    transport: string;
+    timeout: number;
+  };
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -76,11 +86,7 @@ export class ConfigManager {
   private configPath: string;
 
   constructor(configPath?: string) {
-    const defaultConfigPath = path.join(
-      process.cwd(),
-      "config",
-      "config.yaml"
-    );
+    const defaultConfigPath = path.join(process.cwd(), "config", "config.yaml");
     this.configPath = configPath || defaultConfigPath;
     this.config = this.loadConfig();
   }
@@ -95,7 +101,7 @@ export class ConfigManager {
         return this.normalizeConfig(parsed);
       } else {
         console.warn(
-          `Config file not found at ${expandedPath}, using defaults`
+          `Config file not found at ${expandedPath}, using defaults`,
         );
         return this.getDefaultConfig();
       }
@@ -140,7 +146,7 @@ export class ConfigManager {
         : defaults.routing.codeSuffixes;
 
     const normalizedRules = normalizeRoutingRules(
-      routingRaw.rules ?? routingRaw.rules
+      routingRaw.rules ?? routingRaw.rules,
     );
 
     return {
@@ -267,8 +273,9 @@ export class ConfigManager {
       else if (falsy) this.config.routing.enabled = false;
     }
     if (process.env.MEMOHUB_ROUTING_DEFAULT_TRACK) {
-      const track = String(process.env.MEMOHUB_ROUTING_DEFAULT_TRACK ?? "")
-        .trim();
+      const track = String(
+        process.env.MEMOHUB_ROUTING_DEFAULT_TRACK ?? "",
+      ).trim();
       if (track) this.config.routing.defaultTrack = track;
     }
     if (process.env.MEMOHUB_ROUTING_CODE_SUFFIXES) {
@@ -308,9 +315,7 @@ export class ConfigManager {
 
     if (this.config.routing.enabled) {
       if (!this.config.routing.defaultTrack) {
-        errors.push(
-          "routing.defaultTrack is required when routing is enabled"
-        );
+        errors.push("routing.defaultTrack is required when routing is enabled");
       }
 
       for (const s of this.config.routing.codeSuffixes) {
@@ -330,12 +335,9 @@ export class ConfigManager {
         errors.push("routing.rules must be an array when provided");
       } else {
         for (const rule of this.config.routing.rules) {
-          if (
-            rule.type !== "file_suffix" &&
-            rule.type !== "default"
-          ) {
+          if (rule.type !== "file_suffix" && rule.type !== "default") {
             errors.push(
-              `routing.rules has unsupported type: ${String(rule.type)}`
+              `routing.rules has unsupported type: ${String(rule.type)}`,
             );
             continue;
           }
@@ -343,25 +345,22 @@ export class ConfigManager {
             errors.push(`routing.rules.${rule.type}.track is required`);
           }
           if (rule.type === "file_suffix") {
-            if (
-              !Array.isArray(rule.suffixes) ||
-              rule.suffixes.length === 0
-            ) {
+            if (!Array.isArray(rule.suffixes) || rule.suffixes.length === 0) {
               errors.push(
-                "routing.rules.file_suffix.suffixes must be a non-empty array"
+                "routing.rules.file_suffix.suffixes must be a non-empty array",
               );
             } else {
               for (const s of rule.suffixes) {
                 const suffix = String(s ?? "").trim();
                 if (!suffix) {
                   errors.push(
-                    "routing.rules.file_suffix.suffixes contains empty suffix"
+                    "routing.rules.file_suffix.suffixes contains empty suffix",
                   );
                   continue;
                 }
                 if (!suffix.startsWith(".")) {
                   errors.push(
-                    `routing.rules.file_suffix.suffixes must start with '.': ${suffix}`
+                    `routing.rules.file_suffix.suffixes must start with '.': ${suffix}`,
                   );
                 }
               }

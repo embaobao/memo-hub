@@ -1,14 +1,17 @@
-import { useCallback } from 'react';
-import { useGetModelsQuery } from 'librechat-data-provider/react-query';
-import { excludedKeys, getDefaultParamsEndpoint } from 'librechat-data-provider';
+import { useCallback } from "react";
+import { useGetModelsQuery } from "librechat-data-provider/react-query";
+import {
+  excludedKeys,
+  getDefaultParamsEndpoint,
+} from "librechat-data-provider";
 import type {
   TEndpointsConfig,
   TModelsConfig,
   TConversation,
   TPreset,
-} from 'librechat-data-provider';
-import { getDefaultEndpoint, buildDefaultConvo } from '~/utils';
-import { useGetEndpointsQuery } from '~/data-provider';
+} from "librechat-data-provider";
+import { getDefaultEndpoint, buildDefaultConvo } from "~/utils";
+import { useGetEndpointsQuery } from "~/data-provider";
 
 type TDefaultConvo = {
   conversation: Partial<TConversation>;
@@ -17,20 +20,26 @@ type TDefaultConvo = {
   cleanOutput?: boolean;
 };
 
-const exceptions = new Set(['spec', 'iconURL']);
+const exceptions = new Set(["spec", "iconURL"]);
 
 const useDefaultConvo = () => {
-  const { data: endpointsConfig = {} as TEndpointsConfig } = useGetEndpointsQuery();
+  const { data: endpointsConfig = {} as TEndpointsConfig } =
+    useGetEndpointsQuery();
   const { data: modelsConfig = {} as TModelsConfig } = useGetModelsQuery();
 
   const getDefaultConversation = useCallback(
-    ({ conversation: _convo, preset, cleanInput, cleanOutput }: TDefaultConvo) => {
+    ({
+      conversation: _convo,
+      preset,
+      cleanInput,
+      cleanOutput,
+    }: TDefaultConvo) => {
       const endpoint = getDefaultEndpoint({
         convoSetup: preset as TPreset,
         endpointsConfig,
       });
 
-      const models = modelsConfig[endpoint ?? ''] || [];
+      const models = modelsConfig[endpoint ?? ""] || [];
       const conversation = { ..._convo };
       if (cleanInput === true) {
         for (const key in conversation) {
@@ -44,7 +53,10 @@ const useDefaultConvo = () => {
         }
       }
 
-      const defaultParamsEndpoint = getDefaultParamsEndpoint(endpointsConfig, endpoint);
+      const defaultParamsEndpoint = getDefaultParamsEndpoint(
+        endpointsConfig,
+        endpoint,
+      );
 
       const defaultConvo = buildDefaultConvo({
         conversation: conversation as TConversation,

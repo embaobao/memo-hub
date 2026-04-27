@@ -1,11 +1,11 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { FC } from 'react';
-import type { TModelSelectProps } from '~/common';
-import AssistantsSettings from './Assistants';
-import { GoogleSettings } from './MultiView';
-import AnthropicSettings from './Anthropic';
-import BedrockSettings from './Bedrock';
-import OpenAISettings from './OpenAI';
+import { EModelEndpoint } from "librechat-data-provider";
+import type { FC } from "react";
+import type { TModelSelectProps } from "~/common";
+import AssistantsSettings from "./Assistants";
+import { GoogleSettings } from "./MultiView";
+import AnthropicSettings from "./Anthropic";
+import BedrockSettings from "./Bedrock";
+import OpenAISettings from "./OpenAI";
 
 const settings: { [key: string]: FC<TModelSelectProps> | undefined } = {
   [EModelEndpoint.assistants]: AssistantsSettings,

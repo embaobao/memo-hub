@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from "react";
 
 export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 4;
@@ -9,7 +9,10 @@ interface UseMermaidZoomOptions {
   wheelDep?: unknown;
 }
 
-export default function useMermaidZoom({ containerRef, wheelDep }: UseMermaidZoomOptions = {}) {
+export default function useMermaidZoom({
+  containerRef,
+  wheelDep,
+}: UseMermaidZoomOptions = {}) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -39,9 +42,16 @@ export default function useMermaidZoom({ containerRef, wheelDep }: UseMermaidZoo
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (e.button === 0 && target.tagName !== 'BUTTON' && !target.closest('button')) {
+    if (
+      e.button === 0 &&
+      target.tagName !== "BUTTON" &&
+      !target.closest("button")
+    ) {
       setIsPanning(true);
-      panStartRef.current = { x: e.clientX - panRef.current.x, y: e.clientY - panRef.current.y };
+      panStartRef.current = {
+        x: e.clientX - panRef.current.x,
+        y: e.clientY - panRef.current.y,
+      };
     }
   }, []);
 
@@ -56,11 +66,11 @@ export default function useMermaidZoom({ containerRef, wheelDep }: UseMermaidZoo
       });
     };
     const onUp = () => setIsPanning(false);
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
     return () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
     };
   }, [isPanning]);
 
@@ -76,8 +86,8 @@ export default function useMermaidZoom({ containerRef, wheelDep }: UseMermaidZoo
         setZoom((prev) => Math.min(Math.max(prev + delta, MIN_ZOOM), MAX_ZOOM));
       }
     };
-    container.addEventListener('wheel', onWheel, { passive: false });
-    return () => container.removeEventListener('wheel', onWheel);
+    container.addEventListener("wheel", onWheel, { passive: false });
+    return () => container.removeEventListener("wheel", onWheel);
   }, [containerRef, wheelDep]);
 
   return {

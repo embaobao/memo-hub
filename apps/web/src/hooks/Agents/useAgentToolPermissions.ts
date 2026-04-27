@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
-import { Tools, EToolResources } from 'librechat-data-provider';
-import type { TEphemeralAgent } from 'librechat-data-provider';
-import { useGetAgentByIdQuery } from '~/data-provider';
-import { useAgentsMapContext } from '~/Providers';
-import { isEphemeralAgent } from '~/common';
+import { useMemo } from "react";
+import { Tools, EToolResources } from "librechat-data-provider";
+import type { TEphemeralAgent } from "librechat-data-provider";
+import { useGetAgentByIdQuery } from "~/data-provider";
+import { useAgentsMapContext } from "~/Providers";
+import { isEphemeralAgent } from "~/common";
 
 interface AgentToolPermissionsResult {
   fileSearchAllowedByAgent: boolean;
@@ -26,14 +26,15 @@ export default function useAgentToolPermissions(
   const agentsMap = useAgentsMapContext();
 
   const selectedAgent = useMemo(() => {
-    return agentId != null && agentId !== '' ? agentsMap?.[agentId] : undefined;
+    return agentId != null && agentId !== "" ? agentsMap?.[agentId] : undefined;
   }, [agentId, agentsMap]);
 
   const { data: agentData } = useGetAgentByIdQuery(agentId);
 
   const tools = useMemo(
     () =>
-      (agentData?.tools as string[] | undefined) || (selectedAgent?.tools as string[] | undefined),
+      (agentData?.tools as string[] | undefined) ||
+      (selectedAgent?.tools as string[] | undefined),
     [agentData?.tools, selectedAgent?.tools],
   );
 

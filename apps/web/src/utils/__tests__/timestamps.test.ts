@@ -1,4 +1,4 @@
-import { LocalStorageKeys } from 'librechat-data-provider';
+import { LocalStorageKeys } from "librechat-data-provider";
 import {
   setTimestamp,
   setTimestampedValue,
@@ -6,17 +6,17 @@ import {
   removeTimestampedValue,
   cleanupTimestampedStorage,
   migrateExistingEntries,
-} from '../timestamps';
+} from "../timestamps";
 
-describe('timestamps', () => {
+describe("timestamps", () => {
   beforeEach(() => {
     localStorage.clear();
     jest.clearAllMocks();
   });
 
-  describe('setTimestamp', () => {
-    it('should set only timestamp in localStorage', () => {
-      const key = 'test-key';
+  describe("setTimestamp", () => {
+    it("should set only timestamp in localStorage", () => {
+      const key = "test-key";
 
       setTimestamp(key);
 
@@ -25,10 +25,10 @@ describe('timestamps', () => {
     });
   });
 
-  describe('setTimestampedValue', () => {
-    it('should set value and timestamp in localStorage', () => {
-      const key = 'test-key';
-      const value = { data: 'test' };
+  describe("setTimestampedValue", () => {
+    it("should set value and timestamp in localStorage", () => {
+      const key = "test-key";
+      const value = { data: "test" };
 
       setTimestampedValue(key, value);
 
@@ -37,10 +37,10 @@ describe('timestamps', () => {
     });
   });
 
-  describe('getTimestampedValue', () => {
-    it('should return value if timestamp is valid', () => {
-      const key = 'test-key';
-      const value = { data: 'test' };
+  describe("getTimestampedValue", () => {
+    it("should return value if timestamp is valid", () => {
+      const key = "test-key";
+      const value = { data: "test" };
 
       localStorage.setItem(key, JSON.stringify(value));
       localStorage.setItem(`${key}_TIMESTAMP`, Date.now().toString());
@@ -49,9 +49,9 @@ describe('timestamps', () => {
       expect(result).toBe(JSON.stringify(value));
     });
 
-    it('should return null and clean up if timestamp is too old', () => {
-      const key = 'test-key';
-      const value = { data: 'test' };
+    it("should return null and clean up if timestamp is too old", () => {
+      const key = "test-key";
+      const value = { data: "test" };
       const oldTimestamp = Date.now() - 3 * 24 * 60 * 60 * 1000; // 3 days ago
 
       localStorage.setItem(key, JSON.stringify(value));
@@ -63,9 +63,9 @@ describe('timestamps', () => {
       expect(localStorage.getItem(`${key}_TIMESTAMP`)).toBeNull();
     });
 
-    it('should return value if no timestamp exists (backward compatibility)', () => {
-      const key = 'test-key';
-      const value = { data: 'test' };
+    it("should return value if no timestamp exists (backward compatibility)", () => {
+      const key = "test-key";
+      const value = { data: "test" };
 
       localStorage.setItem(key, JSON.stringify(value));
 
@@ -74,11 +74,11 @@ describe('timestamps', () => {
     });
   });
 
-  describe('removeTimestampedValue', () => {
-    it('should remove both value and timestamp', () => {
-      const key = 'test-key';
+  describe("removeTimestampedValue", () => {
+    it("should remove both value and timestamp", () => {
+      const key = "test-key";
 
-      localStorage.setItem(key, 'value');
+      localStorage.setItem(key, "value");
       localStorage.setItem(`${key}_TIMESTAMP`, Date.now().toString());
 
       removeTimestampedValue(key);
@@ -88,21 +88,21 @@ describe('timestamps', () => {
     });
   });
 
-  describe('cleanupTimestampedStorage', () => {
-    it('should remove entries without timestamps', () => {
+  describe("cleanupTimestampedStorage", () => {
+    it("should remove entries without timestamps", () => {
       const key = `${LocalStorageKeys.LAST_MCP_}convo-123`;
-      localStorage.setItem(key, 'value');
+      localStorage.setItem(key, "value");
 
       cleanupTimestampedStorage();
 
       expect(localStorage.getItem(key)).toBeNull();
     });
 
-    it('should remove old entries with timestamps', () => {
+    it("should remove old entries with timestamps", () => {
       const key = `${LocalStorageKeys.LAST_CODE_TOGGLE_}convo-456`;
       const oldTimestamp = Date.now() - 3 * 24 * 60 * 60 * 1000; // 3 days ago
 
-      localStorage.setItem(key, 'true');
+      localStorage.setItem(key, "true");
       localStorage.setItem(`${key}_TIMESTAMP`, oldTimestamp.toString());
 
       cleanupTimestampedStorage();
@@ -111,36 +111,38 @@ describe('timestamps', () => {
       expect(localStorage.getItem(`${key}_TIMESTAMP`)).toBeNull();
     });
 
-    it('should keep recent entries', () => {
+    it("should keep recent entries", () => {
       const key = `${LocalStorageKeys.LAST_WEB_SEARCH_TOGGLE_}convo-789`;
       const recentTimestamp = Date.now() - 1 * 60 * 60 * 1000; // 1 hour ago
 
-      localStorage.setItem(key, 'false');
+      localStorage.setItem(key, "false");
       localStorage.setItem(`${key}_TIMESTAMP`, recentTimestamp.toString());
 
       cleanupTimestampedStorage();
 
-      expect(localStorage.getItem(key)).toBe('false');
-      expect(localStorage.getItem(`${key}_TIMESTAMP`)).toBe(recentTimestamp.toString());
+      expect(localStorage.getItem(key)).toBe("false");
+      expect(localStorage.getItem(`${key}_TIMESTAMP`)).toBe(
+        recentTimestamp.toString(),
+      );
     });
 
-    it('should not affect non-timestamped keys', () => {
-      const regularKey = 'regular-key';
-      localStorage.setItem(regularKey, 'value');
+    it("should not affect non-timestamped keys", () => {
+      const regularKey = "regular-key";
+      localStorage.setItem(regularKey, "value");
 
       cleanupTimestampedStorage();
 
-      expect(localStorage.getItem(regularKey)).toBe('value');
+      expect(localStorage.getItem(regularKey)).toBe("value");
     });
   });
 
-  describe('migrateExistingEntries', () => {
-    it('should add timestamps to existing timestamped keys', () => {
+  describe("migrateExistingEntries", () => {
+    it("should add timestamps to existing timestamped keys", () => {
       const key1 = `${LocalStorageKeys.LAST_MCP_}convo-111`;
       const key2 = `${LocalStorageKeys.PIN_MCP_}convo-222`;
 
       localStorage.setItem(key1, '["mcp1", "mcp2"]');
-      localStorage.setItem(key2, 'true');
+      localStorage.setItem(key2, "true");
 
       migrateExistingEntries();
 
@@ -148,11 +150,11 @@ describe('timestamps', () => {
       expect(localStorage.getItem(`${key2}_TIMESTAMP`)).toBeTruthy();
     });
 
-    it('should not overwrite existing timestamps', () => {
+    it("should not overwrite existing timestamps", () => {
       const key = `${LocalStorageKeys.LAST_FILE_SEARCH_TOGGLE_}convo-333`;
-      const existingTimestamp = '1234567890';
+      const existingTimestamp = "1234567890";
 
-      localStorage.setItem(key, 'true');
+      localStorage.setItem(key, "true");
       localStorage.setItem(`${key}_TIMESTAMP`, existingTimestamp);
 
       migrateExistingEntries();

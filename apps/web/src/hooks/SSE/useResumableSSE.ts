@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { v4 } from 'uuid';
-import { SSE } from 'sse.js';
-import { useSetRecoilState } from 'recoil';
-import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useState, useRef, useCallback } from "react";
+import { v4 } from "uuid";
+import { SSE } from "sse.js";
+import { useSetRecoilState } from "recoil";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   request,
   Constants,
@@ -13,29 +13,34 @@ import {
   createPayload,
   ViolationTypes,
   removeNullishValues,
-} from 'librechat-data-provider';
-import type { TMessage, TPayload, TSubmission, EventSubmission } from 'librechat-data-provider';
-import type { EventHandlerParams } from './useEventHandlers';
+} from "librechat-data-provider";
+import type {
+  TMessage,
+  TPayload,
+  TSubmission,
+  EventSubmission,
+} from "librechat-data-provider";
+import type { EventHandlerParams } from "./useEventHandlers";
 import {
   useGetUserBalance,
   useGetStartupConfig,
   queueTitleGeneration,
   streamStatusQueryKey,
-} from '~/data-provider';
-import type { ActiveJobsResponse } from '~/data-provider';
-import { useAuthContext } from '~/hooks/AuthContext';
-import useEventHandlers from './useEventHandlers';
-import { clearAllDrafts } from '~/utils';
-import store from '~/store';
+} from "~/data-provider";
+import type { ActiveJobsResponse } from "~/data-provider";
+import { useAuthContext } from "~/hooks/AuthContext";
+import useEventHandlers from "./useEventHandlers";
+import { clearAllDrafts } from "~/utils";
+import store from "~/store";
 
 type ChatHelpers = Pick<
   EventHandlerParams,
-  | 'setMessages'
-  | 'getMessages'
-  | 'setConversation'
-  | 'setIsSubmitting'
-  | 'newConversation'
-  | 'resetLatestMessage'
+  | "setMessages"
+  | "getMessages"
+  | "setConversation"
+  | "setIsSubmitting"
+  | "newConversation"
+  | "resetLatestMessage"
 >;
 
 const MAX_RETRIES = 5;
@@ -67,9 +72,12 @@ export default function useResumableSSE(
    */
   const addActiveJob = useCallback(
     (jobId: string) => {
-      queryClient.setQueryData<ActiveJobsResponse>([QueryKeys.activeJobs], (old) => ({
-        activeJobIds: [...new Set([...(old?.activeJobIds ?? []), jobId])],
-      }));
+      queryClient.setQueryData<ActiveJobsResponse>(
+        [QueryKeys.activeJobs],
+        (old) => ({
+          activeJobIds: [...new Set([...(old?.activeJobIds ?? []), jobId])],
+        }),
+      );
     },
     [queryClient],
   );
@@ -80,16 +88,21 @@ export default function useResumableSSE(
    */
   const removeActiveJob = useCallback(
     (jobId: string) => {
-      queryClient.setQueryData<ActiveJobsResponse>([QueryKeys.activeJobs], (old) => ({
-        activeJobIds: (old?.activeJobIds ?? []).filter((id) => id !== jobId),
-      }));
+      queryClient.setQueryData<ActiveJobsResponse>(
+        [QueryKeys.activeJobs],
+        (old) => ({
+          activeJobIds: (old?.activeJobIds ?? []).filter((id) => id !== jobId),
+        }),
+      );
     },
     [queryClient],
   );
   const [_completed, setCompleted] = useState(new Set());
   const [streamId, setStreamId] = useState<string | null>(null);
   const setAbortScroll = useSetRecoilState(store.abortScrollFamily(runIndex));
-  const setShowStopButton = useSetRecoilState(store.showStopButtonByIndex(runIndex));
+  const setShowStopButton = useSetRecoilState(
+    store.showStopButtonByIndex(runIndex),
+  );
 
   const sseRef = useRef<SSE | null>(null);
   const reconnectAttemptRef = useRef(0);
@@ -139,22 +152,26 @@ export default function useResumableSSE(
    * @param isResume - If true, adds ?resume=true to trigger sync event from server
    */
   const subscribeToStream = useCallback(
-    (currentStreamId: string, currentSubmission: TSubmission, isResume = false) => {
+    (
+      currentStreamId: string,
+      currentSubmission: TSubmission,
+      isResume = false,
+    ) => {
       let { userMessage } = currentSubmission;
       let textIndex: number | null = null;
 
       const baseUrl = `${apiBaseUrl()}/api/agents/chat/stream/${encodeURIComponent(currentStreamId)}`;
       const url = isResume ? `${baseUrl}?resume=true` : baseUrl;
-      console.log('[ResumableSSE] Subscribing to stream:', url, { isResume });
+      console.log("[ResumableSSE] Subscribing to stream:", url, { isResume });
 
       const sse = new SSE(url, {
         headers: { Authorization: `Bearer ${token}` },
-        method: 'GET',
+        method: "GET",
       });
       sseRef.current = sse;
 
-      sse.addEventListener('open', () => {
-        console.log('[ResumableSSE] Stream connected');
+      sse.addEventListener("open", () => {
+        console.log("[ResumableSSE] Stream connected");
         setAbortScroll(false);
         // Restore UI state on successful connection (including reconnection)
         setIsSubmitting(true);
@@ -162,12 +179,12 @@ export default function useResumableSSE(
         reconnectAttemptRef.current = 0;
       });
 
-      sse.addEventListener('message', (e: MessageEvent) => {
+      sse.addEventListener("message", (e: MessageEvent) => {
         try {
           const data = JSON.parse(e.data);
 
           if (data.final != null) {
-            console.log('[ResumableSSE] Received FINAL event', {
+            console.log("[ResumableSSE] Received FINAL event", {
               aborted: data.aborted,
               conversationId: data.conversation?.conversationId,
               hasResponseMessage: !!data.responseMessage,
@@ -176,7 +193,7 @@ export default function useResumableSSE(
             try {
               finalHandler(data, currentSubmission as EventSubmission);
             } catch (error) {
-              console.error('[ResumableSSE] Error in finalHandler:', error);
+              console.error("[ResumableSSE] Error in finalHandler:", error);
               setIsSubmitting(false);
               setShowStopButton(false);
             }
@@ -184,14 +201,15 @@ export default function useResumableSSE(
             clearStepMaps();
             // Optimistically remove from active jobs
             removeActiveJob(currentStreamId);
-            (startupConfig?.balance?.enabled ?? false) && balanceQuery.refetch();
+            (startupConfig?.balance?.enabled ?? false) &&
+              balanceQuery.refetch();
             sse.close();
             setStreamId(null);
             return;
           }
 
           if (data.created != null) {
-            console.log('[ResumableSSE] Received CREATED event', {
+            console.log("[ResumableSSE] Received CREATED event", {
               messageId: data.message?.messageId,
               conversationId: data.message?.conversationId,
             });
@@ -202,11 +220,14 @@ export default function useResumableSSE(
               ...data.message,
               overrideParentMessageId: userMessage.overrideParentMessageId,
             };
-            createdHandler(data, { ...currentSubmission, userMessage } as EventSubmission);
+            createdHandler(data, {
+              ...currentSubmission,
+              userMessage,
+            } as EventSubmission);
             return;
           }
 
-          if (data.event === 'attachment' && data.data) {
+          if (data.event === "attachment" && data.data) {
             attachmentHandler({
               data: data.data,
               submission: currentSubmission as EventSubmission,
@@ -215,12 +236,15 @@ export default function useResumableSSE(
           }
 
           if (data.event != null) {
-            stepHandler(data, { ...currentSubmission, userMessage } as EventSubmission);
+            stepHandler(data, {
+              ...currentSubmission,
+              userMessage,
+            } as EventSubmission);
             return;
           }
 
           if (data.sync != null) {
-            console.log('[ResumableSSE] SYNC received', {
+            console.log("[ResumableSSE] SYNC received", {
               runSteps: data.resumeState?.runSteps?.length ?? 0,
               pendingEvents: data.pendingEvents?.length ?? 0,
             });
@@ -244,23 +268,28 @@ export default function useResumableSSE(
 
               let responseIdx = -1;
               if (serverResponseId) {
-                responseIdx = messages.findIndex((m) => m.messageId === serverResponseId);
+                responseIdx = messages.findIndex(
+                  (m) => m.messageId === serverResponseId,
+                );
               }
               if (responseIdx < 0) {
                 responseIdx = messages.findIndex(
                   (m) =>
                     !m.isCreatedByUser &&
-                    (m.messageId === `${userMsgId}_` || m.parentMessageId === userMsgId),
+                    (m.messageId === `${userMsgId}_` ||
+                      m.parentMessageId === userMsgId),
                 );
               }
 
-              console.log('[ResumableSSE] SYNC update', {
+              console.log("[ResumableSSE] SYNC update", {
                 userMsgId,
                 serverResponseId,
                 responseIdx,
-                foundMessageId: responseIdx >= 0 ? messages[responseIdx]?.messageId : null,
+                foundMessageId:
+                  responseIdx >= 0 ? messages[responseIdx]?.messageId : null,
                 messagesCount: messages.length,
-                aggregatedContentLength: data.resumeState.aggregatedContent?.length,
+                aggregatedContentLength:
+                  data.resumeState.aggregatedContent?.length,
               });
 
               if (responseIdx >= 0) {
@@ -270,22 +299,25 @@ export default function useResumableSSE(
                   ...updated[responseIdx],
                   content: data.resumeState.aggregatedContent,
                 };
-                console.log('[ResumableSSE] SYNC updating message', {
+                console.log("[ResumableSSE] SYNC updating message", {
                   messageId: updated[responseIdx]?.messageId,
-                  oldContentLength: Array.isArray(oldContent) ? oldContent.length : 0,
+                  oldContentLength: Array.isArray(oldContent)
+                    ? oldContent.length
+                    : 0,
                   newContentLength: data.resumeState.aggregatedContent?.length,
                 });
                 setMessages(updated);
                 resetContentHandler();
                 syncStepMessage(updated[responseIdx]);
-                console.log('[ResumableSSE] SYNC complete, handlers synced');
+                console.log("[ResumableSSE] SYNC complete, handlers synced");
               } else {
                 const responseId = serverResponseId ?? `${userMsgId}_`;
                 const newMessage = {
                   messageId: responseId,
                   parentMessageId: userMsgId,
-                  conversationId: currentSubmission.conversation?.conversationId ?? '',
-                  text: '',
+                  conversationId:
+                    currentSubmission.conversation?.conversationId ?? "",
+                  text: "",
                   content: data.resumeState.aggregatedContent,
                   isCreatedByUser: false,
                 } as TMessage;
@@ -296,8 +328,13 @@ export default function useResumableSSE(
             }
 
             if (data.pendingEvents?.length > 0) {
-              console.log(`[ResumableSSE] Replaying ${data.pendingEvents.length} pending events`);
-              const submission = { ...currentSubmission, userMessage } as EventSubmission;
+              console.log(
+                `[ResumableSSE] Replaying ${data.pendingEvents.length} pending events`,
+              );
+              const submission = {
+                ...currentSubmission,
+                userMessage,
+              } as EventSubmission;
               for (const pendingEvent of data.pendingEvents) {
                 if (pendingEvent.event != null) {
                   stepHandler(pendingEvent, submission);
@@ -317,7 +354,10 @@ export default function useResumableSSE(
             if (text != null && index !== textIndex) {
               textIndex = index;
             }
-            contentHandler({ data, submission: currentSubmission as EventSubmission });
+            contentHandler({
+              data,
+              submission: currentSubmission as EventSubmission,
+            });
             return;
           }
 
@@ -328,10 +368,14 @@ export default function useResumableSSE(
               parentMessageId: data.parentMessageId,
               messageId: data.messageId,
             };
-            messageHandler(text, { ...currentSubmission, userMessage, initialResponse });
+            messageHandler(text, {
+              ...currentSubmission,
+              userMessage,
+              initialResponse,
+            });
           }
         } catch (error) {
-          console.error('[ResumableSSE] Error processing message:', error);
+          console.error("[ResumableSSE] Error processing message:", error);
         }
       });
 
@@ -342,7 +386,7 @@ export default function useResumableSSE(
        *
        * Order matters: check responseCode first since HTTP errors may also include data
        */
-      sse.addEventListener('error', async (e: MessageEvent) => {
+      sse.addEventListener("error", async (e: MessageEvent) => {
         (startupConfig?.balance?.enabled ?? false) && balanceQuery.refetch();
 
         /* @ts-ignore - sse.js types don't expose responseCode */
@@ -352,14 +396,21 @@ export default function useResumableSSE(
         // Invalidate cache once so react-query refetches instead of showing an error.
         if (responseCode === 404) {
           const convoId = currentSubmission.conversation?.conversationId;
-          console.log('[ResumableSSE] Stream 404, invalidating messages for:', convoId);
+          console.log(
+            "[ResumableSSE] Stream 404, invalidating messages for:",
+            convoId,
+          );
           sse.close();
           removeActiveJob(currentStreamId);
           clearAllDrafts(convoId);
           clearStepMaps();
           if (convoId) {
-            queryClient.invalidateQueries({ queryKey: [QueryKeys.messages, convoId] });
-            queryClient.removeQueries({ queryKey: streamStatusQueryKey(convoId) });
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.messages, convoId],
+            });
+            queryClient.removeQueries({
+              queryKey: streamStatusQueryKey(convoId),
+            });
           }
           setIsSubmitting(false);
           setShowStopButton(false);
@@ -372,9 +423,9 @@ export default function useResumableSSE(
         if (responseCode === 401) {
           try {
             const refreshResponse = await request.refreshToken();
-            const newToken = refreshResponse?.token ?? '';
+            const newToken = refreshResponse?.token ?? "";
             if (!newToken) {
-              throw new Error('Token refresh failed.');
+              throw new Error("Token refresh failed.");
             }
             sse.headers = {
               Authorization: `Bearer ${newToken}`,
@@ -383,7 +434,7 @@ export default function useResumableSSE(
             sse.stream();
             return;
           } catch (error) {
-            console.log('[ResumableSSE] Token refresh failed:', error);
+            console.log("[ResumableSSE] Token refresh failed:", error);
           }
         }
 
@@ -393,41 +444,60 @@ export default function useResumableSSE(
          * Only check e.data if there's no HTTP responseCode, since HTTP errors may also have body data.
          */
         if (!responseCode && e.data) {
-          console.log('[ResumableSSE] Server-sent error event received:', e.data);
+          console.log(
+            "[ResumableSSE] Server-sent error event received:",
+            e.data,
+          );
           sse.close();
           removeActiveJob(currentStreamId);
 
           try {
             const errorData = JSON.parse(e.data);
-            const errorString = errorData.error ?? errorData.message ?? JSON.stringify(errorData);
+            const errorString =
+              errorData.error ?? errorData.message ?? JSON.stringify(errorData);
 
             // Check if it's a known error type (ViolationTypes or ErrorTypes)
             let isKnownError = false;
             try {
               const parsed =
-                typeof errorString === 'string' ? JSON.parse(errorString) : errorString;
+                typeof errorString === "string"
+                  ? JSON.parse(errorString)
+                  : errorString;
               const errorType = parsed?.type ?? parsed?.code;
               if (errorType) {
-                const violationValues = Object.values(ViolationTypes) as string[];
+                const violationValues = Object.values(
+                  ViolationTypes,
+                ) as string[];
                 const errorTypeValues = Object.values(ErrorTypes) as string[];
                 isKnownError =
-                  violationValues.includes(errorType) || errorTypeValues.includes(errorType);
+                  violationValues.includes(errorType) ||
+                  errorTypeValues.includes(errorType);
               }
             } catch {
               // Not JSON or parsing failed - treat as generic error
             }
 
-            console.log('[ResumableSSE] Error type check:', { isKnownError, errorString });
+            console.log("[ResumableSSE] Error type check:", {
+              isKnownError,
+              errorString,
+            });
 
             // Display the error to user via errorHandler
             errorHandler({
-              data: { text: errorString } as unknown as Parameters<typeof errorHandler>[0]['data'],
+              data: { text: errorString } as unknown as Parameters<
+                typeof errorHandler
+              >[0]["data"],
               submission: currentSubmission as EventSubmission,
             });
           } catch (parseError) {
-            console.error('[ResumableSSE] Failed to parse server error:', parseError);
+            console.error(
+              "[ResumableSSE] Failed to parse server error:",
+              parseError,
+            );
             errorHandler({
-              data: { text: e.data } as unknown as Parameters<typeof errorHandler>[0]['data'],
+              data: { text: e.data } as unknown as Parameters<
+                typeof errorHandler
+              >[0]["data"],
               submission: currentSubmission as EventSubmission,
             });
           }
@@ -440,15 +510,21 @@ export default function useResumableSSE(
         }
 
         // Network failure or unknown HTTP error - attempt reconnection with backoff
-        console.log('[ResumableSSE] Stream error (network failure) - will attempt reconnect', {
-          responseCode,
-          hasData: !!e.data,
-        });
+        console.log(
+          "[ResumableSSE] Stream error (network failure) - will attempt reconnect",
+          {
+            responseCode,
+            hasData: !!e.data,
+          },
+        );
 
         if (reconnectAttemptRef.current < MAX_RETRIES) {
           // Increment counter BEFORE close() so abort handler knows we're reconnecting
           reconnectAttemptRef.current++;
-          const delay = Math.min(1000 * Math.pow(2, reconnectAttemptRef.current - 1), 30000);
+          const delay = Math.min(
+            1000 * Math.pow(2, reconnectAttemptRef.current - 1),
+            30000,
+          );
 
           console.log(
             `[ResumableSSE] Reconnecting in ${delay}ms (attempt ${reconnectAttemptRef.current}/${MAX_RETRIES})`,
@@ -468,9 +544,12 @@ export default function useResumableSSE(
           setIsSubmitting(true);
           setShowStopButton(true);
         } else {
-          console.error('[ResumableSSE] Max reconnect attempts reached');
+          console.error("[ResumableSSE] Max reconnect attempts reached");
           sse.close();
-          errorHandler({ data: undefined, submission: currentSubmission as EventSubmission });
+          errorHandler({
+            data: undefined,
+            submission: currentSubmission as EventSubmission,
+          });
           // Optimistically remove from active jobs on max retries
           removeActiveJob(currentStreamId);
           setIsSubmitting(false);
@@ -484,15 +563,19 @@ export default function useResumableSSE(
        * This happens on cleanup/navigation OR when error handler closes to reconnect.
        * Only reset state if we're NOT in a reconnection cycle.
        */
-      sse.addEventListener('abort', () => {
+      sse.addEventListener("abort", () => {
         // If we're in a reconnection cycle, don't reset state
         // (error handler will set up the reconnect timeout)
         if (reconnectAttemptRef.current > 0) {
-          console.log('[ResumableSSE] Stream closed for reconnect - preserving state');
+          console.log(
+            "[ResumableSSE] Stream closed for reconnect - preserving state",
+          );
           return;
         }
 
-        console.log('[ResumableSSE] Stream aborted (intentional close) - no reconnect');
+        console.log(
+          "[ResumableSSE] Stream aborted (intentional close) - no reconnect",
+        );
         // Clear any pending reconnect attempts
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
@@ -518,14 +601,14 @@ export default function useResumableSSE(
 
         /** Simulate network drop - triggers error event → reconnection */
         debugWindow.__killNetwork = () => {
-          console.log('[Debug] Simulating network drop...');
+          console.log("[Debug] Simulating network drop...");
           // @ts-ignore - sse.js types are incorrect, dispatchEvent actually takes Event
-          sse.dispatchEvent(new Event('error'));
+          sse.dispatchEvent(new Event("error"));
         };
 
         /** Simulate clean close (navigation away) - triggers abort event → no reconnection */
         debugWindow.__closeClean = () => {
-          console.log('[Debug] Simulating clean close (navigation away)...');
+          console.log("[Debug] Simulating clean close (navigation away)...");
           sse.close();
         };
       }
@@ -576,16 +659,21 @@ export default function useResumableSSE(
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
           // Use request.post which handles auth token refresh via axios interceptors
-          const data = (await request.post(url, payload)) as { streamId: string };
-          console.log('[ResumableSSE] Generation started:', { streamId: data.streamId });
+          const data = (await request.post(url, payload)) as {
+            streamId: string;
+          };
+          console.log("[ResumableSSE] Generation started:", {
+            streamId: data.streamId,
+          });
           return data.streamId;
         } catch (error) {
           lastError = error;
           // Check if it's a network error (retry) vs server error (don't retry)
           const isNetworkError =
             error instanceof Error &&
-            'code' in error &&
-            (error.code === 'ERR_NETWORK' || error.code === 'ERR_INTERNET_DISCONNECTED');
+            "code" in error &&
+            (error.code === "ERR_NETWORK" ||
+              error.code === "ERR_INTERNET_DISCONNECTED");
 
           if (isNetworkError && attempt < maxRetries) {
             const delay = Math.min(1000 * Math.pow(2, attempt - 1), 8000);
@@ -601,19 +689,24 @@ export default function useResumableSSE(
         }
       }
 
-      console.error('[ResumableSSE] Error starting generation:', lastError);
+      console.error("[ResumableSSE] Error starting generation:", lastError);
 
-      const axiosError = lastError as { response?: { data?: Record<string, unknown> } };
+      const axiosError = lastError as {
+        response?: { data?: Record<string, unknown> };
+      };
       const errorData = axiosError?.response?.data;
       if (errorData) {
         errorHandler({
           data: { text: JSON.stringify(errorData) } as unknown as Parameters<
             typeof errorHandler
-          >[0]['data'],
+          >[0]["data"],
           submission: currentSubmission as EventSubmission,
         });
       } else {
-        errorHandler({ data: undefined, submission: currentSubmission as EventSubmission });
+        errorHandler({
+          data: undefined,
+          submission: currentSubmission as EventSubmission,
+        });
       }
       setIsSubmitting(false);
       return null;
@@ -623,7 +716,7 @@ export default function useResumableSSE(
 
   useEffect(() => {
     if (!submission || Object.keys(submission).length === 0) {
-      console.log('[ResumableSSE] No submission, cleaning up');
+      console.log("[ResumableSSE] No submission, cleaning up");
       // Clear reconnect timeout if submission is cleared
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
@@ -640,8 +733,10 @@ export default function useResumableSSE(
       return;
     }
 
-    const resumeStreamId = (submission as TSubmission & { resumeStreamId?: string }).resumeStreamId;
-    console.log('[ResumableSSE] Effect triggered', {
+    const resumeStreamId = (
+      submission as TSubmission & { resumeStreamId?: string }
+    ).resumeStreamId;
+    console.log("[ResumableSSE] Effect triggered", {
       conversationId: submission.conversation?.conversationId,
       hasResumeStreamId: !!resumeStreamId,
       resumeStreamId,
@@ -656,27 +751,30 @@ export default function useResumableSSE(
 
       if (resumeStreamId) {
         // Resume: just subscribe to existing stream, don't start new generation
-        console.log('[ResumableSSE] Resuming existing stream:', resumeStreamId);
+        console.log("[ResumableSSE] Resuming existing stream:", resumeStreamId);
         setStreamId(resumeStreamId);
         // Optimistically add to active jobs (in case it's not already there)
         addActiveJob(resumeStreamId);
         subscribeToStream(resumeStreamId, submission, true); // isResume=true
       } else {
         // New generation: start and then subscribe
-        console.log('[ResumableSSE] Starting NEW generation');
+        console.log("[ResumableSSE] Starting NEW generation");
         const newStreamId = await startGeneration(submission);
         if (newStreamId) {
           setStreamId(newStreamId);
           // Optimistically add to active jobs
           addActiveJob(newStreamId);
           // Queue title generation if this is a new conversation (first message)
-          const isNewConvo = submission.userMessage?.parentMessageId === Constants.NO_PARENT;
+          const isNewConvo =
+            submission.userMessage?.parentMessageId === Constants.NO_PARENT;
           if (isNewConvo) {
             queueTitleGeneration(newStreamId);
           }
           subscribeToStream(newStreamId, submission);
         } else {
-          console.error('[ResumableSSE] Failed to get streamId from startGeneration');
+          console.error(
+            "[ResumableSSE] Failed to get streamId from startGeneration",
+          );
         }
       }
     };
@@ -684,7 +782,7 @@ export default function useResumableSSE(
     initStream();
 
     return () => {
-      console.log('[ResumableSSE] Cleanup - closing SSE, resetting UI state');
+      console.log("[ResumableSSE] Cleanup - closing SSE, resetting UI state");
       // Cleanup on unmount/navigation - close connection but DO NOT abort backend
       // Reset UI state so it doesn't leak to other conversations
       // If user returns to this conversation, useResumeOnLoad will restore the state

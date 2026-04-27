@@ -1,9 +1,11 @@
-import { useCallback } from 'react';
-import type { EModelEndpoint } from 'librechat-data-provider';
-import type { SharePointFile } from '~/data-provider/Files/sharepoint';
-import type { FileHandlingState } from './useFileHandling';
-import useFileHandling, { useFileHandlingNoChatContext } from './useFileHandling';
-import useSharePointDownload from './useSharePointDownload';
+import { useCallback } from "react";
+import type { EModelEndpoint } from "librechat-data-provider";
+import type { SharePointFile } from "~/data-provider/Files/sharepoint";
+import type { FileHandlingState } from "./useFileHandling";
+import useFileHandling, {
+  useFileHandlingNoChatContext,
+} from "./useFileHandling";
+import useSharePointDownload from "./useSharePointDownload";
 
 interface UseSharePointFileHandlingProps {
   fileSetter?: any;
@@ -25,24 +27,23 @@ export default function useSharePointFileHandling(
   props?: UseSharePointFileHandlingProps,
 ): UseSharePointFileHandlingReturn {
   const { handleFiles } = useFileHandling(props);
-  const { downloadSharePointFiles, isDownloading, downloadProgress, error } = useSharePointDownload(
-    {
+  const { downloadSharePointFiles, isDownloading, downloadProgress, error } =
+    useSharePointDownload({
       onFilesDownloaded: async (downloadedFiles: File[]) => {
         const fileArray = Array.from(downloadedFiles);
         await handleFiles(fileArray, props?.toolResource);
       },
       onError: (error) => {
-        console.error('SharePoint download failed:', error);
+        console.error("SharePoint download failed:", error);
       },
-    },
-  );
+    });
 
   const handleSharePointFiles = useCallback(
     async (sharePointFiles: SharePointFile[]) => {
       try {
         await downloadSharePointFiles(sharePointFiles);
       } catch (error) {
-        console.error('SharePoint file handling error:', error);
+        console.error("SharePoint file handling error:", error);
         throw error;
       }
     },
@@ -63,24 +64,23 @@ export function useSharePointFileHandlingNoChatContext(
 ): UseSharePointFileHandlingReturn {
   const { handleFiles } = useFileHandlingNoChatContext(props, fileState);
 
-  const { downloadSharePointFiles, isDownloading, downloadProgress, error } = useSharePointDownload(
-    {
+  const { downloadSharePointFiles, isDownloading, downloadProgress, error } =
+    useSharePointDownload({
       onFilesDownloaded: async (downloadedFiles: File[]) => {
         const fileArray = Array.from(downloadedFiles);
         await handleFiles(fileArray, props?.toolResource);
       },
       onError: (error) => {
-        console.error('SharePoint download failed:', error);
+        console.error("SharePoint download failed:", error);
       },
-    },
-  );
+    });
 
   const handleSharePointFiles = useCallback(
     async (sharePointFiles: SharePointFile[]) => {
       try {
         await downloadSharePointFiles(sharePointFiles);
       } catch (error) {
-        console.error('SharePoint file handling error:', error);
+        console.error("SharePoint file handling error:", error);
         throw error;
       }
     },

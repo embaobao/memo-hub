@@ -7,14 +7,14 @@ describe("VariableResolver", () => {
     payload: {
       id: "p1",
       text: "hello world",
-      meta: { cat: "test" }
+      meta: { cat: "test" },
     },
     nodes: {
       step1: {
         hash: "abc-123",
-        data: { vector: [1, 2, 3] }
-      }
-    }
+        data: { vector: [1, 2, 3] },
+      },
+    },
   };
 
   test("should resolve simple payload paths", () => {
@@ -24,7 +24,9 @@ describe("VariableResolver", () => {
 
   test("should resolve node paths", () => {
     expect(resolver.resolve("{{nodes.step1.hash}}", state)).toBe("abc-123");
-    expect(resolver.resolve("{{nodes.step1.data.vector}}", state)).toEqual([1, 2, 3]);
+    expect(resolver.resolve("{{nodes.step1.data.vector}}", state)).toEqual([
+      1, 2, 3,
+    ]);
   });
 
   test("should resolve complex objects", () => {
@@ -32,15 +34,15 @@ describe("VariableResolver", () => {
       id: "{{payload.id}}",
       details: {
         source: "{{nodes.step1.hash}}",
-        tags: ["{{payload.meta.cat}}", "constant"]
-      }
+        tags: ["{{payload.meta.cat}}", "constant"],
+      },
     };
     const expected = {
       id: "p1",
       details: {
         source: "abc-123",
-        tags: ["test", "constant"]
-      }
+        tags: ["test", "constant"],
+      },
     };
     expect(resolver.resolve(input, state)).toEqual(expected);
   });

@@ -1,5 +1,9 @@
-import type { SearchRefType } from 'librechat-data-provider';
-export type Citation = { turn: number; refType: SearchRefType | string; index: number };
+import type { SearchRefType } from "librechat-data-provider";
+export type Citation = {
+  turn: number;
+  refType: SearchRefType | string;
+  index: number;
+};
 
 export type CitationProps = {
   citationId?: string | null;

@@ -1,17 +1,17 @@
-import { renderHook, act } from '@testing-library/react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useHealthCheck } from '../connection';
-import { QueryKeys, Time, dataService } from 'librechat-data-provider';
+import { renderHook, act } from "@testing-library/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useHealthCheck } from "../connection";
+import { QueryKeys, Time, dataService } from "librechat-data-provider";
 
 // Mock dependencies
-jest.mock('@tanstack/react-query');
-jest.mock('librechat-data-provider', () => ({
-  QueryKeys: { health: 'health' },
+jest.mock("@tanstack/react-query");
+jest.mock("librechat-data-provider", () => ({
+  QueryKeys: { health: "health" },
   Time: { TEN_MINUTES: 600000, FIVE_MINUTES: 300000 },
   dataService: { healthCheck: jest.fn() },
 }));
 
-jest.mock('~/utils', () => ({
+jest.mock("~/utils", () => ({
   logger: { log: jest.fn() },
 }));
 
@@ -25,9 +25,11 @@ const mockQueryClient = {
   invalidateQueries: jest.fn(),
 } as any;
 
-const mockUseQueryClient = useQueryClient as jest.MockedFunction<typeof useQueryClient>;
+const mockUseQueryClient = useQueryClient as jest.MockedFunction<
+  typeof useQueryClient
+>;
 
-describe('useHealthCheck', () => {
+describe("useHealthCheck", () => {
   let addEventListenerSpy: jest.SpyInstance;
   let removeEventListenerSpy: jest.SpyInstance;
 
@@ -36,8 +38,8 @@ describe('useHealthCheck', () => {
     jest.clearAllTimers();
     mockUseQueryClient.mockReturnValue(mockQueryClient);
 
-    addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    addEventListenerSpy = jest.spyOn(window, "addEventListener");
+    removeEventListenerSpy = jest.spyOn(window, "removeEventListener");
 
     mockQueryClient.fetchQuery.mockResolvedValue({});
     mockQueryClient.getQueryState.mockReturnValue(null);
@@ -48,8 +50,8 @@ describe('useHealthCheck', () => {
     removeEventListenerSpy.mockRestore();
   });
 
-  describe('when not authenticated', () => {
-    it('should not start health check', () => {
+  describe("when not authenticated", () => {
+    it("should not start health check", () => {
       renderHook(() => useHealthCheck(false));
 
       // Fast-forward past the delay
@@ -62,8 +64,8 @@ describe('useHealthCheck', () => {
     });
   });
 
-  describe('when authenticated', () => {
-    it('should start health check after delay', async () => {
+  describe("when authenticated", () => {
+    it("should start health check after delay", async () => {
       renderHook(() => useHealthCheck(true));
 
       // Should not run immediately
@@ -85,7 +87,7 @@ describe('useHealthCheck', () => {
       );
     });
 
-    it('should set up 10-minute interval', async () => {
+    it("should set up 10-minute interval", async () => {
       renderHook(() => useHealthCheck(true));
 
       await act(async () => {
@@ -103,7 +105,7 @@ describe('useHealthCheck', () => {
       expect(mockQueryClient.fetchQuery).toHaveBeenCalledTimes(1);
     });
 
-    it('should run health check continuously every 10 minutes', async () => {
+    it("should run health check continuously every 10 minutes", async () => {
       renderHook(() => useHealthCheck(true));
 
       await act(async () => {
@@ -134,17 +136,20 @@ describe('useHealthCheck', () => {
       expect(mockQueryClient.fetchQuery).toHaveBeenCalledTimes(8);
     });
 
-    it('should add window focus event listener', async () => {
+    it("should add window focus event listener", async () => {
       renderHook(() => useHealthCheck(true));
 
       await act(async () => {
         jest.advanceTimersByTime(500);
       });
 
-      expect(addEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        "focus",
+        expect.any(Function),
+      );
     });
 
-    it('should handle window focus correctly when no previous check', async () => {
+    it("should handle window focus correctly when no previous check", async () => {
       renderHook(() => useHealthCheck(true));
 
       await act(async () => {
@@ -166,7 +171,7 @@ describe('useHealthCheck', () => {
       expect(mockQueryClient.fetchQuery).toHaveBeenCalledTimes(1);
     });
 
-    it('should handle window focus correctly when check is recent', async () => {
+    it("should handle window focus correctly when check is recent", async () => {
       renderHook(() => useHealthCheck(true));
 
       await act(async () => {
@@ -190,7 +195,7 @@ describe('useHealthCheck', () => {
       expect(mockQueryClient.fetchQuery).not.toHaveBeenCalled();
     });
 
-    it('should handle window focus correctly when check is old', async () => {
+    it("should handle window focus correctly when check is old", async () => {
       renderHook(() => useHealthCheck(true));
 
       await act(async () => {
@@ -214,7 +219,7 @@ describe('useHealthCheck', () => {
       expect(mockQueryClient.fetchQuery).toHaveBeenCalledTimes(1);
     });
 
-    it('should prevent multiple initializations', async () => {
+    it("should prevent multiple initializations", async () => {
       const { rerender } = renderHook(({ auth }) => useHealthCheck(auth), {
         initialProps: { auth: true },
       });
@@ -236,9 +241,9 @@ describe('useHealthCheck', () => {
       expect(addEventListenerSpy).toHaveBeenCalledTimes(initialCallCount);
     });
 
-    it('should handle API errors gracefully', async () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-      mockQueryClient.fetchQuery.mockRejectedValue(new Error('API Error'));
+    it("should handle API errors gracefully", async () => {
+      const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+      mockQueryClient.fetchQuery.mockRejectedValue(new Error("API Error"));
 
       renderHook(() => useHealthCheck(true));
 
@@ -246,20 +251,23 @@ describe('useHealthCheck', () => {
         jest.advanceTimersByTime(500);
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('Health check failed:', expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Health check failed:",
+        expect.any(Error),
+      );
       consoleSpy.mockRestore();
     });
   });
 
-  describe('cleanup', () => {
-    it('should clear intervals on unmount', async () => {
+  describe("cleanup", () => {
+    it("should clear intervals on unmount", async () => {
       const { unmount } = renderHook(() => useHealthCheck(true));
 
       await act(async () => {
         jest.advanceTimersByTime(500);
       });
 
-      const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+      const clearIntervalSpy = jest.spyOn(global, "clearInterval");
 
       unmount();
 
@@ -267,7 +275,7 @@ describe('useHealthCheck', () => {
       clearIntervalSpy.mockRestore();
     });
 
-    it('should remove event listeners on unmount', async () => {
+    it("should remove event listeners on unmount", async () => {
       const { unmount } = renderHook(() => useHealthCheck(true));
 
       await act(async () => {
@@ -276,11 +284,14 @@ describe('useHealthCheck', () => {
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith('focus', expect.any(Function));
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        "focus",
+        expect.any(Function),
+      );
     });
 
-    it('should clear timeout on unmount before initialization', () => {
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+    it("should clear timeout on unmount before initialization", () => {
+      const clearTimeoutSpy = jest.spyOn(global, "clearTimeout");
       const { unmount } = renderHook(() => useHealthCheck(true));
 
       // Unmount before delay completes
@@ -291,8 +302,8 @@ describe('useHealthCheck', () => {
     });
   });
 
-  describe('authentication state changes', () => {
-    it('should start health check when authentication becomes true', async () => {
+  describe("authentication state changes", () => {
+    it("should start health check when authentication becomes true", async () => {
       const { rerender } = renderHook(({ auth }) => useHealthCheck(auth), {
         initialProps: { auth: false },
       });

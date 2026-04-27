@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react';
-import { ContentTypes } from 'librechat-data-provider';
-import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo } from "react";
+import { ContentTypes } from "librechat-data-provider";
+import { useQueryClient } from "@tanstack/react-query";
 
 import type {
   Text,
@@ -11,8 +11,8 @@ import type {
   TContentData,
   EventSubmission,
   TMessageContentParts,
-} from 'librechat-data-provider';
-import { addFileToCache } from '~/utils';
+} from "librechat-data-provider";
+import { addFileToCache } from "~/utils";
 
 type TUseContentHandler = {
   setMessages: (messages: TMessage[]) => void;
@@ -24,7 +24,10 @@ type TContentHandler = {
   submission: EventSubmission;
 };
 
-export default function useContentHandler({ setMessages, getMessages }: TUseContentHandler) {
+export default function useContentHandler({
+  setMessages,
+  getMessages,
+}: TUseContentHandler) {
   const queryClient = useQueryClient();
   const messageMap = useMemo(() => new Map<string, TMessage>(), []);
 
@@ -39,8 +42,9 @@ export default function useContentHandler({ setMessages, getMessages }: TUseCont
 
       const _messages = getMessages();
       const messages =
-        _messages?.filter((m) => m.messageId !== messageId).map((msg) => ({ ...msg, thread_id })) ??
-        [];
+        _messages
+          ?.filter((m) => m.messageId !== messageId)
+          .map((msg) => ({ ...msg, thread_id })) ?? [];
       const userMessage = messages[messages.length - 1] as TMessage | undefined;
 
       const { initialResponse } = submission;
@@ -49,10 +53,12 @@ export default function useContentHandler({ setMessages, getMessages }: TUseCont
       if (!response) {
         // Check if message already exists in current messages (e.g., after sync)
         // Use that as base instead of stale initialResponse
-        const existingMessage = _messages?.find((m) => m.messageId === messageId);
+        const existingMessage = _messages?.find(
+          (m) => m.messageId === messageId,
+        );
         response = {
           ...(existingMessage ?? (initialResponse as TMessage)),
-          parentMessageId: userMessage?.messageId ?? '',
+          parentMessageId: userMessage?.messageId ?? "",
           conversationId,
           messageId,
           thread_id,
@@ -63,7 +69,9 @@ export default function useContentHandler({ setMessages, getMessages }: TUseCont
       // TODO: handle streaming for non-text
       const textPart: Text | string | undefined = data[ContentTypes.TEXT];
       const part: ContentPart =
-        textPart != null && typeof textPart === 'string' ? { value: textPart } : data[type];
+        textPart != null && typeof textPart === "string"
+          ? { value: textPart }
+          : data[type];
 
       if (type === ContentTypes.IMAGE_FILE) {
         addFileToCache(queryClient, part as ImageFile & PartMetadata);

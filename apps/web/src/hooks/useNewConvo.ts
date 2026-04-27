@@ -1,7 +1,12 @@
-import { useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useGetModelsQuery } from 'librechat-data-provider/react-query';
-import { useRecoilState, useRecoilValue, useSetRecoilState, useRecoilCallback } from 'recoil';
+import { useCallback } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useGetModelsQuery } from "librechat-data-provider/react-query";
+import {
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+  useRecoilCallback,
+} from "recoil";
 import {
   Constants,
   FileSources,
@@ -15,15 +20,15 @@ import {
   isEphemeralAgentId,
   isAssistantsEndpoint,
   getDefaultParamsEndpoint,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import type {
   TPreset,
   TSubmission,
   TModelsConfig,
   TConversation,
   TEndpointsConfig,
-} from 'librechat-data-provider';
-import type { AssistantListItem } from '~/common';
+} from "librechat-data-provider";
+import type { AssistantListItem } from "~/common";
 import {
   updateLastSelectedModel,
   getLocalStorageItems,
@@ -32,14 +37,18 @@ import {
   getModelSpecPreset,
   buildDefaultConvo,
   logger,
-} from '~/utils';
-import { useDeleteFilesMutation, useGetEndpointsQuery, useGetStartupConfig } from '~/data-provider';
-import useAssistantListMap from './Assistants/useAssistantListMap';
-import { useResetChatBadges } from './useChatBadges';
-import { useApplyModelSpecEffects } from './Agents';
-import { usePauseGlobalAudio } from './Audio';
-import { useHasAccess } from '~/hooks';
-import store from '~/store';
+} from "~/utils";
+import {
+  useDeleteFilesMutation,
+  useGetEndpointsQuery,
+  useGetStartupConfig,
+} from "~/data-provider";
+import useAssistantListMap from "./Assistants/useAssistantListMap";
+import { useResetChatBadges } from "./useChatBadges";
+import { useApplyModelSpecEffects } from "./Agents";
+import { usePauseGlobalAudio } from "./Audio";
+import { useHasAccess } from "~/hooks";
+import store from "~/store";
 
 const useNewConvo = (index = 0) => {
   const navigate = useNavigate();
@@ -51,9 +60,14 @@ const useNewConvo = (index = 0) => {
   const { setConversation } = store.useSetConversationAtom(index);
   const [files, setFiles] = useRecoilState(store.filesByIndex(index));
   const saveBadgesState = useRecoilValue<boolean>(store.saveBadgesState);
-  const clearAllLatestMessages = store.useClearLatestMessages(`useNewConvo ${index}`);
-  const setSubmission = useSetRecoilState<TSubmission | null>(store.submissionByIndex(index));
-  const { data: endpointsConfig = {} as TEndpointsConfig } = useGetEndpointsQuery();
+  const clearAllLatestMessages = store.useClearLatestMessages(
+    `useNewConvo ${index}`,
+  );
+  const setSubmission = useSetRecoilState<TSubmission | null>(
+    store.submissionByIndex(index),
+  );
+  const { data: endpointsConfig = {} as TEndpointsConfig } =
+    useGetEndpointsQuery();
 
   const hasAgentAccess = useHasAccess({
     permissionType: PermissionTypes.AGENTS,
@@ -68,10 +82,10 @@ const useNewConvo = (index = 0) => {
 
   const { mutateAsync } = useDeleteFilesMutation({
     onSuccess: () => {
-      console.log('Files deleted');
+      console.log("Files deleted");
     },
     onError: (error) => {
-      console.log('Error deleting files:', error);
+      console.log("Error deleting files:", error);
     },
   });
 
@@ -89,7 +103,8 @@ const useNewConvo = (index = 0) => {
       ) => {
         const modelsConfig = modelsData ?? modelsQuery.data;
         const { endpoint = null } = conversation;
-        const buildDefaultConversation = (endpoint === null || buildDefault) ?? false;
+        const buildDefaultConversation =
+          (endpoint === null || buildDefault) ?? false;
         const activePreset =
           // use default preset only when it's defined,
           // preset is not provided,
@@ -119,10 +134,12 @@ const useNewConvo = (index = 0) => {
           // Also check localStorage for new conversations restored after refresh
           const { lastConversationSetup } = getLocalStorageItems();
           const storedAgentId =
-            isAgentsEndpoint(lastConversationSetup?.endpoint) && lastConversationSetup?.agent_id;
+            isAgentsEndpoint(lastConversationSetup?.endpoint) &&
+            lastConversationSetup?.agent_id;
           const isExistingAgentConvo =
             isAgentsEndpoint(defaultEndpoint) &&
-            ((conversation.agent_id && !isEphemeralAgentId(conversation.agent_id)) ||
+            ((conversation.agent_id &&
+              !isEphemeralAgentId(conversation.agent_id)) ||
               (storedAgentId && !isEphemeralAgentId(storedAgentId)));
           if (
             defaultEndpoint &&
@@ -131,7 +148,9 @@ const useNewConvo = (index = 0) => {
             !isExistingAgentConvo
           ) {
             defaultEndpoint = Object.keys(endpointsConfig ?? {}).find(
-              (ep) => !isAgentsEndpoint(ep as EModelEndpoint) && endpointsConfig?.[ep],
+              (ep) =>
+                !isAgentsEndpoint(ep as EModelEndpoint) &&
+                endpointsConfig?.[ep],
             ) as EModelEndpoint | undefined;
           }
 
@@ -149,7 +168,11 @@ const useNewConvo = (index = 0) => {
             }) as EModelEndpoint;
           }
 
-          const endpointType = getEndpointField(endpointsConfig, defaultEndpoint, 'type');
+          const endpointType = getEndpointField(
+            endpointsConfig,
+            defaultEndpoint,
+            "type",
+          );
           if (!conversation.endpointType && endpointType) {
             conversation.endpointType = endpointType;
           } else if (conversation.endpointType && !endpointType) {
@@ -157,11 +180,12 @@ const useNewConvo = (index = 0) => {
           }
 
           const isAssistantEndpoint = isAssistantsEndpoint(defaultEndpoint);
-          const assistants: AssistantListItem[] = assistantsListMap[defaultEndpoint] ?? [];
-          const currentAssistantId = conversation.assistant_id ?? '';
-          const currentAssistant = assistantsListMap[defaultEndpoint]?.[currentAssistantId] as
-            | AssistantListItem
-            | undefined;
+          const assistants: AssistantListItem[] =
+            assistantsListMap[defaultEndpoint] ?? [];
+          const currentAssistantId = conversation.assistant_id ?? "";
+          const currentAssistant = assistantsListMap[defaultEndpoint]?.[
+            currentAssistantId
+          ] as AssistantListItem | undefined;
 
           if (currentAssistantId && !currentAssistant) {
             conversation.assistant_id = undefined;
@@ -179,7 +203,9 @@ const useNewConvo = (index = 0) => {
             isAssistantEndpoint &&
             conversation.conversationId === Constants.NEW_CONVO
           ) {
-            const assistant = assistants.find((asst) => asst.id === currentAssistantId);
+            const assistant = assistants.find(
+              (asst) => asst.id === currentAssistantId,
+            );
             conversation.model = assistant?.model;
             updateLastSelectedModel({
               endpoint: defaultEndpoint,
@@ -192,7 +218,10 @@ const useNewConvo = (index = 0) => {
           }
 
           const models = modelsConfig?.[defaultEndpoint] ?? [];
-          const defaultParamsEndpoint = getDefaultParamsEndpoint(endpointsConfig, defaultEndpoint);
+          const defaultParamsEndpoint = getDefaultParamsEndpoint(
+            endpointsConfig,
+            defaultEndpoint,
+          );
           conversation = buildDefaultConvo({
             conversation,
             lastConversationSetup: activePreset as TConversation,
@@ -209,11 +238,11 @@ const useNewConvo = (index = 0) => {
         if (!(keepAddedConvos ?? false)) {
           clearAllConversations(true);
         }
-        const isCancelled = conversation.conversationId?.startsWith('_');
+        const isCancelled = conversation.conversationId?.startsWith("_");
         if (isCancelled) {
           logger.log(
-            'conversation',
-            'Cancelled conversation, setting to `new` in `useNewConvo`',
+            "conversation",
+            "Cancelled conversation, setting to `new` in `useNewConvo`",
             conversation,
           );
           setConversation({
@@ -221,12 +250,16 @@ const useNewConvo = (index = 0) => {
             conversationId: Constants.NEW_CONVO as string,
           });
         } else {
-          logger.log('conversation', 'Setting conversation from `useNewConvo`', conversation);
+          logger.log(
+            "conversation",
+            "Setting conversation from `useNewConvo`",
+            conversation,
+          );
           setConversation(conversation);
         }
         setSubmission({} as TSubmission);
         if (!(keepLatestMessage ?? false)) {
-          logger.log('latest_message', 'Clearing all latest messages');
+          logger.log("latest_message", "Clearing all latest messages");
           clearAllLatestMessages();
         }
         if (isCancelled) {
@@ -234,10 +267,15 @@ const useNewConvo = (index = 0) => {
         }
 
         const searchParamsString = searchParams?.toString();
-        const getParams = () => (searchParamsString ? `?${searchParamsString}` : '');
+        const getParams = () =>
+          searchParamsString ? `?${searchParamsString}` : "";
 
-        if (conversation.conversationId === Constants.NEW_CONVO && !modelsData) {
-          const appTitle = localStorage.getItem(LocalStorageKeys.APP_TITLE) ?? '';
+        if (
+          conversation.conversationId === Constants.NEW_CONVO &&
+          !modelsData
+        ) {
+          const appTitle =
+            localStorage.getItem(LocalStorageKeys.APP_TITLE) ?? "";
           if (appTitle) {
             document.title = appTitle;
           }
@@ -252,7 +290,13 @@ const useNewConvo = (index = 0) => {
           state: disableFocus ? {} : { focusChat: true },
         });
       },
-    [endpointsConfig, defaultPreset, assistantsListMap, modelsQuery.data, hasAgentAccess],
+    [
+      endpointsConfig,
+      defaultPreset,
+      assistantsListMap,
+      modelsQuery.data,
+      hasAgentAccess,
+    ],
   );
 
   const newConversation = useCallback(
@@ -280,22 +324,27 @@ const useNewConvo = (index = 0) => {
         resetBadges();
       }
 
-      const templateConvoId = _template.conversationId ?? '';
+      const templateConvoId = _template.conversationId ?? "";
       const paramEndpoint =
-        isParamEndpoint(_template.endpoint ?? '', _template.endpointType ?? '') === true ||
-        isParamEndpoint(_preset?.endpoint ?? '', _preset?.endpointType ?? '');
+        isParamEndpoint(
+          _template.endpoint ?? "",
+          _template.endpointType ?? "",
+        ) === true ||
+        isParamEndpoint(_preset?.endpoint ?? "", _preset?.endpointType ?? "");
       const template =
-        paramEndpoint === true && templateConvoId && templateConvoId === Constants.NEW_CONVO
+        paramEndpoint === true &&
+        templateConvoId &&
+        templateConvoId === Constants.NEW_CONVO
           ? { endpoint: _template.endpoint }
           : _template;
 
       const conversation = {
         conversationId: Constants.NEW_CONVO as string,
-        title: 'New Chat',
+        title: "New Chat",
         endpoint: null,
         ...template,
-        createdAt: '',
-        updatedAt: '',
+        createdAt: "",
+        updatedAt: "",
       };
 
       let preset = _preset;
@@ -323,7 +372,7 @@ const useNewConvo = (index = 0) => {
           .filter(
             (file) =>
               file.filepath != null &&
-              file.filepath !== '' &&
+              file.filepath !== "" &&
               file.source &&
               !(file.embedded ?? false) &&
               file.temp_file_id,
@@ -336,7 +385,10 @@ const useNewConvo = (index = 0) => {
           }));
 
         setFiles(new Map());
-        localStorage.setItem(LocalStorageKeys.FILES_TO_DELETE, JSON.stringify({}));
+        localStorage.setItem(
+          LocalStorageKeys.FILES_TO_DELETE,
+          JSON.stringify({}),
+        );
 
         if (!saveDrafts && filesToDelete.length > 0) {
           mutateAsync({ files: filesToDelete });

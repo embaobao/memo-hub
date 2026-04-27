@@ -1,11 +1,16 @@
-import { useResetRecoilState, useSetRecoilState } from 'recoil';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { MutationKeys, QueryKeys, dataService, request } from 'librechat-data-provider';
-import type { UseMutationResult } from '@tanstack/react-query';
-import type * as t from 'librechat-data-provider';
-import useClearStates from '~/hooks/Config/useClearStates';
-import { clearAllConversationStorage } from '~/utils';
-import store from '~/store';
+import { useResetRecoilState, useSetRecoilState } from "recoil";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  MutationKeys,
+  QueryKeys,
+  dataService,
+  request,
+} from "librechat-data-provider";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type * as t from "librechat-data-provider";
+import useClearStates from "~/hooks/Config/useClearStates";
+import { clearAllConversationStorage } from "~/utils";
+import store from "~/store";
 
 /* login/logout */
 export const useLogoutUserMutation = (
@@ -58,8 +63,18 @@ export const useLoginUserMutation = (
 };
 
 export const useRefreshTokenMutation = (
-  options?: t.MutationOptions<t.TRefreshTokenResponse | undefined, undefined, unknown, unknown>,
-): UseMutationResult<t.TRefreshTokenResponse | undefined, unknown, undefined, unknown> => {
+  options?: t.MutationOptions<
+    t.TRefreshTokenResponse | undefined,
+    undefined,
+    unknown,
+    unknown
+  >,
+): UseMutationResult<
+  t.TRefreshTokenResponse | undefined,
+  unknown,
+  undefined,
+  unknown
+> => {
   const queryClient = useQueryClient();
   return useMutation([MutationKeys.refreshToken], {
     mutationFn: () => request.refreshToken(),
@@ -74,13 +89,19 @@ export const useRefreshTokenMutation = (
 /* User */
 export const useDeleteUserMutation = (
   options?: t.MutationOptions<unknown, t.TDeleteUserRequest | undefined>,
-): UseMutationResult<unknown, unknown, t.TDeleteUserRequest | undefined, unknown> => {
+): UseMutationResult<
+  unknown,
+  unknown,
+  t.TDeleteUserRequest | undefined,
+  unknown
+> => {
   const queryClient = useQueryClient();
   const clearStates = useClearStates();
   const resetDefaultPreset = useResetRecoilState(store.defaultPreset);
 
   return useMutation([MutationKeys.deleteUser], {
-    mutationFn: (payload?: t.TDeleteUserRequest) => dataService.deleteUser(payload),
+    mutationFn: (payload?: t.TDeleteUserRequest) =>
+      dataService.deleteUser(payload),
     ...(options || {}),
     onSuccess: (...args) => {
       resetDefaultPreset();
@@ -99,11 +120,14 @@ export const useEnableTwoFactorMutation = (): UseMutationResult<
   unknown
 > => {
   const queryClient = useQueryClient();
-  return useMutation((payload?: t.TEnable2FARequest) => dataService.enableTwoFactor(payload), {
-    onSuccess: (data) => {
-      queryClient.setQueryData([QueryKeys.user, '2fa'], data);
+  return useMutation(
+    (payload?: t.TEnable2FARequest) => dataService.enableTwoFactor(payload),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData([QueryKeys.user, "2fa"], data);
+      },
     },
-  });
+  );
 };
 
 export const useVerifyTwoFactorMutation = (): UseMutationResult<
@@ -113,11 +137,14 @@ export const useVerifyTwoFactorMutation = (): UseMutationResult<
   unknown
 > => {
   const queryClient = useQueryClient();
-  return useMutation((payload: t.TVerify2FARequest) => dataService.verifyTwoFactor(payload), {
-    onSuccess: (data) => {
-      queryClient.setQueryData([QueryKeys.user, '2fa'], data);
+  return useMutation(
+    (payload: t.TVerify2FARequest) => dataService.verifyTwoFactor(payload),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData([QueryKeys.user, "2fa"], data);
+      },
     },
-  });
+  );
 };
 
 export const useConfirmTwoFactorMutation = (): UseMutationResult<
@@ -127,11 +154,14 @@ export const useConfirmTwoFactorMutation = (): UseMutationResult<
   unknown
 > => {
   const queryClient = useQueryClient();
-  return useMutation((payload: t.TVerify2FARequest) => dataService.confirmTwoFactor(payload), {
-    onSuccess: (data) => {
-      queryClient.setQueryData([QueryKeys.user, '2fa'], data);
+  return useMutation(
+    (payload: t.TVerify2FARequest) => dataService.confirmTwoFactor(payload),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData([QueryKeys.user, "2fa"], data);
+      },
     },
-  });
+  );
 };
 
 export const useDisableTwoFactorMutation = (): UseMutationResult<
@@ -141,11 +171,14 @@ export const useDisableTwoFactorMutation = (): UseMutationResult<
   unknown
 > => {
   const queryClient = useQueryClient();
-  return useMutation((payload?: t.TDisable2FARequest) => dataService.disableTwoFactor(payload), {
-    onSuccess: () => {
-      queryClient.setQueryData([QueryKeys.user, '2fa'], null);
+  return useMutation(
+    (payload?: t.TDisable2FARequest) => dataService.disableTwoFactor(payload),
+    {
+      onSuccess: () => {
+        queryClient.setQueryData([QueryKeys.user, "2fa"], null);
+      },
     },
-  });
+  );
 };
 
 export const useRegenerateBackupCodesMutation = (): UseMutationResult<
@@ -156,25 +189,37 @@ export const useRegenerateBackupCodesMutation = (): UseMutationResult<
 > => {
   const queryClient = useQueryClient();
   return useMutation(
-    (payload?: t.TRegenerateBackupCodesRequest) => dataService.regenerateBackupCodes(payload),
+    (payload?: t.TRegenerateBackupCodesRequest) =>
+      dataService.regenerateBackupCodes(payload),
     {
       onSuccess: (data) => {
-        queryClient.setQueryData([QueryKeys.user, '2fa', 'backup'], data);
+        queryClient.setQueryData([QueryKeys.user, "2fa", "backup"], data);
       },
     },
   );
 };
 
 export const useVerifyTwoFactorTempMutation = (
-  options?: t.MutationOptions<t.TVerify2FATempResponse, t.TVerify2FATempRequest, unknown, unknown>,
-): UseMutationResult<t.TVerify2FATempResponse, unknown, t.TVerify2FATempRequest, unknown> => {
+  options?: t.MutationOptions<
+    t.TVerify2FATempResponse,
+    t.TVerify2FATempRequest,
+    unknown,
+    unknown
+  >,
+): UseMutationResult<
+  t.TVerify2FATempResponse,
+  unknown,
+  t.TVerify2FATempRequest,
+  unknown
+> => {
   const queryClient = useQueryClient();
   return useMutation(
-    (payload: t.TVerify2FATempRequest) => dataService.verifyTwoFactorTemp(payload),
+    (payload: t.TVerify2FATempRequest) =>
+      dataService.verifyTwoFactorTemp(payload),
     {
       ...(options || {}),
       onSuccess: (data, ...args) => {
-        queryClient.setQueryData([QueryKeys.user, '2fa'], data);
+        queryClient.setQueryData([QueryKeys.user, "2fa"], data);
         options?.onSuccess?.(data, ...args);
       },
     },

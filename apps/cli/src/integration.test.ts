@@ -11,19 +11,21 @@ describe("MemoHub CLI Integration", () => {
 
   beforeAll(() => {
     if (!fs.existsSync(testRoot)) fs.mkdirSync(testRoot, { recursive: true });
-    
+
     // Create a minimal test config
     const testConfig = {
       version: "1.0.0",
       system: { root: testRoot, log_level: "error" },
       ai: {
-        providers: [{ id: "local", type: "ollama", url: "http://localhost:11434/v1" }],
+        providers: [
+          { id: "local", type: "ollama", url: "http://localhost:11434/v1" },
+        ],
         agents: {
-          embedder: { provider: "local", model: "nomic-embed-text-v2-moe" }
-        }
+          embedder: { provider: "local", model: "nomic-embed-text-v2-moe" },
+        },
       },
       dispatcher: { fallback: "track-insight" },
-      tracks: []
+      tracks: [],
     };
     fs.writeFileSync(configPath, JSON.stringify(testConfig));
   });
@@ -36,7 +38,7 @@ describe("MemoHub CLI Integration", () => {
   const runCli = (args: string[]) => {
     return spawnSync("node", [cliPath, ...args], {
       env: { ...process.env, MEMOHUB_CONFIG: configPath },
-      encoding: "utf-8"
+      encoding: "utf-8",
     });
   };
 
@@ -46,7 +48,7 @@ describe("MemoHub CLI Integration", () => {
   });
 
   test("should add knowledge (dry run with error if Ollama offline)", () => {
-    // We expect this to fail gracefully if Ollama is not running, 
+    // We expect this to fail gracefully if Ollama is not running,
     // but the CLI command should execute the dispatch logic.
     const proc = runCli(["add", "Test knowledge entry"]);
     // If it fails with connection refused, it proves the command reached the AI provider phase

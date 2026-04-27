@@ -1,8 +1,8 @@
-import download from 'downloadjs';
-import { useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import exportFromJSON from 'export-from-json';
-import { useQueryClient } from '@tanstack/react-query';
+import download from "downloadjs";
+import { useCallback } from "react";
+import { useParams } from "react-router-dom";
+import exportFromJSON from "export-from-json";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   buildTree,
   QueryKeys,
@@ -10,16 +10,16 @@ import {
   ToolCallTypes,
   imageGenTools,
   isImageVisionTool,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import type {
   TMessageContentParts,
   TConversation,
   TMessage,
   TPreset,
-} from 'librechat-data-provider';
-import useBuildMessageTree from '~/hooks/Messages/useBuildMessageTree';
-import { useScreenshot } from '~/hooks/ScreenshotContext';
-import { cleanupPreset } from '~/utils';
+} from "librechat-data-provider";
+import useBuildMessageTree from "~/hooks/Messages/useBuildMessageTree";
+import { useScreenshot } from "~/hooks/ScreenshotContext";
+import { cleanupPreset } from "~/utils";
 
 type ExportValues = {
   fieldName: string;
@@ -38,9 +38,9 @@ export default function useExportConversation({
   conversation: TConversation | null;
   filename: string;
   type: string;
-  includeOptions: boolean | 'indeterminate';
-  exportBranches: boolean | 'indeterminate';
-  recursive: boolean | 'indeterminate';
+  includeOptions: boolean | "indeterminate";
+  exportBranches: boolean | "indeterminate";
+  recursive: boolean | "indeterminate";
 }) {
   const queryClient = useQueryClient();
   const { captureScreenshot } = useScreenshot();
@@ -50,36 +50,43 @@ export default function useExportConversation({
 
   const getMessageTree = useCallback(() => {
     const queryParam =
-      paramId === 'new' ? paramId : (conversation?.conversationId ?? paramId ?? '');
-    const messages = queryClient.getQueryData<TMessage[]>([QueryKeys.messages, queryParam]) ?? [];
+      paramId === "new"
+        ? paramId
+        : (conversation?.conversationId ?? paramId ?? "");
+    const messages =
+      queryClient.getQueryData<TMessage[]>([QueryKeys.messages, queryParam]) ??
+      [];
     const dataTree = buildTree({ messages });
     return dataTree?.length === 0 ? null : (dataTree ?? null);
   }, [paramId, conversation?.conversationId, queryClient]);
 
-  const getMessageText = (message: Partial<TMessage> | undefined, format = 'text') => {
+  const getMessageText = (
+    message: Partial<TMessage> | undefined,
+    format = "text",
+  ) => {
     if (!message) {
-      return '';
+      return "";
     }
 
     const formatText = (sender: string, text: string) => {
-      if (format === 'text') {
+      if (format === "text") {
         return `>> ${sender}:\n${text}`;
       }
       return `**${sender}**\n${text}`;
     };
 
     if (!message.content) {
-      return formatText(message.sender || '', message.text || '');
+      return formatText(message.sender || "", message.text || "");
     }
 
     return message.content
       .filter((content) => content != null)
-      .map((content) => getMessageContent(message.sender || '', content))
+      .map((content) => getMessageContent(message.sender || "", content))
       .filter((text) => text.length > 0)
       .map((text) => {
         return formatText(text[0], text[1]);
       })
-      .join('\n\n\n');
+      .join("\n\n\n");
   };
 
   /**
@@ -87,7 +94,10 @@ export default function useExportConversation({
    * Currently, content whose type is `TOOL_CALL` basically returns JSON as is.
    * In the future, different formatted text may be returned for each type.
    */
-  const getMessageContent = (sender: string, content?: TMessageContentParts): string[] => {
+  const getMessageContent = (
+    sender: string,
+    content?: TMessageContentParts,
+  ): string[] => {
     if (!content) {
       return [];
     }
@@ -96,16 +106,17 @@ export default function useExportConversation({
       // ERROR
       return [
         sender,
-        typeof content[ContentTypes.TEXT] === 'object'
-          ? (content[ContentTypes.TEXT].value ?? '')
-          : (content[ContentTypes.TEXT] ?? ''),
+        typeof content[ContentTypes.TEXT] === "object"
+          ? (content[ContentTypes.TEXT].value ?? "")
+          : (content[ContentTypes.TEXT] ?? ""),
       ];
     }
 
     if (content.type === ContentTypes.TEXT) {
       // TEXT
       const textPart = content[ContentTypes.TEXT];
-      const text = typeof textPart === 'string' ? textPart : (textPart?.value ?? '');
+      const text =
+        typeof textPart === "string" ? textPart : (textPart?.value ?? "");
       if (text.trim().length === 0) {
         return [];
       }
@@ -119,13 +130,13 @@ export default function useExportConversation({
         // CODE_INTERPRETER
         const toolCall = content[ContentTypes.TOOL_CALL];
         const code_interpreter = toolCall[ToolCallTypes.CODE_INTERPRETER];
-        return ['Code Interpreter', JSON.stringify(code_interpreter)];
+        return ["Code Interpreter", JSON.stringify(code_interpreter)];
       }
 
       if (type === ToolCallTypes.RETRIEVAL) {
         // RETRIEVAL
         const toolCall = content[ContentTypes.TOOL_CALL];
-        return ['Retrieval', JSON.stringify(toolCall)];
+        return ["Retrieval", JSON.stringify(toolCall)];
       }
 
       if (
@@ -134,23 +145,23 @@ export default function useExportConversation({
       ) {
         // IMAGE_GENERATION
         const toolCall = content[ContentTypes.TOOL_CALL];
-        return ['Tool', JSON.stringify(toolCall)];
+        return ["Tool", JSON.stringify(toolCall)];
       }
 
       if (type === ToolCallTypes.FUNCTION) {
         // IMAGE_VISION
         const toolCall = content[ContentTypes.TOOL_CALL];
         if (isImageVisionTool(toolCall)) {
-          return ['Tool', JSON.stringify(toolCall)];
+          return ["Tool", JSON.stringify(toolCall)];
         }
-        return ['Tool', JSON.stringify(toolCall)];
+        return ["Tool", JSON.stringify(toolCall)];
       }
     }
 
     if (content.type === ContentTypes.IMAGE_FILE) {
       // IMAGE
       const imageFile = content[ContentTypes.IMAGE_FILE];
-      return ['Image', JSON.stringify(imageFile)];
+      return ["Image", JSON.stringify(imageFile)];
     }
 
     return [sender, JSON.stringify(content)];
@@ -161,10 +172,10 @@ export default function useExportConversation({
     try {
       data = await captureScreenshot();
     } catch (err) {
-      console.error('Failed to capture screenshot');
+      console.error("Failed to capture screenshot");
       return console.error(err);
     }
-    download(data, `${filename}.png`, 'image/png');
+    download(data, `${filename}.png`, "image/png");
   };
 
   const exportCSV = async () => {
@@ -192,40 +203,51 @@ export default function useExportConversation({
     exportFromJSON({
       data: data,
       fileName: filename,
-      extension: 'csv',
+      extension: "csv",
       exportType: exportFromJSON.types.csv,
       beforeTableEncode: (entries: ExportEntries | undefined) => [
         {
-          fieldName: 'sender',
-          fieldValues: entries?.find((e) => e.fieldName == 'sender')?.fieldValues ?? [],
+          fieldName: "sender",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "sender")?.fieldValues ?? [],
         },
         {
-          fieldName: 'text',
-          fieldValues: entries?.find((e) => e.fieldName == 'text')?.fieldValues ?? [],
+          fieldName: "text",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "text")?.fieldValues ?? [],
         },
         {
-          fieldName: 'isCreatedByUser',
-          fieldValues: entries?.find((e) => e.fieldName == 'isCreatedByUser')?.fieldValues ?? [],
+          fieldName: "isCreatedByUser",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "isCreatedByUser")
+              ?.fieldValues ?? [],
         },
         {
-          fieldName: 'error',
-          fieldValues: entries?.find((e) => e.fieldName == 'error')?.fieldValues ?? [],
+          fieldName: "error",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "error")?.fieldValues ?? [],
         },
         {
-          fieldName: 'unfinished',
-          fieldValues: entries?.find((e) => e.fieldName == 'unfinished')?.fieldValues ?? [],
+          fieldName: "unfinished",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "unfinished")?.fieldValues ??
+            [],
         },
         {
-          fieldName: 'messageId',
-          fieldValues: entries?.find((e) => e.fieldName == 'messageId')?.fieldValues ?? [],
+          fieldName: "messageId",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "messageId")?.fieldValues ?? [],
         },
         {
-          fieldName: 'parentMessageId',
-          fieldValues: entries?.find((e) => e.fieldName == 'parentMessageId')?.fieldValues ?? [],
+          fieldName: "parentMessageId",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "parentMessageId")
+              ?.fieldValues ?? [],
         },
         {
-          fieldName: 'createdAt',
-          fieldValues: entries?.find((e) => e.fieldName == 'createdAt')?.fieldValues ?? [],
+          fieldName: "createdAt",
+          fieldValues:
+            entries?.find((e) => e.fieldName == "createdAt")?.fieldValues ?? [],
         },
       ],
     });
@@ -233,14 +255,14 @@ export default function useExportConversation({
 
   const exportMarkdown = async () => {
     let data =
-      '# Conversation\n' +
+      "# Conversation\n" +
       `- conversationId: ${conversation?.conversationId}\n` +
       `- endpoint: ${conversation?.endpoint}\n` +
       `- title: ${conversation?.title}\n` +
       `- exportAt: ${new Date().toTimeString()}\n`;
 
     if (includeOptions === true) {
-      data += '\n## Options\n';
+      data += "\n## Options\n";
       const options = cleanupPreset({ preset: conversation as TPreset });
 
       for (const key of Object.keys(options)) {
@@ -256,47 +278,47 @@ export default function useExportConversation({
       recursive: false,
     });
 
-    data += '\n## History\n';
+    data += "\n## History\n";
     if (Array.isArray(messages)) {
       for (const message of messages) {
-        data += `${getMessageText(message, 'md')}\n`;
+        data += `${getMessageText(message, "md")}\n`;
         if (message?.error) {
-          data += '*(This is an error message)*\n';
+          data += "*(This is an error message)*\n";
         }
         if (message?.unfinished === true) {
-          data += '*(This is an unfinished message)*\n';
+          data += "*(This is an unfinished message)*\n";
         }
-        data += '\n\n';
+        data += "\n\n";
       }
     } else {
-      data += `${getMessageText(messages, 'md')}\n`;
+      data += `${getMessageText(messages, "md")}\n`;
       if (messages.error) {
-        data += '*(This is an error message)*\n';
+        data += "*(This is an error message)*\n";
       }
       if (messages.unfinished === true) {
-        data += '*(This is an unfinished message)*\n';
+        data += "*(This is an unfinished message)*\n";
       }
     }
 
     exportFromJSON({
       data: data,
       fileName: filename,
-      extension: 'md',
+      extension: "md",
       exportType: exportFromJSON.types.txt,
     });
   };
 
   const exportText = async () => {
     let data =
-      'Conversation\n' +
-      '########################\n' +
+      "Conversation\n" +
+      "########################\n" +
       `conversationId: ${conversation?.conversationId}\n` +
       `endpoint: ${conversation?.endpoint}\n` +
       `title: ${conversation?.title}\n` +
       `exportAt: ${new Date().toTimeString()}\n`;
 
     if (includeOptions === true) {
-      data += '\nOptions\n########################\n';
+      data += "\nOptions\n########################\n";
       const options = cleanupPreset({ preset: conversation as TPreset });
 
       for (const key of Object.keys(options)) {
@@ -312,32 +334,32 @@ export default function useExportConversation({
       recursive: false,
     });
 
-    data += '\nHistory\n########################\n';
+    data += "\nHistory\n########################\n";
     if (Array.isArray(messages)) {
       for (const message of messages) {
         data += `${getMessageText(message)}\n`;
         if (message?.error) {
-          data += '(This is an error message)\n';
+          data += "(This is an error message)\n";
         }
         if (message?.unfinished === true) {
-          data += '(This is an unfinished message)\n';
+          data += "(This is an unfinished message)\n";
         }
-        data += '\n\n';
+        data += "\n\n";
       }
     } else {
       data += `${getMessageText(messages)}\n`;
       if (messages.error) {
-        data += '(This is an error message)\n';
+        data += "(This is an error message)\n";
       }
       if (messages.unfinished === true) {
-        data += '(This is an unfinished message)\n';
+        data += "(This is an unfinished message)\n";
       }
     }
 
     exportFromJSON({
       data: data,
       fileName: filename,
-      extension: 'txt',
+      extension: "txt",
       exportType: exportFromJSON.types.txt,
     });
   };
@@ -353,7 +375,7 @@ export default function useExportConversation({
     };
 
     if (includeOptions === true) {
-      data['options'] = cleanupPreset({ preset: conversation as TPreset });
+      data["options"] = cleanupPreset({ preset: conversation as TPreset });
     }
 
     const messages = await buildMessageTree({
@@ -365,27 +387,29 @@ export default function useExportConversation({
     });
 
     if (recursive === true && !Array.isArray(messages)) {
-      data['messagesTree'] = messages.children;
+      data["messagesTree"] = messages.children;
     } else {
-      data['messages'] = messages;
+      data["messages"] = messages;
     }
 
     /** Use JSON.stringify without indentation to minimize file size for deeply nested recursive exports */
     const jsonString = JSON.stringify(data);
-    const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
-    download(blob, `${filename}.json`, 'application/json');
+    const blob = new Blob([jsonString], {
+      type: "application/json;charset=utf-8",
+    });
+    download(blob, `${filename}.json`, "application/json");
   };
 
   const exportConversation = () => {
-    if (type === 'json') {
+    if (type === "json") {
       exportJSON();
-    } else if (type == 'text') {
+    } else if (type == "text") {
       exportText();
-    } else if (type == 'markdown') {
+    } else if (type == "markdown") {
       exportMarkdown();
-    } else if (type == 'csv') {
+    } else if (type == "csv") {
       exportCSV();
-    } else if (type == 'screenshot') {
+    } else if (type == "screenshot") {
       exportScreenshot();
     }
   };

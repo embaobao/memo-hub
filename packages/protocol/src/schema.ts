@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { MemoOp, type Text2MemInstruction } from './types.js';
+import { z } from "zod";
+import { MemoOp, type Text2MemInstruction } from "./types.js";
 
 export const MemoOpSchema = z.nativeEnum(MemoOp);
 
@@ -22,6 +22,8 @@ export function validateInstruction(input: unknown): {
   }
   return {
     success: false,
-    error: result.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; '),
+    error: result.error.issues
+      .map((i) => `${i.path.join(".")}: ${i.message}`)
+      .join("; "),
   };
 }

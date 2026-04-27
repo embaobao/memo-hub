@@ -1,6 +1,6 @@
-import { atom, selector } from 'recoil';
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TEndpointsConfig } from 'librechat-data-provider';
+import { atom, selector } from "recoil";
+import { EModelEndpoint } from "librechat-data-provider";
+import type { TEndpointsConfig } from "librechat-data-provider";
 
 const defaultConfig: TEndpointsConfig = {
   [EModelEndpoint.azureOpenAI]: null,
@@ -14,17 +14,17 @@ const defaultConfig: TEndpointsConfig = {
 };
 
 const endpointsConfig = atom<TEndpointsConfig>({
-  key: 'endpointsConfig',
+  key: "endpointsConfig",
   default: defaultConfig,
 });
 
 const endpointsQueryEnabled = atom<boolean>({
-  key: 'endpointsQueryEnabled',
+  key: "endpointsQueryEnabled",
   default: true,
 });
 
 const endpointsFilter = selector({
-  key: 'endpointsFilter',
+  key: "endpointsFilter",
   get: ({ get }) => {
     const config = get(endpointsConfig) || {};
 

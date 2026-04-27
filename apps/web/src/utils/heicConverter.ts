@@ -1,4 +1,4 @@
-import { heicTo, isHeic } from 'heic-to';
+import { heicTo, isHeic } from "heic-to";
 
 /**
  * Check if a file is in HEIC format
@@ -9,9 +9,9 @@ export const isHEICFile = async (file: File): Promise<boolean> => {
   try {
     return await isHeic(file);
   } catch (error) {
-    console.warn('Error checking if file is HEIC:', error);
+    console.warn("Error checking if file is HEIC:", error);
     // Fallback to mime type check
-    return file.type === 'image/heic' || file.type === 'image/heif';
+    return file.type === "image/heic" || file.type === "image/heif";
   }
 };
 
@@ -33,7 +33,7 @@ export const convertHEICToJPEG = async (
 
     const convertedBlob = await heicTo({
       blob: file,
-      type: 'image/jpeg',
+      type: "image/jpeg",
       quality,
     });
 
@@ -41,18 +41,22 @@ export const convertHEICToJPEG = async (
     onProgress?.(0.8);
 
     // Create a new File object with the converted blob
-    const convertedFile = new File([convertedBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
-      type: 'image/jpeg',
-      lastModified: file.lastModified,
-    });
+    const convertedFile = new File(
+      [convertedBlob],
+      file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+      {
+        type: "image/jpeg",
+        lastModified: file.lastModified,
+      },
+    );
 
     // Report file creation completion
     onProgress?.(1.0);
 
     return convertedFile;
   } catch (error) {
-    console.error('Error converting HEIC to JPEG:', error);
-    throw new Error('Failed to convert HEIC image to JPEG');
+    console.error("Error converting HEIC to JPEG:", error);
+    throw new Error("Failed to convert HEIC image to JPEG");
   }
 };
 
@@ -71,7 +75,7 @@ export const processFileForUpload = async (
   const isHEIC = await isHEICFile(file);
 
   if (isHEIC) {
-    console.log('HEIC file detected, converting to JPEG...');
+    console.log("HEIC file detected, converting to JPEG...");
     return convertHEICToJPEG(file, quality, onProgress);
   }
 

@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import { useSetRecoilState } from 'recoil';
-import { useGetCustomConfigSpeechQuery } from 'librechat-data-provider/react-query';
-import { logger } from '~/utils';
-import store from '~/store';
+import { useEffect, useRef } from "react";
+import { useSetRecoilState } from "recoil";
+import { useGetCustomConfigSpeechQuery } from "librechat-data-provider/react-query";
+import { logger } from "~/utils";
+import store from "~/store";
 
 /**
  * Initializes speech-related Recoil values from the server-side custom
@@ -31,12 +31,12 @@ export default function useSpeechSettingsInit(isAuthenticated: boolean) {
   }).current;
 
   useEffect(() => {
-    if (!isAuthenticated || !data || data.message === 'not_found') return;
+    if (!isAuthenticated || !data || data.message === "not_found") return;
 
-    logger.log('Initializing speech settings from config:', data);
+    logger.log("Initializing speech settings from config:", data);
 
     Object.entries(data).forEach(([key, value]) => {
-      if (key === 'sttExternal' || key === 'ttsExternal') return;
+      if (key === "sttExternal" || key === "ttsExternal") return;
 
       if (localStorage.getItem(key) !== null) return;
 

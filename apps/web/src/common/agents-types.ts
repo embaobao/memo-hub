@@ -1,4 +1,4 @@
-import { AgentCapabilities, ArtifactModes } from 'librechat-data-provider';
+import { AgentCapabilities, ArtifactModes } from "librechat-data-provider";
 import type {
   AgentModelParameters,
   AgentToolOptions,
@@ -6,8 +6,8 @@ import type {
   AgentProvider,
   GraphEdge,
   Agent,
-} from 'librechat-data-provider';
-import type { OptionWithIcon, ExtendedFile } from './types';
+} from "librechat-data-provider";
+import type { OptionWithIcon, ExtendedFile } from "./types";
 
 export type AgentQueryResult = { found: true; agent: Agent } | { found: false };
 
@@ -49,5 +49,5 @@ export type AgentForm = {
   // Avatar management fields
   avatar_file?: File | null;
   avatar_preview?: string | null;
-  avatar_action?: 'upload' | 'reset' | null;
+  avatar_action?: "upload" | "reset" | null;
 } & TAgentCapabilities;

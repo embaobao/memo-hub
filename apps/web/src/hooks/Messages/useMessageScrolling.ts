@@ -1,10 +1,10 @@
-import { useRecoilValue } from 'recoil';
-import { Constants } from 'librechat-data-provider';
-import { useState, useRef, useCallback, useEffect } from 'react';
-import type { TMessage } from 'librechat-data-provider';
-import { useMessagesConversation, useMessagesSubmission } from '~/Providers';
-import useScrollToRef from '~/hooks/useScrollToRef';
-import store from '~/store';
+import { useRecoilValue } from "recoil";
+import { Constants } from "librechat-data-provider";
+import { useState, useRef, useCallback, useEffect } from "react";
+import type { TMessage } from "librechat-data-provider";
+import { useMessagesConversation, useMessagesSubmission } from "~/Providers";
+import useScrollToRef from "~/hooks/useScrollToRef";
+import store from "~/store";
 
 const threshold = 0.85;
 const debounceRate = 150;
@@ -96,7 +96,11 @@ export default function useMessageScrolling(messagesTree?: TMessage[] | null) {
       return;
     }
 
-    if (scrollToBottom && autoScroll && conversationId !== Constants.NEW_CONVO) {
+    if (
+      scrollToBottom &&
+      autoScroll &&
+      conversationId !== Constants.NEW_CONVO
+    ) {
       scrollToBottom();
     }
   }, [autoScroll, conversationId, scrollToBottom]);

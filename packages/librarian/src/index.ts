@@ -1,5 +1,11 @@
-import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider, IVectorStorage } from '@memohub/protocol';
-import { MemoOp } from '@memohub/protocol';
+import type {
+  Text2MemInstruction,
+  Text2MemResult,
+  IKernel,
+  ITrackProvider,
+  IVectorStorage,
+} from "@memohub/protocol";
+import { MemoOp } from "@memohub/protocol";
 
 export {
   PreProcessor,
@@ -16,7 +22,7 @@ export {
   type RankingFactor,
   type RetrievalPipelineOptions,
   type PipelineResult,
-} from './retrieval-pipeline.js';
+} from "./retrieval-pipeline.js";
 
 export interface ConflictReport {
   recordA: any;
@@ -26,8 +32,8 @@ export interface ConflictReport {
 }
 
 export class Librarian implements ITrackProvider {
-  id = 'track-librarian';
-  name = 'Librarian';
+  id = "track-librarian";
+  name = "Librarian";
 
   private kernel!: IKernel;
   private timers: ReturnType<typeof setInterval>[] = [];
@@ -43,11 +49,17 @@ export class Librarian implements ITrackProvider {
       case MemoOp.LIST:
         return this.handleDedup(instruction);
       default:
-        return { success: false, error: `Operation ${instruction.op} not supported by librarian` };
+        return {
+          success: false,
+          error: `Operation ${instruction.op} not supported by librarian`,
+        };
     }
   }
 
-  async scanDedup(trackId: string, threshold: number = 0.95): Promise<ConflictReport[]> {
+  async scanDedup(
+    trackId: string,
+    threshold: number = 0.95,
+  ): Promise<ConflictReport[]> {
     const storage = this.kernel.getVectorStorage();
     const cas = this.kernel.getCAS();
     const conflicts: ConflictReport[] = [];
@@ -73,7 +85,9 @@ export class Librarian implements ITrackProvider {
   }
 
   private cosineSimilarity(a: number[], b: number[]): number {
-    let dot = 0, normA = 0, normB = 0;
+    let dot = 0,
+      normA = 0,
+      normB = 0;
     for (let i = 0; i < a.length; i++) {
       dot += a[i] * b[i];
       normA += a[i] * a[i];
@@ -90,40 +104,58 @@ export class Librarian implements ITrackProvider {
         recordA: { id: conflict.recordA.id, hash: conflict.recordA.hash },
         recordB: { id: conflict.recordB.id, hash: conflict.recordB.hash },
         similarity: conflict.similarity,
-        resolutionOptions: ['keep-first', 'keep-second', 'merge', 'skip'],
+        resolutionOptions: ["keep-first", "keep-second", "merge", "skip"],
       },
     });
   }
 
-  private async handleDedup(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleDedup(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     try {
       const { trackId, threshold = 0.95 } = inst.payload ?? {};
-      if (!trackId) return { success: false, error: 'payload.trackId is required' };
+      if (!trackId)
+        return { success: false, error: "payload.trackId is required" };
 
       const conflicts = await this.scanDedup(trackId, threshold);
-      return { success: true, data: { conflictCount: conflicts.length, conflicts } };
+      return {
+        success: true,
+        data: { conflictCount: conflicts.length, conflicts },
+      };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
-  private async handleDistill(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleDistill(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     try {
       const { trackId } = inst.payload ?? {};
-      if (!trackId) return { success: false, error: 'payload.trackId is required' };
+      if (!trackId)
+        return { success: false, error: "payload.trackId is required" };
 
       const completer = this.kernel.getCompleter();
-      if (!completer) return { success: false, error: 'No completer (LLM) configured for distill' };
+      if (!completer)
+        return {
+          success: false,
+          error: "No completer (LLM) configured for distill",
+        };
 
       const conflicts = await this.scanDedup(trackId);
       const distilled = [];
 
       for (const conflict of conflicts) {
         const cas = this.kernel.getCAS();
-        const textA = await cas.read(conflict.recordA.hash).catch(() => '');
-        const textB = await cas.read(conflict.recordB.hash).catch(() => '');
+        const textA = await cas.read(conflict.recordA.hash).catch(() => "");
+        const textB = await cas.read(conflict.recordB.hash).catch(() => "");
 
-        const summary = await completer.summarize(`Merge and refine these two similar entries into one concise entry:\n\n1: ${textA}\n\n2: ${textB}`);
+        const summary = await completer.summarize(
+          `Merge and refine these two similar entries into one concise entry:\n\n1: ${textA}\n\n2: ${textB}`,
+        );
         distilled.push({
           originalIds: [conflict.recordA.id, conflict.recordB.id],
           distilled: summary,
@@ -131,9 +163,15 @@ export class Librarian implements ITrackProvider {
         });
       }
 
-      return { success: true, data: { totalConflicts: conflicts.length, distilled } };
+      return {
+        success: true,
+        data: { totalConflicts: conflicts.length, distilled },
+      };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 

@@ -1,6 +1,6 @@
 // useQueryParams.spec.ts
-jest.mock('recoil', () => {
-  const originalModule = jest.requireActual('recoil');
+jest.mock("recoil", () => {
+  const originalModule = jest.requireActual("recoil");
   return {
     ...originalModule,
     atom: jest.fn().mockImplementation((config) => ({
@@ -12,74 +12,74 @@ jest.mock('recoil', () => {
 });
 
 // Move mock store definition after the mocks
-jest.mock('~/store', () => ({
-  modularChat: { key: 'modularChat', default: false },
-  availableTools: { key: 'availableTools', default: [] },
+jest.mock("~/store", () => ({
+  modularChat: { key: "modularChat", default: false },
+  availableTools: { key: "availableTools", default: [] },
 }));
 
-import { renderHook, act } from '@testing-library/react';
-import { useSearchParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
-import { useRecoilValue } from 'recoil';
-import useQueryParams from './useQueryParams';
-import { useChatContext, useChatFormContext } from '~/Providers';
-import useSubmitMessage from '~/hooks/Messages/useSubmitMessage';
-import useDefaultConvo from '~/hooks/Conversations/useDefaultConvo';
-import store from '~/store';
+import { renderHook, act } from "@testing-library/react";
+import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRecoilValue } from "recoil";
+import useQueryParams from "./useQueryParams";
+import { useChatContext, useChatFormContext } from "~/Providers";
+import useSubmitMessage from "~/hooks/Messages/useSubmitMessage";
+import useDefaultConvo from "~/hooks/Conversations/useDefaultConvo";
+import store from "~/store";
 
 // Other mocks
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   useSearchParams: jest.fn(),
 }));
 
-jest.mock('@tanstack/react-query', () => ({
+jest.mock("@tanstack/react-query", () => ({
   useQueryClient: jest.fn(),
   useQuery: jest.fn(),
 }));
 
-jest.mock('~/Providers', () => ({
+jest.mock("~/Providers", () => ({
   useChatContext: jest.fn(),
   useChatFormContext: jest.fn(),
 }));
 
-jest.mock('~/hooks/Messages/useSubmitMessage', () => ({
+jest.mock("~/hooks/Messages/useSubmitMessage", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock('~/hooks/Conversations/useDefaultConvo', () => ({
+jest.mock("~/hooks/Conversations/useDefaultConvo", () => ({
   __esModule: true,
   default: jest.fn(),
 }));
 
-jest.mock('~/hooks/AuthContext', () => ({
+jest.mock("~/hooks/AuthContext", () => ({
   useAuthContext: jest.fn(),
 }));
 
-jest.mock('~/hooks/Agents/useAgentsMap', () => ({
+jest.mock("~/hooks/Agents/useAgentsMap", () => ({
   __esModule: true,
   default: jest.fn(() => ({})),
 }));
-jest.mock('~/hooks/Agents/useAgentDefaultPermissionLevel', () => ({
+jest.mock("~/hooks/Agents/useAgentDefaultPermissionLevel", () => ({
   __esModule: true,
   default: jest.fn(() => ({})),
 }));
 
-jest.mock('~/utils', () => {
-  const actualUtils = jest.requireActual('~/utils');
+jest.mock("~/utils", () => {
+  const actualUtils = jest.requireActual("~/utils");
   return {
     ...actualUtils,
     // Only mock logger to suppress test output
     logger: { log: jest.fn(), warn: jest.fn(), error: jest.fn() },
     // Mock theme utilities that interact with DOM
-    getInitialTheme: jest.fn(() => 'light'),
+    getInitialTheme: jest.fn(() => "light"),
     applyFontSize: jest.fn(),
   };
 });
 
 // Use actual librechat-data-provider with minimal overrides
-jest.mock('librechat-data-provider', () => {
-  const actual = jest.requireActual('librechat-data-provider');
+jest.mock("librechat-data-provider", () => {
+  const actual = jest.requireActual("librechat-data-provider");
   return {
     ...actual,
     // Override schema to avoid complex validation in tests
@@ -94,8 +94,9 @@ jest.mock('librechat-data-provider', () => {
 });
 
 // Mock data-provider hooks while preserving real exports like startupConfigKey
-jest.mock('~/data-provider', () => {
-  const actual = jest.requireActual<typeof import('~/data-provider')>('~/data-provider');
+jest.mock("~/data-provider", () => {
+  const actual =
+    jest.requireActual<typeof import("~/data-provider")>("~/data-provider");
   return {
     ...actual,
     useGetAgentByIdQuery: jest.fn(() => ({
@@ -120,20 +121,20 @@ global.window.history = {
   back: jest.fn(),
   forward: jest.fn(),
   length: 1,
-  scrollRestoration: 'auto',
+  scrollRestoration: "auto",
   state: null,
 };
 
-describe('useQueryParams', () => {
+describe("useQueryParams", () => {
   // Setup common mocks before each test
   beforeEach(() => {
     jest.useFakeTimers();
 
     // Reset mock for window.history.replaceState
-    jest.spyOn(window.history, 'replaceState').mockClear();
+    jest.spyOn(window.history, "replaceState").mockClear();
 
     // Reset data-provider mocks
-    const dataProvider = jest.requireMock('~/data-provider');
+    const dataProvider = jest.requireMock("~/data-provider");
     (dataProvider.useGetAgentByIdQuery as jest.Mock).mockReturnValue({
       data: null,
       isLoading: false,
@@ -142,14 +143,17 @@ describe('useQueryParams', () => {
 
     // Create mocks for all dependencies
     const mockSearchParams = new URLSearchParams();
-    (useSearchParams as jest.Mock).mockReturnValue([mockSearchParams, jest.fn()]);
+    (useSearchParams as jest.Mock).mockReturnValue([
+      mockSearchParams,
+      jest.fn(),
+    ]);
 
     const mockQueryClient = {
       getQueryData: jest.fn().mockImplementation((key) => {
-        if (key === 'startupConfig') {
+        if (key === "startupConfig") {
           return { modelSpecs: { list: [] } };
         }
-        if (key === 'endpoints') {
+        if (key === "endpoints") {
           return {};
         }
         return null;
@@ -172,8 +176,10 @@ describe('useQueryParams', () => {
 
     const mockMethods = {
       setValue: jest.fn(),
-      getValues: jest.fn().mockReturnValue(''),
-      handleSubmit: jest.fn((callback) => () => callback({ text: 'test message' })),
+      getValues: jest.fn().mockReturnValue(""),
+      handleSubmit: jest.fn(
+        (callback) => () => callback({ text: "test message" }),
+      ),
     };
     (useChatFormContext as jest.Mock).mockReturnValue(mockMethods);
 
@@ -186,9 +192,9 @@ describe('useQueryParams', () => {
     (useDefaultConvo as jest.Mock).mockReturnValue(mockGetDefaultConversation);
 
     // Mock useAuthContext
-    const { useAuthContext } = jest.requireMock('~/hooks/AuthContext');
+    const { useAuthContext } = jest.requireMock("~/hooks/AuthContext");
     (useAuthContext as jest.Mock).mockReturnValue({
-      user: { id: 'test-user-id' },
+      user: { id: "test-user-id" },
       isAuthenticated: true,
     });
   });
@@ -208,7 +214,7 @@ describe('useQueryParams', () => {
   };
 
   // Test cases remain the same
-  it('should process query parameters on initial render', () => {
+  it("should process query parameters on initial render", () => {
     // Setup
     const mockSetValue = jest.fn();
     const mockTextAreaRef = {
@@ -220,21 +226,23 @@ describe('useQueryParams', () => {
 
     (useChatFormContext as jest.Mock).mockReturnValue({
       setValue: mockSetValue,
-      getValues: jest.fn().mockReturnValue(''),
-      handleSubmit: jest.fn((callback) => () => callback({ text: 'test message' })),
+      getValues: jest.fn().mockReturnValue(""),
+      handleSubmit: jest.fn(
+        (callback) => () => callback({ text: "test message" }),
+      ),
     });
 
     (useQueryClient as jest.Mock).mockReturnValue({
       getQueryData: jest.fn().mockImplementation((key) => {
         const k = Array.isArray(key) ? key[0] : key;
-        if (k === 'startupConfig') {
+        if (k === "startupConfig") {
           return { modelSpecs: { list: [] } };
         }
         return null;
       }),
     });
 
-    setUrlParams({ q: 'hello world' });
+    setUrlParams({ q: "hello world" });
 
     // Execute
     renderHook(() => useQueryParams({ textAreaRef: mockTextAreaRef }));
@@ -246,21 +254,24 @@ describe('useQueryParams', () => {
 
     // Assert
     expect(mockSetValue).toHaveBeenCalledWith(
-      'text',
-      'hello world',
+      "text",
+      "hello world",
       expect.objectContaining({ shouldValidate: true }),
     );
-    const mockSetSearchParams = (useSearchParams as jest.Mock).mock.results[0].value[1];
+    const mockSetSearchParams = (useSearchParams as jest.Mock).mock.results[0]
+      .value[1];
     const [params, options] = mockSetSearchParams.mock.calls[0];
     expect(params).toBeInstanceOf(URLSearchParams);
-    expect(params.toString()).toBe('');
+    expect(params.toString()).toBe("");
     expect(options).toEqual(expect.objectContaining({ replace: true }));
   });
 
-  it('should auto-submit message when submit=true and no settings to apply', () => {
+  it("should auto-submit message when submit=true and no settings to apply", () => {
     // Setup
     const mockSetValue = jest.fn();
-    const mockHandleSubmit = jest.fn((callback) => () => callback({ text: 'test message' }));
+    const mockHandleSubmit = jest.fn(
+      (callback) => () => callback({ text: "test message" }),
+    );
     const mockSubmitMessage = jest.fn();
     const mockTextAreaRef = {
       current: {
@@ -271,7 +282,7 @@ describe('useQueryParams', () => {
 
     (useChatFormContext as jest.Mock).mockReturnValue({
       setValue: mockSetValue,
-      getValues: jest.fn().mockReturnValue(''),
+      getValues: jest.fn().mockReturnValue(""),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -282,14 +293,14 @@ describe('useQueryParams', () => {
     (useQueryClient as jest.Mock).mockReturnValue({
       getQueryData: jest.fn().mockImplementation((key) => {
         const k = Array.isArray(key) ? key[0] : key;
-        if (k === 'startupConfig') {
+        if (k === "startupConfig") {
           return { modelSpecs: { list: [] } };
         }
         return null;
       }),
     });
 
-    setUrlParams({ q: 'hello world', submit: 'true' });
+    setUrlParams({ q: "hello world", submit: "true" });
 
     // Execute
     renderHook(() => useQueryParams({ textAreaRef: mockTextAreaRef }));
@@ -301,18 +312,20 @@ describe('useQueryParams', () => {
 
     // Assert
     expect(mockSetValue).toHaveBeenCalledWith(
-      'text',
-      'hello world',
+      "text",
+      "hello world",
       expect.objectContaining({ shouldValidate: true }),
     );
     expect(mockHandleSubmit).toHaveBeenCalled();
     expect(mockSubmitMessage).toHaveBeenCalled();
   });
 
-  it('should defer submission when settings need to be applied first', () => {
+  it("should defer submission when settings need to be applied first", () => {
     // Setup
     const mockSetValue = jest.fn();
-    const mockHandleSubmit = jest.fn((callback) => () => callback({ text: 'test message' }));
+    const mockHandleSubmit = jest.fn(
+      (callback) => () => callback({ text: "test message" }),
+    );
     const mockSubmitMessage = jest.fn();
     const mockNewConversation = jest.fn();
     const mockTextAreaRef = {
@@ -325,10 +338,10 @@ describe('useQueryParams', () => {
     // Mock getQueryData to return array format for startupConfig and endpoints
     const mockGetQueryData = jest.fn().mockImplementation((key) => {
       const k = Array.isArray(key) ? key[0] : key;
-      if (k === 'startupConfig') {
+      if (k === "startupConfig") {
         return { modelSpecs: { list: [] } };
       }
-      if (k === 'endpoints') {
+      if (k === "endpoints") {
         return {};
       }
       return null;
@@ -336,7 +349,7 @@ describe('useQueryParams', () => {
 
     (useChatFormContext as jest.Mock).mockReturnValue({
       setValue: mockSetValue,
-      getValues: jest.fn().mockReturnValue(''),
+      getValues: jest.fn().mockReturnValue(""),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -353,10 +366,12 @@ describe('useQueryParams', () => {
       getQueryData: mockGetQueryData,
     });
 
-    setUrlParams({ q: 'hello world', submit: 'true', model: 'gpt-4' });
+    setUrlParams({ q: "hello world", submit: "true", model: "gpt-4" });
 
     // Execute
-    const { rerender } = renderHook(() => useQueryParams({ textAreaRef: mockTextAreaRef }));
+    const { rerender } = renderHook(() =>
+      useQueryParams({ textAreaRef: mockTextAreaRef }),
+    );
 
     // First interval tick should process params but not submit
     act(() => {
@@ -370,7 +385,7 @@ describe('useQueryParams', () => {
 
     // Now mock conversation update to trigger settings application check
     (useChatContext as jest.Mock).mockReturnValue({
-      conversation: { model: 'gpt-4', endpoint: null },
+      conversation: { model: "gpt-4", endpoint: null },
       newConversation: mockNewConversation,
     });
 
@@ -379,18 +394,20 @@ describe('useQueryParams', () => {
 
     // Now the message should be submitted
     expect(mockSetValue).toHaveBeenCalledWith(
-      'text',
-      'hello world',
+      "text",
+      "hello world",
       expect.objectContaining({ shouldValidate: true }),
     );
     expect(mockHandleSubmit).toHaveBeenCalled();
     expect(mockSubmitMessage).toHaveBeenCalled();
   });
 
-  it('should submit after timeout if settings never get applied', () => {
+  it("should submit after timeout if settings never get applied", () => {
     // Setup
     const mockSetValue = jest.fn();
-    const mockHandleSubmit = jest.fn((callback) => () => callback({ text: 'test message' }));
+    const mockHandleSubmit = jest.fn(
+      (callback) => () => callback({ text: "test message" }),
+    );
     const mockSubmitMessage = jest.fn();
     const mockNewConversation = jest.fn();
     const mockTextAreaRef = {
@@ -402,7 +419,7 @@ describe('useQueryParams', () => {
 
     (useChatFormContext as jest.Mock).mockReturnValue({
       setValue: mockSetValue,
-      getValues: jest.fn().mockReturnValue(''),
+      getValues: jest.fn().mockReturnValue(""),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -419,17 +436,21 @@ describe('useQueryParams', () => {
     (useQueryClient as jest.Mock).mockReturnValue({
       getQueryData: jest.fn().mockImplementation((key) => {
         const k = Array.isArray(key) ? key[0] : key;
-        if (k === 'startupConfig') {
+        if (k === "startupConfig") {
           return { modelSpecs: { list: [] } };
         }
-        if (k === 'endpoints') {
+        if (k === "endpoints") {
           return {};
         }
         return null;
       }),
     });
 
-    setUrlParams({ q: 'hello world', submit: 'true', model: 'non-existent-model' });
+    setUrlParams({
+      q: "hello world",
+      submit: "true",
+      model: "non-existent-model",
+    });
 
     // Execute
     renderHook(() => useQueryParams({ textAreaRef: mockTextAreaRef }));
@@ -452,10 +473,12 @@ describe('useQueryParams', () => {
     expect(mockSubmitMessage).toHaveBeenCalled();
   });
 
-  it('should mark as submitted when no submit parameter is present', () => {
+  it("should mark as submitted when no submit parameter is present", () => {
     // Setup
     const mockSetValue = jest.fn();
-    const mockHandleSubmit = jest.fn((callback) => () => callback({ text: 'test message' }));
+    const mockHandleSubmit = jest.fn(
+      (callback) => () => callback({ text: "test message" }),
+    );
     const mockSubmitMessage = jest.fn();
     const mockTextAreaRef = {
       current: {
@@ -466,7 +489,7 @@ describe('useQueryParams', () => {
 
     (useChatFormContext as jest.Mock).mockReturnValue({
       setValue: mockSetValue,
-      getValues: jest.fn().mockReturnValue(''),
+      getValues: jest.fn().mockReturnValue(""),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -477,14 +500,14 @@ describe('useQueryParams', () => {
     (useQueryClient as jest.Mock).mockReturnValue({
       getQueryData: jest.fn().mockImplementation((key) => {
         const k = Array.isArray(key) ? key[0] : key;
-        if (k === 'startupConfig') {
+        if (k === "startupConfig") {
           return { modelSpecs: { list: [] } };
         }
         return null;
       }),
     });
 
-    setUrlParams({ model: 'gpt-4' }); // No submit=true
+    setUrlParams({ model: "gpt-4" }); // No submit=true
 
     // Execute
     renderHook(() => useQueryParams({ textAreaRef: mockTextAreaRef }));
@@ -506,7 +529,7 @@ describe('useQueryParams', () => {
     expect(mockSubmitMessage).not.toHaveBeenCalled();
   });
 
-  it('should handle empty query parameters', () => {
+  it("should handle empty query parameters", () => {
     // Setup
     const mockSetValue = jest.fn();
     const mockHandleSubmit = jest.fn();
@@ -517,7 +540,7 @@ describe('useQueryParams', () => {
 
     (useChatFormContext as jest.Mock).mockReturnValue({
       setValue: mockSetValue,
-      getValues: jest.fn().mockReturnValue(''),
+      getValues: jest.fn().mockReturnValue(""),
       handleSubmit: mockHandleSubmit,
     });
 
@@ -528,7 +551,7 @@ describe('useQueryParams', () => {
     (useQueryClient as jest.Mock).mockReturnValue({
       getQueryData: jest.fn().mockImplementation((key) => {
         const k = Array.isArray(key) ? key[0] : key;
-        if (k === 'startupConfig') {
+        if (k === "startupConfig") {
           return { modelSpecs: { list: [] } };
         }
         return null;
@@ -554,10 +577,11 @@ describe('useQueryParams', () => {
     expect(mockSetValue).not.toHaveBeenCalled();
     expect(mockHandleSubmit).not.toHaveBeenCalled();
     expect(mockSubmitMessage).not.toHaveBeenCalled();
-    const mockSetSearchParams = (useSearchParams as jest.Mock).mock.results[0].value[1];
+    const mockSetSearchParams = (useSearchParams as jest.Mock).mock.results[0]
+      .value[1];
     const [params, options] = mockSetSearchParams.mock.calls[0];
     expect(params).toBeInstanceOf(URLSearchParams);
-    expect(params.toString()).toBe('');
+    expect(params.toString()).toBe("");
     expect(options).toEqual(expect.objectContaining({ replace: true }));
   });
 });

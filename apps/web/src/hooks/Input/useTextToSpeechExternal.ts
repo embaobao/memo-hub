@@ -1,14 +1,14 @@
-import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
-import { useToastContext } from '@librechat/client';
-import { useTextToSpeechMutation, useVoicesQuery } from '~/data-provider';
-import { useLocalize } from '~/hooks';
-import store from '~/store';
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
+import { useRecoilValue } from "recoil";
+import { useToastContext } from "@librechat/client";
+import { useTextToSpeechMutation, useVoicesQuery } from "~/data-provider";
+import { useLocalize } from "~/hooks";
+import store from "~/store";
 
 const createFormData = (text: string, voice: string) => {
   const formData = new FormData();
-  formData.append('input', text);
-  formData.append('voice', voice);
+  formData.append("input", text);
+  formData.append("voice", voice);
   return formData;
 };
 
@@ -38,7 +38,9 @@ function useTextToSpeechExternal({
   const promiseAudioRef = useRef<HTMLAudioElement | null>(null);
 
   /* Global Audio Variables */
-  const globalIsFetching = useRecoilValue(store.globalAudioFetchingFamily(index));
+  const globalIsFetching = useRecoilValue(
+    store.globalAudioFetchingFamily(index),
+  );
   const globalIsPlaying = useRecoilValue(store.globalAudioPlayingFamily(index));
 
   const autoPlayAudio = (blobUrl: string) => {
@@ -60,21 +62,23 @@ function useTextToSpeechExternal({
     playPromise().catch((error: Error) => {
       if (
         error.message &&
-        error.message.includes('The play() request was interrupted by a call to pause()')
+        error.message.includes(
+          "The play() request was interrupted by a call to pause()",
+        )
       ) {
-        console.log('Play request was interrupted by a call to pause()');
+        console.log("Play request was interrupted by a call to pause()");
         initializeAudio();
         return playPromise().catch(console.error);
       }
       console.error(error);
       showToast({
-        message: localize('com_nav_audio_play_error', { 0: error.message }),
-        status: 'error',
+        message: localize("com_nav_audio_play_error", { 0: error.message }),
+        status: "error",
       });
     });
 
     newAudio.onended = () => {
-      console.log('Cached message audio ended');
+      console.log("Cached message audio ended");
       URL.revokeObjectURL(blobUrl);
       setIsSpeaking(false);
     };
@@ -83,30 +87,30 @@ function useTextToSpeechExternal({
   };
 
   const downloadAudio = (blobUrl: string) => {
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = blobUrl;
-    a.download = 'audio.mp3';
+    a.download = "audio.mp3";
     a.click();
     setDownloadFile(false);
   };
 
   const { mutate: processAudio, isLoading } = useTextToSpeechMutation({
     onMutate: (variables) => {
-      const inputText = (variables.get('input') ?? '') as string;
+      const inputText = (variables.get("input") ?? "") as string;
       if (inputText.length >= 4096) {
         showToast({
-          message: localize('com_nav_long_audio_warning'),
-          status: 'warning',
+          message: localize("com_nav_long_audio_warning"),
+          status: "warning",
         });
       }
     },
     onSuccess: async (data: ArrayBuffer, variables) => {
       try {
-        const inputText = (variables.get('input') ?? '') as string;
-        const audioBlob = new Blob([data], { type: 'audio/mpeg' });
+        const inputText = (variables.get("input") ?? "") as string;
+        const audioBlob = new Blob([data], { type: "audio/mpeg" });
 
         if (cacheTTS && inputText) {
-          const cache = await caches.open('tts-responses');
+          const cache = await caches.open("tts-responses");
           const request = new Request(inputText);
           const response = new Response(audioBlob);
           cache.put(request, response);
@@ -120,20 +124,22 @@ function useTextToSpeechExternal({
       } catch (error) {
         showToast({
           message: `Error processing audio: ${(error as Error).message}`,
-          status: 'error',
+          status: "error",
         });
       }
     },
     onError: (error: unknown) => {
       showToast({
-        message: localize('com_nav_audio_process_error', { 0: (error as Error).message }),
-        status: 'error',
+        message: localize("com_nav_audio_process_error", {
+          0: (error as Error).message,
+        }),
+        status: "error",
       });
     },
   });
 
   const startMutation = (text: string, download: boolean) => {
-    const formData = createFormData(text, voice ?? '');
+    const formData = createFormData(text, voice ?? "");
     setDownloadFile(download);
     processAudio(formData);
   };
@@ -161,7 +167,9 @@ function useTextToSpeechExternal({
   };
 
   const cancelSpeech = () => {
-    const messageAudio = document.getElementById(`audio-${messageId}`) as HTMLAudioElement | null;
+    const messageAudio = document.getElementById(
+      `audio-${messageId}`,
+    ) as HTMLAudioElement | null;
     const pauseAudio = (currentElement: HTMLAudioElement | null) => {
       if (currentElement) {
         currentElement.pause();
@@ -177,7 +185,8 @@ function useTextToSpeechExternal({
   const cancelPromiseSpeech = useCallback(() => {
     if (promiseAudioRef.current) {
       promiseAudioRef.current.pause();
-      promiseAudioRef.current.src && URL.revokeObjectURL(promiseAudioRef.current.src);
+      promiseAudioRef.current.src &&
+        URL.revokeObjectURL(promiseAudioRef.current.src);
       promiseAudioRef.current = null;
       setIsSpeaking(false);
     }

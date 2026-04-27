@@ -1,23 +1,25 @@
-import { createHash, randomUUID } from 'node:crypto';
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
-import * as os from 'node:os';
+import { createHash, randomUUID } from "node:crypto";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import * as os from "node:os";
 
 export class ContentAddressableStorage {
   private rootPath: string;
   private initialized = false;
 
   constructor(rootPath: string) {
-    const expanded = String(rootPath ?? '').replace(/^~/, os.homedir());
+    const expanded = String(rootPath ?? "").replace(/^~/, os.homedir());
     this.rootPath = path.resolve(expanded);
   }
 
   computeHash(content: string): string {
-    return createHash('sha256').update(String(content ?? '')).digest('hex');
+    return createHash("sha256")
+      .update(String(content ?? ""))
+      .digest("hex");
   }
 
   public blobPath(hash: string): string {
-    const prefix = hash.slice(0, 2) || '__';
+    const prefix = hash.slice(0, 2) || "__";
     return path.join(this.rootPath, prefix, hash);
   }
 
@@ -57,7 +59,7 @@ export class ContentAddressableStorage {
     await fs.mkdir(dir, { recursive: true });
 
     const tmpPath = `${filePath}.tmp.${randomUUID()}`;
-    await fs.writeFile(tmpPath, content, { encoding: 'utf8' });
+    await fs.writeFile(tmpPath, content, { encoding: "utf8" });
 
     try {
       await fs.rename(tmpPath, filePath);
@@ -75,7 +77,7 @@ export class ContentAddressableStorage {
   async read(hash: string): Promise<string> {
     const filePath = this.blobPath(hash);
     try {
-      return await fs.readFile(filePath, 'utf-8');
+      return await fs.readFile(filePath, "utf-8");
     } catch {
       throw new Error(`Blob not found: ${hash}`);
     }
@@ -109,7 +111,7 @@ export class ContentAddressableStorage {
         const files = await fs.readdir(shardDir, { withFileTypes: true });
         for (const f of files) {
           if (!f.isFile()) continue;
-          const name = String(f.name ?? '').trim();
+          const name = String(f.name ?? "").trim();
           if (name) hashes.push(name);
         }
       }
@@ -124,7 +126,7 @@ export class ContentAddressableStorage {
     const filePath = this.blobPath(hash);
     let content: string;
     try {
-      content = await fs.readFile(filePath, 'utf8');
+      content = await fs.readFile(filePath, "utf8");
     } catch {
       return null;
     }
@@ -134,15 +136,15 @@ export class ContentAddressableStorage {
   }
 
   buildContentRef(hash: string): string {
-    return `sha256:${String(hash ?? '').trim()}`;
+    return `sha256:${String(hash ?? "").trim()}`;
   }
 
   parseHashFromRef(ref: string): string | null {
-    const r = String(ref ?? '').trim();
+    const r = String(ref ?? "").trim();
     if (!r) return null;
 
-    if (r.startsWith('sha256:')) {
-      const hash = r.slice('sha256:'.length).trim();
+    if (r.startsWith("sha256:")) {
+      const hash = r.slice("sha256:".length).trim();
       return hash || null;
     }
 

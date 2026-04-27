@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { ToolManifestConfig } from '@memohub/config';
-import { IHostResources } from './types-host.js';
+import { z } from "zod";
+import { ToolManifestConfig } from "@memohub/config";
+import { IHostResources } from "./types-host.js";
 
 /**
  * 执行上下文
@@ -16,7 +16,7 @@ export interface ExecutionContext {
  */
 export interface IToolManifest extends ToolManifestConfig {
   id: string;
-  type: 'builtin' | 'extension';
+  type: "builtin" | "extension";
   inputSchema: z.ZodSchema;
   outputSchema: z.ZodSchema;
 }
@@ -26,7 +26,11 @@ export interface IToolManifest extends ToolManifestConfig {
  */
 export interface ITool<TInput = any, TOutput = any> {
   manifest: IToolManifest;
-  execute(input: TInput, resources: IHostResources, context: ExecutionContext): Promise<TOutput>;
+  execute(
+    input: TInput,
+    resources: IHostResources,
+    context: ExecutionContext,
+  ): Promise<TOutput>;
 }
 
 /**
@@ -47,10 +51,10 @@ export class ToolRegistry {
    */
   public get(id: string): ITool {
     if (this.tools.has(id)) return this.tools.get(id)!;
-    
+
     const builtinId = `builtin:${id}`;
     if (this.tools.has(builtinId)) return this.tools.get(builtinId)!;
-    
+
     throw new Error(`[ToolRegistry] 找不到工具节点: ${id}`);
   }
 

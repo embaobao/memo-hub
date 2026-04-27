@@ -1,5 +1,5 @@
-import { PermissionTypes, Permissions } from 'librechat-data-provider';
-import useHasAccess from './Roles/useHasAccess';
+import { PermissionTypes, Permissions } from "librechat-data-provider";
+import useHasAccess from "./Roles/useHasAccess";
 
 export default function usePersonalizationAccess() {
   const hasMemoryOptOut = useHasAccess({

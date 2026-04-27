@@ -1,1 +1,1 @@
-export { default as SidePanelGroup } from './SidePanelGroup';
+export { default as SidePanelGroup } from "./SidePanelGroup";

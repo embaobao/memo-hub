@@ -3,10 +3,10 @@ import {
   TConversation,
   EModelEndpoint,
   tConvoUpdateSchema,
-} from 'librechat-data-provider';
-import type { TSetExample, TSetOption, TSetOptionsPayload } from '~/common';
-import usePresetIndexOptions from './usePresetIndexOptions';
-import { useChatContext } from '~/Providers/ChatContext';
+} from "librechat-data-provider";
+import type { TSetExample, TSetOption, TSetOptionsPayload } from "~/common";
+import usePresetIndexOptions from "./usePresetIndexOptions";
+import { useChatContext } from "~/Providers/ChatContext";
 
 type TUseSetOptions = (preset?: TPreset | boolean | null) => TSetOptionsPayload;
 
@@ -15,7 +15,7 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
 
   const result = usePresetIndexOptions(preset);
 
-  if (result && typeof result !== 'boolean') {
+  if (result && typeof result !== "boolean") {
     return result;
   }
 
@@ -23,16 +23,16 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
     const update = {};
     update[param] = newValue;
 
-    if (param === 'presetOverride') {
+    if (param === "presetOverride") {
       const currentOverride = conversation?.presetOverride || {};
-      update['presetOverride'] = {
+      update["presetOverride"] = {
         ...currentOverride,
         ...(newValue as unknown as Partial<TPreset>),
       };
     }
 
     // Auto-enable Responses API when web search is enabled (only for OpenAI/Azure/Custom endpoints)
-    if (param === 'web_search' && newValue === true) {
+    if (param === "web_search" && newValue === true) {
       const currentEndpoint = conversation?.endpoint;
       const isOpenAICompatible =
         currentEndpoint === EModelEndpoint.openAI ||
@@ -42,7 +42,7 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
       if (isOpenAICompatible) {
         const currentUseResponsesApi = conversation?.useResponsesApi ?? false;
         if (!currentUseResponsesApi) {
-          update['useResponsesApi'] = true;
+          update["useResponsesApi"] = true;
         }
       }
     }
@@ -62,7 +62,7 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
     const currentExample = { ...current[i] };
     currentExample[type] = { content: newValue };
     current[i] = currentExample;
-    update['examples'] = current;
+    update["examples"] = current;
     setConversation(
       (prevState) =>
         tConvoUpdateSchema.parse({
@@ -75,8 +75,8 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
   const addExample: () => void = () => {
     const update = {};
     const current = conversation?.examples?.slice() || [];
-    current.push({ input: { content: '' }, output: { content: '' } });
-    update['examples'] = current;
+    current.push({ input: { content: "" }, output: { content: "" } });
+    update["examples"] = current;
     setConversation(
       (prevState) =>
         tConvoUpdateSchema.parse({
@@ -90,7 +90,9 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
     const update = {};
     const current = conversation?.examples?.slice() || [];
     if (current.length <= 1) {
-      update['examples'] = [{ input: { content: '' }, output: { content: '' } }];
+      update["examples"] = [
+        { input: { content: "" }, output: { content: "" } },
+      ];
       setConversation(
         (prevState) =>
           tConvoUpdateSchema.parse({
@@ -101,7 +103,7 @@ const useSetIndexOptions: TUseSetOptions = (preset = false) => {
       return;
     }
     current.pop();
-    update['examples'] = current;
+    update["examples"] = current;
     setConversation(
       (prevState) =>
         tConvoUpdateSchema.parse({

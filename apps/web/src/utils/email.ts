@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Zod email validation schema
@@ -13,8 +13,11 @@ export const emailSchema = z.string().email();
  * @param errorMessage - Optional custom error message (defaults to Zod's message)
  * @returns true if valid, error message if invalid
  */
-export const validateEmail = (email: string, errorMessage?: string): true | string => {
-  if (!email || email.trim() === '') {
+export const validateEmail = (
+  email: string,
+  errorMessage?: string,
+): true | string => {
+  if (!email || email.trim() === "") {
     return true;
   }
 
@@ -23,6 +26,6 @@ export const validateEmail = (email: string, errorMessage?: string): true | stri
     result.success ||
     errorMessage ||
     result.error.errors[0]?.message ||
-    'Please enter a valid email address'
+    "Please enter a valid email address"
   );
 };

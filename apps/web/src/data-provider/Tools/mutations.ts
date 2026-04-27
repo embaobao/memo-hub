@@ -1,7 +1,7 @@
-import { dataService, QueryKeys, Tools } from 'librechat-data-provider';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { UseMutationResult } from '@tanstack/react-query';
-import type * as t from 'librechat-data-provider';
+import { dataService, QueryKeys, Tools } from "librechat-data-provider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type * as t from "librechat-data-provider";
 
 export const useToolCallMutation = <T extends t.ToolId>(
   toolId: T,
@@ -17,14 +17,15 @@ export const useToolCallMutation = <T extends t.ToolId>(
     },
     {
       onMutate: (variables) => options?.onMutate?.(variables),
-      onError: (error, variables, context) => options?.onError?.(error, variables, context),
+      onError: (error, variables, context) =>
+        options?.onError?.(error, variables, context),
       onSuccess: (response, variables, context) => {
         queryClient.setQueryData<t.ToolCallResults>(
           [QueryKeys.toolCalls, variables.conversationId],
           (prev) => [
             ...(prev ?? []),
             {
-              user: '',
+              user: "",
               toolId: Tools.execute_code,
               partIndex: variables.partIndex,
               messageId: variables.messageId,

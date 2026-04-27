@@ -1,29 +1,31 @@
-import { atom } from 'recoil';
-import { logger } from '~/utils';
-import type { Artifact } from '~/common';
+import { atom } from "recoil";
+import { logger } from "~/utils";
+import type { Artifact } from "~/common";
 
-export const artifactsState = atom<Record<string, Artifact | undefined> | null>({
-  key: 'artifactsState',
-  default: null,
-  effects: [
-    ({ onSet, node }) => {
-      onSet(async (newValue) => {
-        logger.log('artifacts', 'Recoil Effect: Setting artifactsState', {
-          key: node.key,
-          newValue,
+export const artifactsState = atom<Record<string, Artifact | undefined> | null>(
+  {
+    key: "artifactsState",
+    default: null,
+    effects: [
+      ({ onSet, node }) => {
+        onSet(async (newValue) => {
+          logger.log("artifacts", "Recoil Effect: Setting artifactsState", {
+            key: node.key,
+            newValue,
+          });
         });
-      });
-    },
-  ] as const,
-});
+      },
+    ] as const,
+  },
+);
 
 export const currentArtifactId = atom<string | null>({
-  key: 'currentArtifactId',
+  key: "currentArtifactId",
   default: null,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue) => {
-        logger.log('artifacts', 'Recoil Effect: Setting currentArtifactId', {
+        logger.log("artifacts", "Recoil Effect: Setting currentArtifactId", {
           key: node.key,
           newValue,
         });
@@ -33,12 +35,12 @@ export const currentArtifactId = atom<string | null>({
 });
 
 export const artifactsVisibility = atom<boolean>({
-  key: 'artifactsVisibility',
+  key: "artifactsVisibility",
   default: true,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue) => {
-        logger.log('artifacts', 'Recoil Effect: Setting artifactsVisibility', {
+        logger.log("artifacts", "Recoil Effect: Setting artifactsVisibility", {
           key: node.key,
           newValue,
         });
@@ -47,13 +49,16 @@ export const artifactsVisibility = atom<boolean>({
   ] as const,
 });
 
-export const visibleArtifacts = atom<Record<string, Artifact | undefined> | null>({
-  key: 'visibleArtifacts',
+export const visibleArtifacts = atom<Record<
+  string,
+  Artifact | undefined
+> | null>({
+  key: "visibleArtifacts",
   default: null,
   effects: [
     ({ onSet, node }) => {
       onSet(async (newValue) => {
-        logger.log('artifacts', 'Recoil Effect: Setting `visibleArtifacts`', {
+        logger.log("artifacts", "Recoil Effect: Setting `visibleArtifacts`", {
           key: node.key,
           newValue,
         });

@@ -1,16 +1,16 @@
 export enum MemoOp {
-  ADD = 'ADD',
-  RETRIEVE = 'RETRIEVE',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-  MERGE = 'MERGE',
-  CLARIFY = 'CLARIFY',
-  LIST = 'LIST',
-  EXPORT = 'EXPORT',
-  DISTILL = 'DISTILL',
-  ANCHOR = 'ANCHOR',
-  DIFF = 'DIFF',
-  SYNC = 'SYNC',
+  ADD = "ADD",
+  RETRIEVE = "RETRIEVE",
+  UPDATE = "UPDATE",
+  DELETE = "DELETE",
+  MERGE = "MERGE",
+  CLARIFY = "CLARIFY",
+  LIST = "LIST",
+  EXPORT = "EXPORT",
+  DISTILL = "DISTILL",
+  ANCHOR = "ANCHOR",
+  DIFF = "DIFF",
+  SYNC = "SYNC",
 }
 
 export interface Text2MemInstruction {
@@ -64,7 +64,10 @@ export interface ICAS {
 
 export interface IVectorStorage {
   add(records: any | any[]): Promise<void>;
-  search(vector: number[], options?: { limit?: number; filter?: string }): Promise<any[]>;
+  search(
+    vector: number[],
+    options?: { limit?: number; filter?: string },
+  ): Promise<any[]>;
   delete(filter: string): Promise<void>;
   list(filter?: string, limit?: number): Promise<any[]>;
   update(id: string, changes: any): Promise<void>;

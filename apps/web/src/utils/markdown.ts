@@ -1,4 +1,4 @@
-const SAFE_PROTOCOLS = new Set(['http:', 'https:', 'mailto:', 'tel:']);
+const SAFE_PROTOCOLS = new Set(["http:", "https:", "mailto:", "tel:"]);
 
 /**
  * Allowlist-based URL validator for markdown artifact rendering.
@@ -12,7 +12,11 @@ export const isSafeUrl = (url: string): boolean => {
   if (!trimmed) {
     return false;
   }
-  if (trimmed.startsWith('/') || trimmed.startsWith('#') || trimmed.startsWith('.')) {
+  if (
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("#") ||
+    trimmed.startsWith(".")
+  ) {
     return true;
   }
   try {
@@ -233,14 +237,15 @@ const markdownCSS = `
  */
 function escapeForTemplateLiteral(content: string): string {
   return content
-    .replace(/\\/g, '\\\\')
-    .replace(/`/g, '\\`')
-    .replace(/\$/g, '\\$')
-    .replace(/<\/script/gi, '<\\/script');
+    .replace(/\\/g, "\\\\")
+    .replace(/`/g, "\\`")
+    .replace(/\$/g, "\\$")
+    .replace(/<\/script/gi, "<\\/script");
 }
 
-const MARKED_CDN = 'https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js';
-const MARKED_SRI = 'sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+';
+const MARKED_CDN = "https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js";
+const MARKED_SRI =
+  "sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+";
 
 /**
  * Embedded JS copy of `isSafeUrl`. Keep in sync with the exported
@@ -256,7 +261,7 @@ const isSafeUrl = (url) => {
 };`;
 
 function generateMarkdownHtml(content: string): string {
-  const normalizedContent = content.replace(/^( {2})(-|\d+\.)/gm, '    $2');
+  const normalizedContent = content.replace(/^( {2})(-|\d+\.)/gm, "    $2");
   const escapedContent = escapeForTemplateLiteral(normalizedContent);
 
   return `<!DOCTYPE html>
@@ -299,9 +304,9 @@ document.getElementById('content').innerHTML = marked.parse(\`${escapedContent}\
 }
 
 export const getMarkdownFiles = (content: string): Record<string, string> => {
-  const md = content || '# No content provided';
+  const md = content || "# No content provided";
   return {
-    'content.md': md,
-    'index.html': generateMarkdownHtml(md),
+    "content.md": md,
+    "index.html": generateMarkdownHtml(md),
   };
 };

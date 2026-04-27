@@ -20,7 +20,9 @@ export interface MenuItemProps {
   ref?: React.Ref<any>;
   className?: string;
   render?:
-    | RenderProp<React.HTMLAttributes<any> & { ref?: React.Ref<any> | undefined }>
+    | RenderProp<
+        React.HTMLAttributes<any> & { ref?: React.Ref<any> | undefined }
+      >
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>
     | undefined;
   subItems?: MenuItemProps[];

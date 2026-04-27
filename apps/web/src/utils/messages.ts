@@ -5,21 +5,24 @@ import {
   isEphemeralAgentId,
   appendAgentIdSuffix,
   encodeEphemeralAgentId,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import type {
   TMessage,
   TConversation,
   TEndpointsConfig,
   TMessageContentParts,
-} from 'librechat-data-provider';
-import type { QueryClient } from '@tanstack/react-query';
-import type { LocalizeFunction } from '~/common';
+} from "librechat-data-provider";
+import type { QueryClient } from "@tanstack/react-query";
+import type { LocalizeFunction } from "~/common";
 
-export const TEXT_KEY_DIVIDER = '|||';
+export const TEXT_KEY_DIVIDER = "|||";
 
-export const getLatestText = (message?: TMessage | null, includeIndex?: boolean): string => {
+export const getLatestText = (
+  message?: TMessage | null,
+  includeIndex?: boolean,
+): string => {
   if (!message) {
-    return '';
+    return "";
   }
   if (message.text) {
     return message.text;
@@ -31,7 +34,8 @@ export const getLatestText = (message?: TMessage | null, includeIndex?: boolean)
         continue;
       }
 
-      const text = (typeof part?.text === 'string' ? part.text : part?.text?.value) ?? '';
+      const text =
+        (typeof part?.text === "string" ? part.text : part?.text?.value) ?? "";
       if (text.length > 0) {
         if (includeIndex === true) {
           return `${text}-${i}`;
@@ -43,12 +47,12 @@ export const getLatestText = (message?: TMessage | null, includeIndex?: boolean)
       }
     }
   }
-  return '';
+  return "";
 };
 
 export const getAllContentText = (message?: TMessage | null): string => {
   if (!message) {
-    return '';
+    return "";
   }
 
   if (message.text) {
@@ -59,22 +63,22 @@ export const getAllContentText = (message?: TMessage | null): string => {
     return message.content
       .filter((part) => part != null && part.type === ContentTypes.TEXT)
       .map((part) => {
-        if (!('text' in part)) return '';
+        if (!("text" in part)) return "";
         const text = part.text;
-        if (typeof text === 'string') return text;
-        return text?.value || '';
+        if (typeof text === "string") return text;
+        return text?.value || "";
       })
       .filter((text) => text.length > 0)
-      .join('\n');
+      .join("\n");
   }
 
-  return '';
+  return "";
 };
 
 const getLatestContentForKey = (message: TMessage): string => {
   const formatText = (str: string, index: number): string => {
     if (str.length === 0) {
-      return '0';
+      return "0";
     }
     const length = str.length;
     const lastChars = str.slice(-16);
@@ -86,7 +90,7 @@ const getLatestContentForKey = (message: TMessage): string => {
   }
 
   if (!message.content || message.content.length === 0) {
-    return '';
+    return "";
   }
 
   for (let i = message.content.length - 1; i >= 0; i--) {
@@ -96,40 +100,45 @@ const getLatestContentForKey = (message: TMessage): string => {
     }
 
     const type = part.type;
-    let text = '';
+    let text = "";
 
     // Handle THINK type - extract think content
-    if (type === ContentTypes.THINK && 'think' in part) {
-      text = typeof part.think === 'string' ? part.think : (part.think?.value ?? '');
+    if (type === ContentTypes.THINK && "think" in part) {
+      text =
+        typeof part.think === "string" ? part.think : (part.think?.value ?? "");
     }
     // Handle TEXT type
-    else if (type === ContentTypes.TEXT && 'text' in part) {
-      text = typeof part.text === 'string' ? part.text : (part.text?.value ?? '');
+    else if (type === ContentTypes.TEXT && "text" in part) {
+      text =
+        typeof part.text === "string" ? part.text : (part.text?.value ?? "");
     }
     // Handle ERROR type
-    else if (type === ContentTypes.ERROR && 'error' in part) {
-      text = String(part.error || 'err').slice(0, 30);
+    else if (type === ContentTypes.ERROR && "error" in part) {
+      text = String(part.error || "err").slice(0, 30);
     }
     // Handle TOOL_CALL - use simple marker with type
-    else if (type === ContentTypes.TOOL_CALL && 'tool_call' in part) {
-      const tcType = part.tool_call?.type || 'x';
-      const tcName = String(part.tool_call?.['name'] || 'unknown').slice(0, 20);
-      const tcArgs = String(part.tool_call?.['args'] || 'none').slice(0, 20);
-      const tcOutput = String(part.tool_call?.['output'] || 'none').slice(0, 20);
+    else if (type === ContentTypes.TOOL_CALL && "tool_call" in part) {
+      const tcType = part.tool_call?.type || "x";
+      const tcName = String(part.tool_call?.["name"] || "unknown").slice(0, 20);
+      const tcArgs = String(part.tool_call?.["args"] || "none").slice(0, 20);
+      const tcOutput = String(part.tool_call?.["output"] || "none").slice(
+        0,
+        20,
+      );
       text = `tc_${tcType}_${tcName}_${tcArgs}_${tcOutput}`;
     }
     // Handle IMAGE_FILE - use simple marker with file_id suffix
-    else if (type === ContentTypes.IMAGE_FILE && 'image_file' in part) {
-      const fileId = part.image_file?.file_id || 'x';
+    else if (type === ContentTypes.IMAGE_FILE && "image_file" in part) {
+      const fileId = part.image_file?.file_id || "x";
       text = `if_${fileId.slice(-8)}`;
     }
     // Handle IMAGE_URL - use simple marker
     else if (type === ContentTypes.IMAGE_URL) {
-      text = 'iu';
+      text = "iu";
     }
     // Handle AGENT_UPDATE - use simple marker with agentId suffix
-    else if (type === ContentTypes.AGENT_UPDATE && 'agent_update' in part) {
-      const agentId = String(part.agent_update?.agentId || 'x').slice(0, 30);
+    else if (type === ContentTypes.AGENT_UPDATE && "agent_update" in part) {
+      const agentId = String(part.agent_update?.agentId || "x").slice(0, 30);
       text = `au_${agentId}`;
     } else {
       text = type;
@@ -140,21 +149,24 @@ const getLatestContentForKey = (message: TMessage): string => {
     }
   }
 
-  return '';
+  return "";
 };
 
-export const getTextKey = (message?: TMessage | null, convoId?: string | null) => {
+export const getTextKey = (
+  message?: TMessage | null,
+  convoId?: string | null,
+) => {
   if (!message) {
-    return '';
+    return "";
   }
   const contentKey = getLatestContentForKey(message);
-  return `${(message.messageId as string | null) ?? ''}${TEXT_KEY_DIVIDER}${contentKey}${TEXT_KEY_DIVIDER}${message.conversationId ?? convoId}`;
+  return `${(message.messageId as string | null) ?? ""}${TEXT_KEY_DIVIDER}${contentKey}${TEXT_KEY_DIVIDER}${message.conversationId ?? convoId}`;
 };
 
 export const scrollToEnd = (callback?: () => void) => {
-  const messagesEndElement = document.getElementById('messages-end');
+  const messagesEndElement = document.getElementById("messages-end");
   if (messagesEndElement) {
-    messagesEndElement.scrollIntoView({ behavior: 'instant' });
+    messagesEndElement.scrollIntoView({ behavior: "instant" });
     if (callback) {
       callback();
     }
@@ -180,7 +192,10 @@ export const clearMessagesCache = (
 
   // Also clear NEW_CONVO messages if we're not already on NEW_CONVO
   if (convoId !== Constants.NEW_CONVO) {
-    queryClient.setQueryData<TMessage[]>([QueryKeys.messages, Constants.NEW_CONVO], []);
+    queryClient.setQueryData<TMessage[]>(
+      [QueryKeys.messages, Constants.NEW_CONVO],
+      [],
+    );
   }
 };
 
@@ -192,11 +207,14 @@ const getMessageNumber = (message: TMessage): number | null => {
   return message.depth + 1;
 };
 
-export const getMessageAriaLabel = (message: TMessage, localize: LocalizeFunction): string => {
+export const getMessageAriaLabel = (
+  message: TMessage,
+  localize: LocalizeFunction,
+): string => {
   const number = getMessageNumber(message);
   return number != null
-    ? localize('com_endpoint_message_new', { 0: number })
-    : localize('com_endpoint_message');
+    ? localize("com_endpoint_message_new", { 0: number })
+    : localize("com_endpoint_message");
 };
 
 /**
@@ -208,10 +226,10 @@ export const getHeaderPrefixForScreenReader = (
   localize: LocalizeFunction,
 ): string => {
   const number = getMessageNumber(message);
-  const suffix = number != null ? ` ${number}` : '';
+  const suffix = number != null ? ` ${number}` : "";
   return message.isCreatedByUser
-    ? `${localize('com_ui_prompt')}${suffix}: `
-    : `${localize('com_ui_response')}${suffix}: `;
+    ? `${localize("com_ui_prompt")}${suffix}: `
+    : `${localize("com_ui_response")}${suffix}: `;
 };
 
 /**
@@ -237,10 +255,10 @@ export const createDualMessageContent = (
     primaryAgentId = primaryConvo.agent_id;
   } else {
     const primaryEndpoint = primaryConvo.endpoint;
-    const primaryModel = primaryConvo.model ?? '';
+    const primaryModel = primaryConvo.model ?? "";
     // Look up model spec for label fallback
     const primarySpec =
-      primaryConvo.spec != null && primaryConvo.spec !== ''
+      primaryConvo.spec != null && primaryConvo.spec !== ""
         ? modelSpecs?.find((s) => s.name === primaryConvo.spec)
         : undefined;
     // For ephemeral agents, use modelLabel if provided, then model spec's label,
@@ -248,10 +266,12 @@ export const createDualMessageContent = (
     const primarySender =
       primaryConvo.modelLabel ??
       primarySpec?.label ??
-      (primaryEndpoint ? endpointsConfig?.[primaryEndpoint]?.modelDisplayLabel : undefined) ??
-      '';
+      (primaryEndpoint
+        ? endpointsConfig?.[primaryEndpoint]?.modelDisplayLabel
+        : undefined) ??
+      "";
     primaryAgentId = encodeEphemeralAgentId({
-      endpoint: primaryEndpoint ?? '',
+      endpoint: primaryEndpoint ?? "",
       model: primaryModel,
       sender: primarySender,
     });
@@ -263,7 +283,7 @@ export const createDualMessageContent = (
   // Use empty type - these are just placeholders to establish agentId/groupId
   // The actual type will be set when real content arrives from the server
   const primaryContent = {
-    type: '' as const,
+    type: "" as const,
     agentId: primaryAgentId,
     groupId: parallelGroupId,
   };
@@ -277,10 +297,10 @@ export const createDualMessageContent = (
     addedAgentId = appendAgentIdSuffix(addedConvo.agent_id, 1);
   } else {
     const addedEndpoint = addedConvo.endpoint;
-    const addedModel = addedConvo.model ?? '';
+    const addedModel = addedConvo.model ?? "";
     // Look up model spec for label fallback
     const addedSpec =
-      addedConvo.spec != null && addedConvo.spec !== ''
+      addedConvo.spec != null && addedConvo.spec !== ""
         ? modelSpecs?.find((s) => s.name === addedConvo.spec)
         : undefined;
     // For ephemeral agents, use modelLabel if provided, then model spec's label,
@@ -288,10 +308,12 @@ export const createDualMessageContent = (
     const addedSender =
       addedConvo.modelLabel ??
       addedSpec?.label ??
-      (addedEndpoint ? endpointsConfig?.[addedEndpoint]?.modelDisplayLabel : undefined) ??
-      '';
+      (addedEndpoint
+        ? endpointsConfig?.[addedEndpoint]?.modelDisplayLabel
+        : undefined) ??
+      "";
     addedAgentId = encodeEphemeralAgentId({
-      endpoint: addedEndpoint ?? '',
+      endpoint: addedEndpoint ?? "",
       model: addedModel,
       sender: addedSender,
       index: 1,
@@ -300,7 +322,7 @@ export const createDualMessageContent = (
 
   // Use empty type - placeholder to establish agentId/groupId
   const addedContent = {
-    type: '' as const,
+    type: "" as const,
     agentId: addedAgentId,
     groupId: parallelGroupId,
   };

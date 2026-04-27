@@ -1,1 +1,1 @@
-export { default as SharePointPickerDialog } from './SharePointPickerDialog';
+export { default as SharePointPickerDialog } from "./SharePointPickerDialog";

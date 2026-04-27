@@ -1,11 +1,15 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useAtom } from 'jotai';
-import isEqual from 'lodash/isEqual';
-import { useRecoilState } from 'recoil';
-import { Constants, LocalStorageKeys } from 'librechat-data-provider';
-import { ephemeralAgentByConvoId, mcpValuesAtomFamily, mcpPinnedAtom } from '~/store';
-import { setTimestamp } from '~/utils/timestamps';
-import { MCPServerDefinition } from './useMCPServerManager';
+import { useCallback, useEffect, useMemo } from "react";
+import { useAtom } from "jotai";
+import isEqual from "lodash/isEqual";
+import { useRecoilState } from "recoil";
+import { Constants, LocalStorageKeys } from "librechat-data-provider";
+import {
+  ephemeralAgentByConvoId,
+  mcpValuesAtomFamily,
+  mcpPinnedAtom,
+} from "~/store";
+import { setTimestamp } from "~/utils/timestamps";
+import { MCPServerDefinition } from "./useMCPServerManager";
 
 export function useMCPSelect({
   conversationId,
@@ -31,7 +35,9 @@ export function useMCPSelect({
 
   const [isPinned, setIsPinned] = useAtom(mcpPinnedAtom);
   const [mcpValues, setMCPValuesRaw] = useAtom(mcpValuesAtomFamily(mcpAtomKey));
-  const [ephemeralAgent, setEphemeralAgent] = useRecoilState(ephemeralAgentByConvoId(key));
+  const [ephemeralAgent, setEphemeralAgent] = useRecoilState(
+    ephemeralAgentByConvoId(key),
+  );
 
   // Sync ephemeral agent MCP → Jotai atom (strip unconfigured servers)
   useEffect(() => {
@@ -41,7 +47,11 @@ export function useMCPSelect({
       if (!isEqual(activeMcps, mcpValues)) {
         setMCPValuesRaw(activeMcps);
       }
-    } else if (Array.isArray(mcps) && mcps.length === 0 && mcpValues.length > 0) {
+    } else if (
+      Array.isArray(mcps) &&
+      mcps.length === 0 &&
+      mcpValues.length > 0
+    ) {
       // Ephemeral agent explicitly has empty MCP (e.g., spec with no MCP servers) — clear atom
       setMCPValuesRaw([]);
     }

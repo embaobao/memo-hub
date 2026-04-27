@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { AuthType, Tools, QueryKeys } from 'librechat-data-provider';
-import { useUpdateUserPluginsMutation } from 'librechat-data-provider/react-query';
+import { useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { AuthType, Tools, QueryKeys } from "librechat-data-provider";
+import { useUpdateUserPluginsMutation } from "librechat-data-provider/react-query";
 
 export type SearchApiKeyFormData = {
   // Selected options
@@ -26,13 +26,13 @@ const useAuthSearchTool = (options?: { isEntityTool: boolean }) => {
     onMutate: (vars) => {
       queryClient.setQueryData([QueryKeys.toolAuth, Tools.web_search], () => {
         return {
-          authenticated: vars.action === 'install',
+          authenticated: vars.action === "install",
           authTypes:
-            vars.action === 'install'
+            vars.action === "install"
               ? [
-                  ['providers', AuthType.USER_PROVIDED],
-                  ['scrapers', AuthType.USER_PROVIDED],
-                  ['rerankers', AuthType.USER_PROVIDED],
+                  ["providers", AuthType.USER_PROVIDED],
+                  ["scrapers", AuthType.USER_PROVIDED],
+                  ["rerankers", AuthType.USER_PROVIDED],
                 ]
               : [],
         };
@@ -69,7 +69,7 @@ const useAuthSearchTool = (options?: { isEntityTool: boolean }) => {
 
       updateUserPlugins.mutate({
         pluginKey: Tools.web_search,
-        action: 'install',
+        action: "install",
         auth,
         isEntityTool,
       });
@@ -80,7 +80,7 @@ const useAuthSearchTool = (options?: { isEntityTool: boolean }) => {
   const removeTool = useCallback(() => {
     updateUserPlugins.mutate({
       pluginKey: Tools.web_search,
-      action: 'uninstall',
+      action: "uninstall",
       auth: {},
       isEntityTool,
     });

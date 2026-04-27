@@ -1,8 +1,11 @@
-import { useCallback, useState } from 'react';
-import { useToastContext } from '@librechat/client';
-import type { SharePointFile, SharePointBatchProgress } from '~/data-provider/Files';
-import { useSharePointBatchDownload } from '~/data-provider/Files';
-import useSharePointToken from './useSharePointToken';
+import { useCallback, useState } from "react";
+import { useToastContext } from "@librechat/client";
+import type {
+  SharePointFile,
+  SharePointBatchProgress,
+} from "~/data-provider/Files";
+import { useSharePointBatchDownload } from "~/data-provider/Files";
+import useSharePointToken from "./useSharePointToken";
 
 interface UseSharePointDownloadProps {
   onFilesDownloaded?: (files: File[]) => void | Promise<void>;
@@ -21,12 +24,13 @@ export default function useSharePointDownload({
   onError,
 }: UseSharePointDownloadProps = {}): UseSharePointDownloadReturn {
   const { showToast } = useToastContext();
-  const [downloadProgress, setDownloadProgress] = useState<SharePointBatchProgress | null>(null);
+  const [downloadProgress, setDownloadProgress] =
+    useState<SharePointBatchProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const { token, refetch: refetchToken } = useSharePointToken({
     enabled: false,
-    purpose: 'Download',
+    purpose: "Download",
   });
 
   const batchDownloadMutation = useSharePointBatchDownload();
@@ -34,7 +38,7 @@ export default function useSharePointDownload({
   const downloadSharePointFiles = useCallback(
     async (files: SharePointFile[]): Promise<File[]> => {
       if (!files || files.length === 0) {
-        throw new Error('No files provided for download');
+        throw new Error("No files provided for download");
       }
 
       setError(null);
@@ -44,8 +48,8 @@ export default function useSharePointDownload({
         let accessToken = token?.access_token;
         if (!accessToken) {
           showToast({
-            message: 'Getting SharePoint access token...',
-            status: 'info',
+            message: "Getting SharePoint access token...",
+            status: "info",
             duration: 2000,
           });
 
@@ -53,13 +57,13 @@ export default function useSharePointDownload({
           accessToken = tokenResult.data?.access_token;
 
           if (!accessToken) {
-            throw new Error('Failed to obtain SharePoint access token');
+            throw new Error("Failed to obtain SharePoint access token");
           }
         }
 
         showToast({
           message: `Downloading ${files.length} file(s) from SharePoint...`,
-          status: 'info',
+          status: "info",
           duration: 3000,
         });
 
@@ -72,7 +76,7 @@ export default function useSharePointDownload({
             if (files.length > 5 && progress.completed % 3 === 0) {
               showToast({
                 message: `Downloaded ${progress.completed}/${progress.total} files...`,
-                status: 'info',
+                status: "info",
                 duration: 1000,
               });
             }
@@ -88,7 +92,7 @@ export default function useSharePointDownload({
 
           showToast({
             message: successMessage,
-            status: failedCount > 0 ? 'warning' : 'success',
+            status: failedCount > 0 ? "warning" : "success",
             duration: 4000,
           });
 
@@ -100,12 +104,13 @@ export default function useSharePointDownload({
         setDownloadProgress(null);
         return downloadedFiles;
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown download error';
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown download error";
         setError(errorMessage);
 
         showToast({
           message: `SharePoint download failed: ${errorMessage}`,
-          status: 'error',
+          status: "error",
           duration: 5000,
         });
 
@@ -117,7 +122,14 @@ export default function useSharePointDownload({
         throw error;
       }
     },
-    [token, showToast, batchDownloadMutation, onFilesDownloaded, onError, refetchToken],
+    [
+      token,
+      showToast,
+      batchDownloadMutation,
+      onFilesDownloaded,
+      onError,
+      refetchToken,
+    ],
   );
 
   return {

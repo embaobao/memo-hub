@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   QueryKeys,
   dataService,
@@ -8,37 +8,45 @@ import {
   marketplacePermissionsSchema,
   peoplePickerPermissionsSchema,
   remoteAgentsPermissionsSchema,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import type {
   QueryObserverResult,
   UseMutationResult,
   UseQueryOptions,
-} from '@tanstack/react-query';
-import type * as t from 'librechat-data-provider';
+} from "@tanstack/react-query";
+import type * as t from "librechat-data-provider";
 
 export const useGetRole = (
   roleName: string,
   config?: UseQueryOptions<t.TRole>,
 ): QueryObserverResult<t.TRole> => {
-  return useQuery<t.TRole>([QueryKeys.roles, roleName], () => dataService.getRole(roleName), {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: false,
-    ...config,
-  });
+  return useQuery<t.TRole>(
+    [QueryKeys.roles, roleName],
+    () => dataService.getRole(roleName),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      retry: false,
+      ...config,
+    },
+  );
 };
 
 export const useListRoles = (
   config?: UseQueryOptions<t.ListRolesResponse>,
 ): QueryObserverResult<t.ListRolesResponse> => {
-  return useQuery<t.ListRolesResponse>([QueryKeys.rolesList], () => dataService.listRoles(), {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    retry: false,
-    ...config,
-  });
+  return useQuery<t.ListRolesResponse>(
+    [QueryKeys.rolesList],
+    () => dataService.listRoles(),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      retry: false,
+      ...config,
+    },
+  );
 };
 
 export const useUpdatePromptPermissionsMutation = (
@@ -66,7 +74,7 @@ export const useUpdatePromptPermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update prompt permissions:', error);
+          console.error("Failed to update prompt permissions:", error);
         }
         if (onError) {
           onError(...args);
@@ -102,7 +110,7 @@ export const useUpdateAgentPermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update prompt permissions:', error);
+          console.error("Failed to update prompt permissions:", error);
         }
         if (onError != null) {
           onError(...args);
@@ -138,7 +146,7 @@ export const useUpdateMemoryPermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update memory permissions:', error);
+          console.error("Failed to update memory permissions:", error);
         }
         if (onError) {
           onError(...args);
@@ -174,7 +182,7 @@ export const useUpdatePeoplePickerPermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update people picker permissions:', error);
+          console.error("Failed to update people picker permissions:", error);
         }
         if (onError) {
           onError(...args);
@@ -210,7 +218,7 @@ export const useUpdateMCPServersPermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update MCP servers permissions:', error);
+          console.error("Failed to update MCP servers permissions:", error);
         }
         if (onError) {
           onError(...args);
@@ -246,7 +254,7 @@ export const useUpdateMarketplacePermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update marketplace permissions:', error);
+          console.error("Failed to update marketplace permissions:", error);
         }
         if (onError) {
           onError(...args);
@@ -282,7 +290,7 @@ export const useUpdateRemoteAgentsPermissionsMutation = (
       onError: (...args) => {
         const error = args[0];
         if (error != null) {
-          console.error('Failed to update remote agents permissions:', error);
+          console.error("Failed to update remote agents permissions:", error);
         }
         if (onError) {
           onError(...args);

@@ -1,14 +1,19 @@
-import type { Text2MemInstruction, Text2MemResult, IKernel, ITrackProvider } from '@memohub/protocol';
-import { MemoOp } from '@memohub/protocol';
-import { Parser } from 'web-tree-sitter';
+import type {
+  Text2MemInstruction,
+  Text2MemResult,
+  IKernel,
+  ITrackProvider,
+} from "@memohub/protocol";
+import { MemoOp } from "@memohub/protocol";
+import { Parser } from "web-tree-sitter";
 
 /**
  * 源码资产轨道 (Source Track)
  * 职责: 处理源代码，进行 AST 解析，索引符号（函数、类、变量）及其调用关系。
  */
 export class SourceTrack implements ITrackProvider {
-  id = 'track-source';
-  name = 'Source Track';
+  id = "track-source";
+  name = "Source Track";
 
   private kernel!: IKernel;
   private parser!: Parser;
@@ -26,7 +31,10 @@ export class SourceTrack implements ITrackProvider {
       this.parser = new Parser();
       this.isParserReady = true;
     } catch (e) {
-      console.warn('[track-source] Tree-sitter initialization failed, will fallback to regex:', e);
+      console.warn(
+        "[track-source] Tree-sitter initialization failed, will fallback to regex:",
+        e,
+      );
     }
   }
 
@@ -60,37 +68,64 @@ export class SourceTrack implements ITrackProvider {
       case MemoOp.SYNC:
         return this.handleSync(instruction);
       default:
-        return { success: false, error: `轨道 track-source 不支持操作: ${instruction.op}` };
+        return {
+          success: false,
+          error: `轨道 track-source 不支持操作: ${instruction.op}`,
+        };
     }
   }
 
   /**
    * 符号提取 (支持 Tree-sitter 与正则 Fallback)
    */
-  private async extractSymbols(code: string, language: string, filePath: string): Promise<Array<{
-    symbol_name: string;
-    ast_type: string;
-    parent_symbol: string | null;
-    text: string;
-  }>> {
-    if (this.isParserReady && (language === 'typescript' || language === 'javascript' || language === 'tsx')) {
+  private async extractSymbols(
+    code: string,
+    language: string,
+    filePath: string,
+  ): Promise<
+    Array<{
+      symbol_name: string;
+      ast_type: string;
+      parent_symbol: string | null;
+      text: string;
+    }>
+  > {
+    if (
+      this.isParserReady &&
+      (language === "typescript" ||
+        language === "javascript" ||
+        language === "tsx")
+    ) {
       try {
         return this.extractSymbolsWithTreeSitter(code, language, filePath);
       } catch (e) {
-        console.warn('[track-source] Tree-sitter extraction failed, fallback to regex:', e);
+        console.warn(
+          "[track-source] Tree-sitter extraction failed, fallback to regex:",
+          e,
+        );
       }
     }
     return this.extractSymbolsRegex(code, language, filePath);
   }
 
-  private extractSymbolsWithTreeSitter(code: string, language: string, filePath: string): Array<any> {
+  private extractSymbolsWithTreeSitter(
+    code: string,
+    language: string,
+    filePath: string,
+  ): Array<any> {
     // 简单实现 Tree-sitter 遍历 (由于缺少实际 WASM 绑定加载逻辑，这里演示查询模式)
     // 假设 parser 已经绑定了正确的 language
     // 为了不在这里抛错中断，如果不完全支持，抛出 fallback
-    throw new Error('Full Tree-sitter WASM binding requires path resolution in Monorepo. Fallback used temporarily.');
+    throw new Error(
+      "Full Tree-sitter WASM binding requires path resolution in Monorepo. Fallback used temporarily.",
+    );
   }
 
-  private extractSymbolsRegex(code: string, language: string, filePath: string): Array<any> {
+  private extractSymbolsRegex(
+    code: string,
+    language: string,
+    filePath: string,
+  ): Array<any> {
     const symbols: Array<any> = [];
     const patterns: Record<string, RegExp[]> = {
       typescript: [
@@ -103,7 +138,7 @@ export class SourceTrack implements ITrackProvider {
       ],
     };
 
-    const lang = language === 'typescript' ? 'typescript' : 'javascript';
+    const lang = language === "typescript" ? "typescript" : "javascript";
     const regexes = patterns[lang] ?? patterns.javascript;
 
     for (const regex of regexes) {
@@ -122,12 +157,12 @@ export class SourceTrack implements ITrackProvider {
   }
 
   private inferAstType(declaration: string): string {
-    if (/function/.test(declaration)) return 'function';
-    if (/class/.test(declaration)) return 'class';
-    if (/interface/.test(declaration)) return 'interface';
-    if (/type\s/.test(declaration)) return 'type';
-    if (/enum/.test(declaration)) return 'enum';
-    return 'variable';
+    if (/function/.test(declaration)) return "function";
+    if (/class/.test(declaration)) return "class";
+    if (/interface/.test(declaration)) return "interface";
+    if (/type\s/.test(declaration)) return "type";
+    if (/enum/.test(declaration)) return "enum";
+    return "variable";
   }
 
   private extractBlock(code: string, startIndex: number): string {
@@ -135,17 +170,19 @@ export class SourceTrack implements ITrackProvider {
     let inBlock = false;
     let blockStart = startIndex;
     for (let i = startIndex; i < code.length; i++) {
-      if (code[i] === '{') {
+      if (code[i] === "{") {
         if (!inBlock) blockStart = i;
         braceCount++;
         inBlock = true;
-      } else if (code[i] === '}') {
+      } else if (code[i] === "}") {
         braceCount--;
         if (braceCount === 0 && inBlock) return code.slice(startIndex, i + 1);
       }
     }
-    const lineEnd = code.indexOf('\n', startIndex);
-    return lineEnd === -1 ? code.slice(startIndex) : code.slice(startIndex, lineEnd);
+    const lineEnd = code.indexOf("\n", startIndex);
+    return lineEnd === -1
+      ? code.slice(startIndex)
+      : code.slice(startIndex, lineEnd);
   }
 
   /**
@@ -153,8 +190,13 @@ export class SourceTrack implements ITrackProvider {
    */
   private async handleAdd(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
-      const { code, language = 'typescript', file_path = '', importance = 0.5 } = inst.payload ?? {};
-      if (!code) return { success: false, error: 'payload.code 不能为空' };
+      const {
+        code,
+        language = "typescript",
+        file_path = "",
+        importance = 0.5,
+      } = inst.payload ?? {};
+      if (!code) return { success: false, error: "payload.code 不能为空" };
 
       const cas = this.kernel.getCAS();
       const embedder = this.kernel.getEmbedder();
@@ -169,9 +211,16 @@ export class SourceTrack implements ITrackProvider {
         const vector = await embedder.embed(code);
         const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         await storage.add({
-          id, vector, hash, track_id: this.id,
-          language, ast_type: 'file', symbol_name: '', file_path, importance,
-          timestamp: new Date().toISOString()
+          id,
+          vector,
+          hash,
+          track_id: this.id,
+          language,
+          ast_type: "file",
+          symbol_name: "",
+          file_path,
+          importance,
+          timestamp: new Date().toISOString(),
         });
         return { success: true, data: [{ id, hash }] };
       }
@@ -182,23 +231,35 @@ export class SourceTrack implements ITrackProvider {
         const vector = await embedder.embed(sym.text);
         const id = `source-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         await storage.add({
-          id, vector, hash, track_id: this.id,
-          language, ast_type: sym.ast_type, symbol_name: sym.symbol_name, file_path, importance,
-          timestamp: new Date().toISOString()
+          id,
+          vector,
+          hash,
+          track_id: this.id,
+          language,
+          ast_type: sym.ast_type,
+          symbol_name: sym.symbol_name,
+          file_path,
+          importance,
+          timestamp: new Date().toISOString(),
         });
         results.push({ id, hash, symbol_name: sym.symbol_name });
       }
 
       return { success: true, data: results };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
   /**
    * 检索代码片段
    */
-  private async handleRetrieve(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleRetrieve(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     try {
       const { query, limit = 5, filters } = inst.payload ?? {};
       const storage = this.kernel.getVectorStorage();
@@ -207,27 +268,39 @@ export class SourceTrack implements ITrackProvider {
 
       const vector = await embedder.embed(query);
       let filterParts = [`track_id = '${this.id}'`];
-      if (filters?.language) filterParts.push(`language = '${filters.language}'`);
-      if (filters?.symbol_name) filterParts.push(`symbol_name = '${filters.symbol_name}'`);
+      if (filters?.language)
+        filterParts.push(`language = '${filters.language}'`);
+      if (filters?.symbol_name)
+        filterParts.push(`symbol_name = '${filters.symbol_name}'`);
 
-      const results = await storage.search(vector, { limit, filter: filterParts.join(' AND ') });
-      const hydrated = await Promise.all(results.map(async (r: any) => ({
-        ...r,
-        text: await cas.read(r.hash).catch(() => '')
-      })));
+      const results = await storage.search(vector, {
+        limit,
+        filter: filterParts.join(" AND "),
+      });
+      const hydrated = await Promise.all(
+        results.map(async (r: any) => ({
+          ...r,
+          text: await cas.read(r.hash).catch(() => ""),
+        })),
+      );
 
       return { success: true, data: hydrated };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 
   /**
    * 更新代码
    */
-  private async handleUpdate(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleUpdate(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { id, code, ...rest } = inst.payload ?? {};
-    if (!id) return { success: false, error: 'payload.id 不能为空' };
+    if (!id) return { success: false, error: "payload.id 不能为空" };
 
     const updates: Record<string, any> = { ...rest };
     if (code) {
@@ -241,9 +314,11 @@ export class SourceTrack implements ITrackProvider {
   /**
    * 删除代码记录
    */
-  private async handleDelete(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleDelete(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { ids } = inst.payload ?? {};
-    if (!ids?.length) return { success: false, error: 'payload.ids 不能为空' };
+    if (!ids?.length) return { success: false, error: "payload.ids 不能为空" };
     for (const id of ids) {
       await this.kernel.getVectorStorage().delete(`id = '${id}'`);
     }
@@ -253,50 +328,80 @@ export class SourceTrack implements ITrackProvider {
   /**
    * 合并代码记录 (在 Source 轨通常较少使用)
    */
-  private async handleMerge(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    return { success: false, error: 'Source 轨道暂不支持 Merge 操作' };
+  private async handleMerge(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
+    return { success: false, error: "Source 轨道暂不支持 Merge 操作" };
   }
 
   /**
    * 列出符号
    */
   private async handleList(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
-    return { success: true, data: records.map(r => ({ id: r.id, symbol: r.symbol_name, file: r.file_path })) };
+    const records = await this.kernel
+      .getVectorStorage()
+      .list(`track_id = '${this.id}'`);
+    return {
+      success: true,
+      data: records.map((r) => ({
+        id: r.id,
+        symbol: r.symbol_name,
+        file: r.file_path,
+      })),
+    };
   }
 
   /**
    * 澄清
    */
-  private async handleClarify(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    return { success: true, data: 'Source 轨道无需澄清环节' };
+  private async handleClarify(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
+    return { success: true, data: "Source 轨道无需澄清环节" };
   }
 
   /**
    * 导出代码资产
    */
-  private async handleExport(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const records = await this.kernel.getVectorStorage().list(`track_id = '${this.id}'`);
-    const fullData = await Promise.all(records.map(async r => ({
-      ...r,
-      text: await this.kernel.getCAS().read(r.hash).catch(() => '')
-    })));
+  private async handleExport(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
+    const records = await this.kernel
+      .getVectorStorage()
+      .list(`track_id = '${this.id}'`);
+    const fullData = await Promise.all(
+      records.map(async (r) => ({
+        ...r,
+        text: await this.kernel
+          .getCAS()
+          .read(r.hash)
+          .catch(() => ""),
+      })),
+    );
     return { success: true, data: fullData };
   }
 
   /**
    * 蒸馏 (例如提取接口定义)
    */
-  private async handleDistill(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    return { success: false, error: 'Source 轨道暂不支持 Distill' };
+  private async handleDistill(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
+    return { success: false, error: "Source 轨道暂不支持 Distill" };
   }
 
   /**
    * 锚定外部文档
    */
-  private async handleAnchor(inst: Text2MemInstruction): Promise<Text2MemResult> {
+  private async handleAnchor(
+    inst: Text2MemInstruction,
+  ): Promise<Text2MemResult> {
     const { id, doc_url } = inst.payload ?? {};
-    return this.handleUpdate({ op: MemoOp.UPDATE, trackId: this.id, payload: { id, metadata: { doc_url } } });
+    return this.handleUpdate({
+      op: MemoOp.UPDATE,
+      trackId: this.id,
+      payload: { id, metadata: { doc_url } },
+    });
   }
 
   /**
@@ -304,9 +409,13 @@ export class SourceTrack implements ITrackProvider {
    */
   private async handleDiff(inst: Text2MemInstruction): Promise<Text2MemResult> {
     const { source_id, target_id } = inst.payload ?? {};
-    const [src] = await this.kernel.getVectorStorage().list(`id = '${source_id}'`);
-    const [tgt] = await this.kernel.getVectorStorage().list(`id = '${target_id}'`);
-    if (!src || !tgt) return { success: false, error: '未找到对应记录' };
+    const [src] = await this.kernel
+      .getVectorStorage()
+      .list(`id = '${source_id}'`);
+    const [tgt] = await this.kernel
+      .getVectorStorage()
+      .list(`id = '${target_id}'`);
+    if (!src || !tgt) return { success: false, error: "未找到对应记录" };
     const srcText = await this.kernel.getCAS().read(src.hash);
     const tgtText = await this.kernel.getCAS().read(tgt.hash);
     return { success: true, data: { changed: srcText !== tgtText } };
@@ -316,6 +425,6 @@ export class SourceTrack implements ITrackProvider {
    * 同步工程代码
    */
   private async handleSync(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    return { success: true, data: 'Sync completed' };
+    return { success: true, data: "Sync completed" };
   }
 }

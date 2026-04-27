@@ -1,23 +1,27 @@
-import { useMemo, useState, useEffect, useRef } from 'react';
-import { Constants } from 'librechat-data-provider';
-import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil';
-import { useArtifactsContext } from '~/Providers';
-import { logger } from '~/utils';
-import store from '~/store';
+import { useMemo, useState, useEffect, useRef } from "react";
+import { Constants } from "librechat-data-provider";
+import { useRecoilState, useRecoilValue, useResetRecoilState } from "recoil";
+import { useArtifactsContext } from "~/Providers";
+import { logger } from "~/utils";
+import store from "~/store";
 
 export default function useArtifacts() {
-  const [activeTab, setActiveTab] = useState('preview');
+  const [activeTab, setActiveTab] = useState("preview");
   const { isSubmitting, latestMessageId, latestMessageText, conversationId } =
     useArtifactsContext();
 
   const artifacts = useRecoilValue(store.artifactsState);
   const resetArtifacts = useResetRecoilState(store.artifactsState);
   const resetCurrentArtifactId = useResetRecoilState(store.currentArtifactId);
-  const [currentArtifactId, setCurrentArtifactId] = useRecoilState(store.currentArtifactId);
+  const [currentArtifactId, setCurrentArtifactId] = useRecoilState(
+    store.currentArtifactId,
+  );
 
   const orderedArtifactIds = useMemo(() => {
     return Object.keys(artifacts ?? {}).sort(
-      (a, b) => (artifacts?.[a]?.lastUpdateTime ?? 0) - (artifacts?.[b]?.lastUpdateTime ?? 0),
+      (a, b) =>
+        (artifacts?.[a]?.lastUpdateTime ?? 0) -
+        (artifacts?.[b]?.lastUpdateTime ?? 0),
     );
   }, [artifacts]);
 
@@ -38,7 +42,10 @@ export default function useArtifacts() {
       hasEnclosedArtifactRef.current = false;
       hasAutoSwitchedToCodeRef.current = false;
     };
-    if (conversationId !== prevConversationIdRef.current && prevConversationIdRef.current != null) {
+    if (
+      conversationId !== prevConversationIdRef.current &&
+      prevConversationIdRef.current != null
+    ) {
       resetState();
     } else if (conversationId === Constants.NEW_CONVO) {
       resetState();
@@ -46,7 +53,7 @@ export default function useArtifacts() {
     prevConversationIdRef.current = conversationId;
     /** Resets artifacts when unmounting */
     return () => {
-      logger.log('artifacts_visibility', 'Unmounting artifacts');
+      logger.log("artifacts_visibility", "Unmounting artifacts");
       resetState();
     };
   }, [conversationId, resetArtifacts, resetCurrentArtifactId]);
@@ -86,7 +93,10 @@ export default function useArtifacts() {
     }
     const latestArtifactId = orderedArtifactIds[orderedArtifactIds.length - 1];
     const latestArtifact = artifacts?.[latestArtifactId];
-    if (latestArtifact?.content === lastContentRef.current && !justFinishedSubmitting) {
+    if (
+      latestArtifact?.content === lastContentRef.current &&
+      !justFinishedSubmitting
+    ) {
       return;
     }
 
@@ -95,9 +105,12 @@ export default function useArtifacts() {
 
     // Only switch to code tab if we haven't detected an enclosed artifact yet
     if (!hasEnclosedArtifactRef.current && !hasAutoSwitchedToCodeRef.current) {
-      const artifactStartContent = latestArtifact?.content?.slice(0, 50) ?? '';
-      if (artifactStartContent.length > 0 && latestMessageText.includes(artifactStartContent)) {
-        setActiveTab('code');
+      const artifactStartContent = latestArtifact?.content?.slice(0, 50) ?? "";
+      if (
+        artifactStartContent.length > 0 &&
+        latestMessageText.includes(artifactStartContent)
+      ) {
+        setActiveTab("code");
         hasAutoSwitchedToCodeRef.current = true;
       }
     }
@@ -125,8 +138,11 @@ export default function useArtifacts() {
       );
 
     if (hasEnclosedArtifact) {
-      logger.log('artifacts', 'Enclosed artifact detected during generation, switching to preview');
-      setActiveTab('preview');
+      logger.log(
+        "artifacts",
+        "Enclosed artifact detected during generation, switching to preview",
+      );
+      setActiveTab("preview");
       hasEnclosedArtifactRef.current = true;
       hasAutoSwitchedToCodeRef.current = false;
     }
@@ -140,9 +156,10 @@ export default function useArtifacts() {
     }
   }, [latestMessageId]);
 
-  const currentArtifact = currentArtifactId != null ? artifacts?.[currentArtifactId] : null;
+  const currentArtifact =
+    currentArtifactId != null ? artifacts?.[currentArtifactId] : null;
 
-  const currentIndex = orderedArtifactIds.indexOf(currentArtifactId ?? '');
+  const currentIndex = orderedArtifactIds.indexOf(currentArtifactId ?? "");
 
   return {
     activeTab,

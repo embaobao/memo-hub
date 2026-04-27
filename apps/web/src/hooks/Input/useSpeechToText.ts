@@ -1,6 +1,6 @@
-import useSpeechToTextBrowser from './useSpeechToTextBrowser';
-import useSpeechToTextExternal from './useSpeechToTextExternal';
-import useGetAudioSettings from './useGetAudioSettings';
+import useSpeechToTextBrowser from "./useSpeechToTextBrowser";
+import useSpeechToTextExternal from "./useSpeechToTextExternal";
+import useGetAudioSettings from "./useGetAudioSettings";
 
 const useSpeechToText = (
   setText: (text: string) => void,
@@ -12,7 +12,7 @@ const useSpeechToText = (
   startRecording: () => void | (() => Promise<void>);
 } => {
   const { speechToTextEndpoint } = useGetAudioSettings();
-  const externalSpeechToText = speechToTextEndpoint === 'external';
+  const externalSpeechToText = speechToTextEndpoint === "external";
 
   const {
     isListening: speechIsListeningBrowser,
@@ -28,8 +28,12 @@ const useSpeechToText = (
     externalStopRecording: stopSpeechRecordingExternal,
   } = useSpeechToTextExternal(setText, onTranscriptionComplete);
 
-  const isListening = externalSpeechToText ? speechIsListeningExternal : speechIsListeningBrowser;
-  const isLoading = externalSpeechToText ? speechIsLoadingExternal : speechIsLoadingBrowser;
+  const isListening = externalSpeechToText
+    ? speechIsListeningExternal
+    : speechIsListeningBrowser;
+  const isLoading = externalSpeechToText
+    ? speechIsLoadingExternal
+    : speechIsLoadingBrowser;
 
   const startRecording = externalSpeechToText
     ? startSpeechRecordingExternal

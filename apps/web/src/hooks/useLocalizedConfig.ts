@@ -1,5 +1,5 @@
-import { useRecoilValue } from 'recoil';
-import store from '~/store';
+import { useRecoilValue } from "recoil";
+import store from "~/store";
 
 type LocalizedValue = string | Record<string, string> | undefined;
 
@@ -22,15 +22,19 @@ export default function useLocalizedConfig() {
     if (value === undefined) {
       return fallback;
     }
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return value;
     }
     // Extract base language code (e.g., 'de' from 'de-DE')
-    const baseLang = lang?.split('-')[0] ?? 'en';
+    const baseLang = lang?.split("-")[0] ?? "en";
 
     // Try exact locale (de-DE), then base language (de), then 'en', then first available
     return (
-      (lang && value[lang]) || value[baseLang] || value['en'] || Object.values(value)[0] || fallback
+      (lang && value[lang]) ||
+      value[baseLang] ||
+      value["en"] ||
+      Object.values(value)[0] ||
+      fallback
     );
   };
 }

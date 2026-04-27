@@ -1,22 +1,26 @@
 /* Memories */
-import { QueryKeys, MutationKeys, dataService } from 'librechat-data-provider';
-import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { QueryKeys, MutationKeys, dataService } from "librechat-data-provider";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import type {
   UseQueryOptions,
   UseMutationOptions,
   QueryObserverResult,
-} from '@tanstack/react-query';
-import type { TUserMemory, MemoriesResponse } from 'librechat-data-provider';
+} from "@tanstack/react-query";
+import type { TUserMemory, MemoriesResponse } from "librechat-data-provider";
 
 export const useMemoriesQuery = (
   config?: UseQueryOptions<MemoriesResponse>,
 ): QueryObserverResult<MemoriesResponse> => {
-  return useQuery<MemoriesResponse>([QueryKeys.memories], () => dataService.getMemories(), {
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
-    ...config,
-  });
+  return useQuery<MemoriesResponse>(
+    [QueryKeys.memories],
+    () => dataService.getMemories(),
+    {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      refetchOnMount: false,
+      ...config,
+    },
+  );
 };
 
 export const useDeleteMemoryMutation = () => {
@@ -28,7 +32,11 @@ export const useDeleteMemoryMutation = () => {
   });
 };
 
-export type UpdateMemoryParams = { key: string; value: string; originalKey?: string };
+export type UpdateMemoryParams = {
+  key: string;
+  value: string;
+  originalKey?: string;
+};
 export const useUpdateMemoryMutation = (
   options?: UseMutationOptions<TUserMemory, Error, UpdateMemoryParams>,
 ) => {
@@ -60,7 +68,11 @@ export const useUpdateMemoryPreferencesMutation = (
   >,
 ) => {
   const queryClient = useQueryClient();
-  return useMutation<UpdateMemoryPreferencesResponse, Error, UpdateMemoryPreferencesParams>(
+  return useMutation<
+    UpdateMemoryPreferencesResponse,
+    Error,
+    UpdateMemoryPreferencesParams
+  >(
     [MutationKeys.updateMemoryPreferences],
     (preferences: UpdateMemoryPreferencesParams) =>
       dataService.updateMemoryPreferences(preferences),
@@ -82,32 +94,39 @@ export const useCreateMemoryMutation = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation<CreateMemoryResponse, Error, CreateMemoryParams>(
-    ({ key, value }: CreateMemoryParams) => dataService.createMemory({ key, value }),
+    ({ key, value }: CreateMemoryParams) =>
+      dataService.createMemory({ key, value }),
     {
       ...options,
       onSuccess: (data, variables, context) => {
-        queryClient.setQueryData<MemoriesResponse>([QueryKeys.memories], (oldData) => {
-          if (!oldData) return oldData;
+        queryClient.setQueryData<MemoriesResponse>(
+          [QueryKeys.memories],
+          (oldData) => {
+            if (!oldData) return oldData;
 
-          const newMemories = [...oldData.memories, data.memory];
-          const totalTokens = newMemories.reduce(
-            (sum, memory) => sum + (memory.tokenCount || 0),
-            0,
-          );
-          const tokenLimit = oldData.tokenLimit;
-          let usagePercentage = oldData.usagePercentage;
+            const newMemories = [...oldData.memories, data.memory];
+            const totalTokens = newMemories.reduce(
+              (sum, memory) => sum + (memory.tokenCount || 0),
+              0,
+            );
+            const tokenLimit = oldData.tokenLimit;
+            let usagePercentage = oldData.usagePercentage;
 
-          if (tokenLimit && tokenLimit > 0) {
-            usagePercentage = Math.min(100, Math.round((totalTokens / tokenLimit) * 100));
-          }
+            if (tokenLimit && tokenLimit > 0) {
+              usagePercentage = Math.min(
+                100,
+                Math.round((totalTokens / tokenLimit) * 100),
+              );
+            }
 
-          return {
-            ...oldData,
-            memories: newMemories,
-            totalTokens,
-            usagePercentage,
-          };
-        });
+            return {
+              ...oldData,
+              memories: newMemories,
+              totalTokens,
+              usagePercentage,
+            };
+          },
+        );
 
         options?.onSuccess?.(data, variables, context);
       },

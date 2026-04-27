@@ -1,15 +1,17 @@
-import type * as t from 'librechat-data-provider';
-import type { TPluginMap } from '~/common';
+import type * as t from "librechat-data-provider";
+import type { TPluginMap } from "~/common";
 
 /** Maps Attachments by `toolCallId` for quick lookup */
-export function mapAttachments(attachments: Array<t.TAttachment | null | undefined>) {
+export function mapAttachments(
+  attachments: Array<t.TAttachment | null | undefined>,
+) {
   const attachmentMap: Record<string, t.TAttachment[] | undefined> = {};
 
   for (const attachment of attachments) {
     if (attachment === null || attachment === undefined) {
       continue;
     }
-    const key = attachment.toolCallId || '';
+    const key = attachment.toolCallId || "";
     if (key.length === 0) {
       continue;
     }
@@ -92,12 +94,14 @@ export function processPlugins(
 ): t.TPlugin[] {
   return tools
     .map((tool: string | t.TPlugin) => {
-      if (typeof tool === 'string') {
+      if (typeof tool === "string") {
         return allPlugins?.[tool];
       }
       return tool;
     })
-    .filter((tool: t.TPlugin | undefined): tool is t.TPlugin => tool !== undefined);
+    .filter(
+      (tool: t.TPlugin | undefined): tool is t.TPlugin => tool !== undefined,
+    );
 }
 
 export function mapToolCalls(toolCalls: t.ToolCallResults = []): {

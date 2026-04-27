@@ -10,45 +10,58 @@ export type AddCompatResult = {
 };
 
 function asErrorMessage(error: unknown): string {
-  if (typeof error === 'string') return error;
-  if (error && typeof error === 'object') {
+  if (typeof error === "string") return error;
+  if (error && typeof error === "object") {
     const anyErr = error as any;
-    if (typeof anyErr.message === 'string') return anyErr.message;
+    if (typeof anyErr.message === "string") return anyErr.message;
   }
-  try { return JSON.stringify(error); } catch { return String(error); }
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
 }
 
 async function resolveMaybePromise<T>(value: T | Promise<T>): Promise<T> {
   return await value;
 }
 
-async function tryGetTableFieldNames(table: AnyTable): Promise<Set<string> | null> {
+async function tryGetTableFieldNames(
+  table: AnyTable,
+): Promise<Set<string> | null> {
   const schemaCandidate = (table as any)?.schema;
   if (!schemaCandidate) return null;
 
   let schema: any = schemaCandidate;
   try {
-    if (typeof schemaCandidate === 'function') {
+    if (typeof schemaCandidate === "function") {
       schema = await resolveMaybePromise(schemaCandidate.call(table));
     }
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 
   const fields: any[] | undefined =
     (schema && Array.isArray(schema.fields) ? schema.fields : undefined) ??
-    (schema && Array.isArray(schema.schema?.fields) ? schema.schema.fields : undefined);
+    (schema && Array.isArray(schema.schema?.fields)
+      ? schema.schema.fields
+      : undefined);
 
   if (!fields || fields.length === 0) return null;
 
   const names = new Set<string>();
   for (const f of fields) {
-    const n = (f && typeof f.name === 'string' ? f.name : null) ?? null;
+    const n = (f && typeof f.name === "string" ? f.name : null) ?? null;
     if (n) names.add(n);
   }
 
   return names.size > 0 ? names : null;
 }
 
-function filterRowByAllowList(row: Record<string, unknown>, allowList: Set<string>): Record<string, unknown> {
+function filterRowByAllowList(
+  row: Record<string, unknown>,
+  allowList: Set<string>,
+): Record<string, unknown> {
   const filtered: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(row)) {
     if (allowList.has(k)) filtered[k] = v;
@@ -73,7 +86,7 @@ function extractUnknownFieldsFromError(error: unknown): Set<string> {
     while (true) {
       const match = pattern.exec(message);
       if (!match) break;
-      const fieldName = String(match[1] ?? '').trim();
+      const fieldName = String(match[1] ?? "").trim();
       if (fieldName) fields.add(fieldName);
     }
   }
@@ -84,7 +97,7 @@ function extractUnknownFieldsFromError(error: unknown): Set<string> {
 export async function addRowsWithSchemaCompatibility(
   table: AnyTable,
   rows: Array<Record<string, unknown>>,
-  options?: { max_retries?: number }
+  options?: { max_retries?: number },
 ): Promise<AddCompatResult> {
   const { max_retries = 10 } = options ?? {};
 

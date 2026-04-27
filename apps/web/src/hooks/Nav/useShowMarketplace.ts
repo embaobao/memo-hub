@@ -1,6 +1,6 @@
-import { useContext, useMemo } from 'react';
-import { PermissionTypes, Permissions } from 'librechat-data-provider';
-import { useHasAccess, AuthContext } from '~/hooks';
+import { useContext, useMemo } from "react";
+import { PermissionTypes, Permissions } from "librechat-data-provider";
+import { useHasAccess, AuthContext } from "~/hooks";
 
 /**
  * Hook to determine if the Agent Marketplace should be shown.
@@ -28,7 +28,8 @@ export default function useShowMarketplace(): boolean {
   const authReady = useMemo(
     () =>
       authContext?.isAuthenticated !== undefined &&
-      (authContext?.isAuthenticated === false || authContext?.user !== undefined),
+      (authContext?.isAuthenticated === false ||
+        authContext?.user !== undefined),
     [authContext?.isAuthenticated, authContext?.user],
   );
 

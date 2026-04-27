@@ -1,14 +1,18 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
-import { useSearchParams } from 'react-router-dom';
-import { QueryClient, useQueryClient } from '@tanstack/react-query';
-import { QueryKeys, EModelEndpoint, PermissionBits } from 'librechat-data-provider';
+import { useEffect, useCallback, useRef } from "react";
+import { useRecoilValue } from "recoil";
+import { useSearchParams } from "react-router-dom";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import {
+  QueryKeys,
+  EModelEndpoint,
+  PermissionBits,
+} from "librechat-data-provider";
 import type {
   AgentListResponse,
   TEndpointsConfig,
   TStartupConfig,
   TPreset,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import {
   clearModelForNonEphemeralAgent,
   removeUnavailableTools,
@@ -17,24 +21,35 @@ import {
   getModelSpecIconURL,
   getConvoSwitchLogic,
   logger,
-} from '~/utils';
-import { useAuthContext, useAgentsMap, useDefaultConvo, useSubmitMessage } from '~/hooks';
-import { startupConfigKey, useGetAgentByIdQuery } from '~/data-provider';
-import { useChatContext, useChatFormContext } from '~/Providers';
-import store from '~/store';
+} from "~/utils";
+import {
+  useAuthContext,
+  useAgentsMap,
+  useDefaultConvo,
+  useSubmitMessage,
+} from "~/hooks";
+import { startupConfigKey, useGetAgentByIdQuery } from "~/data-provider";
+import { useChatContext, useChatFormContext } from "~/Providers";
+import store from "~/store";
 
 const injectAgentIntoAgentsMap = (queryClient: QueryClient, agent: any) => {
-  const editCacheKey = [QueryKeys.agents, { requiredPermission: PermissionBits.EDIT }];
+  const editCacheKey = [
+    QueryKeys.agents,
+    { requiredPermission: PermissionBits.EDIT },
+  ];
   const editCache = queryClient.getQueryData<AgentListResponse>(editCacheKey);
 
-  if (editCache?.data && !editCache.data.some((cachedAgent) => cachedAgent.id === agent.id)) {
+  if (
+    editCache?.data &&
+    !editCache.data.some((cachedAgent) => cachedAgent.id === agent.id)
+  ) {
     // Inject agent into EDIT cache so dropdown can display it
     const updatedCache = {
       ...editCache,
       data: [agent, ...editCache.data],
     };
     queryClient.setQueryData(editCacheKey, updatedCache);
-    logger.log('agent', 'Injected URL agent into cache:', agent);
+    logger.log("agent", "Injected URL agent into cache:", agent);
   }
 };
 
@@ -69,7 +84,7 @@ export default function useQueryParams({
   const queryClient = useQueryClient();
   const { conversation, newConversation } = useChatContext();
 
-  const urlAgentId = searchParams.get('agent_id') || '';
+  const urlAgentId = searchParams.get("agent_id") || "";
   const { data: urlAgent } = useGetAgentByIdQuery(urlAgentId);
 
   /**
@@ -83,8 +98,10 @@ export default function useQueryParams({
         return;
       }
       let newPreset = removeUnavailableTools(_newPreset, availableTools);
-      if (newPreset.spec != null && newPreset.spec !== '') {
-        const startupConfig = queryClient.getQueryData<TStartupConfig>(startupConfigKey(true));
+      if (newPreset.spec != null && newPreset.spec !== "") {
+        const startupConfig = queryClient.getQueryData<TStartupConfig>(
+          startupConfigKey(true),
+        );
         const modelSpecs = startupConfig?.modelSpecs?.list ?? [];
         const spec = modelSpecs.find((s) => s.name === newPreset.spec);
         if (!spec) {
@@ -96,8 +113,10 @@ export default function useQueryParams({
         newPreset = preset;
       }
 
-      let newEndpoint = newPreset.endpoint ?? '';
-      const endpointsConfig = queryClient.getQueryData<TEndpointsConfig>([QueryKeys.endpoints]);
+      let newEndpoint = newPreset.endpoint ?? "";
+      const endpointsConfig = queryClient.getQueryData<TEndpointsConfig>([
+        QueryKeys.endpoints,
+      ]);
 
       if (newEndpoint && endpointsConfig && !endpointsConfig[newEndpoint]) {
         const normalizedNewEndpoint = newEndpoint.toLowerCase();
@@ -153,11 +172,15 @@ export default function useQueryParams({
             ...resetFields,
           },
           preset: template,
-          cleanOutput: newPreset.spec != null && newPreset.spec !== '',
+          cleanOutput: newPreset.spec != null && newPreset.spec !== "",
         });
 
         /* We don't reset the latest message, only when changing settings mid-converstion */
-        logger.log('conversation', 'Switching conversation from query params', currentConvo);
+        logger.log(
+          "conversation",
+          "Switching conversation from query params",
+          currentConvo,
+        );
         newConversation({
           template: currentConvo,
           preset: newPreset,
@@ -189,7 +212,7 @@ export default function useQueryParams({
     }
 
     for (const [key, value] of Object.entries(validSettingsRef.current)) {
-      if (['presetOverride', 'iconURL', 'spec', 'modelLabel'].includes(key)) {
+      if (["presetOverride", "iconURL", "spec", "modelLabel"].includes(key)) {
         continue;
       }
 
@@ -207,19 +230,23 @@ export default function useQueryParams({
    * Has internal guards to ensure it only executes once regardless of how many times it's called.
    */
   const processSubmission = useCallback(() => {
-    if (submissionHandledRef.current || !pendingSubmitRef.current || !promptTextRef.current) {
+    if (
+      submissionHandledRef.current ||
+      !pendingSubmitRef.current ||
+      !promptTextRef.current
+    ) {
       return;
     }
 
     submissionHandledRef.current = true;
     pendingSubmitRef.current = false;
 
-    methods.setValue('text', promptTextRef.current, { shouldValidate: true });
+    methods.setValue("text", promptTextRef.current, { shouldValidate: true });
 
     methods.handleSubmit((data) => {
       if (data.text?.trim()) {
         submitMessage(data);
-        logger.log('conversation', 'Message submitted from query params');
+        logger.log("conversation", "Message submitted from query params");
       }
     })();
 
@@ -234,8 +261,8 @@ export default function useQueryParams({
       });
 
       // Support both 'prompt' and 'q' as query parameters, with 'prompt' taking precedence
-      const decodedPrompt = queryParams.prompt || queryParams.q || '';
-      const shouldAutoSubmit = queryParams.submit?.toLowerCase() === 'true';
+      const decodedPrompt = queryParams.prompt || queryParams.q || "";
+      const shouldAutoSubmit = queryParams.submit?.toLowerCase() === "true";
       delete queryParams.prompt;
       delete queryParams.q;
       delete queryParams.submit;
@@ -248,7 +275,7 @@ export default function useQueryParams({
       if (processedRef.current || attemptsRef.current >= maxAttempts) {
         clearInterval(intervalId);
         if (attemptsRef.current >= maxAttempts) {
-          console.warn('Max attempts reached, failed to process parameters');
+          console.warn("Max attempts reached, failed to process parameters");
         }
         return;
       }
@@ -258,12 +285,15 @@ export default function useQueryParams({
       if (!textAreaRef.current) {
         return;
       }
-      const startupConfig = queryClient.getQueryData<TStartupConfig>(startupConfigKey(true));
+      const startupConfig = queryClient.getQueryData<TStartupConfig>(
+        startupConfigKey(true),
+      );
       if (!startupConfig) {
         return;
       }
 
-      const { decodedPrompt, validSettings, shouldAutoSubmit } = processQueryParams();
+      const { decodedPrompt, validSettings, shouldAutoSubmit } =
+        processQueryParams();
       const hasSettings = Object.keys(validSettings).length > 0;
 
       if (!shouldAutoSubmit) {
@@ -273,7 +303,7 @@ export default function useQueryParams({
       /** Mark processing as complete and clean up as needed */
       const success = () => {
         processedRef.current = true;
-        logger.log('conversation', 'Query parameters processed successfully');
+        logger.log("conversation", "Query parameters processed successfully");
         clearInterval(intervalId);
 
         // Defer URL cleanup until after submission completes (processSubmission handles it)
@@ -300,16 +330,19 @@ export default function useQueryParams({
           settingsTimeoutRef.current = setTimeout(() => {
             if (!submissionHandledRef.current && pendingSubmitRef.current) {
               logger.log(
-                'conversation',
-                'Settings application timeout, proceeding with submission',
+                "conversation",
+                "Settings application timeout, proceeding with submission",
               );
               processSubmission();
             }
           }, MAX_SETTINGS_WAIT_MS);
         } else {
-          methods.setValue('text', decodedPrompt, { shouldValidate: true });
+          methods.setValue("text", decodedPrompt, { shouldValidate: true });
           textAreaRef.current.focus();
-          textAreaRef.current.setSelectionRange(decodedPrompt.length, decodedPrompt.length);
+          textAreaRef.current.setSelectionRange(
+            decodedPrompt.length,
+            decodedPrompt.length,
+          );
 
           methods.handleSubmit((data) => {
             if (data.text?.trim()) {
@@ -318,9 +351,12 @@ export default function useQueryParams({
           })();
         }
       } else if (decodedPrompt) {
-        methods.setValue('text', decodedPrompt, { shouldValidate: true });
+        methods.setValue("text", decodedPrompt, { shouldValidate: true });
         textAreaRef.current.focus();
-        textAreaRef.current.setSelectionRange(decodedPrompt.length, decodedPrompt.length);
+        textAreaRef.current.setSelectionRange(
+          decodedPrompt.length,
+          decodedPrompt.length,
+        );
       } else {
         submissionHandledRef.current = true;
       }
@@ -372,7 +408,10 @@ export default function useQueryParams({
           settingsTimeoutRef.current = null;
         }
 
-        logger.log('conversation', 'Settings fully applied, processing submission');
+        logger.log(
+          "conversation",
+          "Settings fully applied, processing submission",
+        );
         processSubmission();
       }
     }

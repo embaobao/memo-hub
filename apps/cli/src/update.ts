@@ -8,20 +8,20 @@
  *   memohub update
  */
 
-import { execSync } from 'node:child_process';
-import * as fs from 'node:fs';
-import * as path from 'node:path';
-import * as https from 'node:https';
+import { execSync } from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as https from "node:https";
 
-const PACKAGE_NAME = '@memohub/cli';
-const NPM_REGISTRY = 'https://registry.npmjs.org';
+const PACKAGE_NAME = "@memohub/cli";
+const NPM_REGISTRY = "https://registry.npmjs.org";
 
 /**
  * 获取当前版本
  */
 function getCurrentVersion(): string {
-  const packageJsonPath = path.join(process.cwd(), 'package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+  const packageJsonPath = path.join(process.cwd(), "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   return packageJson.version;
 }
 
@@ -30,22 +30,24 @@ function getCurrentVersion(): string {
  */
 async function getLatestVersion(): Promise<string> {
   return new Promise((resolve, reject) => {
-    https.get(`${NPM_REGISTRY}/${PACKAGE_NAME}`, (res) => {
-      let data = '';
+    https
+      .get(`${NPM_REGISTRY}/${PACKAGE_NAME}`, (res) => {
+        let data = "";
 
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
 
-      res.on('end', () => {
-        try {
-          const packageInfo = JSON.parse(data);
-          resolve(packageInfo['dist-tags'].latest);
-        } catch (error) {
-          reject(error);
-        }
-      });
-    }).on('error', reject);
+        res.on("end", () => {
+          try {
+            const packageInfo = JSON.parse(data);
+            resolve(packageInfo["dist-tags"].latest);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      })
+      .on("error", reject);
   });
 }
 
@@ -53,7 +55,7 @@ async function getLatestVersion(): Promise<string> {
  * 检查更新
  */
 async function checkUpdate(): Promise<void> {
-  console.log('正在检查更新...');
+  console.log("正在检查更新...");
 
   const currentVersion = getCurrentVersion();
   const latestVersion = await getLatestVersion();
@@ -62,15 +64,15 @@ async function checkUpdate(): Promise<void> {
   console.log(`最新版本: ${latestVersion}`);
 
   if (currentVersion === latestVersion) {
-    console.log('✅ 已经是最新版本');
+    console.log("✅ 已经是最新版本");
     return;
   }
 
   console.log(`\n🎉 发现新版本: ${latestVersion}`);
-  console.log('\n更新命令:');
-  console.log('  npm update -g @memohub/cli');
-  console.log('  或');
-  console.log('  bun install -g @memohub/cli');
+  console.log("\n更新命令:");
+  console.log("  npm update -g @memohub/cli");
+  console.log("  或");
+  console.log("  bun install -g @memohub/cli");
 }
 
 /**
@@ -80,7 +82,10 @@ export async function main() {
   try {
     await checkUpdate();
   } catch (error) {
-    console.error('❌ 检查更新失败:', error instanceof Error ? error.message : String(error));
+    console.error(
+      "❌ 检查更新失败:",
+      error instanceof Error ? error.message : String(error),
+    );
     process.exit(1);
   }
 }

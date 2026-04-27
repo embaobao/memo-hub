@@ -1,25 +1,25 @@
-import { useContext, useMemo, useState } from 'react';
-import useSWR from 'swr';
-import { Md5 } from 'ts-md5';
-import DOMPurify from 'dompurify';
-import { ThemeContext, isDark } from '@librechat/client';
-import type { MermaidConfig } from 'mermaid';
-import { inlineFlowchartConfig } from '~/utils/mermaid';
+import { useContext, useMemo, useState } from "react";
+import useSWR from "swr";
+import { Md5 } from "ts-md5";
+import DOMPurify from "dompurify";
+import { ThemeContext, isDark } from "@librechat/client";
+import type { MermaidConfig } from "mermaid";
+import { inlineFlowchartConfig } from "~/utils/mermaid";
 
 // Constants
 const MD5_LENGTH_THRESHOLD = 10_000;
-const DEFAULT_ID_PREFIX = 'mermaid-diagram';
+const DEFAULT_ID_PREFIX = "mermaid-diagram";
 
 // Lazy load mermaid library (~2MB)
-let mermaidPromise: Promise<typeof import('mermaid').default> | null = null;
+let mermaidPromise: Promise<typeof import("mermaid").default> | null = null;
 
 const loadMermaid = () => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return Promise.resolve(null);
   }
 
   if (!mermaidPromise) {
-    mermaidPromise = import('mermaid').then((mod) => mod.default);
+    mermaidPromise = import("mermaid").then((mod) => mod.default);
   }
 
   return mermaidPromise;
@@ -57,17 +57,18 @@ export const useMermaid = ({
   const isDarkMode = isDark(theme);
 
   // Store last valid SVG for fallback on errors
-  const [validContent, setValidContent] = useState<string>('');
+  const [validContent, setValidContent] = useState<string>("");
 
   // Generate cache key based on content, theme, and ID
   const cacheKey = useMemo((): string => {
     // For large diagrams, use MD5 hash instead of full content
-    const contentHash = content.length < MD5_LENGTH_THRESHOLD ? content : Md5.hashStr(content);
+    const contentHash =
+      content.length < MD5_LENGTH_THRESHOLD ? content : Md5.hashStr(content);
 
     // Include theme mode in cache key to handle theme switches
-    const themeKey = customTheme || (isDarkMode ? 'd' : 'l');
+    const themeKey = customTheme || (isDarkMode ? "d" : "l");
 
-    return [id, themeKey, contentHash].filter(Boolean).join('-');
+    return [id, themeKey, contentHash].filter(Boolean).join("-");
   }, [content, id, isDarkMode, customTheme]);
 
   // Generate unique diagram ID (mermaid requires unique IDs in the DOM)
@@ -81,15 +82,19 @@ export const useMermaid = ({
 
   // Build mermaid configuration
   const mermaidConfig = useMemo((): MermaidConfig => {
-    const defaultTheme = isDarkMode ? 'dark' : 'neutral';
+    const defaultTheme = isDarkMode ? "dark" : "neutral";
 
     return {
       startOnLoad: false,
-      theme: (customTheme as MermaidConfig['theme']) || defaultTheme,
+      theme: (customTheme as MermaidConfig["theme"]) || defaultTheme,
       ...config,
-      flowchart: { ...inlineFlowchartConfig, ...config?.flowchart, htmlLabels: false },
+      flowchart: {
+        ...inlineFlowchartConfig,
+        ...config?.flowchart,
+        htmlLabels: false,
+      },
       // Security hardening: MUST come after ...config spread to prevent override
-      securityLevel: 'strict',
+      securityLevel: "strict",
       maxTextSize: config?.maxTextSize ?? 50000,
       maxEdges: config?.maxEdges ?? 500,
     };
@@ -98,8 +103,8 @@ export const useMermaid = ({
   // Fetch/render function
   const fetchSvg = async (): Promise<string> => {
     // SSR guard
-    if (typeof window === 'undefined') {
-      return '';
+    if (typeof window === "undefined") {
+      return "";
     }
 
     try {
@@ -107,7 +112,7 @@ export const useMermaid = ({
       const mermaidInstance = await loadMermaid();
 
       if (!mermaidInstance) {
-        throw new Error('Failed to load mermaid library');
+        throw new Error("Failed to load mermaid library");
       }
 
       // Validate syntax first and capture detailed error
@@ -115,10 +120,10 @@ export const useMermaid = ({
         await mermaidInstance.parse(content);
       } catch (parseError) {
         // Extract meaningful error message from mermaid's parse error
-        let errorMessage = 'Invalid mermaid syntax';
+        let errorMessage = "Invalid mermaid syntax";
         if (parseError instanceof Error) {
           errorMessage = parseError.message;
-        } else if (typeof parseError === 'string') {
+        } else if (typeof parseError === "string") {
           errorMessage = parseError;
         }
 
@@ -136,13 +141,13 @@ export const useMermaid = ({
       const sanitizedSvg = purify.sanitize(svg, {
         USE_PROFILES: { svg: true, svgFilters: true },
         // Allow additional elements used by mermaid for text rendering
-        ADD_TAGS: ['foreignObject', 'use', 'switch'],
+        ADD_TAGS: ["foreignObject", "use", "switch"],
         ADD_ATTR: [
-          'dominant-baseline',
-          'text-anchor',
-          'requiredFeatures',
-          'systemLanguage',
-          'xmlns:xlink',
+          "dominant-baseline",
+          "text-anchor",
+          "requiredFeatures",
+          "systemLanguage",
+          "xmlns:xlink",
         ],
       });
 
@@ -151,7 +156,7 @@ export const useMermaid = ({
 
       return sanitizedSvg;
     } catch (error) {
-      console.error('Mermaid rendering error:', error);
+      console.error("Mermaid rendering error:", error);
 
       // Return last valid content if available (graceful degradation)
       if (validContent) {
@@ -163,14 +168,18 @@ export const useMermaid = ({
   };
 
   // Use SWR for caching and revalidation
-  const { data, error, isLoading, isValidating } = useSWR<string, Error>(cacheKey, fetchSvg, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    dedupingInterval: 3000,
-    errorRetryCount: 2,
-    errorRetryInterval: 1000,
-    shouldRetryOnError: true,
-  });
+  const { data, error, isLoading, isValidating } = useSWR<string, Error>(
+    cacheKey,
+    fetchSvg,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 3000,
+      errorRetryCount: 2,
+      errorRetryInterval: 1000,
+      shouldRetryOnError: true,
+    },
+  );
 
   return {
     svg: data,

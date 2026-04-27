@@ -1,26 +1,28 @@
-import { renderHook } from '@testing-library/react';
-import { Tools, EToolResources } from 'librechat-data-provider';
-import useAgentToolPermissions from '../useAgentToolPermissions';
+import { renderHook } from "@testing-library/react";
+import { Tools, EToolResources } from "librechat-data-provider";
+import useAgentToolPermissions from "../useAgentToolPermissions";
 
 // Mock the dependencies
-jest.mock('~/data-provider', () => ({
+jest.mock("~/data-provider", () => ({
   useGetAgentByIdQuery: jest.fn(),
 }));
 
-jest.mock('~/Providers', () => ({
+jest.mock("~/Providers", () => ({
   useAgentsMapContext: jest.fn(),
 }));
 
-const mockUseGetAgentByIdQuery = jest.requireMock('~/data-provider').useGetAgentByIdQuery;
-const mockUseAgentsMapContext = jest.requireMock('~/Providers').useAgentsMapContext;
+const mockUseGetAgentByIdQuery =
+  jest.requireMock("~/data-provider").useGetAgentByIdQuery;
+const mockUseAgentsMapContext =
+  jest.requireMock("~/Providers").useAgentsMapContext;
 
-describe('useAgentToolPermissions', () => {
+describe("useAgentToolPermissions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('when no agentId is provided', () => {
-    it('should disallow all tools for ephemeral agents when no ephemeralAgent settings provided', () => {
+  describe("when no agentId is provided", () => {
+    it("should disallow all tools for ephemeral agents when no ephemeralAgent settings provided", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
@@ -31,7 +33,7 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should disallow all tools when agentId is undefined and no ephemeralAgent settings', () => {
+    it("should disallow all tools when agentId is undefined and no ephemeralAgent settings", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
@@ -42,11 +44,11 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should disallow all tools when agentId is empty string and no ephemeralAgent settings', () => {
+    it("should disallow all tools when agentId is empty string and no ephemeralAgent settings", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
-      const { result } = renderHook(() => useAgentToolPermissions(''));
+      const { result } = renderHook(() => useAgentToolPermissions(""));
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(false);
@@ -54,12 +56,14 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('when agentId is provided but agent not found', () => {
-    it('should disallow all tools', () => {
+  describe("when agentId is provided but agent not found", () => {
+    it("should disallow all tools", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
-      const { result } = renderHook(() => useAgentToolPermissions('agent_nonexistent'));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions("agent_nonexistent"),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(false);
@@ -67,9 +71,9 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('when agent is found with tools', () => {
-    it('should allow tools that are included in the agent tools array', () => {
-      const agentId = 'agent_test';
+  describe("when agent is found with tools", () => {
+    it("should allow tools that are included in the agent tools array", () => {
+      const agentId = "agent_test";
       const agent = {
         id: agentId,
         tools: [Tools.file_search],
@@ -85,8 +89,8 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toEqual([Tools.file_search]);
     });
 
-    it('should allow both tools when both are included', () => {
-      const agentId = 'agent_test';
+    it("should allow both tools when both are included", () => {
+      const agentId = "agent_test";
       const agent = {
         id: agentId,
         tools: [Tools.file_search, Tools.execute_code],
@@ -99,11 +103,14 @@ describe('useAgentToolPermissions', () => {
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
-      expect(result.current.tools).toEqual([Tools.file_search, Tools.execute_code]);
+      expect(result.current.tools).toEqual([
+        Tools.file_search,
+        Tools.execute_code,
+      ]);
     });
 
-    it('should use data from API query when available', () => {
-      const agentId = 'agent_test';
+    it("should use data from API query when available", () => {
+      const agentId = "agent_test";
       const agentMapData = {
         id: agentId,
         tools: [Tools.file_search],
@@ -121,11 +128,14 @@ describe('useAgentToolPermissions', () => {
       // API data should take precedence
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
-      expect(result.current.tools).toEqual([Tools.execute_code, Tools.file_search]);
+      expect(result.current.tools).toEqual([
+        Tools.execute_code,
+        Tools.file_search,
+      ]);
     });
 
-    it('should fallback to agent map data when API data is not available', () => {
-      const agentId = 'agent_test';
+    it("should fallback to agent map data when API data is not available", () => {
+      const agentId = "agent_test";
       const agentMapData = {
         id: agentId,
         tools: [Tools.execute_code],
@@ -142,9 +152,9 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('when agent has no tools', () => {
-    it('should disallow all tools with empty array', () => {
-      const agentId = 'agent_test';
+  describe("when agent has no tools", () => {
+    it("should disallow all tools with empty array", () => {
+      const agentId = "agent_test";
       const agent = {
         id: agentId,
         tools: [],
@@ -160,8 +170,8 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toEqual([]);
     });
 
-    it('should disallow all tools with undefined tools', () => {
-      const agentId = 'agent_test';
+    it("should disallow all tools with undefined tools", () => {
+      const agentId = "agent_test";
       const agent = {
         id: agentId,
         tools: undefined,
@@ -178,8 +188,8 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('when ephemeralAgent settings are provided', () => {
-    it('should allow file_search when ephemeralAgent has file_search enabled', () => {
+  describe("when ephemeralAgent settings are provided", () => {
+    it("should allow file_search when ephemeralAgent has file_search enabled", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
@@ -187,14 +197,16 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.file_search]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(null, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(null, ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(false);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should allow execute_code when ephemeralAgent has execute_code enabled', () => {
+    it("should allow execute_code when ephemeralAgent has execute_code enabled", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
@@ -202,14 +214,16 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.execute_code]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(undefined, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(undefined, ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(true);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should allow both tools when ephemeralAgent has both enabled', () => {
+    it("should allow both tools when ephemeralAgent has both enabled", () => {
       mockUseAgentsMapContext.mockReturnValue({});
       mockUseGetAgentByIdQuery.mockReturnValue({ data: undefined });
 
@@ -218,15 +232,17 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.execute_code]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions('', ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions("", ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should not affect regular agents when ephemeralAgent is provided', () => {
-      const agentId = 'agent_regular';
+    it("should not affect regular agents when ephemeralAgent is provided", () => {
+      const agentId = "agent_regular";
       const agent = {
         id: agentId,
         tools: [Tools.file_search],
@@ -239,7 +255,9 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.execute_code]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(agentId, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(agentId, ephemeralAgent),
+      );
 
       // Should use regular agent's tools, not ephemeralAgent
       expect(result.current.fileSearchAllowedByAgent).toBe(true);

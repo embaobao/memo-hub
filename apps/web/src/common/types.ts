@@ -1,13 +1,17 @@
-import { RefObject } from 'react';
-import { FileSources, EModelEndpoint, isEphemeralAgentId } from 'librechat-data-provider';
-import type { UseMutationResult } from '@tanstack/react-query';
-import type * as InputNumberPrimitive from 'rc-input-number';
-import type { SetterOrUpdater, RecoilState } from 'recoil';
-import type { ColumnDef } from '@tanstack/react-table';
-import type * as t from 'librechat-data-provider';
-import type { LucideIcon } from 'lucide-react';
-import type { TranslationKeys } from '~/hooks';
-import { MCPServerDefinition } from '~/hooks/MCP/useMCPServerManager';
+import { RefObject } from "react";
+import {
+  FileSources,
+  EModelEndpoint,
+  isEphemeralAgentId,
+} from "librechat-data-provider";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type * as InputNumberPrimitive from "rc-input-number";
+import type { SetterOrUpdater, RecoilState } from "recoil";
+import type { ColumnDef } from "@tanstack/react-table";
+import type * as t from "librechat-data-provider";
+import type { LucideIcon } from "lucide-react";
+import type { TranslationKeys } from "~/hooks";
+import { MCPServerDefinition } from "~/hooks/MCP/useMCPServerManager";
 
 export function isEphemeralAgent(agentId: string | null | undefined): boolean {
   return isEphemeralAgentId(agentId);
@@ -28,18 +32,18 @@ export type CodeBarProps = {
 };
 
 export enum PromptsEditorMode {
-  SIMPLE = 'simple',
-  ADVANCED = 'advanced',
+  SIMPLE = "simple",
+  ADVANCED = "advanced",
 }
 
 export enum STTEndpoints {
-  browser = 'browser',
-  external = 'external',
+  browser = "browser",
+  external = "external",
 }
 
 export enum TTSEndpoints {
-  browser = 'browser',
-  external = 'external',
+  browser = "browser",
+  external = "external",
 }
 
 export type AudioChunk = {
@@ -68,14 +72,14 @@ export type BadgeItem = {
 export type AssistantListItem = {
   id: string;
   name: string;
-  metadata: t.Assistant['metadata'];
+  metadata: t.Assistant["metadata"];
   model: string;
 };
 
 export type AgentListItem = {
   id: string;
   name: string;
-  avatar: t.Agent['avatar'];
+  avatar: t.Agent["avatar"];
 };
 
 export type TPluginMap = Record<string, t.TPlugin>;
@@ -91,20 +95,20 @@ export type LocalizeFunction = (
 
 export type ChatFormValues = { text: string };
 
-export const mainTextareaId = 'prompt-textarea';
-export const globalAudioId = 'global-audio';
+export const mainTextareaId = "prompt-textarea";
+export const globalAudioId = "global-audio";
 
 export enum IconContext {
-  landing = 'landing',
-  menuItem = 'menu-item',
-  nav = 'nav',
-  message = 'message',
+  landing = "landing",
+  menuItem = "menu-item",
+  nav = "nav",
+  message = "message",
 }
 
 export type IconMapProps = {
   className?: string;
   iconURL?: string;
-  context?: 'landing' | 'menu-item' | 'nav' | 'message';
+  context?: "landing" | "menu-item" | "nav" | "message";
   endpoint?: string | null;
   endpointType?: string;
   assistantName?: string;
@@ -117,7 +121,10 @@ export type IconComponent = React.ComponentType<IconMapProps>;
 export type AgentIconComponent = React.ComponentType<AgentIconMapProps>;
 export type IconComponentTypes = IconComponent | AgentIconComponent;
 export type IconsRecord = {
-  [key in t.EModelEndpoint | 'unknown' | string]: IconComponentTypes | null | undefined;
+  [key in t.EModelEndpoint | "unknown" | string]:
+    | IconComponentTypes
+    | null
+    | undefined;
 };
 
 export type AgentIconMapProps = IconMapProps & { agentName?: string };
@@ -128,7 +135,7 @@ export type NavLink = {
   icon: LucideIcon | React.FC;
   Component?: React.ComponentType;
   onClick?: (e?: React.MouseEvent) => void;
-  variant?: 'default' | 'ghost';
+  variant?: "default" | "ghost";
   id: string;
 };
 
@@ -141,11 +148,11 @@ export interface DataColumnMeta {
 }
 
 export enum Panel {
-  advanced = 'advanced',
-  builder = 'builder',
-  actions = 'actions',
-  model = 'model',
-  version = 'version',
+  advanced = "advanced",
+  builder = "builder",
+  actions = "actions",
+  model = "model",
+  version = "version",
 }
 
 export type FileSetter =
@@ -169,7 +176,7 @@ export type ActionAuthForm = {
   token_exchange_method: t.TokenExchangeMethodEnum;
 };
 
-export type ActionWithNullableMetadata = Omit<t.Action, 'metadata'> & {
+export type ActionWithNullableMetadata = Omit<t.Action, "metadata"> & {
   metadata: t.ActionMetadata | null;
 };
 
@@ -183,7 +190,9 @@ export type AssistantPanelProps = {
   version: number | string;
   documentsMap: Map<string, t.AssistantDocument> | null;
   setAction: React.Dispatch<React.SetStateAction<t.Action | undefined>>;
-  setCurrentAssistantId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setCurrentAssistantId: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
   setActivePanel: React.Dispatch<React.SetStateAction<Panel>>;
 };
 
@@ -242,7 +251,8 @@ export type AgentModelPanelProps = {
   setActivePanel: React.Dispatch<React.SetStateAction<Panel>>;
 };
 
-export type AugmentedColumnDef<TData, TValue> = ColumnDef<TData, TValue> & DataColumnMeta;
+export type AugmentedColumnDef<TData, TValue> = ColumnDef<TData, TValue> &
+  DataColumnMeta;
 
 export type TSetOption = t.TSetOption;
 
@@ -252,22 +262,23 @@ export type TSetExample = (
   newValue: number | string | boolean | null,
 ) => void;
 
-export type OnInputNumberChange = InputNumberPrimitive.InputNumberProps['onChange'];
+export type OnInputNumberChange =
+  InputNumberPrimitive.InputNumberProps["onChange"];
 
 export const defaultDebouncedDelay = 450;
 
 export enum ESide {
-  Top = 'top',
-  Right = 'right',
-  Bottom = 'bottom',
-  Left = 'left',
+  Top = "top",
+  Right = "right",
+  Bottom = "bottom",
+  Left = "left",
 }
 
 export enum NotificationSeverity {
-  INFO = 'info',
-  SUCCESS = 'success',
-  WARNING = 'warning',
-  ERROR = 'error',
+  INFO = "info",
+  SUCCESS = "success",
+  WARNING = "warning",
+  ERROR = "error",
 }
 
 export type TShowToast = {
@@ -275,7 +286,7 @@ export type TShowToast = {
   severity?: NotificationSeverity;
   showIcon?: boolean;
   duration?: number;
-  status?: 'error' | 'success' | 'warning' | 'info';
+  status?: "error" | "success" | "warning" | "info";
 };
 
 export type TBaseSettingsProps = {
@@ -348,7 +359,7 @@ export type TOptions = {
   /** This value is only true when the user submits a message with "Save & Submit" for a user-created message */
   isResubmission?: boolean;
   /** Currently only utilized when `isResubmission === true`, uses that message's currently attached files */
-  overrideFiles?: t.TMessage['files'];
+  overrideFiles?: t.TMessage["files"];
   /** Added conversation for multi-convo feature - sent to server as part of submission payload */
   addedConvo?: t.TConversation;
 };
@@ -368,7 +379,10 @@ export type TAskFunction = (props: TAskProps, options?: TOptions) => void;
 export type TMessageChatContext = {
   ask: (...args: Parameters<TAskFunction>) => void;
   index: number;
-  regenerate: (message: t.TMessage, options?: { addedConvo?: t.TConversation | null }) => void;
+  regenerate: (
+    message: t.TMessage,
+    options?: { addedConvo?: t.TConversation | null },
+  ) => void;
   conversation: t.TConversation | null;
   latestMessageId: string | undefined;
   latestMessageDepth: number | undefined;
@@ -386,15 +400,19 @@ export type TMessageProps = {
   isSearchView?: boolean;
   siblingIdx?: number;
   siblingCount?: number;
-  setCurrentEditId?: React.Dispatch<React.SetStateAction<string | number | null>> | null;
-  setSiblingIdx?: ((value: number) => void | React.Dispatch<React.SetStateAction<number>>) | null;
+  setCurrentEditId?: React.Dispatch<
+    React.SetStateAction<string | number | null>
+  > | null;
+  setSiblingIdx?:
+    | ((value: number) => void | React.Dispatch<React.SetStateAction<number>>)
+    | null;
 };
 
-export type TMessageIcon = { endpoint?: string | null; isCreatedByUser?: boolean } & Pick<
-  t.TConversation,
-  'modelLabel'
-> &
-  Pick<t.TMessage, 'model' | 'iconURL'>;
+export type TMessageIcon = {
+  endpoint?: string | null;
+  isCreatedByUser?: boolean;
+} & Pick<t.TConversation, "modelLabel"> &
+  Pick<t.TMessage, "model" | "iconURL">;
 
 export type TInitialProps = {
   text: string;
@@ -415,15 +433,15 @@ export type TAdditionalProps = {
 
 export type TMessageContentProps = TInitialProps & TAdditionalProps;
 
-export type TText = Pick<TInitialProps, 'text'> & { className?: string };
-export type TEditProps = Pick<TInitialProps, 'isSubmitting'> &
-  Omit<TAdditionalProps, 'isCreatedByUser' | 'siblingIdx'> & {
+export type TText = Pick<TInitialProps, "text"> & { className?: string };
+export type TEditProps = Pick<TInitialProps, "isSubmitting"> &
+  Omit<TAdditionalProps, "isCreatedByUser" | "siblingIdx"> & {
     text?: string;
     index?: number;
     siblingIdx: number | null;
   };
 export type TDisplayProps = TText &
-  Pick<TAdditionalProps, 'isCreatedByUser' | 'message'> & {
+  Pick<TAdditionalProps, "isCreatedByUser" | "message"> & {
     showCursor?: boolean;
   };
 
@@ -487,8 +505,8 @@ export type TAuthConfig = {
   test?: boolean;
 };
 
-export type IconProps = Pick<t.TMessage, 'isCreatedByUser' | 'model'> &
-  Pick<t.TConversation, 'chatGptLabel' | 'modelLabel'> & {
+export type IconProps = Pick<t.TMessage, "isCreatedByUser" | "model"> &
+  Pick<t.TConversation, "chatGptLabel" | "modelLabel"> & {
     size?: number;
     button?: boolean;
     iconURL?: string;
@@ -532,7 +550,9 @@ export type TMessageAudio = {
 };
 
 export type OptionWithIcon = Option & { icon?: React.ReactNode };
-export type DropdownValueSetter = (value: string | Option | OptionWithIcon) => void;
+export type DropdownValueSetter = (
+  value: string | Option | OptionWithIcon,
+) => void;
 export type MentionOption = OptionWithIcon & {
   type: string;
   value: string;
@@ -563,7 +583,7 @@ export interface ExtendedFile {
   attached?: boolean;
   embedded?: boolean;
   tool_resource?: string;
-  metadata?: t.TFile['metadata'];
+  metadata?: t.TFile["metadata"];
 }
 
 export interface ModelItemProps {
@@ -601,7 +621,9 @@ export type NewConversationParams = {
   disableParams?: boolean;
 };
 
-export type ConvoGenerator = (params: NewConversationParams) => void | t.TConversation;
+export type ConvoGenerator = (
+  params: NewConversationParams,
+) => void | t.TConversation;
 
 export type TBaseResData = {
   final?: boolean;
@@ -617,15 +639,16 @@ export type TResData = TBaseResData & {
   responseMessage: t.TMessage;
 };
 
-export type TFinalResData = Omit<TBaseResData, 'conversation'> & {
-  conversation: Partial<t.TConversation> & Pick<t.TConversation, 'conversationId'>;
+export type TFinalResData = Omit<TBaseResData, "conversation"> & {
+  conversation: Partial<t.TConversation> &
+    Pick<t.TConversation, "conversationId">;
   requestMessage?: t.TMessage;
   responseMessage?: t.TMessage;
 };
 
 export type TVectorStore = {
   _id: string;
-  object: 'vector_store';
+  object: "vector_store";
   created_at: string | Date;
   name: string;
   bytes?: number;

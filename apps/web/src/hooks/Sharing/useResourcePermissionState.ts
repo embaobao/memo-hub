@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   useGetResourcePermissionsQuery,
   useUpdateResourcePermissionsMutation,
-} from 'librechat-data-provider/react-query';
-import type { TPrincipal, ResourceType, AccessRoleIds } from 'librechat-data-provider';
-import { getResourceConfig } from '~/utils';
+} from "librechat-data-provider/react-query";
+import type {
+  TPrincipal,
+  ResourceType,
+  AccessRoleIds,
+} from "librechat-data-provider";
+import { getResourceConfig } from "~/utils";
 
 /**
  * Hook to manage resource permission state including current shares, public access, and mutations
@@ -21,13 +25,13 @@ export const useResourcePermissionState = (
   const config = getResourceConfig(resourceType);
 
   // Only enable the query if we have a valid resourceDbId
-  const isValidResourceId = !!resourceDbId && resourceDbId.trim() !== '';
+  const isValidResourceId = !!resourceDbId && resourceDbId.trim() !== "";
 
   const {
     data: permissionsData,
     isLoading: isLoadingPermissions,
     error: permissionsError,
-  } = useGetResourcePermissionsQuery(resourceType, resourceDbId || '', {
+  } = useGetResourcePermissionsQuery(resourceType, resourceDbId || "", {
     enabled: isValidResourceId,
   });
 
@@ -48,7 +52,8 @@ export const useResourcePermissionState = (
     })) || [];
 
   const currentIsPublic = permissionsData?.public ?? false;
-  const currentPublicRole = permissionsData?.publicAccessRoleId || config?.defaultViewerRoleId;
+  const currentPublicRole =
+    permissionsData?.publicAccessRoleId || config?.defaultViewerRoleId;
 
   // State for managing public access
   const [isPublic, setIsPublic] = useState(false);

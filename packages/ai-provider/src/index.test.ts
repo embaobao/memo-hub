@@ -1,44 +1,44 @@
-import { describe, it, expect } from 'bun:test';
-import { AIProviderRegistry } from './registry.js';
-import { AIProviderError } from './types.js';
-import type { IEmbedder } from './types.js';
+import { describe, it, expect } from "bun:test";
+import { AIProviderRegistry } from "./registry.js";
+import { AIProviderError } from "./types.js";
+import type { IEmbedder } from "./types.js";
 
 const mockEmbedder: IEmbedder = {
   embed: async () => [1, 2, 3],
   batchEmbed: async (texts) => texts.map(() => [1, 2, 3]),
 };
 
-describe('AIProviderRegistry', () => {
-  it('registers and retrieves embedder', () => {
+describe("AIProviderRegistry", () => {
+  it("registers and retrieves embedder", () => {
     const registry = new AIProviderRegistry();
-    registry.registerEmbedder('mock', () => mockEmbedder);
-    const embedder = registry.getEmbedder('mock');
+    registry.registerEmbedder("mock", () => mockEmbedder);
+    const embedder = registry.getEmbedder("mock");
     expect(embedder).toBe(mockEmbedder);
   });
 
-  it('throws for unregistered adapter', () => {
+  it("throws for unregistered adapter", () => {
     const registry = new AIProviderRegistry();
-    expect(() => registry.getEmbedder('nonexistent')).toThrow('not registered');
+    expect(() => registry.getEmbedder("nonexistent")).toThrow("not registered");
   });
 
-  it('caches instances', () => {
+  it("caches instances", () => {
     const registry = new AIProviderRegistry();
     let callCount = 0;
-    registry.registerEmbedder('cached', () => {
+    registry.registerEmbedder("cached", () => {
       callCount++;
       return mockEmbedder;
     });
-    registry.getEmbedder('cached');
-    registry.getEmbedder('cached');
+    registry.getEmbedder("cached");
+    registry.getEmbedder("cached");
     expect(callCount).toBe(1);
   });
 });
 
-describe('AIProviderError', () => {
-  it('includes provider name', () => {
-    const err = new AIProviderError('test', 'ollama');
-    expect(err.name).toBe('AIProviderError');
-    expect(err.provider).toBe('ollama');
-    expect(err.message).toBe('test');
+describe("AIProviderError", () => {
+  it("includes provider name", () => {
+    const err = new AIProviderError("test", "ollama");
+    expect(err.name).toBe("AIProviderError");
+    expect(err.provider).toBe("ollama");
+    expect(err.message).toBe("test");
   });
 });

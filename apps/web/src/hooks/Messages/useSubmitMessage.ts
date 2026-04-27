@@ -1,10 +1,14 @@
-import { useCallback } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { replaceSpecialVars } from 'librechat-data-provider';
-import { useChatContext, useChatFormContext, useAddedChatContext } from '~/Providers';
-import { useAuthContext } from '~/hooks/AuthContext';
-import { mainTextareaId } from '~/common';
-import store from '~/store';
+import { useCallback } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { replaceSpecialVars } from "librechat-data-provider";
+import {
+  useChatContext,
+  useChatFormContext,
+  useAddedChatContext,
+} from "~/Providers";
+import { useAuthContext } from "~/hooks/AuthContext";
+import { mainTextareaId } from "~/common";
+import store from "~/store";
 
 export default function useSubmitMessage() {
   const { user } = useAuthContext();
@@ -19,7 +23,7 @@ export default function useSubmitMessage() {
   const submitMessage = useCallback(
     (data?: { text: string }) => {
       if (!data) {
-        return console.warn('No data provided to submitMessage');
+        return console.warn("No data provided to submitMessage");
       }
       const rootMessages = getMessages();
       const isLatestInRootMessages = rootMessages?.some(
@@ -50,9 +54,12 @@ export default function useSubmitMessage() {
         return;
       }
 
-      const textarea = document.getElementById(mainTextareaId) as HTMLTextAreaElement | null;
-      const currentText = textarea?.value ?? methods.getValues('text');
-      const newText = currentText.trim().length > 1 ? `\n${parsedText}` : parsedText;
+      const textarea = document.getElementById(
+        mainTextareaId,
+      ) as HTMLTextAreaElement | null;
+      const currentText = textarea?.value ?? methods.getValues("text");
+      const newText =
+        currentText.trim().length > 1 ? `\n${parsedText}` : parsedText;
       setActivePrompt(newText);
     },
     [autoSendPrompts, submitMessage, setActivePrompt, methods, user],

@@ -1,8 +1,8 @@
-import { EModelEndpoint } from 'librechat-data-provider';
-import type { TConversation } from 'librechat-data-provider';
-import buildDefaultConvo from '../buildDefaultConvo';
+import { EModelEndpoint } from "librechat-data-provider";
+import type { TConversation } from "librechat-data-provider";
+import buildDefaultConvo from "../buildDefaultConvo";
 
-jest.mock('../localStorage', () => ({
+jest.mock("../localStorage", () => ({
   getLocalStorageItems: jest.fn(() => ({
     lastSelectedModel: {},
     lastSelectedTools: [],
@@ -11,23 +11,23 @@ jest.mock('../localStorage', () => ({
 }));
 
 const baseConversation: TConversation = {
-  conversationId: 'test-convo-id',
-  title: 'Test Conversation',
-  createdAt: '2024-01-01T00:00:00Z',
-  updatedAt: '2024-01-01T00:00:00Z',
+  conversationId: "test-convo-id",
+  title: "Test Conversation",
+  createdAt: "2024-01-01T00:00:00Z",
+  updatedAt: "2024-01-01T00:00:00Z",
   endpoint: null,
 };
 
-describe('buildDefaultConvo - defaultParamsEndpoint', () => {
-  describe('custom endpoint with defaultParamsEndpoint: anthropic', () => {
-    const models = ['anthropic/claude-opus-4.5', 'anthropic/claude-sonnet-4'];
+describe("buildDefaultConvo - defaultParamsEndpoint", () => {
+  describe("custom endpoint with defaultParamsEndpoint: anthropic", () => {
+    const models = ["anthropic/claude-opus-4.5", "anthropic/claude-sonnet-4"];
 
-    it('should preserve maxOutputTokens from model spec preset', () => {
+    it("should preserve maxOutputTokens from model spec preset", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'AnthropicClaude' as EModelEndpoint,
+        endpoint: "AnthropicClaude" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'anthropic/claude-opus-4.5',
+        model: "anthropic/claude-opus-4.5",
         temperature: 0.7,
         maxOutputTokens: 8192,
         topP: 0.9,
@@ -37,7 +37,7 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       const result = buildDefaultConvo({
         models,
         conversation: baseConversation,
-        endpoint: 'AnthropicClaude' as EModelEndpoint,
+        endpoint: "AnthropicClaude" as EModelEndpoint,
         lastConversationSetup: preset,
         defaultParamsEndpoint: EModelEndpoint.anthropic,
       });
@@ -46,15 +46,15 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       expect(result.topP).toBe(0.9);
       expect(result.temperature).toBe(0.7);
       expect(result.maxContextTokens).toBe(50000);
-      expect(result.model).toBe('anthropic/claude-opus-4.5');
+      expect(result.model).toBe("anthropic/claude-opus-4.5");
     });
 
-    it('should strip maxOutputTokens without defaultParamsEndpoint', () => {
+    it("should strip maxOutputTokens without defaultParamsEndpoint", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'AnthropicClaude' as EModelEndpoint,
+        endpoint: "AnthropicClaude" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'anthropic/claude-opus-4.5',
+        model: "anthropic/claude-opus-4.5",
         temperature: 0.7,
         maxOutputTokens: 8192,
       };
@@ -62,7 +62,7 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       const result = buildDefaultConvo({
         models,
         conversation: baseConversation,
-        endpoint: 'AnthropicClaude' as EModelEndpoint,
+        endpoint: "AnthropicClaude" as EModelEndpoint,
         lastConversationSetup: preset,
       });
 
@@ -70,12 +70,12 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       expect(result.temperature).toBe(0.7);
     });
 
-    it('should strip OpenAI-specific fields when using anthropic params', () => {
+    it("should strip OpenAI-specific fields when using anthropic params", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'AnthropicClaude' as EModelEndpoint,
+        endpoint: "AnthropicClaude" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'anthropic/claude-opus-4.5',
+        model: "anthropic/claude-opus-4.5",
         max_tokens: 4096,
         top_p: 0.9,
         presence_penalty: 0.5,
@@ -85,7 +85,7 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       const result = buildDefaultConvo({
         models,
         conversation: baseConversation,
-        endpoint: 'AnthropicClaude' as EModelEndpoint,
+        endpoint: "AnthropicClaude" as EModelEndpoint,
         lastConversationSetup: preset,
         defaultParamsEndpoint: EModelEndpoint.anthropic,
       });
@@ -97,15 +97,15 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
     });
   });
 
-  describe('custom endpoint without defaultParamsEndpoint (OpenAI default)', () => {
-    const models = ['gpt-4o', 'gpt-4.1'];
+  describe("custom endpoint without defaultParamsEndpoint (OpenAI default)", () => {
+    const models = ["gpt-4o", "gpt-4.1"];
 
-    it('should preserve OpenAI fields and strip anthropic fields', () => {
+    it("should preserve OpenAI fields and strip anthropic fields", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'MyOpenRouterEndpoint' as EModelEndpoint,
+        endpoint: "MyOpenRouterEndpoint" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'gpt-4o',
+        model: "gpt-4o",
         temperature: 0.7,
         max_tokens: 4096,
         top_p: 0.9,
@@ -115,7 +115,7 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       const result = buildDefaultConvo({
         models,
         conversation: baseConversation,
-        endpoint: 'MyOpenRouterEndpoint' as EModelEndpoint,
+        endpoint: "MyOpenRouterEndpoint" as EModelEndpoint,
         lastConversationSetup: preset,
       });
 
@@ -126,15 +126,15 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
     });
   });
 
-  describe('custom endpoint with defaultParamsEndpoint: google', () => {
-    const models = ['gemini-pro', 'gemini-1.5-pro'];
+  describe("custom endpoint with defaultParamsEndpoint: google", () => {
+    const models = ["gemini-pro", "gemini-1.5-pro"];
 
-    it('should preserve Google-specific fields', () => {
+    it("should preserve Google-specific fields", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'MyGoogleEndpoint' as EModelEndpoint,
+        endpoint: "MyGoogleEndpoint" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'gemini-pro',
+        model: "gemini-pro",
         temperature: 0.7,
         maxOutputTokens: 8192,
         topP: 0.9,
@@ -144,7 +144,7 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       const result = buildDefaultConvo({
         models,
         conversation: baseConversation,
-        endpoint: 'MyGoogleEndpoint' as EModelEndpoint,
+        endpoint: "MyGoogleEndpoint" as EModelEndpoint,
         lastConversationSetup: preset,
         defaultParamsEndpoint: EModelEndpoint.google,
       });
@@ -155,21 +155,21 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
     });
   });
 
-  describe('cross-endpoint field isolation', () => {
-    it('should not carry bedrock region to a custom endpoint', () => {
+  describe("cross-endpoint field isolation", () => {
+    it("should not carry bedrock region to a custom endpoint", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'MyChatEndpoint' as EModelEndpoint,
+        endpoint: "MyChatEndpoint" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'gpt-4o',
+        model: "gpt-4o",
         temperature: 0.7,
-        region: 'us-east-1',
+        region: "us-east-1",
       };
 
       const result = buildDefaultConvo({
-        models: ['gpt-4o'],
+        models: ["gpt-4o"],
         conversation: baseConversation,
-        endpoint: 'MyChatEndpoint' as EModelEndpoint,
+        endpoint: "MyChatEndpoint" as EModelEndpoint,
         lastConversationSetup: preset,
       });
 
@@ -177,20 +177,20 @@ describe('buildDefaultConvo - defaultParamsEndpoint', () => {
       expect(result.temperature).toBe(0.7);
     });
 
-    it('should not carry bedrock region even with anthropic defaultParamsEndpoint', () => {
+    it("should not carry bedrock region even with anthropic defaultParamsEndpoint", () => {
       const preset: TConversation = {
         ...baseConversation,
-        endpoint: 'MyChatEndpoint' as EModelEndpoint,
+        endpoint: "MyChatEndpoint" as EModelEndpoint,
         endpointType: EModelEndpoint.custom,
-        model: 'claude-3-opus',
-        region: 'us-east-1',
+        model: "claude-3-opus",
+        region: "us-east-1",
         maxOutputTokens: 8192,
       };
 
       const result = buildDefaultConvo({
-        models: ['claude-3-opus'],
+        models: ["claude-3-opus"],
         conversation: baseConversation,
-        endpoint: 'MyChatEndpoint' as EModelEndpoint,
+        endpoint: "MyChatEndpoint" as EModelEndpoint,
         lastConversationSetup: preset,
         defaultParamsEndpoint: EModelEndpoint.anthropic,
       });

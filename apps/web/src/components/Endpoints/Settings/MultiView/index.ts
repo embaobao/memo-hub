@@ -1,1 +1,1 @@
-export { default as GoogleSettings } from './GoogleSettings';
+export { default as GoogleSettings } from "./GoogleSettings";

@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { TAttachment, Tools, SearchResultData } from 'librechat-data-provider';
-import { useLocalize } from '~/hooks';
+import { useMemo } from "react";
+import { TAttachment, Tools, SearchResultData } from "librechat-data-provider";
+import { useLocalize } from "~/hooks";
 
 interface FileSource {
   fileId: string;
@@ -33,15 +33,21 @@ export function useSearchResultsByTurn(attachments?: TAttachment[]) {
 
     attachments?.forEach((attachment) => {
       // Handle web search attachments (existing functionality)
-      if (attachment.type === Tools.web_search && attachment[Tools.web_search]) {
+      if (
+        attachment.type === Tools.web_search &&
+        attachment[Tools.web_search]
+      ) {
         const searchData = attachment[Tools.web_search];
-        if (searchData && typeof searchData.turn === 'number') {
+        if (searchData && typeof searchData.turn === "number") {
           turnMap[searchData.turn.toString()] = searchData;
         }
       }
 
       // Handle agent file search attachments (following web search pattern)
-      if (attachment.type === Tools.file_search && attachment[Tools.file_search]) {
+      if (
+        attachment.type === Tools.file_search &&
+        attachment[Tools.file_search]
+      ) {
         const sources = attachment[Tools.file_search].sources;
 
         // Deduplicate sources by fileId and merge pages
@@ -62,10 +68,16 @@ export function useSearchResultsByTurn(attachments?: TAttachment[]) {
               // Merge page relevance mappings
               const existingPageRelevance = existing.pageRelevance || {};
               const newPageRelevance = source.pageRelevance || {};
-              const mergedPageRelevance = { ...existingPageRelevance, ...newPageRelevance };
+              const mergedPageRelevance = {
+                ...existingPageRelevance,
+                ...newPageRelevance,
+              };
 
               existing.pages = uniquePages;
-              existing.relevance = Math.max(existing.relevance || 0, source.relevance || 0);
+              existing.relevance = Math.max(
+                existing.relevance || 0,
+                source.relevance || 0,
+              );
               existing.pageRelevance = mergedPageRelevance;
             }
           } else {
@@ -89,14 +101,16 @@ export function useSearchResultsByTurn(attachments?: TAttachment[]) {
           references: Array.from(deduplicatedSources.values()).map(
             (source) =>
               ({
-                title: source.fileName || localize('com_file_unknown'),
+                title: source.fileName || localize("com_file_unknown"),
                 link: `#file-${source.fileId}`, // Create a pseudo-link for file references
-                attribution: source.fileName || localize('com_file_unknown'), // Show filename in inline display
+                attribution: source.fileName || localize("com_file_unknown"), // Show filename in inline display
                 snippet:
                   source.pages && source.pages.length > 0
-                    ? localize('com_file_pages', { pages: source.pages.join(', ') })
-                    : '', // Only page numbers for hover
-                type: 'file' as const,
+                    ? localize("com_file_pages", {
+                        pages: source.pages.join(", "),
+                      })
+                    : "", // Only page numbers for hover
+                type: "file" as const,
                 // Store additional agent-specific data as properties on the reference
                 fileId: source.fileId,
                 fileName: source.fileName,

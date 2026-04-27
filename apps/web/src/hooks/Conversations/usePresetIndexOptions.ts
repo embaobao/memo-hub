@@ -1,9 +1,16 @@
-import type { TPreset } from 'librechat-data-provider';
-import type { TSetOptionsPayload, TSetExample, TSetOption, TSetOptions } from '~/common';
-import { useChatContext } from '~/Providers/ChatContext';
-import { cleanupPreset } from '~/utils';
+import type { TPreset } from "librechat-data-provider";
+import type {
+  TSetOptionsPayload,
+  TSetExample,
+  TSetOption,
+  TSetOptions,
+} from "~/common";
+import { useChatContext } from "~/Providers/ChatContext";
+import { cleanupPreset } from "~/utils";
 
-type TUsePresetOptions = (preset?: TPreset | boolean | null) => TSetOptionsPayload | boolean;
+type TUsePresetOptions = (
+  preset?: TPreset | boolean | null,
+) => TSetOptionsPayload | boolean;
 
 const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   const { preset, setPreset } = useChatContext();
@@ -44,7 +51,7 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
     const currentExample = { ...current[i] } || {};
     currentExample[type] = { content: newValue };
     current[i] = currentExample;
-    update['examples'] = current;
+    update["examples"] = current;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -58,8 +65,8 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
   const addExample: () => void = () => {
     const update = {};
     const current = preset?.examples?.slice() || [];
-    current.push({ input: { content: '' }, output: { content: '' } });
-    update['examples'] = current;
+    current.push({ input: { content: "" }, output: { content: "" } });
+    update["examples"] = current;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {
@@ -74,7 +81,9 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
     const update = {};
     const current = preset?.examples?.slice() || [];
     if (current.length <= 1) {
-      update['examples'] = [{ input: { content: '' }, output: { content: '' } }];
+      update["examples"] = [
+        { input: { content: "" }, output: { content: "" } },
+      ];
       setPreset((prevState) =>
         cleanupPreset({
           preset: {
@@ -86,7 +95,7 @@ const usePresetIndexOptions: TUsePresetOptions = (_preset) => {
       return;
     }
     current.pop();
-    update['examples'] = current;
+    update["examples"] = current;
     setPreset((prevState) =>
       cleanupPreset({
         preset: {

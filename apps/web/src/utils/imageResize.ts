@@ -7,7 +7,7 @@ export interface ResizeOptions {
   maxWidth?: number;
   maxHeight?: number;
   quality?: number;
-  format?: 'jpeg' | 'png' | 'webp';
+  format?: "jpeg" | "png" | "webp";
 }
 
 export interface ResizeResult {
@@ -28,7 +28,7 @@ const DEFAULT_RESIZE_OPTIONS: ResizeOptions = {
   maxWidth: 1900, // Slightly less than backend maxLongSide=2000
   maxHeight: 1900, // Slightly less than backend maxLongSide=2000
   quality: 0.92, // High quality while reducing file size
-  format: 'jpeg', // Most compatible format
+  format: "jpeg", // Most compatible format
 };
 
 /**
@@ -37,13 +37,13 @@ const DEFAULT_RESIZE_OPTIONS: ResizeOptions = {
 export function supportsClientResize(): boolean {
   try {
     // Check for required APIs
-    if (typeof HTMLCanvasElement === 'undefined') return false;
-    if (typeof FileReader === 'undefined') return false;
-    if (typeof Image === 'undefined') return false;
+    if (typeof HTMLCanvasElement === "undefined") return false;
+    if (typeof FileReader === "undefined") return false;
+    if (typeof Image === "undefined") return false;
 
     // Test canvas creation
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
     return !!(ctx && ctx.drawImage && canvas.toBlob);
   } catch {
@@ -88,13 +88,13 @@ export function resizeImage(
   return new Promise((resolve, reject) => {
     // Check browser support
     if (!supportsClientResize()) {
-      reject(new Error('Browser does not support client-side image resizing'));
+      reject(new Error("Browser does not support client-side image resizing"));
       return;
     }
 
     // Only process image files
-    if (!file.type.startsWith('image/')) {
-      reject(new Error('File is not an image'));
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("File is not an image"));
       return;
     }
 
@@ -131,15 +131,15 @@ export function resizeImage(
           }
 
           // Create canvas and resize
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d')!;
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d")!;
 
           canvas.width = newDimensions.width;
           canvas.height = newDimensions.height;
 
           // Use high-quality image smoothing
           ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
+          ctx.imageSmoothingQuality = "high";
 
           // Draw resized image
           ctx.drawImage(img, 0, 0, newDimensions.width, newDimensions.height);
@@ -148,13 +148,14 @@ export function resizeImage(
           canvas.toBlob(
             (blob) => {
               if (!blob) {
-                reject(new Error('Failed to create blob from canvas'));
+                reject(new Error("Failed to create blob from canvas"));
                 return;
               }
 
               // Create new file with same name but potentially different extension
-              const extension = opts.format === 'jpeg' ? '.jpg' : `.${opts.format}`;
-              const baseName = file.name.replace(/\.[^/.]+$/, '');
+              const extension =
+                opts.format === "jpeg" ? ".jpg" : `.${opts.format}`;
+              const baseName = file.name.replace(/\.[^/.]+$/, "");
               const newFileName = `${baseName}${extension}`;
 
               const resizedFile = new File([blob], newFileName, {
@@ -179,11 +180,11 @@ export function resizeImage(
         }
       };
 
-      img.onerror = () => reject(new Error('Failed to load image'));
+      img.onerror = () => reject(new Error("Failed to load image"));
       img.src = event.target?.result as string;
     };
 
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsDataURL(file);
   });
 }
@@ -202,12 +203,12 @@ export function shouldResizeImage(
   }
 
   // Don't process non-images
-  if (!file.type.startsWith('image/')) {
+  if (!file.type.startsWith("image/")) {
     return false;
   }
 
   // Don't process GIFs (they might be animated)
-  if (file.type === 'image/gif') {
+  if (file.type === "image/gif") {
     return false;
   }
 

@@ -7,13 +7,13 @@
  * - Post: 融合去重 + 综合排序
  */
 
-import type { IKernel, IEmbedder } from '@memohub/protocol';
-import { extractEntitiesFromText } from '@memohub/protocol';
+import type { IKernel, IEmbedder } from "@memohub/protocol";
+import { extractEntitiesFromText } from "@memohub/protocol";
 
 // ==================== 类型定义 ====================
 
 export interface QueryIntent {
-  type: 'code' | 'knowledge' | 'mixed';
+  type: "code" | "knowledge" | "mixed";
   confidence: number;
   reason: string;
 }
@@ -21,7 +21,7 @@ export interface QueryIntent {
 export interface QueryEntities {
   entities: string[];
   extracted: boolean;
-  method: 'manual' | 'auto' | 'none';
+  method: "manual" | "auto" | "none";
 }
 
 export interface TokenizedQuery {
@@ -104,35 +104,64 @@ export class PreProcessor {
     const q = query.toLowerCase();
 
     // 代码相关关键词
-    const codeKeywords = ['function', 'class', 'interface', 'type', 'import', 'export',
-      'async', 'await', 'const', 'let', 'var', 'return', '=>', '.ts', '.js', '.py'];
+    const codeKeywords = [
+      "function",
+      "class",
+      "interface",
+      "type",
+      "import",
+      "export",
+      "async",
+      "await",
+      "const",
+      "let",
+      "var",
+      "return",
+      "=>",
+      ".ts",
+      ".js",
+      ".py",
+    ];
 
     // 知识相关关键词
-    const knowledgeKeywords = ['what', 'how', 'why', 'explain', 'describe', 'definition',
-      'meaning', 'concept', 'idea', 'principle'];
+    const knowledgeKeywords = [
+      "what",
+      "how",
+      "why",
+      "explain",
+      "describe",
+      "definition",
+      "meaning",
+      "concept",
+      "idea",
+      "principle",
+    ];
 
-    const codeCount = codeKeywords.filter(kw => q.includes(kw)).length;
-    const knowledgeCount = knowledgeKeywords.filter(kw => q.includes(kw)).length;
+    const codeCount = codeKeywords.filter((kw) => q.includes(kw)).length;
+    const knowledgeCount = knowledgeKeywords.filter((kw) =>
+      q.includes(kw),
+    ).length;
 
     // 检查是否包含代码特征（如驼峰命名、特殊符号）
-    const hasCodePattern = /[A-Z][a-z]+[A-Z]/.test(query) || /[{}();]/.test(query);
+    const hasCodePattern =
+      /[A-Z][a-z]+[A-Z]/.test(query) || /[{}();]/.test(query);
 
-    let type: QueryIntent['type'];
+    let type: QueryIntent["type"];
     let confidence: number;
     let reason: string;
 
     if (hasCodePattern || codeCount >= 2) {
-      type = 'code';
+      type = "code";
       confidence = hasCodePattern ? 0.9 : 0.7;
-      reason = hasCodePattern ? '代码模式匹配' : '代码关键词匹配';
+      reason = hasCodePattern ? "代码模式匹配" : "代码关键词匹配";
     } else if (knowledgeCount >= 1) {
-      type = 'knowledge';
+      type = "knowledge";
       confidence = 0.7;
-      reason = '知识关键词匹配';
+      reason = "知识关键词匹配";
     } else {
-      type = 'mixed';
+      type = "mixed";
       confidence = 0.5;
-      reason = '无明显特征，默认混合型';
+      reason = "无明显特征，默认混合型";
     }
 
     return { type, confidence, reason };
@@ -154,7 +183,7 @@ export class PreProcessor {
     return {
       entities,
       extracted: entities.length > 0,
-      method: entities.length > 0 ? 'auto' : 'none',
+      method: entities.length > 0 ? "auto" : "none",
     };
   }
 
@@ -165,9 +194,9 @@ export class PreProcessor {
     // 简单的空格分词，移除标点符号
     const tokens = query
       .toLowerCase()
-      .replace(/[^\w\s.]/g, ' ')
+      .replace(/[^\w\s.]/g, " ")
       .split(/\s+/)
-      .filter(t => t.length >= 2);
+      .filter((t) => t.length >= 2);
 
     return {
       tokens,
@@ -197,7 +226,7 @@ export class ExecProcessor {
   constructor(
     private kernel: IKernel,
     private embedder: IEmbedder,
-    private options: RetrievalPipelineOptions = {}
+    private options: RetrievalPipelineOptions = {},
   ) {
     this.options = {
       maxResults: 20,
@@ -205,8 +234,8 @@ export class ExecProcessor {
       enableEntityExpansion: true,
       entityExpansionLimit: 10,
       trackWeights: {
-        'track-insight': 1.0,
-        'track-source': 1.0,
+        "track-insight": 1.0,
+        "track-source": 1.0,
       },
       similarityThreshold: 0.3,
       ...options,
@@ -216,7 +245,10 @@ export class ExecProcessor {
   /**
    * 向量召回
    */
-  private async vectorRecall(query: string, pre: PreResult): Promise<RetrievedRecord[]> {
+  private async vectorRecall(
+    query: string,
+    pre: PreResult,
+  ): Promise<RetrievedRecord[]> {
     const vector = await this.embedder.embed(query);
 
     // 根据意图选择轨道
@@ -231,12 +263,14 @@ export class ExecProcessor {
         filter,
       });
 
-      allResults.push(...results as RetrievedRecord[]);
+      allResults.push(...(results as RetrievedRecord[]));
     }
 
     // 按相似度排序并截取
     return allResults
-      .filter(r => (r._distance ?? 1) <= (1 - this.options.similarityThreshold!))
+      .filter(
+        (r) => (r._distance ?? 1) <= 1 - this.options.similarityThreshold!,
+      )
       .sort((a, b) => (a._distance ?? 1) - (b._distance ?? 1))
       .slice(0, this.options.maxResults);
   }
@@ -244,27 +278,37 @@ export class ExecProcessor {
   /**
    * 词法通道召回（基于token overlap）
    */
-  private async lexicalRecall(pre: PreResult, vectorResults: RetrievedRecord[]): Promise<RetrievedRecord[]> {
+  private async lexicalRecall(
+    pre: PreResult,
+    vectorResults: RetrievedRecord[],
+  ): Promise<RetrievedRecord[]> {
     if (!this.options.enableLexical || pre.tokenized.tokens.length === 0) {
       return [];
     }
 
     const queryTokens = new Set(pre.tokenized.tokens);
-    const scored = vectorResults.map(record => {
-      const text = (record.text ?? '').toLowerCase();
+    const scored = vectorResults.map((record) => {
+      const text = (record.text ?? "").toLowerCase();
       const recordTokens = new Set(
-        text.replace(/[^\w\s]/g, ' ').split(/\s+/).filter(t => t.length >= 2)
+        text
+          .replace(/[^\w\s]/g, " ")
+          .split(/\s+/)
+          .filter((t) => t.length >= 2),
       );
 
       // 计算token overlap
-      const overlap = [...queryTokens].filter(t => recordTokens.has(t)).length;
+      const overlap = [...queryTokens].filter((t) =>
+        recordTokens.has(t),
+      ).length;
       const score = overlap / queryTokens.size;
 
       return { ...record, _score: score };
     });
 
     // 只保留有overlap的记录
-    return scored.filter(r => (r._score ?? 0) > 0).sort((a, b) => (b._score ?? 0) - (a._score ?? 0));
+    return scored
+      .filter((r) => (r._score ?? 0) > 0)
+      .sort((a, b) => (b._score ?? 0) - (a._score ?? 0));
   }
 
   /**
@@ -272,9 +316,12 @@ export class ExecProcessor {
    */
   private async entityExpansionRecall(
     pre: PreResult,
-    vectorResults: RetrievedRecord[]
+    vectorResults: RetrievedRecord[],
   ): Promise<{ results: RetrievedRecord[]; sources: string[] }> {
-    if (!this.options.enableEntityExpansion || pre.entities.entities.length === 0) {
+    if (
+      !this.options.enableEntityExpansion ||
+      pre.entities.entities.length === 0
+    ) {
       return { results: [], sources: [] };
     }
 
@@ -293,20 +340,19 @@ export class ExecProcessor {
     const topEntities = [...entityCounts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
-      .map(e => e[0]);
+      .map((e) => e[0]);
 
     sources.push(...topEntities);
 
     // 基于高频实体进行跨轨扩展
     for (const entity of topEntities) {
       const filter = `array_contains(entities, '${entity}')`;
-      const results = await this.kernel.getVectorStorage().search(
-        await this.embedder.embed(entity),
-        {
+      const results = await this.kernel
+        .getVectorStorage()
+        .search(await this.embedder.embed(entity), {
           limit: this.options.entityExpansionLimit,
           filter,
-        }
-      );
+        });
 
       allResults.push(...(results as RetrievedRecord[]));
     }
@@ -322,14 +368,14 @@ export class ExecProcessor {
    */
   private selectTracks(intent: QueryIntent): string[] {
     switch (intent.type) {
-      case 'code':
-        return ['track-source'];
-      case 'knowledge':
-        return ['track-insight'];
-      case 'mixed':
-        return ['track-insight', 'track-source'];
+      case "code":
+        return ["track-source"];
+      case "knowledge":
+        return ["track-insight"];
+      case "mixed":
+        return ["track-insight", "track-source"];
       default:
-        return ['track-insight', 'track-source'];
+        return ["track-insight", "track-source"];
     }
   }
 
@@ -352,7 +398,9 @@ export class ExecProcessor {
     return {
       vectorResults,
       lexicalResults: this.options.enableLexical ? lexicalResults : undefined,
-      entityExpandedResults: this.options.enableEntityExpansion ? entityExpandedResults : undefined,
+      entityExpandedResults: this.options.enableEntityExpansion
+        ? entityExpandedResults
+        : undefined,
       stats: {
         vectorCount: vectorResults.length,
         lexicalCount: lexicalResults.length,
@@ -396,10 +444,13 @@ export class PostProcessor {
   /**
    * 计算综合得分
    */
-  private calculateScores(records: RetrievedRecord[], exec: ExecResult): RankingFactor[] {
-    return records.map(record => {
+  private calculateScores(
+    records: RetrievedRecord[],
+    exec: ExecResult,
+  ): RankingFactor[] {
+    return records.map((record) => {
       // 向量相似度得分（距离越小越好）
-      const vectorScore = record._distance ? (1 - record._distance) : 0.5;
+      const vectorScore = record._distance ? 1 - record._distance : 0.5;
 
       // 实体覆盖得分
       const entityCoverage = this.calculateEntityCoverage(record, exec);
@@ -409,9 +460,7 @@ export class PostProcessor {
 
       // 综合得分（加权平均）
       const finalScore =
-        vectorScore * 0.6 +
-        entityCoverage * 0.3 +
-        trackWeight * 0.1;
+        vectorScore * 0.6 + entityCoverage * 0.3 + trackWeight * 0.1;
 
       return {
         recordId: record.id,
@@ -426,15 +475,21 @@ export class PostProcessor {
   /**
    * 计算实体覆盖得分
    */
-  private calculateEntityCoverage(record: RetrievedRecord, exec: ExecResult): number {
+  private calculateEntityCoverage(
+    record: RetrievedRecord,
+    exec: ExecResult,
+  ): number {
     const recordEntities = new Set(record.entities ?? []);
 
     // 计算与扩展源的覆盖度
-    const coverage = exec.stats.expansionSources.filter(source =>
-      recordEntities.has(source)
+    const coverage = exec.stats.expansionSources.filter((source) =>
+      recordEntities.has(source),
     ).length;
 
-    return Math.min(coverage / Math.max(exec.stats.expansionSources.length, 1), 1.0);
+    return Math.min(
+      coverage / Math.max(exec.stats.expansionSources.length, 1),
+      1.0,
+    );
   }
 
   /**
@@ -457,7 +512,7 @@ export class PostProcessor {
       .map((record, i) => ({ record, factor: rankingFactors[i] }))
       .sort((a, b) => b.factor.finalScore - a.factor.finalScore)
       .slice(0, this.options.maxResults ?? 10)
-      .map(item => ({
+      .map((item) => ({
         ...item.record,
         _score: item.factor.finalScore,
       }));
@@ -480,7 +535,7 @@ export class RetrievalPipeline {
   constructor(
     private kernel: IKernel,
     private embedder: IEmbedder,
-    private options: RetrievalPipelineOptions = {}
+    private options: RetrievalPipelineOptions = {},
   ) {}
 
   /**
@@ -493,7 +548,11 @@ export class RetrievalPipeline {
     const pre = await PreProcessor.process(query);
 
     // Exec 阶段
-    const execProcessor = new ExecProcessor(this.kernel, this.embedder, this.options);
+    const execProcessor = new ExecProcessor(
+      this.kernel,
+      this.embedder,
+      this.options,
+    );
     const exec = await execProcessor.execute(query, pre);
 
     // Post 阶段

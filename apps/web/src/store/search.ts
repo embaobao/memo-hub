@@ -1,4 +1,4 @@
-import { atom } from 'recoil';
+import { atom } from "recoil";
 
 export type SearchState = {
   enabled: boolean | null;
@@ -9,11 +9,11 @@ export type SearchState = {
 };
 
 export const search = atom<SearchState>({
-  key: 'search',
+  key: "search",
   default: {
     enabled: null,
-    query: '',
-    debouncedQuery: '',
+    query: "",
+    debouncedQuery: "",
     isSearching: false,
     isTyping: false,
   },

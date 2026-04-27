@@ -1,8 +1,8 @@
-import { visit } from 'unist-util-visit';
-import type { Node } from 'unist';
-import type { UIResourceNode } from './types';
+import { visit } from "unist-util-visit";
+import type { Node } from "unist";
+import type { UIResourceNode } from "./types";
 
-export const UI_RESOURCE_MARKER = '\\ui';
+export const UI_RESOURCE_MARKER = "\\ui";
 // Pattern matches: \ui{id1} or \ui{id1,id2,id3} and captures everything between the braces
 export const UI_RESOURCE_PATTERN = /\\ui\{([\w]+(?:,[\w]+)*)\}/g;
 
@@ -10,11 +10,11 @@ export const UI_RESOURCE_PATTERN = /\\ui\{([\w]+(?:,[\w]+)*)\}/g;
  * Process text nodes and replace UI resource markers with components
  */
 function processTree(tree: Node) {
-  visit(tree, 'text', (node, index, parent) => {
+  visit(tree, "text", (node, index, parent) => {
     const textNode = node as UIResourceNode;
     const parentNode = parent as UIResourceNode;
 
-    if (typeof textNode.value !== 'string') return;
+    if (typeof textNode.value !== "string") return;
 
     const originalValue = textNode.value;
     const segments: Array<UIResourceNode> = [];
@@ -28,22 +28,25 @@ function processTree(tree: Node) {
       const matchText = match[0];
       const idGroup = match[1];
       const idValues = idGroup
-        .split(',')
+        .split(",")
         .map((value) => value.trim())
         .filter(Boolean);
 
       if (matchIndex > currentPosition) {
-        const textBeforeMatch = originalValue.substring(currentPosition, matchIndex);
+        const textBeforeMatch = originalValue.substring(
+          currentPosition,
+          matchIndex,
+        );
         if (textBeforeMatch) {
-          segments.push({ type: 'text', value: textBeforeMatch });
+          segments.push({ type: "text", value: textBeforeMatch });
         }
       }
 
       if (idValues.length === 1) {
         segments.push({
-          type: 'mcp-ui-resource',
+          type: "mcp-ui-resource",
           data: {
-            hName: 'mcp-ui-resource',
+            hName: "mcp-ui-resource",
             hProperties: {
               resourceId: idValues[0],
             },
@@ -51,9 +54,9 @@ function processTree(tree: Node) {
         });
       } else if (idValues.length > 1) {
         segments.push({
-          type: 'mcp-ui-carousel',
+          type: "mcp-ui-carousel",
           data: {
-            hName: 'mcp-ui-carousel',
+            hName: "mcp-ui-carousel",
             hProperties: {
               resourceIds: idValues,
             },
@@ -61,7 +64,7 @@ function processTree(tree: Node) {
         });
       } else {
         // Unable to parse marker; keep original text
-        segments.push({ type: 'text', value: matchText });
+        segments.push({ type: "text", value: matchText });
       }
 
       currentPosition = matchIndex + matchText.length;
@@ -70,7 +73,7 @@ function processTree(tree: Node) {
     if (currentPosition < originalValue.length) {
       const remainingText = originalValue.substring(currentPosition);
       if (remainingText) {
-        segments.push({ type: 'text', value: remainingText });
+        segments.push({ type: "text", value: remainingText });
       }
     }
 

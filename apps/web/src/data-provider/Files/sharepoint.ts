@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
-import type { UseMutationResult } from '@tanstack/react-query';
+import { useMutation } from "@tanstack/react-query";
+import type { UseMutationResult } from "@tanstack/react-query";
 
 export interface SharePointFile {
   id: string;
@@ -49,13 +49,17 @@ export const useSharePointFileDownload = (): UseMutationResult<
       });
 
       if (!response.ok) {
-        throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Download failed: ${response.status} ${response.statusText}`,
+        );
       }
 
-      const contentLength = parseInt(response.headers.get('content-length') || '0');
+      const contentLength = parseInt(
+        response.headers.get("content-length") || "0",
+      );
       const reader = response.body?.getReader();
       if (!reader) {
-        throw new Error('Failed to get response reader');
+        throw new Error("Failed to get response reader");
       }
 
       const chunks: Uint8Array[] = [];
@@ -75,7 +79,9 @@ export const useSharePointFileDownload = (): UseMutationResult<
             fileName: file.name,
             loaded: receivedLength,
             total: contentLength || file.size,
-            progress: Math.round((receivedLength / (contentLength || file.size)) * 100),
+            progress: Math.round(
+              (receivedLength / (contentLength || file.size)) * 100,
+            ),
           });
         }
       }
@@ -88,7 +94,8 @@ export const useSharePointFileDownload = (): UseMutationResult<
       }
 
       const contentType =
-        response.headers.get('content-type') || getMimeTypeFromFileName(file.name);
+        response.headers.get("content-type") ||
+        getMimeTypeFromFileName(file.name);
 
       const blob = new Blob([allChunks], { type: contentType });
       const downloadedFile = new File([blob], file.name, {
@@ -143,7 +150,8 @@ export const useSharePointBatchDownload = (): UseMutationResult<
 
             const blob = await response.blob();
             const contentType =
-              response.headers.get('content-type') || getMimeTypeFromFileName(file.name);
+              response.headers.get("content-type") ||
+              getMimeTypeFromFileName(file.name);
 
             const downloadedFile = new File([blob], file.name, {
               type: contentType,
@@ -176,7 +184,7 @@ export const useSharePointBatchDownload = (): UseMutationResult<
         const chunkResults = await Promise.allSettled(chunkPromises);
 
         chunkResults.forEach((result) => {
-          if (result.status === 'fulfilled') {
+          if (result.status === "fulfilled") {
             downloadedFiles.push(result.value);
           }
         });
@@ -193,40 +201,40 @@ export const useSharePointBatchDownload = (): UseMutationResult<
 };
 
 function getMimeTypeFromFileName(fileName: string): string {
-  const extension = fileName.split('.').pop()?.toLowerCase();
+  const extension = fileName.split(".").pop()?.toLowerCase();
 
   const mimeTypes: Record<string, string> = {
     // Documents
-    pdf: 'application/pdf',
-    doc: 'application/msword',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    xls: 'application/vnd.ms-excel',
-    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ppt: 'application/vnd.ms-powerpoint',
-    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    txt: 'text/plain',
-    csv: 'text/csv',
+    pdf: "application/pdf",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    xls: "application/vnd.ms-excel",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ppt: "application/vnd.ms-powerpoint",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    txt: "text/plain",
+    csv: "text/csv",
 
     // Images
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    gif: 'image/gif',
-    bmp: 'image/bmp',
-    svg: 'image/svg+xml',
-    webp: 'image/webp',
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+    bmp: "image/bmp",
+    svg: "image/svg+xml",
+    webp: "image/webp",
 
     // Archives
-    zip: 'application/zip',
-    rar: 'application/x-rar-compressed',
+    zip: "application/zip",
+    rar: "application/x-rar-compressed",
 
     // Media
-    mp4: 'video/mp4',
-    mp3: 'audio/mpeg',
-    wav: 'audio/wav',
+    mp4: "video/mp4",
+    mp3: "audio/mpeg",
+    wav: "audio/wav",
   };
 
-  return mimeTypes[extension || ''] || 'application/octet-stream';
+  return mimeTypes[extension || ""] || "application/octet-stream";
 }
 
 export { getMimeTypeFromFileName };

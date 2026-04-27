@@ -1,8 +1,11 @@
-import { useCallback } from 'react';
-import { Constants } from 'librechat-data-provider';
-import type { TStartupConfig, TSubmission } from 'librechat-data-provider';
-import { useUpdateEphemeralAgent, useApplyNewAgentTemplate } from '~/store/agents';
-import { getModelSpec, applyModelSpecEphemeralAgent } from '~/utils';
+import { useCallback } from "react";
+import { Constants } from "librechat-data-provider";
+import type { TStartupConfig, TSubmission } from "librechat-data-provider";
+import {
+  useUpdateEphemeralAgent,
+  useApplyNewAgentTemplate,
+} from "~/store/agents";
+import { getModelSpec, applyModelSpecEphemeralAgent } from "~/utils";
 
 /**
  * Hook that applies a model spec from a preset to an ephemeral agent.
@@ -28,7 +31,10 @@ export function useApplyModelSpecEffects() {
         if (startupConfig?.modelSpecs?.list?.length) {
           /** Specs are configured but none selected — reset ephemeral agent to null
            *  so BadgeRowContext fills all values (tool toggles + MCP) from localStorage. */
-          updateEphemeralAgent((convoId ?? Constants.NEW_CONVO) || Constants.NEW_CONVO, null);
+          updateEphemeralAgent(
+            (convoId ?? Constants.NEW_CONVO) || Constants.NEW_CONVO,
+            null,
+          );
         }
         return;
       }
@@ -64,8 +70,8 @@ export function useApplyAgentTemplate() {
       startupConfig,
     }: {
       targetId: string;
-      sourceId?: TSubmission['conversation']['conversationId'] | null;
-      ephemeralAgent: TSubmission['ephemeralAgent'];
+      sourceId?: TSubmission["conversation"]["conversationId"] | null;
+      ephemeralAgent: TSubmission["ephemeralAgent"];
       specName?: string | null;
       startupConfig?: TStartupConfig;
     }) => {
@@ -88,11 +94,15 @@ export function useApplyAgentTemplate() {
         ...ephemeralAgent,
         mcp: [...(ephemeralAgent?.mcp ?? []), ...(modelSpec.mcpServers ?? [])],
         web_search: ephemeralAgent?.web_search ?? modelSpec.webSearch ?? false,
-        file_search: ephemeralAgent?.file_search ?? modelSpec.fileSearch ?? false,
-        execute_code: ephemeralAgent?.execute_code ?? modelSpec.executeCode ?? false,
+        file_search:
+          ephemeralAgent?.file_search ?? modelSpec.fileSearch ?? false,
+        execute_code:
+          ephemeralAgent?.execute_code ?? modelSpec.executeCode ?? false,
         artifacts:
           ephemeralAgent?.artifacts ??
-          (modelSpec.artifacts === true ? 'default' : modelSpec.artifacts || ''),
+          (modelSpec.artifacts === true
+            ? "default"
+            : modelSpec.artifacts || ""),
       };
 
       mergedAgent.mcp = [...new Set(mergedAgent.mcp)];

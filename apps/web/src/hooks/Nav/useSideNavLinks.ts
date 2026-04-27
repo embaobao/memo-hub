@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { MCPIcon, AttachmentIcon, OpenAIMinimalIcon } from '@librechat/client';
+import { useMemo } from "react";
+import { MCPIcon, AttachmentIcon, OpenAIMinimalIcon } from "@librechat/client";
 import {
   Bot,
   Brain,
@@ -7,7 +7,7 @@ import {
   NotebookPen,
   ArrowRightToLine,
   SlidersHorizontal,
-} from 'lucide-react';
+} from "lucide-react";
 import {
   Permissions,
   EModelEndpoint,
@@ -15,18 +15,21 @@ import {
   isParamEndpoint,
   isAgentsEndpoint,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
-import type { TInterfaceConfig, TEndpointsConfig } from 'librechat-data-provider';
-import type { NavLink } from '~/common';
-import MCPBuilderPanel from '~/components/SidePanel/MCPBuilder/MCPBuilderPanel';
-import AgentPanelSwitch from '~/components/SidePanel/Agents/AgentPanelSwitch';
-import BookmarkPanel from '~/components/SidePanel/Bookmarks/BookmarkPanel';
-import PanelSwitch from '~/components/SidePanel/Builder/PanelSwitch';
-import Parameters from '~/components/SidePanel/Parameters/Panel';
-import { MemoryPanel } from '~/components/SidePanel/Memories';
-import FilesPanel from '~/components/SidePanel/Files/Panel';
-import { useHasAccess, useMCPServerManager } from '~/hooks';
-import { PromptsAccordion } from '~/components/Prompts';
+} from "librechat-data-provider";
+import type {
+  TInterfaceConfig,
+  TEndpointsConfig,
+} from "librechat-data-provider";
+import type { NavLink } from "~/common";
+import MCPBuilderPanel from "~/components/SidePanel/MCPBuilder/MCPBuilderPanel";
+import AgentPanelSwitch from "~/components/SidePanel/Agents/AgentPanelSwitch";
+import BookmarkPanel from "~/components/SidePanel/Bookmarks/BookmarkPanel";
+import PanelSwitch from "~/components/SidePanel/Builder/PanelSwitch";
+import Parameters from "~/components/SidePanel/Parameters/Panel";
+import { MemoryPanel } from "~/components/SidePanel/Memories";
+import FilesPanel from "~/components/SidePanel/Files/Panel";
+import { useHasAccess, useMCPServerManager } from "~/hooks";
+import { PromptsAccordion } from "~/components/Prompts";
 
 export default function useSideNavLinks({
   hidePanel,
@@ -89,8 +92,8 @@ export default function useSideNavLinks({
       endpointsConfig[EModelEndpoint.agents].disableBuilder !== true
     ) {
       links.push({
-        title: 'com_sidepanel_agent_builder',
-        label: '',
+        title: "com_sidepanel_agent_builder",
+        label: "",
         icon: Bot,
         id: EModelEndpoint.agents,
         Component: AgentPanelSwitch,
@@ -104,12 +107,13 @@ export default function useSideNavLinks({
         endpointsConfig[EModelEndpoint.assistants].disableBuilder !== true) ||
         (endpoint === EModelEndpoint.azureAssistants &&
           endpointsConfig?.[EModelEndpoint.azureAssistants] &&
-          endpointsConfig[EModelEndpoint.azureAssistants].disableBuilder !== true)) &&
+          endpointsConfig[EModelEndpoint.azureAssistants].disableBuilder !==
+            true)) &&
       keyProvided
     ) {
       links.push({
-        title: 'com_sidepanel_assistant_builder',
-        label: '',
+        title: "com_sidepanel_assistant_builder",
+        label: "",
         icon: OpenAIMinimalIcon,
         id: EModelEndpoint.assistants,
         Component: PanelSwitch,
@@ -118,77 +122,79 @@ export default function useSideNavLinks({
 
     if (hasAccessToPrompts) {
       links.push({
-        title: 'com_ui_prompts',
-        label: '',
+        title: "com_ui_prompts",
+        label: "",
         icon: NotebookPen,
-        id: 'prompts',
+        id: "prompts",
         Component: PromptsAccordion,
       });
     }
 
     if (hasAccessToMemories && hasAccessToReadMemories) {
       links.push({
-        title: 'com_ui_memories',
-        label: '',
+        title: "com_ui_memories",
+        label: "",
         icon: Brain,
-        id: 'memories',
+        id: "memories",
         Component: MemoryPanel,
       });
     }
 
     if (hasAccessToBookmarks) {
       links.push({
-        title: 'com_sidepanel_conversation_tags',
-        label: '',
+        title: "com_sidepanel_conversation_tags",
+        label: "",
         icon: Bookmark,
-        id: 'bookmarks',
+        id: "bookmarks",
         Component: BookmarkPanel,
       });
     }
 
     links.push({
-      title: 'com_sidepanel_attach_files',
-      label: '',
+      title: "com_sidepanel_attach_files",
+      label: "",
       icon: AttachmentIcon,
-      id: 'files',
+      id: "files",
       Component: FilesPanel,
     });
 
     if (
       interfaceConfig.parameters === true &&
-      isParamEndpoint(endpoint ?? '', endpointType ?? '') === true &&
+      isParamEndpoint(endpoint ?? "", endpointType ?? "") === true &&
       !isAgentsEndpoint(endpoint) &&
       keyProvided
     ) {
       links.push({
-        title: 'com_sidepanel_parameters',
-        label: '',
+        title: "com_sidepanel_parameters",
+        label: "",
         icon: SlidersHorizontal,
-        id: 'parameters',
+        id: "parameters",
         Component: Parameters,
       });
     }
 
     if (
-      (hasAccessToUseMCPSettings && availableMCPServers && availableMCPServers.length > 0) ||
+      (hasAccessToUseMCPSettings &&
+        availableMCPServers &&
+        availableMCPServers.length > 0) ||
       hasAccessToCreateMCP
     ) {
       links.push({
-        title: 'com_nav_setting_mcp',
-        label: '',
+        title: "com_nav_setting_mcp",
+        label: "",
         icon: MCPIcon,
-        id: 'mcp-builder',
+        id: "mcp-builder",
         Component: MCPBuilderPanel,
       });
     }
 
     if (includeHidePanel && hidePanel) {
       links.push({
-        title: 'com_sidepanel_hide_panel',
-        label: '',
+        title: "com_sidepanel_hide_panel",
+        label: "",
         icon: ArrowRightToLine,
         onClick: hidePanel,
-        id: 'hide-panel',
+        id: "hide-panel",
       });
     }
 

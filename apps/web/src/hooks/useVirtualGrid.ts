@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from "react";
 
 interface UseVirtualGridProps {
   itemCount: number;
@@ -32,8 +32,15 @@ export const useVirtualGrid = ({
 }: UseVirtualGridProps): UseVirtualGridReturn => {
   // Calculate cards per row based on container width
   const cardsPerRow = useMemo(() => {
-    return containerWidth >= mobileBreakpoint ? desktopColumnsCount : mobileColumnsCount;
-  }, [containerWidth, mobileBreakpoint, desktopColumnsCount, mobileColumnsCount]);
+    return containerWidth >= mobileBreakpoint
+      ? desktopColumnsCount
+      : mobileColumnsCount;
+  }, [
+    containerWidth,
+    mobileBreakpoint,
+    desktopColumnsCount,
+    mobileColumnsCount,
+  ]);
 
   // Calculate total number of rows needed
   const rowCount = useMemo(() => {

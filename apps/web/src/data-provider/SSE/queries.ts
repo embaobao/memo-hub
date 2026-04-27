@@ -1,29 +1,42 @@
-import { useEffect, useMemo, useState } from 'react';
-import { apiBaseUrl, QueryKeys, request, dataService } from 'librechat-data-provider';
-import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
-import type { Agents, TConversation } from 'librechat-data-provider';
-import { updateConvoInAllQueries } from '~/utils';
+import { useEffect, useMemo, useState } from "react";
+import {
+  apiBaseUrl,
+  QueryKeys,
+  request,
+  dataService,
+} from "librechat-data-provider";
+import { useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
+import type { Agents, TConversation } from "librechat-data-provider";
+import { updateConvoInAllQueries } from "~/utils";
 
 export interface StreamStatusResponse {
   active: boolean;
   streamId?: string;
-  status?: 'running' | 'complete' | 'error' | 'aborted';
+  status?: "running" | "complete" | "error" | "aborted";
   aggregatedContent?: Array<{ type: string; text?: string }>;
   createdAt?: number;
   resumeState?: Agents.ResumeState;
 }
 
-export const streamStatusQueryKey = (conversationId: string) => ['streamStatus', conversationId];
+export const streamStatusQueryKey = (conversationId: string) => [
+  "streamStatus",
+  conversationId,
+];
 
-export const fetchStreamStatus = async (conversationId: string): Promise<StreamStatusResponse> => {
+export const fetchStreamStatus = async (
+  conversationId: string,
+): Promise<StreamStatusResponse> => {
   return request.get<StreamStatusResponse>(
     `${apiBaseUrl()}/api/agents/chat/status/${conversationId}`,
   );
 };
 
-export function useStreamStatus(conversationId: string | undefined, enabled = true) {
+export function useStreamStatus(
+  conversationId: string | undefined,
+  enabled = true,
+) {
   return useQuery({
-    queryKey: streamStatusQueryKey(conversationId || ''),
+    queryKey: streamStatusQueryKey(conversationId || ""),
     queryFn: () => fetchStreamStatus(conversationId!),
     enabled: !!conversationId && enabled,
     staleTime: 1000,
@@ -33,7 +46,8 @@ export function useStreamStatus(conversationId: string | undefined, enabled = tr
   });
 }
 
-export const genTitleQueryKey = (conversationId: string) => ['genTitle', conversationId] as const;
+export const genTitleQueryKey = (conversationId: string) =>
+  ["genTitle", conversationId] as const;
 
 /** Response type for active jobs query */
 export interface ActiveJobsResponse {
@@ -85,7 +99,10 @@ export function useTitleGeneration(enabled = true) {
     const completedJobs: string[] = [];
 
     for (const conversationId of titleQueue) {
-      if (!activeSet.has(conversationId) && !processedTitles.has(conversationId)) {
+      if (
+        !activeSet.has(conversationId) &&
+        !processedTitles.has(conversationId)
+      ) {
         completedJobs.push(conversationId);
       }
     }
@@ -114,9 +131,13 @@ export function useTitleGeneration(enabled = true) {
         const { title } = titleQuery.data;
         queryClient.setQueryData(
           [QueryKeys.conversation, conversationId],
-          (convo: TConversation | undefined) => (convo ? { ...convo, title } : convo),
+          (convo: TConversation | undefined) =>
+            convo ? { ...convo, title } : convo,
         );
-        updateConvoInAllQueries(queryClient, conversationId, (c) => ({ ...c, title }));
+        updateConvoInAllQueries(queryClient, conversationId, (c) => ({
+          ...c,
+          title,
+        }));
         // Only update document title if this conversation is currently active
         if (window.location.pathname.includes(conversationId)) {
           document.title = title;
@@ -147,7 +168,8 @@ export function useActiveJobs(enabled = true) {
     staleTime: 5_000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
-    refetchInterval: (data) => ((data?.activeJobIds?.length ?? 0) > 0 ? 5_000 : false),
+    refetchInterval: (data) =>
+      (data?.activeJobIds?.length ?? 0) > 0 ? 5_000 : false,
     retry: false,
   });
 }

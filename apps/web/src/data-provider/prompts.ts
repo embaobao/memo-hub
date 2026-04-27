@@ -1,8 +1,8 @@
-import { useRecoilValue } from 'recoil';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { dataService, QueryKeys } from 'librechat-data-provider';
-import type { UseMutationResult } from '@tanstack/react-query';
-import type t from 'librechat-data-provider';
+import { useRecoilValue } from "recoil";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { dataService, QueryKeys } from "librechat-data-provider";
+import type { UseMutationResult } from "@tanstack/react-query";
+import type t from "librechat-data-provider";
 import {
   /* Prompts */
   addGroupToAll,
@@ -12,8 +12,8 @@ import {
   updateGroupFieldsInPlace,
   deletePromptGroup,
   removeGroupFromAll,
-} from '~/utils';
-import store from '~/store';
+} from "~/utils";
+import store from "~/store";
 
 export const useUpdatePromptGroup = (
   options?: t.UpdatePromptGroupOptions,
@@ -45,7 +45,9 @@ export const useUpdatePromptGroup = (
         category,
         pageSize,
       ]);
-      const previousListData = groupListData ? structuredClone(groupListData) : undefined;
+      const previousListData = groupListData
+        ? structuredClone(groupListData)
+        : undefined;
 
       const update = variables.payload;
 
@@ -56,7 +58,11 @@ export const useUpdatePromptGroup = (
           /* Update */
           { _id: variables.id, ...update },
           /* Callback */
-          (group) => queryClient.setQueryData([QueryKeys.promptGroup, variables.id], group),
+          (group) =>
+            queryClient.setQueryData(
+              [QueryKeys.promptGroup, variables.id],
+              group,
+            ),
         );
         queryClient.setQueryData<t.PromptGroupListData>(
           [QueryKeys.promptGroups, name, category, pageSize],
@@ -72,7 +78,10 @@ export const useUpdatePromptGroup = (
     },
     onError: (err, variables, context) => {
       if (context?.group) {
-        queryClient.setQueryData([QueryKeys.promptGroup, variables.id], context.group);
+        queryClient.setQueryData(
+          [QueryKeys.promptGroup, variables.id],
+          context.group,
+        );
       }
       if (context?.previousListData) {
         queryClient.setQueryData<t.PromptGroupListData>(
@@ -95,7 +104,12 @@ export const useUpdatePromptGroup = (
 
 export const useCreatePrompt = (
   options?: t.CreatePromptOptions,
-): UseMutationResult<t.TCreatePromptResponse, unknown, t.TCreatePrompt, unknown> => {
+): UseMutationResult<
+  t.TCreatePromptResponse,
+  unknown,
+  t.TCreatePrompt,
+  unknown
+> => {
   const queryClient = useQueryClient();
   const { onSuccess, ...rest } = options || {};
   const name = useRecoilValue(store.promptsName);
@@ -147,7 +161,10 @@ export const useAddPromptToGroup = (
   const { onSuccess, ...rest } = options || {};
 
   return useMutation({
-    mutationFn: ({ groupId, ...payload }: t.TCreatePrompt & { groupId: string }) =>
+    mutationFn: ({
+      groupId,
+      ...payload
+    }: t.TCreatePrompt & { groupId: string }) =>
       dataService.addPromptToGroup(groupId, payload),
     ...rest,
     onSuccess: (response, variables, context) => {
@@ -168,7 +185,12 @@ export const useAddPromptToGroup = (
 
 export const useDeletePrompt = (
   options?: t.DeletePromptOptions,
-): UseMutationResult<t.TDeletePromptResponse, unknown, t.TDeletePromptVariables, unknown> => {
+): UseMutationResult<
+  t.TDeletePromptResponse,
+  unknown,
+  t.TDeletePromptVariables,
+  unknown
+> => {
   const queryClient = useQueryClient();
   const { onSuccess, ...rest } = options || {};
   const name = useRecoilValue(store.promptsName);
@@ -176,7 +198,8 @@ export const useDeletePrompt = (
   const category = useRecoilValue(store.promptsCategory);
 
   return useMutation({
-    mutationFn: (payload: t.TDeletePromptVariables) => dataService.deletePrompt(payload),
+    mutationFn: (payload: t.TDeletePromptVariables) =>
+      dataService.deletePrompt(payload),
     ...rest,
     onSuccess: (response, variables, context) => {
       if (response.promptGroup) {
@@ -196,7 +219,9 @@ export const useDeletePrompt = (
         queryClient.setQueryData<t.TPrompt[]>(
           [QueryKeys.prompts, variables.groupId],
           (oldData?: t.TPrompt[]) => {
-            const prompts = oldData ? oldData.filter((prompt) => prompt._id !== variables._id) : [];
+            const prompts = oldData
+              ? oldData.filter((prompt) => prompt._id !== variables._id)
+              : [];
             queryClient.setQueryData<t.TPromptGroup>(
               [QueryKeys.promptGroup, variables.groupId],
               (data) => {
@@ -204,7 +229,11 @@ export const useDeletePrompt = (
                   return data;
                 }
                 if (data.productionId === variables._id) {
-                  return { ...data, productionId: prompts[0]?._id, productionPrompt: prompts[0] };
+                  return {
+                    ...data,
+                    productionId: prompts[0]?._id,
+                    productionPrompt: prompts[0],
+                  };
                 }
                 return data;
               },
@@ -279,7 +308,9 @@ export const useUpdatePromptLabels = (
   });
 };
 
-export const useMakePromptProduction = (options?: t.MakePromptProductionOptions) => {
+export const useMakePromptProduction = (
+  options?: t.MakePromptProductionOptions,
+) => {
   const queryClient = useQueryClient();
   const { onSuccess, onError, onMutate } = options || {};
   const name = useRecoilValue(store.promptsName);
@@ -317,11 +348,14 @@ export const useMakePromptProduction = (options?: t.MakePromptProductionOptions)
       }
 
       if (groupData) {
-        queryClient.setQueryData<t.TPromptGroup>([QueryKeys.promptGroup, variables.groupId], {
-          ...groupData,
-          productionId: variables.id,
-          productionPrompt: variables.productionPrompt,
-        });
+        queryClient.setQueryData<t.TPromptGroup>(
+          [QueryKeys.promptGroup, variables.groupId],
+          {
+            ...groupData,
+            productionId: variables.id,
+            productionPrompt: variables.productionPrompt,
+          },
+        );
       }
 
       if (onMutate) {
@@ -332,7 +366,10 @@ export const useMakePromptProduction = (options?: t.MakePromptProductionOptions)
     },
     onError: (err, variables, context) => {
       if (context?.group) {
-        queryClient.setQueryData([QueryKeys.promptGroup, variables.groupId], context.group);
+        queryClient.setQueryData(
+          [QueryKeys.promptGroup, variables.groupId],
+          context.group,
+        );
       }
       if (context?.previousListData) {
         queryClient.setQueryData<t.PromptGroupListData>(
@@ -369,9 +406,13 @@ export const useRecordPromptUsage = (): UseMutationResult<
   const pageSize = useRecoilValue(store.promptsPageSize);
 
   return useMutation({
-    mutationFn: (groupId: string) => dataService.recordPromptGroupUsage(groupId),
+    mutationFn: (groupId: string) =>
+      dataService.recordPromptGroupUsage(groupId),
     onSuccess: (data, groupId) => {
-      const update = { _id: groupId, numberOfGenerations: data.numberOfGenerations };
+      const update = {
+        _id: groupId,
+        numberOfGenerations: data.numberOfGenerations,
+      };
       queryClient.setQueryData<t.PromptGroupListData>(
         [QueryKeys.promptGroups, name, category, pageSize],
         (old) => (old ? updateGroupFieldsInPlace(old, update) : old),

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
-import { fixSubgraphTitleContrast } from '~/utils/mermaid';
-import { useDebouncedMermaid } from '~/hooks';
+import { useEffect, useMemo, useState, useRef } from "react";
+import { fixSubgraphTitleContrast } from "~/utils/mermaid";
+import { useDebouncedMermaid } from "~/hooks";
 
 const MIN_CONTAINER_HEIGHT = 200;
 const MAX_CONTAINER_HEIGHT = 500;
@@ -17,19 +17,25 @@ function applyFallbackFixes(svgString: string): string {
   let finalSvg = svgString;
 
   if (
-    !svgString.includes('viewBox') &&
-    svgString.includes('height=') &&
-    svgString.includes('width=')
+    !svgString.includes("viewBox") &&
+    svgString.includes("height=") &&
+    svgString.includes("width=")
   ) {
     const widthMatch = svgString.match(/width="(\d+)"/);
     const heightMatch = svgString.match(/height="(\d+)"/);
     if (widthMatch && heightMatch) {
-      finalSvg = finalSvg.replace('<svg', `<svg viewBox="0 0 ${widthMatch[1]} ${heightMatch[1]}"`);
+      finalSvg = finalSvg.replace(
+        "<svg",
+        `<svg viewBox="0 0 ${widthMatch[1]} ${heightMatch[1]}"`,
+      );
     }
   }
 
-  if (!finalSvg.includes('xmlns')) {
-    finalSvg = finalSvg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+  if (!finalSvg.includes("xmlns")) {
+    finalSvg = finalSvg.replace(
+      "<svg",
+      '<svg xmlns="http://www.w3.org/2000/svg"',
+    );
   }
 
   return finalSvg;
@@ -37,22 +43,22 @@ function applyFallbackFixes(svgString: string): string {
 
 function processSvgString(svg: string) {
   const parser = new DOMParser();
-  const doc = parser.parseFromString(svg, 'image/svg+xml');
+  const doc = parser.parseFromString(svg, "image/svg+xml");
 
-  if (doc.querySelector('parsererror')) {
+  if (doc.querySelector("parsererror")) {
     return { processedSvg: applyFallbackFixes(svg), parsedDimensions: null };
   }
 
-  const svgElement = doc.querySelector('svg');
+  const svgElement = doc.querySelector("svg");
   if (!svgElement) {
     return { processedSvg: applyFallbackFixes(svg), parsedDimensions: null };
   }
 
-  let width = parseFloat(svgElement.getAttribute('width') || '0');
-  let height = parseFloat(svgElement.getAttribute('height') || '0');
+  let width = parseFloat(svgElement.getAttribute("width") || "0");
+  let height = parseFloat(svgElement.getAttribute("height") || "0");
 
   if (!width || !height) {
-    const viewBox = svgElement.getAttribute('viewBox');
+    const viewBox = svgElement.getAttribute("viewBox");
     if (viewBox) {
       const parts = viewBox.split(/[\s,]+/).map(Number);
       if (parts.length === 4) {
@@ -65,16 +71,16 @@ function processSvgString(svg: string) {
   let dimensions: { width: number; height: number } | null = null;
   if (width > 0 && height > 0) {
     dimensions = { width, height };
-    if (!svgElement.getAttribute('viewBox')) {
-      svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    if (!svgElement.getAttribute("viewBox")) {
+      svgElement.setAttribute("viewBox", `0 0 ${width} ${height}`);
     }
-    svgElement.removeAttribute('width');
-    svgElement.removeAttribute('height');
-    svgElement.removeAttribute('style');
+    svgElement.removeAttribute("width");
+    svgElement.removeAttribute("height");
+    svgElement.removeAttribute("style");
   }
 
-  if (!svgElement.getAttribute('xmlns')) {
-    svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  if (!svgElement.getAttribute("xmlns")) {
+    svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
   }
 
   fixSubgraphTitleContrast(svgElement);
@@ -92,10 +98,11 @@ export default function useSvgProcessing({
   retryCount,
   containerRef,
 }: UseSvgProcessingOptions) {
-  const [blobUrl, setBlobUrl] = useState('');
-  const [svgDimensions, setSvgDimensions] = useState<{ width: number; height: number } | null>(
-    null,
-  );
+  const [blobUrl, setBlobUrl] = useState("");
+  const [svgDimensions, setSvgDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
   const [containerWidth, setContainerWidth] = useState(700);
   const lastValidSvgRef = useRef<string | null>(null);
 
@@ -142,7 +149,7 @@ export default function useSvgProcessing({
     if (!processedSvg) {
       return;
     }
-    const blob = new Blob([processedSvg], { type: 'image/svg+xml' });
+    const blob = new Blob([processedSvg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     setBlobUrl(url);
     return () => URL.revokeObjectURL(url);

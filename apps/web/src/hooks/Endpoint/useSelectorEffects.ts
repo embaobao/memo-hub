@@ -1,13 +1,13 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo, useEffect, useRef } from "react";
 import {
   isAgentsEndpoint,
   LocalStorageKeys,
   isEphemeralAgentId,
   isAssistantsEndpoint,
-} from 'librechat-data-provider';
-import type * as t from 'librechat-data-provider';
-import type { SelectedValues } from '~/common';
-import useSetIndexOptions from '~/hooks/Conversations/useSetIndexOptions';
+} from "librechat-data-provider";
+import type * as t from "librechat-data-provider";
+import type { SelectedValues } from "~/common";
+import useSetIndexOptions from "~/hooks/Conversations/useSetIndexOptions";
 
 export default function useSelectorEffects({
   index = 0,
@@ -35,7 +35,9 @@ export default function useSelectorEffects({
     if (!isAssistantsEndpoint(endpoint)) {
       return [];
     }
-    return Object.values(assistantsMap?.[endpoint ?? ''] ?? {}) as t.Assistant[];
+    return Object.values(
+      assistantsMap?.[endpoint ?? ""] ?? {},
+    ) as t.Assistant[];
   }, [assistantsMap, endpoint]);
 
   useEffect(() => {
@@ -43,15 +45,17 @@ export default function useSelectorEffects({
       return;
     }
     if (selectedAgentId == null && agents.length > 0) {
-      let agent_id = localStorage.getItem(`${LocalStorageKeys.AGENT_ID_PREFIX}${index}`);
+      let agent_id = localStorage.getItem(
+        `${LocalStorageKeys.AGENT_ID_PREFIX}${index}`,
+      );
       if (agent_id == null || isEphemeralAgentId(agent_id)) {
         agent_id = agents[0]?.id;
       }
       const agent = agentsMap?.[agent_id];
 
       if (agent !== undefined) {
-        setOption('model')('');
-        setOption('agent_id')(agent_id);
+        setOption("model")("");
+        setOption("agent_id")(agent_id);
       }
     }
   }, [index, agents, selectedAgentId, agentsMap, endpoint, setOption]);
@@ -60,17 +64,26 @@ export default function useSelectorEffects({
       return;
     }
     if (selectedAssistantId == null && assistants.length > 0) {
-      let assistant_id = localStorage.getItem(`${LocalStorageKeys.ASST_ID_PREFIX}${index}`);
+      let assistant_id = localStorage.getItem(
+        `${LocalStorageKeys.ASST_ID_PREFIX}${index}`,
+      );
       if (assistant_id == null) {
         assistant_id = assistants[0]?.id;
       }
-      const assistant = assistantsMap?.[endpoint ?? '']?.[assistant_id];
+      const assistant = assistantsMap?.[endpoint ?? ""]?.[assistant_id];
       if (assistant !== undefined) {
-        setOption('model')(assistant.model);
-        setOption('assistant_id')(assistant_id);
+        setOption("model")(assistant.model);
+        setOption("assistant_id")(assistant_id);
       }
     }
-  }, [index, assistants, selectedAssistantId, assistantsMap, endpoint, setOption]);
+  }, [
+    index,
+    assistants,
+    selectedAssistantId,
+    assistantsMap,
+    endpoint,
+    setOption,
+  ]);
 
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -96,23 +109,23 @@ export default function useSelectorEffects({
     ) {
       if (isAgentsEndpoint(conversation?.endpoint)) {
         debouncedSetSelectedValues({
-          endpoint: conversation.endpoint || '',
-          model: conversation.agent_id ?? '',
-          modelSpec: conversation.spec || '',
+          endpoint: conversation.endpoint || "",
+          model: conversation.agent_id ?? "",
+          modelSpec: conversation.spec || "",
         });
         return;
       } else if (isAssistantsEndpoint(conversation?.endpoint)) {
         debouncedSetSelectedValues({
-          endpoint: conversation.endpoint || '',
-          model: conversation.assistant_id || '',
-          modelSpec: conversation.spec || '',
+          endpoint: conversation.endpoint || "",
+          model: conversation.assistant_id || "",
+          modelSpec: conversation.spec || "",
         });
         return;
       }
       debouncedSetSelectedValues({
-        endpoint: conversation.endpoint || '',
-        model: conversation.model || '',
-        modelSpec: conversation.spec || '',
+        endpoint: conversation.endpoint || "",
+        model: conversation.model || "",
+        modelSpec: conversation.spec || "",
       });
     }
     return () => {

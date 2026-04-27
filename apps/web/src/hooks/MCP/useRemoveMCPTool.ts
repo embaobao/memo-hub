@@ -1,9 +1,9 @@
-import { useCallback } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { Constants } from 'librechat-data-provider';
-import { useToastContext } from '@librechat/client';
-import type { AgentForm } from '~/common';
-import { useLocalize } from '~/hooks';
+import { useCallback } from "react";
+import { useFormContext } from "react-hook-form";
+import { Constants } from "librechat-data-provider";
+import { useToastContext } from "@librechat/client";
+import type { AgentForm } from "~/common";
+import { useLocalize } from "~/hooks";
 
 /**
  * Hook for removing MCP tools/servers from an agent
@@ -22,19 +22,19 @@ export function useRemoveMCPTool(options?: { showToast?: boolean }) {
         return;
       }
 
-      const currentTools = getValues('tools');
+      const currentTools = getValues("tools");
       const remainingToolIds =
         currentTools?.filter(
           (currentToolId) =>
             currentToolId !== serverName &&
             !currentToolId.endsWith(`${Constants.mcp_delimiter}${serverName}`),
         ) || [];
-      setValue('tools', remainingToolIds, { shouldDirty: true });
+      setValue("tools", remainingToolIds, { shouldDirty: true });
 
       if (shouldShowToast) {
         showToast({
-          message: localize('com_ui_delete_tool_save_reminder'),
-          status: 'warning',
+          message: localize("com_ui_delete_tool_save_reminder"),
+          status: "warning",
         });
       }
     },

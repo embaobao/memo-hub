@@ -1,11 +1,11 @@
-import { atom } from 'recoil';
-import { NotificationSeverity } from '~/common';
+import { atom } from "recoil";
+import { NotificationSeverity } from "~/common";
 
 const toastState = atom({
-  key: 'toastState',
+  key: "toastState",
   default: {
     open: false,
-    message: '',
+    message: "",
     severity: NotificationSeverity.SUCCESS,
     showIcon: true,
   },

@@ -1,13 +1,13 @@
-import { useCallback, useMemo, useEffect } from 'react';
-import debounce from 'lodash/debounce';
-import { useRecoilState } from 'recoil';
-import { Constants, LocalStorageKeys } from 'librechat-data-provider';
-import type { VerifyToolAuthResponse } from 'librechat-data-provider';
-import type { UseQueryOptions } from '@tanstack/react-query';
-import { useVerifyAgentToolAuth } from '~/data-provider';
-import { setTimestamp } from '~/utils/timestamps';
-import useLocalStorage from '~/hooks/useLocalStorageAlt';
-import { ephemeralAgentByConvoId } from '~/store';
+import { useCallback, useMemo, useEffect } from "react";
+import debounce from "lodash/debounce";
+import { useRecoilState } from "recoil";
+import { Constants, LocalStorageKeys } from "librechat-data-provider";
+import type { VerifyToolAuthResponse } from "librechat-data-provider";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { useVerifyAgentToolAuth } from "~/data-provider";
+import { setTimestamp } from "~/utils/timestamps";
+import useLocalStorage from "~/hooks/useLocalStorageAlt";
+import { ephemeralAgentByConvoId } from "~/store";
 
 type ToolValue = boolean | string;
 
@@ -35,10 +35,12 @@ export function useToolToggle({
   authConfig,
 }: UseToolToggleOptions) {
   const key = conversationId ?? Constants.NEW_CONVO;
-  const [ephemeralAgent, setEphemeralAgent] = useRecoilState(ephemeralAgentByConvoId(key));
+  const [ephemeralAgent, setEphemeralAgent] = useRecoilState(
+    ephemeralAgentByConvoId(key),
+  );
 
   const authQuery = useVerifyAgentToolAuth(
-    { toolId: authConfig?.toolId || '' },
+    { toolId: authConfig?.toolId || "" },
     {
       enabled: !!authConfig?.toolId,
       ...authConfig?.queryOptions,
@@ -47,12 +49,16 @@ export function useToolToggle({
 
   const isAuthenticated = useMemo(
     () =>
-      externalIsAuthenticated ?? (authConfig ? (authQuery?.data?.authenticated ?? false) : false),
+      externalIsAuthenticated ??
+      (authConfig ? (authQuery?.data?.authenticated ?? false) : false),
     [externalIsAuthenticated, authConfig, authQuery.data?.authenticated],
   );
 
   const toolKey = useMemo(() => _toolKey, [_toolKey]);
-  const storageKey = useMemo(() => `${localStorageKey}${key}`, [localStorageKey, key]);
+  const storageKey = useMemo(
+    () => `${localStorageKey}${key}`,
+    [localStorageKey, key],
+  );
 
   // The actual current value comes from ephemeralAgent
   const toolValue = useMemo(() => {
@@ -61,7 +67,7 @@ export function useToolToggle({
 
   const isToolEnabled = useMemo(() => {
     // For backward compatibility, treat truthy string values as enabled
-    if (typeof toolValue === 'string') {
+    if (typeof toolValue === "string") {
       return toolValue.length > 0;
     }
     return toolValue === true;
@@ -76,11 +82,24 @@ export function useToolToggle({
     }
   }, [ephemeralAgent, toolKey, storageKey]);
 
-  const [isPinned, setIsPinned] = useLocalStorage<boolean>(`${localStorageKey}pinned`, false);
+  const [isPinned, setIsPinned] = useLocalStorage<boolean>(
+    `${localStorageKey}pinned`,
+    false,
+  );
 
   const handleChange = useCallback(
-    ({ e, value }: { e?: React.ChangeEvent<HTMLInputElement>; value: ToolValue }) => {
-      if (isAuthenticated !== undefined && !isAuthenticated && setIsDialogOpen) {
+    ({
+      e,
+      value,
+    }: {
+      e?: React.ChangeEvent<HTMLInputElement>;
+      value: ToolValue;
+    }) => {
+      if (
+        isAuthenticated !== undefined &&
+        !isAuthenticated &&
+        setIsDialogOpen
+      ) {
         setIsDialogOpen(true);
         e?.preventDefault?.();
         setEphemeralAgent((prev) => ({

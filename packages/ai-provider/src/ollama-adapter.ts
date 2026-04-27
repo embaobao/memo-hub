@@ -1,5 +1,5 @@
-import type { IEmbedder, ICompleter, ChatMessage } from './types.js';
-import { AIProviderError } from './types.js';
+import type { IEmbedder, ICompleter, ChatMessage } from "./types.js";
+import { AIProviderError } from "./types.js";
 
 export interface OllamaConfig {
   url: string;
@@ -23,16 +23,19 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
 
     try {
       const response = await fetch(`${this.config.url}/embeddings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model: this.config.embeddingModel, input: text }),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: this.config.embeddingModel,
+          input: text,
+        }),
         signal: controller.signal,
       });
 
       if (!response.ok) {
         throw new AIProviderError(
           `Embedding API error: ${response.status} ${response.statusText}`,
-          'ollama',
+          "ollama",
         );
       }
 
@@ -40,12 +43,12 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
       return json.data[0].embedding as number[];
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        throw new AIProviderError('Embedding request timed out', 'ollama');
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new AIProviderError("Embedding request timed out", "ollama");
       }
       throw new AIProviderError(
         `Embedding failed: ${error instanceof Error ? error.message : String(error)}`,
-        'ollama',
+        "ollama",
         error instanceof Error ? error : undefined,
       );
     } finally {
@@ -60,7 +63,7 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
   async chat(messages: ChatMessage[]): Promise<string> {
     const chatModel = this.config.chatModel;
     if (!chatModel) {
-      throw new AIProviderError('No chat model configured', 'ollama');
+      throw new AIProviderError("No chat model configured", "ollama");
     }
 
     const controller = new AbortController();
@@ -69,8 +72,8 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
 
     try {
       const response = await fetch(`${this.config.url}/chat/completions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: chatModel, messages }),
         signal: controller.signal,
       });
@@ -78,7 +81,7 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
       if (!response.ok) {
         throw new AIProviderError(
           `Chat API error: ${response.status} ${response.statusText}`,
-          'ollama',
+          "ollama",
         );
       }
 
@@ -88,7 +91,7 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
       if (error instanceof AIProviderError) throw error;
       throw new AIProviderError(
         `Chat failed: ${error instanceof Error ? error.message : String(error)}`,
-        'ollama',
+        "ollama",
         error instanceof Error ? error : undefined,
       );
     } finally {
@@ -98,8 +101,8 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
 
   async summarize(text: string): Promise<string> {
     return this.chat([
-      { role: 'system', content: 'Summarize the following text concisely.' },
-      { role: 'user', content: text },
+      { role: "system", content: "Summarize the following text concisely." },
+      { role: "user", content: text },
     ]);
   }
 }

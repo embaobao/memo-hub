@@ -1,4 +1,4 @@
-import { EModelEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
+import { EModelEndpoint, isAssistantsEndpoint } from "librechat-data-provider";
 
 type TUseGenerations = {
   error?: boolean;
@@ -19,7 +19,7 @@ export default function useGenerationsByLatest({
   isEditing = false,
   isSubmitting,
   searchResult = false,
-  finish_reason = '',
+  finish_reason = "",
   latestMessageId,
   isCreatedByUser = false,
 }: TUseGenerations) {
@@ -38,7 +38,7 @@ export default function useGenerationsByLatest({
   const continueSupported =
     latestMessageId === messageId &&
     finish_reason &&
-    finish_reason !== 'stop' &&
+    finish_reason !== "stop" &&
     !isEditing &&
     !searchResult &&
     isEditableEndpoint;
@@ -56,7 +56,11 @@ export default function useGenerationsByLatest({
   );
 
   const regenerateEnabled =
-    !isCreatedByUser && !searchResult && !isEditing && !isSubmitting && branchingSupported;
+    !isCreatedByUser &&
+    !searchResult &&
+    !isEditing &&
+    !isSubmitting &&
+    branchingSupported;
 
   const hideEditButton =
     isSubmitting ||

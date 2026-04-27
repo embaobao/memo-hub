@@ -1,33 +1,33 @@
-import { renderHook } from '@testing-library/react';
-import { Tools, Constants, EToolResources } from 'librechat-data-provider';
-import type { TEphemeralAgent } from 'librechat-data-provider';
-import useAgentToolPermissions from '../useAgentToolPermissions';
+import { renderHook } from "@testing-library/react";
+import { Tools, Constants, EToolResources } from "librechat-data-provider";
+import type { TEphemeralAgent } from "librechat-data-provider";
+import useAgentToolPermissions from "../useAgentToolPermissions";
 
 // Mock dependencies
-jest.mock('~/data-provider', () => ({
+jest.mock("~/data-provider", () => ({
   useGetAgentByIdQuery: jest.fn(),
 }));
 
-jest.mock('~/Providers', () => ({
+jest.mock("~/Providers", () => ({
   useAgentsMapContext: jest.fn(),
 }));
 
 // Import mocked functions after mocking
-import { useGetAgentByIdQuery } from '~/data-provider';
-import { useAgentsMapContext } from '~/Providers';
+import { useGetAgentByIdQuery } from "~/data-provider";
+import { useAgentsMapContext } from "~/Providers";
 
 type HookProps = {
   agentId?: string | null;
   ephemeralAgent?: TEphemeralAgent | null;
 };
 
-describe('useAgentToolPermissions', () => {
+describe("useAgentToolPermissions", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('Ephemeral Agent Scenarios (without ephemeralAgent parameter)', () => {
-    it('should return false for all tools when agentId is null and no ephemeralAgent provided', () => {
+  describe("Ephemeral Agent Scenarios (without ephemeralAgent parameter)", () => {
+    it("should return false for all tools when agentId is null and no ephemeralAgent provided", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -38,7 +38,7 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should return false for all tools when agentId is undefined and no ephemeralAgent provided', () => {
+    it("should return false for all tools when agentId is undefined and no ephemeralAgent provided", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -49,22 +49,24 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should return false for all tools when agentId is empty string and no ephemeralAgent provided', () => {
+    it("should return false for all tools when agentId is empty string and no ephemeralAgent provided", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
-      const { result } = renderHook(() => useAgentToolPermissions(''));
+      const { result } = renderHook(() => useAgentToolPermissions(""));
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(false);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should return false for all tools when agentId is EPHEMERAL_AGENT_ID and no ephemeralAgent provided', () => {
+    it("should return false for all tools when agentId is EPHEMERAL_AGENT_ID and no ephemeralAgent provided", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
-      const { result } = renderHook(() => useAgentToolPermissions(Constants.EPHEMERAL_AGENT_ID));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(Constants.EPHEMERAL_AGENT_ID),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(false);
@@ -72,8 +74,8 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('Ephemeral Agent with Tool Settings', () => {
-    it('should return true for file_search when ephemeralAgent has file_search enabled', () => {
+  describe("Ephemeral Agent with Tool Settings", () => {
+    it("should return true for file_search when ephemeralAgent has file_search enabled", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -81,14 +83,16 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.file_search]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(null, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(null, ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(false);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should return true for execute_code when ephemeralAgent has execute_code enabled', () => {
+    it("should return true for execute_code when ephemeralAgent has execute_code enabled", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -96,14 +100,16 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.execute_code]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(undefined, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(undefined, ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(true);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should return true for both tools when ephemeralAgent has both enabled', () => {
+    it("should return true for both tools when ephemeralAgent has both enabled", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -112,14 +118,16 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.execute_code]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions('', ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions("", ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should return false for tools when ephemeralAgent has them explicitly disabled', () => {
+    it("should return false for tools when ephemeralAgent has them explicitly disabled", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -137,7 +145,7 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should handle ephemeralAgent with ocr property without affecting other tools', () => {
+    it("should handle ephemeralAgent with ocr property without affecting other tools", () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
@@ -145,15 +153,17 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.file_search]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(null, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(null, ephemeralAgent),
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(false);
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should not affect regular agents when ephemeralAgent is provided', () => {
-      const agentId = 'agent_regular';
+    it("should not affect regular agents when ephemeralAgent is provided", () => {
+      const agentId = "agent_regular";
       const mockAgent = {
         id: agentId,
         tools: [Tools.file_search],
@@ -168,7 +178,9 @@ describe('useAgentToolPermissions', () => {
         [EToolResources.execute_code]: true,
       };
 
-      const { result } = renderHook(() => useAgentToolPermissions(agentId, ephemeralAgent));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(agentId, ephemeralAgent),
+      );
 
       // Should use regular agent's tools, not ephemeralAgent
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
@@ -177,12 +189,12 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('Regular Agent with Tools', () => {
-    it('should allow file_search when agent has the tool', () => {
-      const agentId = 'agent_123';
+  describe("Regular Agent with Tools", () => {
+    it("should allow file_search when agent has the tool", () => {
+      const agentId = "agent_123";
       const mockAgent = {
         id: agentId,
-        tools: [Tools.file_search, 'other_tool'],
+        tools: [Tools.file_search, "other_tool"],
       };
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({
@@ -194,14 +206,14 @@ describe('useAgentToolPermissions', () => {
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(false);
-      expect(result.current.tools).toEqual([Tools.file_search, 'other_tool']);
+      expect(result.current.tools).toEqual([Tools.file_search, "other_tool"]);
     });
 
-    it('should allow execute_code when agent has the tool', () => {
-      const agentId = 'agent_456';
+    it("should allow execute_code when agent has the tool", () => {
+      const agentId = "agent_456";
       const mockAgent = {
         id: agentId,
-        tools: [Tools.execute_code, 'another_tool'],
+        tools: [Tools.execute_code, "another_tool"],
       };
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({
@@ -213,14 +225,17 @@ describe('useAgentToolPermissions', () => {
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(true);
-      expect(result.current.tools).toEqual([Tools.execute_code, 'another_tool']);
+      expect(result.current.tools).toEqual([
+        Tools.execute_code,
+        "another_tool",
+      ]);
     });
 
-    it('should allow both tools when agent has both', () => {
-      const agentId = 'agent_789';
+    it("should allow both tools when agent has both", () => {
+      const agentId = "agent_789";
       const mockAgent = {
         id: agentId,
-        tools: [Tools.file_search, Tools.execute_code, 'custom_tool'],
+        tools: [Tools.file_search, Tools.execute_code, "custom_tool"],
       };
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({
@@ -232,14 +247,18 @@ describe('useAgentToolPermissions', () => {
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
-      expect(result.current.tools).toEqual([Tools.file_search, Tools.execute_code, 'custom_tool']);
+      expect(result.current.tools).toEqual([
+        Tools.file_search,
+        Tools.execute_code,
+        "custom_tool",
+      ]);
     });
 
-    it('should disallow both tools when agent has neither', () => {
-      const agentId = 'agent_no_tools';
+    it("should disallow both tools when agent has neither", () => {
+      const agentId = "agent_no_tools";
       const mockAgent = {
         id: agentId,
-        tools: ['custom_tool1', 'custom_tool2'],
+        tools: ["custom_tool1", "custom_tool2"],
       };
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({
@@ -251,11 +270,11 @@ describe('useAgentToolPermissions', () => {
 
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(false);
-      expect(result.current.tools).toEqual(['custom_tool1', 'custom_tool2']);
+      expect(result.current.tools).toEqual(["custom_tool1", "custom_tool2"]);
     });
 
-    it('should handle agent with empty tools array', () => {
-      const agentId = 'agent_empty_tools';
+    it("should handle agent with empty tools array", () => {
+      const agentId = "agent_empty_tools";
       const mockAgent = {
         id: agentId,
         tools: [],
@@ -273,8 +292,8 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toEqual([]);
     });
 
-    it('should handle agent with undefined tools', () => {
-      const agentId = 'agent_undefined_tools';
+    it("should handle agent with undefined tools", () => {
+      const agentId = "agent_undefined_tools";
       const mockAgent = {
         id: agentId,
         tools: undefined,
@@ -293,12 +312,12 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('Agent Data from Query', () => {
-    it('should prioritize agentData tools over selectedAgent tools', () => {
-      const agentId = 'agent_with_query_data';
+  describe("Agent Data from Query", () => {
+    it("should prioritize agentData tools over selectedAgent tools", () => {
+      const agentId = "agent_with_query_data";
       const mockAgent = {
         id: agentId,
-        tools: ['old_tool'],
+        tools: ["old_tool"],
       };
       const mockAgentData = {
         id: agentId,
@@ -308,17 +327,22 @@ describe('useAgentToolPermissions', () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({
         [agentId]: mockAgent,
       });
-      (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: mockAgentData });
+      (useGetAgentByIdQuery as jest.Mock).mockReturnValue({
+        data: mockAgentData,
+      });
 
       const { result } = renderHook(() => useAgentToolPermissions(agentId));
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
-      expect(result.current.tools).toEqual([Tools.file_search, Tools.execute_code]);
+      expect(result.current.tools).toEqual([
+        Tools.file_search,
+        Tools.execute_code,
+      ]);
     });
 
-    it('should fallback to selectedAgent tools when agentData has no tools', () => {
-      const agentId = 'agent_fallback';
+    it("should fallback to selectedAgent tools when agentData has no tools", () => {
+      const agentId = "agent_fallback";
       const mockAgent = {
         id: agentId,
         tools: [Tools.file_search],
@@ -331,7 +355,9 @@ describe('useAgentToolPermissions', () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue({
         [agentId]: mockAgent,
       });
-      (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: mockAgentData });
+      (useGetAgentByIdQuery as jest.Mock).mockReturnValue({
+        data: mockAgentData,
+      });
 
       const { result } = renderHook(() => useAgentToolPermissions(agentId));
 
@@ -341,9 +367,9 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('Agent Not Found Scenarios', () => {
-    it('should disallow all tools when agent is not found in map', () => {
-      const agentId = 'agent_nonexistent';
+  describe("Agent Not Found Scenarios", () => {
+    it("should disallow all tools when agent is not found in map", () => {
+      const agentId = "agent_nonexistent";
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
@@ -355,8 +381,8 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should disallow all tools when agentsMap is null', () => {
-      const agentId = 'agent_with_null_map';
+    it("should disallow all tools when agentsMap is null", () => {
+      const agentId = "agent_with_null_map";
 
       (useAgentsMapContext as jest.Mock).mockReturnValue(null);
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
@@ -368,8 +394,8 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should disallow all tools when agentsMap is undefined', () => {
-      const agentId = 'agent_with_undefined_map';
+    it("should disallow all tools when agentsMap is undefined", () => {
+      const agentId = "agent_with_undefined_map";
 
       (useAgentsMapContext as jest.Mock).mockReturnValue(undefined);
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
@@ -382,9 +408,9 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('Memoization and Performance', () => {
-    it('should memoize results when inputs do not change', () => {
-      const agentId = 'agent_memoized';
+  describe("Memoization and Performance", () => {
+    it("should memoize results when inputs do not change", () => {
+      const agentId = "agent_memoized";
       const mockAgent = {
         id: agentId,
         tools: [Tools.file_search],
@@ -395,7 +421,9 @@ describe('useAgentToolPermissions', () => {
       });
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
-      const { result, rerender } = renderHook(() => useAgentToolPermissions(agentId));
+      const { result, rerender } = renderHook(() =>
+        useAgentToolPermissions(agentId),
+      );
 
       const firstResult = result.current;
 
@@ -405,8 +433,12 @@ describe('useAgentToolPermissions', () => {
       const secondResult = result.current;
 
       // The hook returns a new object each time, but the values should be equal
-      expect(firstResult.fileSearchAllowedByAgent).toBe(secondResult.fileSearchAllowedByAgent);
-      expect(firstResult.codeAllowedByAgent).toBe(secondResult.codeAllowedByAgent);
+      expect(firstResult.fileSearchAllowedByAgent).toBe(
+        secondResult.fileSearchAllowedByAgent,
+      );
+      expect(firstResult.codeAllowedByAgent).toBe(
+        secondResult.codeAllowedByAgent,
+      );
       // Tools array reference should be the same since it comes from useMemo
       expect(firstResult.tools).toBe(secondResult.tools);
 
@@ -416,9 +448,9 @@ describe('useAgentToolPermissions', () => {
       expect(secondResult.tools).toEqual([Tools.file_search]);
     });
 
-    it('should recompute when agentId changes', () => {
-      const agentId1 = 'agent_1';
-      const agentId2 = 'agent_2';
+    it("should recompute when agentId changes", () => {
+      const agentId1 = "agent_1";
+      const agentId2 = "agent_2";
       const mockAgents = {
         [agentId1]: { id: agentId1, tools: [Tools.file_search] },
         [agentId2]: { id: agentId2, tools: [Tools.execute_code] },
@@ -427,9 +459,12 @@ describe('useAgentToolPermissions', () => {
       (useAgentsMapContext as jest.Mock).mockReturnValue(mockAgents);
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
-      const { result, rerender } = renderHook(({ agentId }) => useAgentToolPermissions(agentId), {
-        initialProps: { agentId: agentId1 },
-      });
+      const { result, rerender } = renderHook(
+        ({ agentId }) => useAgentToolPermissions(agentId),
+        {
+          initialProps: { agentId: agentId1 },
+        },
+      );
 
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(false);
@@ -441,8 +476,8 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.codeAllowedByAgent).toBe(true);
     });
 
-    it('should handle switching between ephemeral and regular agents', () => {
-      const regularAgentId = 'agent_regular';
+    it("should handle switching between ephemeral and regular agents", () => {
+      const regularAgentId = "agent_regular";
       const mockAgent = {
         id: regularAgentId,
         tools: [],
@@ -459,7 +494,8 @@ describe('useAgentToolPermissions', () => {
       };
 
       const { result, rerender } = renderHook(
-        ({ agentId, ephemeralAgent }) => useAgentToolPermissions(agentId, ephemeralAgent),
+        ({ agentId, ephemeralAgent }) =>
+          useAgentToolPermissions(agentId, ephemeralAgent),
         { initialProps: { agentId: null, ephemeralAgent } as HookProps },
       );
 
@@ -473,7 +509,7 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.codeAllowedByAgent).toBe(false);
 
       // Switch back to ephemeral
-      rerender({ agentId: '', ephemeralAgent });
+      rerender({ agentId: "", ephemeralAgent });
       expect(result.current.fileSearchAllowedByAgent).toBe(true);
       expect(result.current.codeAllowedByAgent).toBe(true);
 
@@ -484,9 +520,9 @@ describe('useAgentToolPermissions', () => {
     });
   });
 
-  describe('Edge Cases', () => {
-    it('should handle agents with null tools gracefully', () => {
-      const agentId = 'agent_null_tools';
+  describe("Edge Cases", () => {
+    it("should handle agents with null tools gracefully", () => {
+      const agentId = "agent_null_tools";
       const mockAgent = {
         id: agentId,
         tools: null as any,
@@ -504,23 +540,25 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeNull();
     });
 
-    it('should handle whitespace-only agentId as ephemeral', () => {
+    it("should handle whitespace-only agentId as ephemeral", () => {
       // Note: Based on the current implementation, only empty string is treated as ephemeral
       // Whitespace-only strings would be treated as regular agent IDs
-      const whitespaceId = '   ';
+      const whitespaceId = "   ";
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({ data: undefined });
 
-      const { result } = renderHook(() => useAgentToolPermissions(whitespaceId));
+      const { result } = renderHook(() =>
+        useAgentToolPermissions(whitespaceId),
+      );
 
       // Whitespace ID is not considered ephemeral in current implementation
       expect(result.current.fileSearchAllowedByAgent).toBe(false);
       expect(result.current.codeAllowedByAgent).toBe(false);
     });
 
-    it('should handle query loading state', () => {
-      const agentId = 'agent_loading';
+    it("should handle query loading state", () => {
+      const agentId = "agent_loading";
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({
@@ -537,14 +575,14 @@ describe('useAgentToolPermissions', () => {
       expect(result.current.tools).toBeUndefined();
     });
 
-    it('should handle query error state', () => {
-      const agentId = 'agent_error';
+    it("should handle query error state", () => {
+      const agentId = "agent_error";
 
       (useAgentsMapContext as jest.Mock).mockReturnValue({});
       (useGetAgentByIdQuery as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
-        error: new Error('Failed to fetch agent'),
+        error: new Error("Failed to fetch agent"),
       });
 
       const { result } = renderHook(() => useAgentToolPermissions(agentId));

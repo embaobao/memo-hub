@@ -1,9 +1,11 @@
-import { useSetRecoilState } from 'recoil';
-import useUpdateTagsInConvo from './useUpdateTagsInConvo';
-import store from '~/store';
+import { useSetRecoilState } from "recoil";
+import useUpdateTagsInConvo from "./useUpdateTagsInConvo";
+import store from "~/store";
 
 const useBookmarkSuccess = (conversationId: string) => {
-  const updateConversation = useSetRecoilState(store.updateConversationSelector(conversationId));
+  const updateConversation = useSetRecoilState(
+    store.updateConversationSelector(conversationId),
+  );
   const { updateTagsInConversation } = useUpdateTagsInConvo();
 
   return (newTags: string[]) => {

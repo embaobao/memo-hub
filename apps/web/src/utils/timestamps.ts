@@ -1,7 +1,7 @@
-import { LocalStorageKeys } from 'librechat-data-provider';
+import { LocalStorageKeys } from "librechat-data-provider";
 
 /** Suffix for timestamp entries */
-const TIMESTAMP_SUFFIX = '_TIMESTAMP';
+const TIMESTAMP_SUFFIX = "_TIMESTAMP";
 
 /** Duration in milliseconds (2 days) */
 const CLEANUP_THRESHOLD = 2 * 24 * 60 * 60 * 1000;
@@ -30,7 +30,10 @@ export function setTimestamp(key: string): void {
  * Set a value in localStorage with an associated timestamp
  */
 export function setTimestampedValue(key: string, value: any): void {
-  localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+  localStorage.setItem(
+    key,
+    typeof value === "string" ? value : JSON.stringify(value),
+  );
   localStorage.setItem(`${key}${TIMESTAMP_SUFFIX}`, Date.now().toString());
 }
 
@@ -85,7 +88,7 @@ export function cleanupTimestampedStorage(): void {
 
       // Check if this key should be timestamped
       const isTimestampedKey = TIMESTAMPED_KEYS.some(
-        (prefix) => key.startsWith(prefix) && !key.includes('pinned'),
+        (prefix) => key.startsWith(prefix) && !key.includes("pinned"),
       );
 
       if (isTimestampedKey && !key.endsWith(TIMESTAMP_SUFFIX)) {
@@ -113,7 +116,7 @@ export function cleanupTimestampedStorage(): void {
       console.log(`Cleaned up ${keysToRemove.length} old localStorage entries`);
     }
   } catch (error) {
-    console.error('Error during cleanup of timestamped storage:', error);
+    console.error("Error during cleanup of timestamped storage:", error);
   }
 }
 
@@ -128,7 +131,9 @@ export function migrateExistingEntries(): void {
     const key = localStorage.key(i);
     if (!key) continue;
 
-    const isTimestampedKey = TIMESTAMPED_KEYS.some((prefix) => key.startsWith(prefix));
+    const isTimestampedKey = TIMESTAMPED_KEYS.some((prefix) =>
+      key.startsWith(prefix),
+    );
 
     if (isTimestampedKey && !key.endsWith(TIMESTAMP_SUFFIX)) {
       const timestampKey = `${key}${TIMESTAMP_SUFFIX}`;

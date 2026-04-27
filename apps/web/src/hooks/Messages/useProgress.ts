@@ -1,6 +1,10 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from "react";
 
-export default function useProgress(initialProgress = 0.01, increment = 0.007, fileSize?: number) {
+export default function useProgress(
+  initialProgress = 0.01,
+  increment = 0.007,
+  fileSize?: number,
+) {
   const calculateIncrement = useCallback(
     (size?: number) => {
       const baseRate = 0.05;
@@ -67,7 +71,13 @@ export default function useProgress(initialProgress = 0.01, increment = 0.007, f
       clearInterval(timer);
       clearTimeout(timeout);
     };
-  }, [progress, initialProgress, incrementValue, fileSize, getDynamicIncrement]);
+  }, [
+    progress,
+    initialProgress,
+    incrementValue,
+    fileSize,
+    getDynamicIncrement,
+  ]);
 
   return progress;
 }

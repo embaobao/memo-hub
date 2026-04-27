@@ -1,5 +1,5 @@
-import React, { useMemo, useCallback } from 'react';
-import { useGetModelsQuery } from 'librechat-data-provider/react-query';
+import React, { useMemo, useCallback } from "react";
+import { useGetModelsQuery } from "librechat-data-provider/react-query";
 import {
   Permissions,
   alternateName,
@@ -7,19 +7,19 @@ import {
   PermissionTypes,
   getEndpointField,
   getConfigDefaults,
-} from 'librechat-data-provider';
+} from "librechat-data-provider";
 import type {
   TEndpointsConfig,
   TAssistantsMap,
   TStartupConfig,
   Assistant,
   Agent,
-} from 'librechat-data-provider';
-import type { Endpoint } from '~/common';
-import { useGetEndpointsQuery } from '~/data-provider';
-import { mapEndpoints, getIconKey } from '~/utils';
-import { useHasAccess } from '~/hooks';
-import { icons } from './Icons';
+} from "librechat-data-provider";
+import type { Endpoint } from "~/common";
+import { useGetEndpointsQuery } from "~/data-provider";
+import { mapEndpoints, getIconKey } from "~/utils";
+import { useHasAccess } from "~/hooks";
+import { icons } from "./Icons";
 
 const defaultInterface = getConfigDefaults().interface;
 
@@ -35,7 +35,9 @@ export const useEndpoints = ({
   startupConfig: TStartupConfig | undefined;
 }) => {
   const modelsQuery = useGetModelsQuery();
-  const { data: endpoints = [] } = useGetEndpointsQuery({ select: mapEndpoints });
+  const { data: endpoints = [] } = useGetEndpointsQuery({
+    select: mapEndpoints,
+  });
   const interfaceConfig = startupConfig?.interface ?? defaultInterface;
   const includedEndpoints = useMemo(
     () => new Set(startupConfig?.modelSpecs?.addedEndpoints ?? []),
@@ -73,21 +75,30 @@ export const useEndpoints = ({
     }
 
     return result;
-  }, [endpoints, hasAgentAccess, includedEndpoints, interfaceConfig.modelSelect]);
+  }, [
+    endpoints,
+    hasAgentAccess,
+    includedEndpoints,
+    interfaceConfig.modelSelect,
+  ]);
 
   const endpointRequiresUserKey = useCallback(
     (ep: string) => {
-      return !!getEndpointField(endpointsConfig, ep, 'userProvide');
+      return !!getEndpointField(endpointsConfig, ep, "userProvide");
     },
     [endpointsConfig],
   );
 
   const mappedEndpoints: Endpoint[] = useMemo(() => {
     return filteredEndpoints.map((ep) => {
-      const endpointType = getEndpointField(endpointsConfig, ep, 'type');
-      const iconKey = getIconKey({ endpoint: ep, endpointsConfig, endpointType });
+      const endpointType = getEndpointField(endpointsConfig, ep, "type");
+      const iconKey = getIconKey({
+        endpoint: ep,
+        endpointsConfig,
+        endpointType,
+      });
       const Icon = icons[iconKey];
-      const endpointIconURL = getEndpointField(endpointsConfig, ep, 'iconURL');
+      const endpointIconURL = getEndpointField(endpointsConfig, ep, "iconURL");
       const hasModels =
         (ep === EModelEndpoint.agents && (agents?.length ?? 0) > 0) ||
         (ep === EModelEndpoint.assistants && assistants?.length > 0) ||
@@ -103,7 +114,7 @@ export const useEndpoints = ({
         icon: Icon
           ? React.createElement(Icon, {
               size: 20,
-              className: 'text-text-primary shrink-0 icon-md',
+              className: "text-text-primary shrink-0 icon-md",
               iconURL: endpointIconURL,
               endpoint: ep,
             })
@@ -117,7 +128,7 @@ export const useEndpoints = ({
           isGlobal: agent.isPublic ?? false,
         }));
         result.agentNames = agents?.reduce((acc, agent) => {
-          acc[agent.id] = agent.name || '';
+          acc[agent.id] = agent.name || "";
           return acc;
         }, {});
         result.modelIcons = agents?.reduce((acc, agent) => {
@@ -134,7 +145,7 @@ export const useEndpoints = ({
         }));
         result.assistantNames = assistants.reduce(
           (acc: Record<string, string>, assistant: Assistant) => {
-            acc[assistant.id] = assistant.name || '';
+            acc[assistant.id] = assistant.name || "";
             return acc;
           },
           {},
@@ -146,14 +157,17 @@ export const useEndpoints = ({
           },
           {},
         );
-      } else if (ep === EModelEndpoint.azureAssistants && azureAssistants.length > 0) {
+      } else if (
+        ep === EModelEndpoint.azureAssistants &&
+        azureAssistants.length > 0
+      ) {
         result.models = azureAssistants.map((assistant: { id: string }) => ({
           name: assistant.id,
           isGlobal: false,
         }));
         result.assistantNames = azureAssistants.reduce(
           (acc: Record<string, string>, assistant: Assistant) => {
-            acc[assistant.id] = assistant.name || '';
+            acc[assistant.id] = assistant.name || "";
             return acc;
           },
           {},
@@ -181,7 +195,14 @@ export const useEndpoints = ({
 
       return result;
     });
-  }, [filteredEndpoints, endpointsConfig, modelsQuery.data, agents, assistants, azureAssistants]);
+  }, [
+    filteredEndpoints,
+    endpointsConfig,
+    modelsQuery.data,
+    agents,
+    assistants,
+    azureAssistants,
+  ]);
 
   return {
     mappedEndpoints,

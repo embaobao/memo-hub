@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 type DebugWindow = Window & {
   __LC_RENDER_DEBUG__?: boolean;
@@ -25,11 +25,14 @@ export default function useRenderChangeLog(
   > | null>(null);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
       return;
     }
 
-    if (typeof window === 'undefined' || !(window as DebugWindow).__LC_RENDER_DEBUG__) {
+    if (
+      typeof window === "undefined" ||
+      !(window as DebugWindow).__LC_RENDER_DEBUG__
+    ) {
       previousValuesRef.current = values;
       return;
     }

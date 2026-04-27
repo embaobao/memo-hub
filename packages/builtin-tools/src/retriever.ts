@@ -1,11 +1,15 @@
-import { z } from 'zod';
-import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index';
-import { IHostResources } from '@memohub/core/src/index';
+import { z } from "zod";
+import {
+  ITool,
+  IToolManifest,
+  ExecutionContext,
+} from "@memohub/core/src/index";
+import { IHostResources } from "@memohub/core/src/index";
 
 export class RetrieverTool implements ITool {
   public manifest: IToolManifest = {
-    id: 'builtin:retriever',
-    type: 'builtin',
+    id: "builtin:retriever",
+    type: "builtin",
     exposed: true,
     optional: false,
     inputSchema: z.object({
@@ -20,8 +24,20 @@ export class RetrieverTool implements ITool {
     }),
   };
 
-  public async execute(input: { vector: number[], track_id?: string, limit: number, filter?: string, hydrate?: boolean }, resources: IHostResources, context: ExecutionContext): Promise<{ results: any[] }> {
-    const filter = input.track_id ? `track_id = '${input.track_id}'` : input.filter;
+  public async execute(
+    input: {
+      vector: number[];
+      track_id?: string;
+      limit: number;
+      filter?: string;
+      hydrate?: boolean;
+    },
+    resources: IHostResources,
+    context: ExecutionContext,
+  ): Promise<{ results: any[] }> {
+    const filter = input.track_id
+      ? `track_id = '${input.track_id}'`
+      : input.filter;
     const searchResults = await resources.soul.search(input.vector, {
       limit: input.limit,
       filter: filter,
@@ -35,7 +51,7 @@ export class RetrieverTool implements ITool {
           try {
             item.text = await resources.flesh.read(item.hash);
           } catch {
-            item.text = '[Content Missing]';
+            item.text = "[Content Missing]";
           }
         }
         results.push(item);

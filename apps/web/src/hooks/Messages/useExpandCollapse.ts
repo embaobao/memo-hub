@@ -1,8 +1,8 @@
-import { useRef, useLayoutEffect, useMemo } from 'react';
-import type { CSSProperties } from 'react';
+import { useRef, useLayoutEffect, useMemo } from "react";
+import type { CSSProperties } from "react";
 
 export const EXPAND_TRANSITION =
-  'grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+  "grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
 
 export default function useExpandCollapse(isExpanded: boolean): {
   style: CSSProperties;
@@ -17,16 +17,16 @@ export default function useExpandCollapse(isExpanded: boolean): {
     }
 
     if (isExpanded) {
-      el.removeAttribute('inert');
+      el.removeAttribute("inert");
     } else {
-      el.setAttribute('inert', '');
+      el.setAttribute("inert", "");
     }
   }, [isExpanded]);
 
   const style = useMemo<CSSProperties>(
     () => ({
-      display: 'grid',
-      gridTemplateRows: isExpanded ? '1fr' : '0fr',
+      display: "grid",
+      gridTemplateRows: isExpanded ? "1fr" : "0fr",
       transition: EXPAND_TRANSITION,
       opacity: isExpanded ? 1 : 0,
     }),

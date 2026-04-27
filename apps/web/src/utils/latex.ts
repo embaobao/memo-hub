@@ -5,7 +5,8 @@ const MHCHEM_CE_ESCAPED_REGEX = /\$\\\\ce\{[^}]*\}\$/g;
 const MHCHEM_PU_ESCAPED_REGEX = /\$\\\\pu\{[^}]*\}\$/g;
 const CURRENCY_REGEX =
   /(?<![\\$])\$(?!\$)(?=\d+(?:,\d{3})*(?:\.\d+)?(?:[KMBkmb])?(?:\s|$|[^a-zA-Z\d]))/g;
-const SINGLE_DOLLAR_REGEX = /(?<!\\)\$(?!\$)((?:[^$\n]|\\[$])+?)(?<!\\)(?<!`)\$(?!\$)/g;
+const SINGLE_DOLLAR_REGEX =
+  /(?<!\\)\$(?!\$)((?:[^$\n]|\\[$])+?)(?<!\\)(?<!`)\$(?!\$)/g;
 
 /**
  * Escapes mhchem package notation in LaTeX by converting single dollar delimiters to double dollars
@@ -16,8 +17,8 @@ const SINGLE_DOLLAR_REGEX = /(?<!\\)\$(?!\$)((?:[^$\n]|\\[$])+?)(?<!\\)(?<!`)\$(
  */
 function escapeMhchem(text: string): string {
   // First escape the backslashes in mhchem commands
-  let result = text.replace(MHCHEM_CE_REGEX, '$\\\\ce{');
-  result = result.replace(MHCHEM_PU_REGEX, '$\\\\pu{');
+  let result = text.replace(MHCHEM_CE_REGEX, "$\\\\ce{");
+  result = result.replace(MHCHEM_PU_REGEX, "$\\\\pu{");
 
   // Then convert single dollar mhchem to double dollar
   result = result.replace(MHCHEM_CE_ESCAPED_REGEX, (match) => `$${match}$`);
@@ -41,10 +42,10 @@ function findCodeBlockRegions(content: string): Array<[number, number]> {
 
     // Check for multiline code blocks
     if (
-      char === '`' &&
+      char === "`" &&
       i + 2 < content.length &&
-      content[i + 1] === '`' &&
-      content[i + 2] === '`'
+      content[i + 1] === "`" &&
+      content[i + 2] === "`"
     ) {
       if (multilineStart === -1) {
         multilineStart = i;
@@ -56,7 +57,7 @@ function findCodeBlockRegions(content: string): Array<[number, number]> {
       }
     }
     // Check for inline code blocks (only if not in multiline)
-    else if (char === '`' && multilineStart === -1) {
+    else if (char === "`" && multilineStart === -1) {
       if (inlineStart === -1) {
         inlineStart = i;
       } else {
@@ -75,7 +76,10 @@ function findCodeBlockRegions(content: string): Array<[number, number]> {
  * @param codeRegions Array of code block regions
  * @returns True if position is inside a code block
  */
-function isInCodeBlock(position: number, codeRegions: Array<[number, number]>): boolean {
+function isInCodeBlock(
+  position: number,
+  codeRegions: Array<[number, number]>,
+): boolean {
   let left = 0;
   let right = codeRegions.length - 1;
 
@@ -103,11 +107,11 @@ function isInCodeBlock(position: number, codeRegions: Array<[number, number]>): 
  */
 export function preprocessLaTeX(content: string): string {
   // Early return for most common case
-  if (!content.includes('$')) return content;
+  if (!content.includes("$")) return content;
 
   // Process mhchem first (usually rare, so check if needed)
   let processed = content;
-  if (content.includes('\\ce{') || content.includes('\\pu{')) {
+  if (content.includes("\\ce{") || content.includes("\\pu{")) {
     processed = escapeMhchem(content);
   }
 
@@ -125,12 +129,12 @@ export function preprocessLaTeX(content: string): string {
   while ((match = CURRENCY_REGEX.exec(processed)) !== null) {
     if (!isInCodeBlock(match.index, codeRegions)) {
       parts.push(processed.substring(lastIndex, match.index));
-      parts.push('\\$');
+      parts.push("\\$");
       lastIndex = match.index + 1;
     }
   }
   parts.push(processed.substring(lastIndex));
-  processed = parts.join('');
+  processed = parts.join("");
 
   // Second pass: convert single dollar delimiters to double dollars
   const result: string[] = [];
@@ -148,5 +152,5 @@ export function preprocessLaTeX(content: string): string {
   }
   result.push(processed.substring(lastIndex));
 
-  return result.join('');
+  return result.join("");
 }

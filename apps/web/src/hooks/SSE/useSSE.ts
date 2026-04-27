@@ -1,25 +1,34 @@
-import { useEffect, useState } from 'react';
-import { v4 } from 'uuid';
-import { SSE } from 'sse.js';
-import { useSetRecoilState } from 'recoil';
-import { request, createPayload, removeNullishValues } from 'librechat-data-provider';
-import type { TMessage, TPayload, TSubmission, EventSubmission } from 'librechat-data-provider';
-import type { EventHandlerParams } from './useEventHandlers';
-import type { TResData } from '~/common';
-import { useGetStartupConfig, useGetUserBalance } from '~/data-provider';
-import { useAuthContext } from '~/hooks/AuthContext';
-import useEventHandlers from './useEventHandlers';
-import { clearAllDrafts } from '~/utils';
-import store from '~/store';
+import { useEffect, useState } from "react";
+import { v4 } from "uuid";
+import { SSE } from "sse.js";
+import { useSetRecoilState } from "recoil";
+import {
+  request,
+  createPayload,
+  removeNullishValues,
+} from "librechat-data-provider";
+import type {
+  TMessage,
+  TPayload,
+  TSubmission,
+  EventSubmission,
+} from "librechat-data-provider";
+import type { EventHandlerParams } from "./useEventHandlers";
+import type { TResData } from "~/common";
+import { useGetStartupConfig, useGetUserBalance } from "~/data-provider";
+import { useAuthContext } from "~/hooks/AuthContext";
+import useEventHandlers from "./useEventHandlers";
+import { clearAllDrafts } from "~/utils";
+import store from "~/store";
 
 type ChatHelpers = Pick<
   EventHandlerParams,
-  | 'setMessages'
-  | 'getMessages'
-  | 'setConversation'
-  | 'setIsSubmitting'
-  | 'newConversation'
-  | 'resetLatestMessage'
+  | "setMessages"
+  | "getMessages"
+  | "setConversation"
+  | "setIsSubmitting"
+  | "newConversation"
+  | "resetLatestMessage"
 >;
 
 export default function useSSE(
@@ -33,7 +42,9 @@ export default function useSSE(
   const { token, isAuthenticated } = useAuthContext();
   const [completed, setCompleted] = useState(new Set());
   const setAbortScroll = useSetRecoilState(store.abortScrollFamily(runIndex));
-  const setShowStopButton = useSetRecoilState(store.showStopButtonByIndex(runIndex));
+  const setShowStopButton = useSetRecoilState(
+    store.showStopButtonByIndex(runIndex),
+  );
 
   const {
     setMessages,
@@ -88,10 +99,13 @@ export default function useSSE(
 
     const sse = new SSE(payloadData.server, {
       payload: JSON.stringify(payload),
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
-    sse.addEventListener('attachment', (e: MessageEvent) => {
+    sse.addEventListener("attachment", (e: MessageEvent) => {
       try {
         const data = JSON.parse(e.data);
         attachmentHandler({ data, submission: submission as EventSubmission });
@@ -100,7 +114,7 @@ export default function useSSE(
       }
     });
 
-    sse.addEventListener('message', (e: MessageEvent) => {
+    sse.addEventListener("message", (e: MessageEvent) => {
       const data = JSON.parse(e.data);
 
       if (data.final != null) {
@@ -108,12 +122,12 @@ export default function useSSE(
         try {
           finalHandler(data, submission as EventSubmission);
         } catch (error) {
-          console.error('Error in finalHandler:', error);
+          console.error("Error in finalHandler:", error);
           setIsSubmitting(false);
           setShowStopButton(false);
         }
         (startupConfig?.balance?.enabled ?? false) && balanceQuery.refetch();
-        console.log('final', data);
+        console.log("final", data);
         return;
       } else if (data.created != null) {
         const runId = v4();
@@ -154,13 +168,14 @@ export default function useSSE(
       }
     });
 
-    sse.addEventListener('open', () => {
+    sse.addEventListener("open", () => {
       setAbortScroll(false);
-      console.log('connection is opened');
+      console.log("connection is opened");
     });
 
-    sse.addEventListener('cancel', async () => {
-      const streamKey = (submission as TSubmission | null)?.['initialResponse']?.messageId;
+    sse.addEventListener("cancel", async () => {
+      const streamKey = (submission as TSubmission | null)?.["initialResponse"]
+        ?.messageId;
       if (completed.has(streamKey)) {
         setIsSubmitting(false);
         setCompleted((prev) => {
@@ -172,35 +187,36 @@ export default function useSSE(
 
       setCompleted((prev) => new Set(prev.add(streamKey)));
       const latestMessages = getMessages();
-      const conversationId = latestMessages?.[latestMessages.length - 1]?.conversationId;
+      const conversationId =
+        latestMessages?.[latestMessages.length - 1]?.conversationId;
       try {
         await abortConversation(
           conversationId ??
             userMessage.conversationId ??
             submission.conversation?.conversationId ??
-            '',
+            "",
           submission as EventSubmission,
           latestMessages,
         );
       } catch (error) {
-        console.error('Error during abort:', error);
+        console.error("Error during abort:", error);
         setIsSubmitting(false);
         setShowStopButton(false);
       }
     });
 
-    sse.addEventListener('error', async (e: MessageEvent) => {
+    sse.addEventListener("error", async (e: MessageEvent) => {
       /* @ts-ignore */
       if (e.responseCode === 401) {
         /* token expired, refresh and retry */
         try {
           const refreshResponse = await request.refreshToken();
-          const token = refreshResponse?.token ?? '';
+          const token = refreshResponse?.token ?? "";
           if (!token) {
-            throw new Error('Token refresh failed.');
+            throw new Error("Token refresh failed.");
           }
           sse.headers = {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           };
 
@@ -213,7 +229,7 @@ export default function useSSE(
         }
       }
 
-      console.log('error in server stream.');
+      console.log("error in server stream.");
       (startupConfig?.balance?.enabled ?? false) && balanceQuery.refetch();
 
       let data: TResData | undefined = undefined;
@@ -225,7 +241,10 @@ export default function useSSE(
         setIsSubmitting(false);
       }
 
-      errorHandler({ data, submission: { ...submission, userMessage } as EventSubmission });
+      errorHandler({
+        data,
+        submission: { ...submission, userMessage } as EventSubmission,
+      });
     });
 
     setIsSubmitting(true);
@@ -235,7 +254,7 @@ export default function useSSE(
       const isCancelled = sse.readyState <= 1;
       sse.close();
       if (isCancelled) {
-        const e = new Event('cancel');
+        const e = new Event("cancel");
         /* @ts-ignore */
         sse.dispatchEvent(e);
       }

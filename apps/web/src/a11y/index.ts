@@ -1,1 +1,1 @@
-export { default as LiveAnnouncer } from './LiveAnnouncer';
+export { default as LiveAnnouncer } from "./LiveAnnouncer";

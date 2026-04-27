@@ -5,7 +5,7 @@ import {
   AudioPaths,
   VideoPaths,
   SheetPaths,
-} from '@librechat/client';
+} from "@librechat/client";
 import {
   megabyte,
   QueryKeys,
@@ -13,56 +13,60 @@ import {
   excelMimeTypes,
   EToolResources,
   fileConfig as defaultFileConfig,
-} from 'librechat-data-provider';
-import type { TFile, EndpointFileConfig, FileConfig } from 'librechat-data-provider';
-import type { QueryClient } from '@tanstack/react-query';
-import type { ExtendedFile } from '~/common';
+} from "librechat-data-provider";
+import type {
+  TFile,
+  EndpointFileConfig,
+  FileConfig,
+} from "librechat-data-provider";
+import type { QueryClient } from "@tanstack/react-query";
+import type { ExtendedFile } from "~/common";
 
-export const partialTypes = ['text/x-'];
+export const partialTypes = ["text/x-"];
 
 const textDocument = {
   paths: TextPaths,
-  fill: '#FF5588',
-  title: 'Document',
+  fill: "#FF5588",
+  title: "Document",
 };
 
 const spreadsheet = {
   paths: SheetPaths,
-  fill: '#10A37F',
-  title: 'Spreadsheet',
+  fill: "#10A37F",
+  title: "Spreadsheet",
 };
 
 const codeFile = {
   paths: CodePaths,
-  fill: '#FF6E3C',
+  fill: "#FF6E3C",
   // TODO: make this dynamic to the language
-  title: 'Code',
+  title: "Code",
 };
 
 const artifact = {
   paths: CodePaths,
-  fill: '#2D305C',
-  title: 'Code',
+  fill: "#2D305C",
+  title: "Code",
 };
 
 const audioFile = {
   paths: AudioPaths,
-  fill: '#FF6B35',
-  title: 'Audio',
+  fill: "#FF6B35",
+  title: "Audio",
 };
 
 const videoFile = {
   paths: VideoPaths,
-  fill: '#8B5CF6',
-  title: 'Video',
+  fill: "#8B5CF6",
+  title: "Video",
 };
 
 export const fileTypes = {
   /* Category matches */
   file: {
     paths: FilePaths,
-    fill: '#0000FF',
-    title: 'File',
+    fill: "#0000FF",
+    title: "File",
   },
   text: textDocument,
   txt: textDocument,
@@ -72,9 +76,9 @@ export const fileTypes = {
 
   /* Partial matches */
   csv: spreadsheet,
-  'application/pdf': textDocument,
+  "application/pdf": textDocument,
   pdf: textDocument,
-  'text/x-': codeFile,
+  "text/x-": codeFile,
   artifact: artifact,
 
   /* Exact matches */
@@ -106,7 +110,7 @@ export const fileTypes = {
 // };
 
 export const getFileType = (
-  type = '',
+  type = "",
 ): {
   paths: React.FC;
   fill: string;
@@ -128,7 +132,7 @@ export const getFileType = (
   }
 
   // Category check
-  const category = type.split('/')[0] || 'text';
+  const category = type.split("/")[0] || "text";
   if (fileTypes[category]) {
     return fileTypes[category];
   }
@@ -144,32 +148,32 @@ export const getFileType = (
  */
 export function formatDate(dateString: string, isSmallScreen = false) {
   if (!dateString) {
-    return '';
+    return "";
   }
 
   const date = new Date(dateString);
 
   if (isSmallScreen) {
-    return date.toLocaleDateString('en-US', {
-      month: 'numeric',
-      day: 'numeric',
-      year: '2-digit',
+    return date.toLocaleDateString("en-US", {
+      month: "numeric",
+      day: "numeric",
+      year: "2-digit",
     });
   }
 
   const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const day = date.getDate();
@@ -186,14 +190,20 @@ export function addFileToCache(queryClient: QueryClient, newfile: TFile) {
   const currentFiles = queryClient.getQueryData<TFile[]>([QueryKeys.files]);
 
   if (!currentFiles) {
-    console.warn('No current files found in cache, skipped updating file query cache');
+    console.warn(
+      "No current files found in cache, skipped updating file query cache",
+    );
     return;
   }
 
-  const fileIndex = currentFiles.findIndex((file) => file.file_id === newfile.file_id);
+  const fileIndex = currentFiles.findIndex(
+    (file) => file.file_id === newfile.file_id,
+  );
 
   if (fileIndex > -1) {
-    console.warn('File already exists in cache, skipped updating file query cache');
+    console.warn(
+      "File already exists in cache, skipped updating file query cache",
+    );
     return;
   }
 
@@ -235,20 +245,31 @@ export const validateFiles = ({
   toolResource?: string;
   fileConfig: FileConfig | null;
 }) => {
-  const { fileLimit, fileSizeLimit, totalSizeLimit, supportedMimeTypes, disabled } =
-    endpointFileConfig;
+  const {
+    fileLimit,
+    fileSizeLimit,
+    totalSizeLimit,
+    supportedMimeTypes,
+    disabled,
+  } = endpointFileConfig;
   /** Block all uploads if the endpoint is explicitly disabled */
   if (disabled === true) {
-    setError('com_ui_attach_error_disabled');
+    setError("com_ui_attach_error_disabled");
     return false;
   }
   const existingFiles = Array.from(files.values());
-  const incomingTotalSize = fileList.reduce((total, file) => total + file.size, 0);
+  const incomingTotalSize = fileList.reduce(
+    (total, file) => total + file.size,
+    0,
+  );
   if (incomingTotalSize === 0) {
-    setError('com_error_files_empty');
+    setError("com_error_files_empty");
     return false;
   }
-  const currentTotalSize = existingFiles.reduce((total, file) => total + file.size, 0);
+  const currentTotalSize = existingFiles.reduce(
+    (total, file) => total + file.size,
+    0,
+  );
 
   if (fileLimit && fileList.length + files.size > fileLimit) {
     setError(`File limit reached: ${fileLimit} files`);
@@ -261,13 +282,15 @@ export const validateFiles = ({
 
     // Check if the file type is still empty after the extension check
     if (!fileType) {
-      setError('Unable to determine file type for: ' + originalFile.name);
+      setError("Unable to determine file type for: " + originalFile.name);
       return false;
     }
 
     // Replace empty type with inferred type
     if (originalFile.type !== fileType) {
-      const newFile = new File([originalFile], originalFile.name, { type: fileType });
+      const newFile = new File([originalFile], originalFile.name, {
+        type: fileType,
+      });
       originalFile = newFile;
       fileList[i] = newFile;
     }
@@ -300,18 +323,18 @@ export const validateFiles = ({
   const combinedFilesInfo = [
     ...existingFiles.map(
       (file) =>
-        `${file.file?.name ?? file.filename}-${file.size}-${file.type?.split('/')[0] ?? 'file'}`,
+        `${file.file?.name ?? file.filename}-${file.size}-${file.type?.split("/")[0] ?? "file"}`,
     ),
     ...fileList.map(
       (file: File | undefined) =>
-        `${file?.name}-${file?.size}-${file?.type.split('/')[0] ?? 'file'}`,
+        `${file?.name}-${file?.size}-${file?.type.split("/")[0] ?? "file"}`,
     ),
   ];
 
   const uniqueFilesSet = new Set(combinedFilesInfo);
 
   if (uniqueFilesSet.size !== combinedFilesInfo.length) {
-    setError('com_error_files_dupe');
+    setError("com_error_files_dupe");
     return false;
   }
 
@@ -325,5 +348,7 @@ export function sortPagesByRelevance(
   if (!pageRelevance || Object.keys(pageRelevance).length === 0) {
     return pages;
   }
-  return [...pages].sort((a, b) => (pageRelevance[b] || 0) - (pageRelevance[a] || 0));
+  return [...pages].sort(
+    (a, b) => (pageRelevance[b] || 0) - (pageRelevance[a] || 0),
+  );
 }
