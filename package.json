@@ -34,10 +34,6 @@
   "license": "MIT",
   "dependencies": {
     "comment-json": "^5.0.0",
-    "esprima": "^4.0.1",
-    "highlight.js": "^11.11.1",
-    "react-markdown": "^10.1.0",
-    "rehype-highlight": "^7.0.2",
-    "remark-gfm": "^4.0.1"
+    "esprima": "^4.0.1"
   }
 }
