@@ -100,8 +100,10 @@ export class MemoryKernel extends EventEmitter implements IKernel {
     try {
       // 1. 优先尝试配置驱动的 Flow
       const trackConfig = this.config.tracks.find(t => t.id === trackId);
+      console.log(`[Kernel] Dispatching ${instruction.op} to track: ${trackId}. Config found: ${!!trackConfig}`);
       if (trackConfig) {
         const flow = (trackConfig.flows && trackConfig.flows[instruction.op]) || trackConfig.flow;
+        console.log(`[Kernel] Selected flow: ${flow ? 'Array(' + flow.length + ')' : 'NONE'}`);
         if (flow && flow.length > 0) {
           const output = await this.flowEngine.executeFlow(flow, instruction.payload, traceId);
           this.emit('dispatch', { traceId, trackId, op: instruction.op, stage: 'end', success: true });

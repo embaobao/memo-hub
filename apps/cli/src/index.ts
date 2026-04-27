@@ -118,10 +118,13 @@ program
       });
       if (result.success) {
         spinner.stop();
-        console.log(chalk.blue(`\nFound ${result.data.length} memories for: "${query}"\n`));
-        result.data.forEach((item: any, i: number) => {
-          console.log(chalk.white(`${i + 1}. `) + chalk.green(item.text));
-          if (item.entities) console.log(chalk.gray(`   Entities: ${item.entities.join(', ')}`));
+        const items = Array.isArray(result.data) ? result.data : (result.data?.results || []);
+        console.log(chalk.blue(`\nFound ${items.length} memories for: "${query}"\n`));
+        items.forEach((item: any, i: number) => {
+          const text = item.text || '[No Content]';
+          const entities = Array.isArray(item.entities) ? item.entities : [];
+          console.log(chalk.white(`${i + 1}. `) + chalk.green(text));
+          if (entities.length > 0) console.log(chalk.gray(`   Entities: ${entities.join(', ')}`));
           console.log(chalk.gray(`   Source: ${item.track_id || options.track}\n`));
         });
       } else {

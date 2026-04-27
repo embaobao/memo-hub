@@ -7,11 +7,22 @@
   },
   "ai": {
     "providers": [
-      { "id": "local", "type": "ollama", "url": "http://localhost:11434/v1" }
+      {
+        "id": "local",
+        "type": "ollama",
+        "url": "http://localhost:11434/v1"
+      }
     ],
     "agents": {
-      "embedder": { "provider": "local", "model": "nomic-embed-text-v2-moe", "dimensions": 768 },
-      "summarizer": { "provider": "local", "model": "qwen2.5:7b" }
+      "embedder": {
+        "provider": "local",
+        "model": "nomic-embed-text-v2-moe",
+        "dimensions": 768
+      },
+      "summarizer": {
+        "provider": "local",
+        "model": "qwen2.5:7b"
+      }
     }
   },
   "dispatcher": {
@@ -23,23 +34,52 @@
       "id": "track-insight",
       "flows": {
         "ADD": [
-          { "step": "storage", "tool": "builtin:cas", "input": { "content": "$.payload.text" } },
-          { "step": "embedding", "tool": "builtin:embedder", "input": { "text": "$.payload.text" } },
-          { "step": "indexing", "tool": "builtin:vector", "input": { 
-            "id": "$.payload.id", 
-            "vector": "$.nodes.embedding.vector",
-            "hash": "$.nodes.storage.hash",
-            "track_id": "track-insight",
-            "meta": { "category": "$.payload.category", "importance": "$.payload.importance" }
-          } }
+          {
+            "step": "storage",
+            "tool": "builtin:cas",
+            "input": {
+              "content": "$.payload.text"
+            }
+          },
+          {
+            "step": "embedding",
+            "tool": "builtin:embedder",
+            "input": {
+              "text": "$.payload.text"
+            }
+          },
+          {
+            "step": "indexing",
+            "tool": "builtin:vector",
+            "input": {
+              "id": "$.payload.id",
+              "vector": "$.nodes.embedding.vector",
+              "hash": "$.nodes.storage.hash",
+              "track_id": "track-insight",
+              "meta": {
+                "category": "$.payload.category",
+                "importance": "$.payload.importance"
+              }
+            }
+          }
         ],
         "RETRIEVE": [
-          { "step": "embedding", "tool": "builtin:embedder", "input": { "text": "$.payload.query" } },
-          { "step": "searching", "tool": "builtin:retriever", "input": { 
-            "vector": "$.nodes.embedding.vector", 
-            "track_id": "track-insight",
-            "limit": "$.payload.limit"
-          } }
+          {
+            "step": "embedding",
+            "tool": "builtin:embedder",
+            "input": {
+              "text": "$.payload.query"
+            }
+          },
+          {
+            "step": "searching",
+            "tool": "builtin:retriever",
+            "input": {
+              "vector": "$.nodes.embedding.vector",
+              "track_id": "track-insight",
+              "limit": "$.payload.limit"
+            }
+          }
         ]
       }
     },
@@ -47,25 +87,61 @@
       "id": "track-source",
       "flows": {
         "ADD": [
-          { "step": "analyzer", "tool": "builtin:code-analyzer", "input": { "code": "$.payload.code", "language": "$.payload.language" } },
-          { "step": "storage", "tool": "builtin:cas", "input": { "content": "$.payload.code" } },
-          { "step": "embedding", "tool": "builtin:embedder", "input": { "text": "$.payload.code" } },
-          { "step": "indexing", "tool": "builtin:vector", "input": { 
-            "id": "$.payload.id", 
-            "vector": "$.nodes.embedding.vector",
-            "hash": "$.nodes.storage.hash",
-            "track_id": "track-source",
-            "entities": "$.nodes.analyzer.entities",
-            "meta": { "language": "$.payload.language", "file_path": "$.payload.file_path" }
-          } }
+          {
+            "step": "analyzer",
+            "tool": "builtin:code-analyzer",
+            "input": {
+              "code": "$.payload.code",
+              "language": "$.payload.language"
+            }
+          },
+          {
+            "step": "storage",
+            "tool": "builtin:cas",
+            "input": {
+              "content": "$.payload.code"
+            }
+          },
+          {
+            "step": "embedding",
+            "tool": "builtin:embedder",
+            "input": {
+              "text": "$.payload.code"
+            }
+          },
+          {
+            "step": "indexing",
+            "tool": "builtin:vector",
+            "input": {
+              "id": "$.payload.id",
+              "vector": "$.nodes.embedding.vector",
+              "hash": "$.nodes.storage.hash",
+              "track_id": "track-source",
+              "entities": "$.nodes.analyzer.entities",
+              "meta": {
+                "language": "$.payload.language",
+                "file_path": "$.payload.file_path"
+              }
+            }
+          }
         ],
         "RETRIEVE": [
-          { "step": "embedding", "tool": "builtin:embedder", "input": { "text": "$.payload.query" } },
-          { "step": "searching", "tool": "builtin:retriever", "input": { 
-            "vector": "$.nodes.embedding.vector", 
-            "track_id": "track-source",
-            "limit": "$.payload.limit"
-          } }
+          {
+            "step": "embedding",
+            "tool": "builtin:embedder",
+            "input": {
+              "text": "$.payload.query"
+            }
+          },
+          {
+            "step": "searching",
+            "tool": "builtin:retriever",
+            "input": {
+              "vector": "$.nodes.embedding.vector",
+              "track_id": "track-source",
+              "limit": "$.payload.limit"
+            }
+          }
         ]
       }
     },
@@ -73,21 +149,60 @@
       "id": "track-stream",
       "flows": {
         "ADD": [
-          { "step": "storage", "tool": "builtin:cas", "input": { "content": "$.payload.content" } },
-          { "step": "embedding", "tool": "builtin:embedder", "input": { "text": "$.payload.content" } },
-          { "step": "indexing", "tool": "builtin:vector", "input": { 
-            "id": "$.payload.id", 
-            "vector": "$.nodes.embedding.vector",
-            "hash": "$.nodes.storage.hash",
-            "track_id": "track-stream",
-            "meta": { "session_id": "$.payload.session_id", "role": "$.payload.role" }
-          } }
+          {
+            "step": "storage",
+            "tool": "builtin:cas",
+            "input": {
+              "content": "$.payload.content"
+            }
+          },
+          {
+            "step": "embedding",
+            "tool": "builtin:embedder",
+            "input": {
+              "text": "$.payload.content"
+            }
+          },
+          {
+            "step": "indexing",
+            "tool": "builtin:vector",
+            "input": {
+              "id": "$.payload.id",
+              "vector": "$.nodes.embedding.vector",
+              "hash": "$.nodes.storage.hash",
+              "track_id": "track-stream",
+              "meta": {
+                "session_id": "$.payload.session_id",
+                "role": "$.payload.role"
+              }
+            }
+          }
         ],
         "DISTILL": [
-            // 主动记忆蒸馏流 (Stream -> Insight)
-            { "step": "history", "tool": "builtin:retriever", "input": { "track_id": "track-stream", "limit": 20 } },
-            { "step": "summarize", "tool": "builtin:summarizer", "input": { "text": "$.nodes.history.results" } },
-            { "step": "to-insight", "tool": "track-insight:ADD", "input": { "text": "$.nodes.summarize.output", "category": "distilled" } }
+          // 主动记忆蒸馏流 (Stream -> Insight)
+          {
+            "step": "history",
+            "tool": "builtin:retriever",
+            "input": {
+              "track_id": "track-stream",
+              "limit": 20
+            }
+          },
+          {
+            "step": "summarize",
+            "tool": "builtin:summarizer",
+            "input": {
+              "text": "$.nodes.history.results"
+            }
+          },
+          {
+            "step": "to-insight",
+            "tool": "track-insight:ADD",
+            "input": {
+              "text": "$.nodes.summarize.output",
+              "category": "distilled"
+            }
+          }
         ]
       }
     }

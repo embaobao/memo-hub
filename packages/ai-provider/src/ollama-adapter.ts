@@ -18,7 +18,8 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
 
   async embed(text: string): Promise<number[]> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.config.timeout * 1000);
+    const timeoutVal = this.config.timeout || 30;
+    const timeout = setTimeout(() => controller.abort(), timeoutVal * 1000);
 
     try {
       const response = await fetch(`${this.config.url}/embeddings`, {
@@ -63,7 +64,8 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
     }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.config.timeout * 1000);
+    const timeoutVal = this.config.timeout || 30;
+    const timeout = setTimeout(() => controller.abort(), timeoutVal * 1000);
 
     try {
       const response = await fetch(`${this.config.url}/chat/completions`, {
