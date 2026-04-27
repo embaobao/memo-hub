@@ -1,227 +1,75 @@
-# MemoHub v1
+# 🧠 MemoHub v1.0.0
+> **The First Memory-First Orchestration OS for Personal Agents.**
 
-## 🧠 Personal Agent Memory System
+MemoHub 是一个专为个人 Agent 打造的数字记忆操作系统。它将碎片化的信息通过 **Text2Mem 协议** 转化为结构化的、可编排的记忆资产，并提供 iOS 级审美的 **Ether UI** 可视化控制台。
 
-基于 **Text2Mem 协议**的智能记忆管理系统，采用 **Bun Workspace Monorepo** 架构，为 AI Agent 提供持久化记忆能力。
+![V1 Status](https://img.shields.io/badge/Status-v1.0.0_Ready-emerald?style=for-the-badge)
+![Tech Stack](https://img.shields.io/badge/Stack-Bun_|_TS_|_LanceDB-blue?style=for-the-badge)
 
 ---
 
-## ✨ 核心特性
+## 💎 核心特性
 
-- 🧠 **多轨道动态矩阵**: Source、Insight、Stream、Wiki 等多个专业轨道
-- 📦 **Monorepo 架构**: 模块化、可维护、可扩展
-- 🔌 **MCP 协议**: 完全支持 Model Context Protocol
-- 🤖 **AI 友好**: 专为 AI Agent 设计的接口
-- 💾 **灵肉分离**: CAS 内容存储 + 向量索引
-- 📊 **Text2Mem 协议**: 12 个原子操作指令
-- 🔧 **治理能力**: 去重、蒸馏、澄清环节
+- **Flow-Driven 编排**: 采用 n8n/Dify 风格的流引擎，支持通过 `config.jsonc` 动态定义记忆的存取逻辑。
+- **Ether UI 控制台**: 极致简约的拟态设计（Hardcore Minimalism）。
+  - **Flow Studio**: 可视化编排记忆轨道，实时热生效。
+  - **Memory Matrix**: 跨轨道记忆资产大盘，支持多维检索。
+  - **Agent Sandbox**: 集成记忆感知能力的智能对话调试环境。
+- **Text2Mem 协议**: 统一的 12 项原子操作，抹平不同类型知识（代码、语义、流）的存取差异。
+- **全栈 Monorepo**: 基于 Bun Workspaces 构建，模块化程度高，核心、工具、轨道完全解耦。
 
 ---
 
 ## 🚀 快速开始
 
-### 构建项目
+### 1. 环境准备
+确保您的系统已安装 [Bun](https://bun.sh/) 运行时。
 
 ```bash
-cd /path/to/memo-hub
-bun install && bun run build
+# 克隆并安装依赖
+bun install
+bun run build
 ```
 
-### 集成方式
-
-选择适合你的集成方式：
-
-- 📖 [集成指南首页](docs/integration/index.md) - 选择适合的集成方式
-- 🔌 [MCP 协议集成](docs/integration/mcp-integration.md) - 标准协议，适用于所有 AI Agent
-- 💻 [CLI 命令集成](docs/integration/cli-integration.md) - 命令行使用
-- 🤖 [Hermes AI 集成](docs/integration/hermes-guide.md) - Hermes 特定集成
-
-### 全局安装 CLI
-
+### 2. 启动控制台
 ```bash
-cd apps/cli
-npm link
-memohub --version
+bun apps/cli/src/index.ts ui
 ```
+访问 `http://localhost:3000` 进入可视化界面。
 
----
-
-## 📚 文档导航
-
-### 🚀 快速上手
-- [快速开始指南](docs/guides/quickstart.md) - 5 分钟上手
-- [配置指南](docs/guides/configuration.md) - 详细配置说明
-
-### 🔌 集成方式
-- [集成指南首页](docs/integration/index.md) - 所有集成方式概览
-- [MCP 协议集成](docs/integration/mcp-integration.md) - 标准 MCP 协议
-- [CLI 命令集成](docs/integration/cli-integration.md) - 命令行集成
-- [Hermes AI 集成](docs/integration/hermes-guide.md) - Hermes 特定集成
-
-### 🏗️ 架构文档
-- [架构概览](docs/architecture/overview.md) - 系统架构设计
-- [框架流程图](docs/architecture/framework-flow.md) - 完整流程图
-- [设计与代码映射](docs/architecture/design-code-mapping.md) - 设计到代码映射
-- [记忆流程图](docs/architecture/memory-flow.md) - 记忆读写流程
-- [实现验证报告](docs/architecture/implementation-verification.md) - 架构验证报告
-- [验证总结](docs/architecture/verification-summary.md) - 验证结果总结
-
-### 📖 开发文档
-- [项目结构](docs/development/project-structure.md) - Monorepo 结构
-- [贡献指南](docs/development/contributing.md) - 如何贡献代码
-- [测试指南](docs/development/testing.md) - 测试规范
-
----
-
-## 📁 项目结构
-
-```
-memohub/
-├── apps/              # 应用层
-│   └── cli/          # CLI + MCP Server
-├── packages/         # 核心包
-│   ├── protocol/     # Text2Mem 协议
-│   ├── core/         # MemoryKernel
-│   ├── ai-provider/  # AI 适配器
-│   ├── storage-flesh/  # CAS 存储
-│   ├── storage-soul/   # 向量存储
-│   └── librarian/    # 检索流水线
-├── tracks/           # 轨道层
-│   ├── track-insight/  # 逻辑沉淀轨道（知识、事实、偏好）
-│   ├── track-source/   # 静态资产轨道（代码、AST）
-│   └── track-stream/   # 时序流轨道（对话历史，计划中）
-└── docs/             # 文档中心
-```
-
----
-
-## 🛠️ CLI 命令
-
+### 3. 命令行操作
 ```bash
-# 知识管理
-memohub add "知识内容" -c <分类> -t <标签>
-memohub search "查询" -l <结果数>
-memohub list
-memohub delete --ids <id1,id2>
+# 注入一条记忆
+bun apps/cli/src/index.ts add "MemoHub V1 采用极简设计语言"
 
-# 代码管理
-memohub add-code <文件> -l <语言>
-memohub search-code "查询" -l <结果数>
+# 语义检索
+bun apps/cli/src/index.ts search "设计语言是什么？"
 
-# 统一检索
-memohub search-all "查询" -l <结果数>
-
-# 治理功能
-memohub dedup --track track-insight
-memohub distill --track track-insight
-
-# 配置
-memohub config --validate
-memohub serve  # 启动 MCP 服务器
+# 启动 MCP 服务供 Claude 使用
+bun apps/cli/src/index.ts mcp
 ```
 
 ---
 
-## 🔌 MCP 工具
+## 🏗️ 架构概览
 
-MemoHub MCP Server 提供 7 个工具：
-
-### 知识管理
-- `add_knowledge` - 添加知识
-- `query_knowledge` - 查询知识
-- `delete_knowledge` - 删除知识
-- `list_categories` - 列出分类
-
-### 代码管理
-- `add_code` - 添加代码
-- `search_code` - 搜索代码
-
-### 统计信息
-- `get_stats` - 获取统计信息
-
-**详细文档**: [MCP 集成指南](docs/integration/mcp-integration.md)
+- **MemoryKernel**: 纯粹的调度器，通过 `FlowEngine` 执行工作流。
+- **ToolRegistry**: 原子工具（CAS, Vector, AST）的注册中心。
+- **Track System**: 业务轨道（Insight, Source, Stream, Wiki）高度热插拔。
+- **Storage**: 
+  - **Flesh (CAS)**: 内容寻址存储，确保数据去重与一致性。
+  - **Soul (LanceDB)**: 向量化长期记忆，支持毫秒级语义检索。
 
 ---
 
-## 🎯 技术栈
+## 📚 深入阅读
 
-- **语言**: TypeScript 5.9.3
-- **运行时**: Node.js >= 22.0.0, Bun >= 1.3.0
-- **包管理**: Bun Workspace
-- **数据库**: LanceDB 0.26.2
-- **嵌入**: Ollama (nomic-embed-text-v2-moe)
-- **协议**: MCP (Model Context Protocol)
+- [架构设计详解](docs/architecture/overview.md)
+- [Text2Mem 协议规范](docs/architecture/text2mem-protocol.md)
+- [轨道开发指南](docs/development/contributing.md)
+- [配置说明](docs/guides/configuration.md)
 
 ---
 
-## 🏗️ Text2Mem 协议
-
-MemoHub v1 基于 **Text2Mem 协议**，提供 12 个原子操作：
-
-### 写入操作
-- `ADD` - 添加记录
-- `UPDATE` - 更新记录
-- `DELETE` - 删除记录
-- `MERGE` - 合并记录
-
-### 读取操作
-- `RETRIEVE` - 检索记录
-- `LIST` - 列出记录
-- `GET` - 获取单个
-
-### 元数据操作
-- `CLARIFY` - 澄清记录
-- `ANCHOR` - 锚定记录
-
-### 治理操作
-- `DISTILL` - 蒸馏知识
-- `DEDUP` - 去重扫描
-- `SYNC` - 同步记录
-
-**详细文档**: [Text2Mem 协议](docs/architecture/text2mem-protocol.md)
-
----
-
-## 📊 架构验证
-
-✅ **所有核心问题已验证通过**
-
-- ✅ CLI 多轨机制流转
-- ✅ Agent 调用路由机制
-- ✅ MCP 协议符合性
-- ✅ 数据入库完整性
-- ✅ Hermes 集成可靠性
-
-**详细报告**: [架构验证报告](docs/architecture/implementation-verification.md)
-
----
-
-## 🤝 贡献指南
-
-欢迎贡献代码！请阅读 [贡献指南](docs/development/contributing.md)。
-
-### 开发规范
-
-- 遵循 [AGENT.md](AGENT.md) 开发规范
-- 保持 Monorepo 依赖单向
-- 添加完整测试
-- 更新相关文档
-
----
-
-## 📄 许可证
-
-MIT License
-
----
-
-## 🔗 相关链接
-
-- [文档中心](docs/README.md)
-- [GitHub Issues](https://github.com/your-repo/issues)
-- [更新日志](CHANGELOG.md)
-
----
-
-**版本**: 3.0.0
-**最后更新**: 2026-04-24
+**MemoHub 让 Agent 拥有灵魂。**  
+Made with ❤️ for the AI Era.

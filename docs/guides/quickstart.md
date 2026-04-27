@@ -1,310 +1,114 @@
-# 快速开始指南
+# 🚀 快速开始指南 (v1.0.0)
 
-本指南将帮助你快速上手 MemoHub。
+本指南将帮助您在 5 分钟内启动 MemoHub 并开始您的记忆编排之旅。
 
-## 前置条件
+## 🛠️ 环境准备
 
-### 1. 安装 Ollama
-
-MemoHub 使用 Ollama 运行本地嵌入模型。
-
+### 1. 安装 Bun (运行时)
+MemoHub 深度依赖 Bun 引擎提供高性能的源码执行与包管理。
 ```bash
-# macOS/Linux
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Windows (使用 WSL)
-wsl bash -c "curl -fsSL https://ollama.com/install.sh | sh"
+curl -fsSL https://bun.sh/install | sh
 ```
 
-### 2. 拉取嵌入模型
-
+### 2. 安装并启动 Ollama (向量嵌入)
+默认使用本地模型 `nomic-embed-text-v2-moe`。
 ```bash
 ollama pull nomic-embed-text-v2-moe
-```
-
-### 3. 启动 Ollama 服务
-
-```bash
 ollama serve
 ```
 
-验证服务是否运行：
-
-```bash
-curl http://localhost:11434/api/tags
-```
-
 ---
 
-## 安装 MemoHub
-
-### 从源码安装（推荐）
+## 📦 安装与构建
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-username/memohub.git
-cd memohub
+git clone https://github.com/embaobao/memo-hub.git
+cd memo-hub
 
-# 2. 安装依赖
+# 2. 安装依赖并构建
 bun install
-
-# 3. 构建项目
 bun run build
-
-# 4. 配置文件
-cp config/config.example.yaml config/config.jsonc
-
-# 5. 测试安装
-mh --help
-```
-
-### 全局安装
-
-```bash
-cd memohub
-bun run build
-npm install -g .
-
-# 验证
-mh --help
 ```
 
 ---
 
-## 基础使用
+## 🖥️ 启动 Web 控制台 (推荐)
 
-### 1. 查看统计信息
-
-```bash
-mh stats
-```
-
-**输出示例**：
-```
-GBrain (通用知识):
-  总记录数: 69
-  数据库路径: ~/.memohub/track-insight.lancedb
-  嵌入模型: nomic-embed-text-v2-moe
-  向量维度: 768
-
-ClawMem (代码记忆):
-  总记录数: 833
-  数据库路径: ~/.memohub/track-source.lancedb
-  嵌入模型: nomic-embed-text-v2-moe
-  向量维度: 768
-```
-
-### 2. 添加知识
+MemoHub 提供了一个极致简约、功能强大的可视化管理界面。
 
 ```bash
-# 添加用户偏好
-mh add-knowledge "用户喜欢 TypeScript 和 React 开发" \
-  -c user \
-  -i 0.9 \
-  -t preference,typescript,react
+bun apps/cli/src/index.ts ui
+```
+访问 **`http://localhost:3000`** 即可进入控制台：
+- **Studio**: 拖拽原子工具（CAS, Vector）构建您的记忆轨道逻辑。
+- **Sandbox**: 直接与您的 Agent 对话，观察其如何检索并引用记忆。
+- **Matrix**: 像浏览文件一样管理您的所有记忆碎片。
 
-# 添加环境信息
-mh add-knowledge "项目使用 Node.js v22 和 Bun 运行时" \
-  -c environment \
-  -i 0.8 \
-  -t system,nodejs,bun
+---
 
-# 添加项目信息
-mh add-knowledge "项目是一个基于向量嵌入的双轨记忆系统" \
-  -c project \
-  -i 0.9 \
-  -t project,memory,vector
+## ⌨️ 命令行交互
+
+如果您更喜欢终端操作，MemoHub 提供了一套完整的指令集：
+
+### 1. 注入记忆 (Add)
+```bash
+bun apps/cli/src/index.ts add "用户喜欢极简设计风格" -t track-insight
 ```
 
-### 3. 搜索知识
-
+### 2. 语义搜索 (Search)
 ```bash
-# 搜索用户偏好
-mh search-knowledge "TypeScript" -l 3
-
-# 搜索环境信息
-mh search-knowledge "Node.js Bun" -l 3
-
-# 搜索项目信息
-mh search-knowledge "向量嵌入" -l 5
+bun apps/cli/src/index.ts search "用户的设计偏好是什么？"
 ```
 
-### 4. 添加代码片段
-
+### 3. 查看状态 (Inspect)
 ```bash
-# 添加接口定义
-mh add-code "interface User { name: string; age: number; }" \
-  -f user.ts \
-  -a interface \
-  -s User \
-  -l typescript \
-  -i 0.8 \
-  -t user,model
-
-# 添加函数
-mh add-code "async function search(query: string): Promise<Result[]>" \
-  -f search.ts \
-  -a function \
-  -s search \
-  -l typescript \
-  -i 0.9 \
-  -t search,async
-
-# 添加类
-mh add-code "class MemoryStore { constructor() {} add(data) {} }" \
-  -f store.ts \
-  -a class \
-  -s MemoryStore \
-  -l typescript \
-  -i 0.9 \
-  -t memory,store
+bun apps/cli/src/index.ts inspect
 ```
 
-### 5. 搜索代码
-
+### 4. MCP 模式
+将 MemoHub 挂载为 MCP 服务器，供 Claude Desktop 使用：
 ```bash
-# 搜索接口
-mh search-code "interface User" -l 3
-
-# 搜索函数
-mh search-code "async function search" -l 5
-
-# 搜索类
-mh search-code "class Memory" -l 3
+bun apps/cli/src/index.ts mcp
 ```
 
 ---
 
-## 配置文件
+## ⚙️ 配置文件
 
-编辑 `config/config.jsonc`：
+核心配置文件位于 `~/.memohub/config.jsonc`。
+您可以定义 AI 供应商、向量维度、以及自定义的 Flow 编排逻辑。
 
-```yaml
-# 嵌入模型配置
-embedding:
-  url: "http://localhost:11434/v1"
-  model: "nomic-embed-text-v2-moe"
-  dimensions: 768
-  timeout: 30
-
-# CAS（内容寻址存储，可选）：用于“灵肉分离”
-cas:
-  root_path: "~/.hermes/data/memohub-cas"
-
-# 写入路由配置（可选）
-routing:
-  enabled: true
-  default_track: "track-insight"
-  code_suffixes: [".ts", ".tsx", ".js", ".jsx", ".py", ".md"]
-
-# 双轨数据库配置
-track-insight:
-  db_path: "~/.hermes/data/track-insight.lancedb"
-  table_name: "track-insight"
-
-track-source:
-  db_path: "~/.hermes/data/track-source.lancedb"
-  table_name: "track-source"
-
-# 同步配置（可选）
-sync:
-  editor_memory_paths:
-    - "~/.claude-code/memory"
-    - "~/.opencode/memory"
-    - "~/.trae/memory"
-  interval: 3600
-  cloud:
-    enabled: false
-    provider: "github"
-    repo: "your-username/memory-backup"
-    branch: "main"
-```
-
-说明：
-- 推荐直接复制示例配置：`cp config/config.example.yaml config/config.jsonc`
-- 配置优先级为：环境变量 > YAML > 默认值
-
-## 进阶：2.0+ 能力快速体验
-
-### 1) 带上下文写入（用于路由/审计）
-
-```bash
-mh add-knowledge "检索默认回填原文（Hydration）" -c memory -t architecture \
-  --project memo-hub --session-id s-001 --source cli
-```
-
-### 2) 检索回填开关（Hydration）
-
-```bash
-# 默认开启（仅当索引 text 为空且存在 content_ref 时才会回填）
-mh search-knowledge "Hydration" -l 5
-
-# 关闭回填
-mh search-knowledge "Hydration" -l 5 --no-hydrate
-```
-
-### 3) Git Hook 无感采集（post-commit）
-
-```bash
-mh hooks install
-mh librarian ingest-git --commit HEAD --dry-run
+```jsonc
+{
+  "system": { "root": "~/.memohub" },
+  "ai": {
+    "providers": {
+      "ollama": { "baseURL": "http://localhost:11434/v1" }
+    }
+  },
+  "tracks": [
+    {
+      "id": "track-insight",
+      "flows": {
+        "ADD": [
+          { "step": "extract", "tool": "builtin:entity-linker" },
+          { "step": "save", "tool": "builtin:vector" }
+        ]
+      }
+    }
+  ]
+}
 ```
 
 ---
 
-## 与 Hermes 集成
+## 💡 下一步建议
 
-如果你使用 Hermes，可以共享记忆数据：
-
-```yaml
-track-insight:
-  dbPath: "~/.hermes/data/track-insight.lancedb"
-
-track-source:
-  dbPath: "~/.hermes/data/track-source.lancedb"
-```
+- 深入了解 [Text2Mem 协议](../architecture/text2mem-protocol.md)。
+- 学习如何 [开发自定义轨道](../development/contributing.md)。
+- 探索 [存储架构](../architecture/storage.md) 的“灵肉分离”设计。
 
 ---
 
-## 下一步
-
-- [配置指南](configuration.md) - 深入了解配置选项
-- [API 文档](../docs/api.md) - 查看 API 参考
-- [插件开发](../docs/plugins.md) - 开发自定义插件
-- [私有仓库同步](private-sync.md) - 设置私有仓库同步
-
----
-
-## 常见问题
-
-### Q: 如何检查 Ollama 是否运行？
-
-```bash
-curl http://localhost:11434/api/tags
-```
-
-### Q: 如何重置数据库？
-
-```bash
-rm -rf ~/.memohub/*.lancedb
-```
-
-### Q: 如何备份数据？
-
-```bash
-# 备份整个目录
-cp -r ~/.memohub/ ~/.memohub-backup-$(date +%Y%m%d)/
-
-# 或者创建 tar 归档
-tar -czf memohub-backup-$(date +%Y%m%d).tar.gz ~/.memohub/
-```
-
-### Q: 如何验证配置？
-
-```bash
-mh config --validate
-```
-
----
-
-需要帮助？查看 [常见问题](../docs/faq.md) 或提交 [GitHub Issue](https://github.com/your-username/memohub/issues)。
+**MemoHub: 让记忆可被编排。**
