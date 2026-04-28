@@ -1,0 +1,9 @@
+schema: spec-driven
+created: 2026-04-28
+title: Structured Indexes for Performance
+stage: proposal
+status: pending
+priority: P2
+depends:
+  - 2026-04-28-mcp-integration-hub-mvp
+  - 2026-04-28-mcp-event-projectors

@@ -1,0 +1,8 @@
+schema: spec-driven
+created: 2026-04-28
+title: MCP Event Projectors Extension
+stage: proposal
+status: pending
+priority: P1
+depends:
+  - 2026-04-28-mcp-integration-hub-mvp
