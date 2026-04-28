@@ -1,86 +1,30 @@
-import { AgentConfig, ProviderConfig } from "@memohub/config";
-import {
-  IEmbedder,
-  ICompleter,
-  AIProviderRegistry,
-  OllamaAdapter,
-  MockAdapter,
-} from "@memohub/ai-provider";
+import { IEmbedder, ICompleter, AIProviderRegistry, OllamaAdapter, MockAdapter } from '@memohub/ai-provider';
 
 export class AIHub {
   private providers = new Map<string, any>();
-  private agents = new Map<string, AgentConfig>();
-  private registry = new AIProviderRegistry();
+  private registry: AIProviderRegistry;
 
-  constructor(
-    providers: ProviderConfig[],
-    agents: Record<string, AgentConfig>,
-  ) {
-    // Register default adapters
-    this.registry.registerEmbedder(
-      "ollama",
-      (config) => new OllamaAdapter(config as any),
-    );
-    this.registry.registerCompleter(
-      "ollama",
-      (config) => new OllamaAdapter(config as any),
-    );
-    this.registry.registerEmbedder("mock", () => new MockAdapter());
-    this.registry.registerCompleter("mock", () => new MockAdapter());
-
-    // Initialize providers
-    for (const p of providers) {
-      this.providers.set(p.id, p);
-    }
-
-    // Register agents
-    for (const [id, agent] of Object.entries(agents)) {
-      this.agents.set(id, agent);
-    }
+  constructor(providers: any[], agents: any) {
+    this.registry = new AIProviderRegistry();
+    this.registry.registerEmbedder('ollama', (config) => new OllamaAdapter(config));
+    this.registry.registerCompleter('ollama', (config) => new OllamaAdapter(config));
+    this.registry.registerEmbedder('mock', (config) => new MockAdapter());
+    this.registry.registerCompleter('mock', (config) => new MockAdapter());
+    
+    // 初始化 providers
+    providers.forEach(p => this.providers.set(p.id, p));
   }
 
-  /**
-   * Get an embedder for a specific agent role.
-   */
-  public getEmbedder(agentId: string): IEmbedder {
-    const agent = this.agents.get(agentId);
-    if (!agent) throw new Error(`Agent not found: ${agentId}`);
-
-    const provider = this.providers.get(agent.provider);
-    if (!provider)
-      throw new Error(
-        `Provider not found: ${agent.provider} for agent ${agentId}`,
-      );
-
-    // Here we wrap the existing AIProviderRegistry logic
-    return this.registry.getEmbedder(provider.type, {
-      url: provider.url,
-      embeddingModel: agent.model,
-      dimensions: agent.dimensions,
-      apiKey: provider.apiKey,
-      ...provider.config,
-    });
+  public getEmbedder(id: string = 'embedder'): IEmbedder {
+    // 简化逻辑：直接从第一个可用 provider 获取
+    const p = Array.from(this.providers.values())[0];
+    if (!p) throw new Error("No AI provider found");
+    return this.registry.getEmbedder(p.type, { url: p.url, embeddingModel: 'nomic-embed-text' });
   }
 
-  /**
-   * Get a completer for a specific agent role.
-   */
-  public getCompleter(agentId: string): ICompleter {
-    const agent = this.agents.get(agentId);
-    if (!agent) throw new Error(`Agent not found: ${agentId}`);
-
-    const provider = this.providers.get(agent.provider);
-    if (!provider)
-      throw new Error(
-        `Provider not found: ${agent.provider} for agent ${agentId}`,
-      );
-
-    return this.registry.getCompleter(provider.type, {
-      url: provider.url,
-      chatModel: agent.model,
-      apiKey: provider.apiKey,
-      temperature: agent.temperature,
-      ...provider.config,
-    });
+  public getCompleter(id: string = 'summarizer'): ICompleter {
+    const p = Array.from(this.providers.values())[0];
+    if (!p) throw new Error("No AI provider found");
+    return this.registry.getCompleter(p.type, { url: p.url, chatModel: 'qwen2.5:7b' });
   }
 }

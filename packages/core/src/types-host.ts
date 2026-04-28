@@ -1,28 +1,23 @@
-import {
-  ICAS,
-  IVectorStorage,
-  IEmbedder,
-  ICompleter,
-  IKernel,
+import { 
+  IKernel, 
+  ICAS, 
+  IVectorStorage, 
+  IEmbedder, 
+  ICompleter 
 } from "@memohub/protocol";
 
 /**
- * Host resources injected into tools during execution.
- * Decouples tools from MemoryKernel while providing necessary capability access.
+ * 宿主资源接口 (DI Container)
  */
 export interface IHostResources {
   kernel: IKernel;
   flesh: ICAS;
   soul: IVectorStorage;
-  sessionCache: {
-    get(id: string): any;
-    set(id: string, record: any): void;
-  };
   ai: {
-    getEmbedder(agentId?: string): IEmbedder;
-    getCompleter(agentId?: string): ICompleter;
+    getEmbedder: (id?: string) => IEmbedder;
+    getCompleter: (id?: string) => ICompleter | null;
   };
   logger: {
-    log(msg: string, level?: "info" | "warn" | "error"): void;
+    log: (msg: string, level?: string) => void;
   };
 }

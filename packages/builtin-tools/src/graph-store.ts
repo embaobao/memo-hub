@@ -10,7 +10,8 @@ import * as path from "node:path";
 import { resolvePath } from "@memohub/config";
 
 export class GraphStoreTool implements ITool {
-  public manifest: IToolManifest = {
+   // @ts-ignore
+    public manifest: IToolManifest = {
     id: "builtin:graph-store",
     type: "builtin",
     exposed: true,

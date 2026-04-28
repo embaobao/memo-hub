@@ -64,23 +64,33 @@ export class WikiTrack implements ITrackProvider {
           },
         };
 
-      const hash = await this.kernel.getCAS().write(content);
-      const vector = await this.kernel
-        .getEmbedder()
-        .embed(`${title}\n${content}`);
-      const id = `wiki-${Date.now()}`;
+      const casTool = this.kernel.getTool("builtin:cas");
+      const embedderTool = this.kernel.getTool("builtin:embedder");
+      const vectorTool = this.kernel.getTool("builtin:vector");
 
-      await this.kernel.getVectorStorage().add({
-        id,
-        vector,
-        hash,
-        track_id: this.id,
-        title,
-        category,
-        version,
-        verified: true,
-        timestamp: new Date().toISOString(),
-      });
+      const { hash } = await casTool.execute(
+        { content },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
+      const { vector } = await embedderTool.execute(
+        { text: `${title}\n${content}` },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
+
+      const id = `wiki-${Date.now()}`;
+      await vectorTool.execute(
+        {
+          id,
+          vector,
+          hash,
+          track_id: this.id,
+          meta: { title, category, version, verified: true, timestamp: new Date().toISOString() },
+        },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
 
       return { success: true, data: { id, hash } };
     } catch (error) {
@@ -99,23 +109,15 @@ export class WikiTrack implements ITrackProvider {
   ): Promise<Text2MemResult> {
     try {
       const { query, limit = 5 } = inst.payload ?? {};
-      const vector = await this.kernel.getEmbedder().embed(query);
-      const results = await this.kernel.getVectorStorage().search(vector, {
-        limit,
-        filter: `track_id = '${this.id}'`,
-      });
+      const retrieverTool = this.kernel.getTool("builtin:retriever");
 
-      const hydrated = await Promise.all(
-        results.map(async (r: any) => ({
-          ...r,
-          text: await this.kernel
-            .getCAS()
-            .read(r.hash)
-            .catch(() => ""),
-        })),
+      const results = await retrieverTool.execute(
+        { query, limit, filter: `track_id = '${this.id}'` },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
       );
 
-      return { success: true, data: hydrated };
+      return { success: true, data: results };
     } catch (error) {
       return {
         success: false,
@@ -131,13 +133,29 @@ export class WikiTrack implements ITrackProvider {
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
     try {
-      const { id, content, version } = inst.payload ?? {};
-      const updates: any = { version };
+      const { id, content, version, title } = inst.payload ?? {};
+      const vectorStorage = this.kernel.getVectorStorage();
+      const updates: any = { meta: { version, title } };
+
       if (content) {
-        updates.hash = await this.kernel.getCAS().write(content);
-        updates.vector = await this.kernel.getEmbedder().embed(content);
+        const casTool = this.kernel.getTool("builtin:cas");
+        const embedderTool = this.kernel.getTool("builtin:embedder");
+        
+        const { hash } = await casTool.execute(
+          { content },
+          this.kernel.getResources(),
+          { traceId: inst.meta?.traceId },
+        );
+        const { vector } = await embedderTool.execute(
+          { text: content },
+          this.kernel.getResources(),
+          { traceId: inst.meta?.traceId },
+        );
+        updates.hash = hash;
+        updates.vector = vector;
       }
-      await this.kernel.getVectorStorage().update(id, updates);
+      
+      await vectorStorage.update(id, updates);
       return { success: true };
     } catch (error) {
       return {
@@ -154,9 +172,10 @@ export class WikiTrack implements ITrackProvider {
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
     try {
-      const { ids } = inst.payload ?? {};
+      const { ids = [] } = inst.payload ?? {};
+      const vectorStorage = this.kernel.getVectorStorage();
       for (const id of ids)
-        await this.kernel.getVectorStorage().delete(`id = '${id}'`);
+        await vectorStorage.delete(`id = '${id}'`);
       return { success: true };
     } catch (error) {
       return {
@@ -211,3 +230,4 @@ export class WikiTrack implements ITrackProvider {
     return { success: true };
   }
 }
+

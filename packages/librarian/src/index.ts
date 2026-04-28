@@ -5,7 +5,7 @@ import type {
   ITrackProvider,
   IVectorStorage,
 } from "@memohub/protocol";
-import { MemoOp } from "@memohub/protocol";
+import { MemoOp, MemoErrorCode } from "@memohub/protocol";
 
 export {
   PreProcessor,
@@ -51,7 +51,10 @@ export class Librarian implements ITrackProvider {
       default:
         return {
           success: false,
-          error: `Operation ${instruction.op} not supported by librarian`,
+          error: {
+            code: MemoErrorCode.ERR_TOOL_NOT_FOUND,
+            message: `Operation ${instruction.op} not supported by librarian`,
+          },
         };
     }
   }
@@ -115,7 +118,13 @@ export class Librarian implements ITrackProvider {
     try {
       const { trackId, threshold = 0.95 } = inst.payload ?? {};
       if (!trackId)
-        return { success: false, error: "payload.trackId is required" };
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.trackId is required",
+          },
+        };
 
       const conflicts = await this.scanDedup(trackId, threshold);
       return {
@@ -125,7 +134,10 @@ export class Librarian implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        },
       };
     }
   }
@@ -136,13 +148,22 @@ export class Librarian implements ITrackProvider {
     try {
       const { trackId } = inst.payload ?? {};
       if (!trackId)
-        return { success: false, error: "payload.trackId is required" };
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.trackId is required",
+          },
+        };
 
       const completer = this.kernel.getCompleter();
       if (!completer)
         return {
           success: false,
-          error: "No completer (LLM) configured for distill",
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "No completer (LLM) configured for distill",
+          },
         };
 
       const conflicts = await this.scanDedup(trackId);
@@ -170,7 +191,10 @@ export class Librarian implements ITrackProvider {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : String(error),
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        },
       };
     }
   }

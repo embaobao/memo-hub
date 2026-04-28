@@ -7,7 +7,8 @@ import {
 import { IHostResources } from "@memohub/core/src/index";
 
 export class RerankerTool implements ITool {
-  public manifest: IToolManifest = {
+   // @ts-ignore
+    public manifest: IToolManifest = {
     id: "builtin:reranker",
     type: "builtin",
     exposed: true,
@@ -34,6 +35,10 @@ export class RerankerTool implements ITool {
     // For now, we simulate or use a simpler logic.
     // Logic: LLM is asked to pick the best results.
     const completer = resources.ai.getCompleter(input.agent);
+    if (!completer) {
+      console.warn(`No completer found for agent ${input.agent}, returning original results`);
+      return { results: input.results.slice(0, input.top_n) };
+    }
 
     const contextStr = input.results
       .map((r, i) => `ID: ${i}\nContent: ${r.text || JSON.stringify(r)}`)

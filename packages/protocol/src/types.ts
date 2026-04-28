@@ -10,6 +10,12 @@ export enum MemoOp {
   DELETE = "DELETE",
   LIST = "LIST",
   SYNC = "SYNC",
+  EXPORT = "EXPORT",
+  ANCHOR = "ANCHOR",
+  MERGE = "MERGE",
+  DISTILL = "DISTILL",
+  DIFF = "DIFF",
+  CLARIFY = "CLARIFY",
 }
 
 export enum MemoErrorCode {
@@ -36,6 +42,11 @@ export interface Text2MemInstruction {
   op: MemoOp;
   trackId: string;
   payload: any;
+  context?: {
+    source?: string;
+    sessionId?: string;
+    [key: string]: any;
+  };
   meta?: {
     traceId: string;
     timestamp: string;
@@ -73,7 +84,9 @@ export interface IKernel {
   getCAS(): ICAS;
   getVectorStorage(): IVectorStorage;
   getEmbedder(): IEmbedder;
+  getCompleter(): ICompleter | null;
   getTool(id: string): ITool;
+  getResources(): any;
   dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult>;
 }
 
@@ -91,10 +104,18 @@ export interface ICAS {
 
 export interface IVectorStorage {
   initialize(): Promise<void>;
-  add(record: any): Promise<void>;
-  search(vector: number[], options: any): Promise<any[]>;
+  add(record: any | any[]): Promise<void>;
+  search(vector: number[], options?: { limit?: number; filter?: string }): Promise<any[]>;
+  delete(filter: string): Promise<void>;
+  list(filter?: string, limit?: number): Promise<any[]>;
+  update(id: string, changes: any): Promise<void>;
 }
 
 export interface IEmbedder {
   embed(text: string): Promise<number[]>;
+}
+
+export interface ICompleter {
+  chat(messages: Array<{ role: string; content: string }>): Promise<string>;
+  summarize(text: string): Promise<string>;
 }

@@ -4,3 +4,6 @@ export * from "./tool-registry.js";
 export * from "./observation.js";
 export * from "./cache.js";
 export * from "./session-cache.js";
+export * from "./types.js";
+export * from "./types-host.js";
+export * from "./router.js";

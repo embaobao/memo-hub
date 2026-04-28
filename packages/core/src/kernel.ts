@@ -16,52 +16,39 @@ import {
 import { ToolRegistry } from "./tool-registry.js";
 import { ObservationKernel } from "./observation.js";
 import { CacheManager } from "./cache.js";
+import { SessionCacheLayer } from "./session-cache.js";
+import { ContentAddressableStorage } from "@memohub/storage-flesh";
+import { VectorStorage } from "@memohub/storage-soul";
+import { AIHub } from "./ai-hub.js";
+import { MemoryRouter } from "./router.js";
 
-/**
- * 宿主资源接口 (DI Container)
- */
-export interface IHostResources {
-  kernel: IKernel;
-  flesh: ICAS;
-  soul: IVectorStorage;
-  ai: {
-    getEmbedder: (id?: string) => IEmbedder;
-    getCompleter: (id?: string) => ICompleter;
-  };
-  logger: {
-    log: (msg: string, level?: string) => void;
-  };
-}
-
-/**
- * MemoHub 核心内核 (Memory OS Kernel)
- * 职责: 协调轨道与工具，维护指令流转状态机。
- */
 export class MemoryKernel extends EventEmitter implements IKernel {
-  private config: Record<string, any>;
+  private config: any;
+  private aiHub: AIHub;
   private toolRegistry: ToolRegistry;
   private observation: ObservationKernel;
   private cache: CacheManager;
+  private sessionCache: SessionCacheLayer;
+  private router: MemoryRouter;
   
-  // 核心资源 (DI 注入)
   private cas!: ICAS;
   private vectorStorage!: IVectorStorage;
   private embedder!: IEmbedder;
-  private completer!: ICompleter | null;
+  private completer: ICompleter | null = null;
 
   private tracks: Map<string, ITrackProvider> = new Map();
 
   constructor(config: any) {
     super();
     this.config = config;
+    this.aiHub = new AIHub(config.ai?.providers || [], config.ai?.agents || {});
     this.toolRegistry = new ToolRegistry();
     this.observation = new ObservationKernel(config.system?.root || './.memohub');
     this.cache = new CacheManager(config.system?.root || './.memohub');
+    this.sessionCache = new SessionCacheLayer();
+    this.router = new MemoryRouter(config);
   }
 
-  /**
-   * 手动注入核心组件 (Manual DI)
-   */
   public setComponents(components: {
     cas: ICAS;
     vector: IVectorStorage;
@@ -81,52 +68,53 @@ export class MemoryKernel extends EventEmitter implements IKernel {
     await this.vectorStorage.initialize();
   }
 
-  /**
-   * 注册轨道提供者
-   */
   public async registerTrack(track: ITrackProvider): Promise<void> {
     this.tracks.set(track.id, track);
     await track.initialize(this);
   }
 
-  /**
-   * 指令调度 (State Machine Driven)
-   */
   public async dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult> {
     const startTime = Date.now();
     const traceId = instruction.meta?.traceId || this.observation.createTraceId();
-    const trackId = instruction.trackId;
+    
+    // 自动路由逻辑
+    const trackId = this.router.route(instruction);
     
     let currentState = InstructionState.RECEIVED;
 
-    // 1. 发射接收事件
     this.emit("dispatch", { traceId, trackId, op: instruction.op, state: currentState });
 
     try {
-      // 2. 状态流转: PARSED (校验)
       currentState = InstructionState.PARSED;
       const provider = this.tracks.get(trackId);
       if (!provider) {
         return this.fail(MemoErrorCode.ERR_TRACK_NOT_FOUND, `Track not found: ${trackId}`, traceId, trackId, startTime);
       }
 
-      // 3. 执行轨道逻辑 (轨道内部负责后续的状态反馈)
       const result = await provider.execute({
         ...instruction,
+        trackId, // 确保 provider 收到的是路由后的 trackId
         meta: { ...instruction.meta, traceId, timestamp: new Date().toISOString(), state: currentState }
       });
 
       const latencyMs = Date.now() - startTime;
+      const finalState = result.success ? (result.meta?.state || InstructionState.COMMITTED) : InstructionState.FAILED;
       
-      // 4. 发射完成事件
-      this.emit("dispatch", { traceId, trackId, op: instruction.op, state: result.meta?.state || InstructionState.COMMITTED, latencyMs });
+      this.emit("dispatch", { 
+        traceId, 
+        trackId, 
+        op: instruction.op, 
+        state: finalState, 
+        latencyMs,
+        error: result.error?.message 
+      });
 
       return {
         ...result,
         meta: {
           traceId,
           trackId,
-          state: result.meta?.state || InstructionState.COMMITTED,
+          state: finalState,
           latencyMs
         }
       };
@@ -137,23 +125,20 @@ export class MemoryKernel extends EventEmitter implements IKernel {
         error.message || "Internal Kernel Error", 
         traceId, 
         trackId, 
-        startTime,
-        error.stack
+        startTime
       );
     }
   }
 
-  private fail(code: MemoErrorCode, message: string, traceId: string, trackId: string, start: number, stack?: string): Text2MemResult {
+  private fail(code: MemoErrorCode, message: string, traceId: string, trackId: string, start: number): Text2MemResult {
     const latencyMs = Date.now() - start;
     this.emit("dispatch", { traceId, trackId, state: InstructionState.FAILED, error: message });
     return {
       success: false,
-      error: { code, message, stack },
+      error: { code, message },
       meta: { traceId, trackId, state: InstructionState.FAILED, latencyMs }
     };
   }
-
-  // --- 资源暴露接口 (符合 IKernel 协议) ---
 
   public getEmbedder() { return this.embedder; }
   public getCompleter() { return this.completer; }
@@ -171,9 +156,26 @@ export class MemoryKernel extends EventEmitter implements IKernel {
     return this.toolRegistry.list().map(t => t.manifest);
   }
 
+  public async listTracks() {
+    return Array.from(this.tracks.values());
+  }
+
   public getToolRegistry() { return this.toolRegistry; }
 
-  public clearCache(): void {
-    this.cache.clear();
+  public getResources(): any {
+    return {
+      kernel: this,
+      flesh: this.cas,
+      soul: this.vectorStorage,
+      ai: {
+        getEmbedder: (id?: string) => this.aiHub.getEmbedder(id),
+        getCompleter: (id?: string) => this.aiHub.getCompleter(id)
+      },
+      logger: {
+        log: (msg: string, level: string = 'info') => {
+           console.log(`[${level.toUpperCase()}] ${msg}`);
+        }
+      }
+    };
   }
 }

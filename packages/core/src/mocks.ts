@@ -3,7 +3,6 @@ import type {
   ICompleter,
   ICAS,
   IVectorStorage,
-  Text2MemResult,
 } from "@memohub/protocol";
 
 export class MockEmbedder implements IEmbedder {
@@ -56,7 +55,6 @@ export class MockVectorStorage implements IVectorStorage {
   async search(vector: number[], options?: any): Promise<any[]> {
     let res = this.records;
     if (options?.filter) {
-      // Very simple filter simulator (track_id = 'xxx')
       const match = options.filter.match(/track_id = '([^']+)'/);
       if (match) res = res.filter((r) => r.track_id === match[1]);
     }
@@ -65,7 +63,7 @@ export class MockVectorStorage implements IVectorStorage {
       .map((r) => ({ ...r, _distance: 0.1 }));
   }
   async delete(filter: string): Promise<void> {
-    this.records = []; // simple clear for mock
+    this.records = [];
   }
   async list(filter?: string, limit?: number): Promise<any[]> {
     return this.records.slice(0, limit);

@@ -17,9 +17,19 @@
     "types": ["node", "bun-types"],
     "downlevelIteration": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@memohub/protocol": ["./packages/protocol/src/index.ts"],
+      "@memohub/core": ["./packages/core/src/index.ts"],
+      "@memohub/config": ["./packages/config/src/index.ts"],
+      "@memohub/ai-provider": ["./packages/ai-provider/src/index.ts"],
+      "@memohub/librarian": ["./packages/librarian/src/index.ts"],
+      "@memohub/storage-flesh": ["./packages/storage-flesh/src/index.ts"],
+      "@memohub/storage-soul": ["./packages/storage-soul/src/index.ts"],
+      "@memohub/track-insight": ["./tracks/track-insight/src/index.ts"],
+      "@memohub/track-source": ["./tracks/track-source/src/index.ts"],
+      "@memohub/builtin-tools": ["./packages/builtin-tools/src/index.ts"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "exclude": ["**/*.test.ts", "node_modules", "dist""node_modules", "dist", "**/*.test.ts"]
 }

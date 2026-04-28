@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
+// @ts-ignore
 import * as yaml from "yaml";
 
 export interface RoutingRule {

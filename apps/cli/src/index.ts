@@ -28,6 +28,9 @@ import {
 // --- 业务轨道 ---
 import { InsightTrack } from "../../../tracks/track-insight/src/index.ts";
 import { SourceTrack } from "../../../tracks/track-source/src/index.ts";
+import { StreamTrack } from "../../../tracks/track-stream/src/index.ts";
+import { WikiTrack } from "../../../tracks/track-wiki/src/index.ts";
+import { runMcpServer } from "./mcp.ts";
 
 /**
  * 组装 Memory OS 内核 (Manual Dependency Injection)
@@ -72,6 +75,8 @@ export async function createKernel(): Promise<MemoryKernel> {
   // 4. 挂载业务轨道
   await kernel.registerTrack(new InsightTrack());
   await kernel.registerTrack(new SourceTrack());
+  await kernel.registerTrack(new StreamTrack());
+  await kernel.registerTrack(new WikiTrack());
 
   return kernel;
 }
@@ -162,6 +167,21 @@ program
       });
     } else {
       spinner.fail(chalk.red(`Error: ${result.error.message}`));
+    }
+  });
+
+program
+  .command("mcp")
+  .description("Start the MCP (Model Context Protocol) server")
+  .action(async () => {
+    const spinner = ora("Starting MCP Server...").start();
+    try {
+      const kernel = await createKernel();
+      spinner.succeed(chalk.green("MCP Server running on Stdio"));
+      await runMcpServer(kernel);
+    } catch (error) {
+      spinner.fail(chalk.red(`Failed to start MCP Server: ${error.message}`));
+      process.exit(1);
     }
   });
 

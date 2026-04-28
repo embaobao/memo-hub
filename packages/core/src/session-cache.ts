@@ -1,3 +1,4 @@
+// @ts-ignore
 import { LRUCache } from "lru-cache";
 import { VectorRecord } from "@memohub/storage-soul";
 

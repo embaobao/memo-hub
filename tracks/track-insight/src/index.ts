@@ -4,7 +4,7 @@ import type {
   IKernel,
   ITrackProvider,
 } from "@memohub/protocol";
-import { MemoOp, extractEntitiesFromText } from "@memohub/protocol";
+import { MemoOp, MemoErrorCode, extractEntitiesFromText } from "@memohub/protocol";
 
 /**
  * 知识沉淀轨道 (Insight Track)
@@ -55,7 +55,10 @@ export class InsightTrack implements ITrackProvider {
       default:
         return {
           success: false,
-          error: `轨道 track-insight 不支持操作: ${instruction.op}`,
+          error: {
+            code: MemoErrorCode.ERR_TOOL_NOT_FOUND,
+            message: `轨道 track-insight 不支持操作: ${instruction.op}`,
+          },
         };
     }
   }
@@ -73,15 +76,23 @@ export class InsightTrack implements ITrackProvider {
         entities: providedEntities = [],
         confidence = 0.9,
       } = inst.payload ?? {};
-      if (!text) return { success: false, error: "payload.text 不能为空" };
+      if (!text) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.text 不能为空",
+          },
+        };
+      }
 
       // 1. 获取并执行 CAS 工具
       const casTool = this.kernel.getTool('builtin:cas');
-      const { hash } = await casTool.execute({ content: text }, {}, { traceId: inst.meta?.traceId });
+      const { hash } = await casTool.execute({ content: text }, this.kernel.getResources(), { traceId: inst.meta?.traceId });
 
       // 2. 获取并执行 Embedder 工具
       const embedderTool = this.kernel.getTool('builtin:embedder');
-      const { vector } = await embedderTool.execute({ text }, {}, { traceId: inst.meta?.traceId });
+      const { vector } = await embedderTool.execute({ text }, this.kernel.getResources(), { traceId: inst.meta?.traceId });
 
       // 3. 获取并执行 Vector 存储工具
       const vectorTool = this.kernel.getTool('builtin:vector');
@@ -105,7 +116,7 @@ export class InsightTrack implements ITrackProvider {
           confidence, 
           source: inst.context?.source ?? "cli" 
         }
-      }, {}, { traceId: inst.meta?.traceId });
+      }, this.kernel.getResources(), { traceId: inst.meta?.traceId });
 
       return { success: true, data: { id, hash } };
     } catch (error) {
@@ -127,11 +138,19 @@ export class InsightTrack implements ITrackProvider {
   ): Promise<Text2MemResult> {
     try {
       const { query, limit = 5, filters } = inst.payload ?? {};
-      if (!query) return { success: false, error: "payload.query 不能为空" };
+      if (!query) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.query 不能为空",
+          },
+        };
+      }
 
       // 1. 生成向量
       const embedderTool = this.kernel.getTool('builtin:embedder');
-      const { vector } = await embedderTool.execute({ text: query }, {}, { traceId: inst.meta?.traceId });
+      const { vector } = await embedderTool.execute({ text: query }, this.kernel.getResources(), { traceId: inst.meta?.traceId });
 
       // 2. 语义搜索 (开启回填)
       const retrieverTool = this.kernel.getTool('builtin:retriever');
@@ -143,7 +162,7 @@ export class InsightTrack implements ITrackProvider {
         limit,
         filter: filterStr,
         hydrate: true
-      }, {}, { traceId: inst.meta?.traceId });
+      }, this.kernel.getResources(), { traceId: inst.meta?.traceId });
 
       return { success: true, data: results };
     } catch (error) {
@@ -165,15 +184,46 @@ export class InsightTrack implements ITrackProvider {
   ): Promise<Text2MemResult> {
     try {
       const { id, text, ...rest } = inst.payload ?? {};
-      if (!id) return { success: false, error: "payload.id 不能为空" };
+      if (!id) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.id 不能为空",
+          },
+        };
+      }
 
       const updates: Record<string, any> = { ...rest };
       if (text) {
-        updates.hash = await this.kernel.getCAS().write(text);
-        updates.vector = await this.kernel.getEmbedder().embed(text);
+        const casTool = this.kernel.getTool("builtin:cas");
+        const { hash } = await casTool.execute(
+          { op: "write", content: text },
+          this.kernel.getResources(),
+          { traceId: inst.meta?.traceId },
+        );
+        updates.hash = hash;
+
+        const embedderTool = this.kernel.getTool("builtin:embedder");
+        const { vector } = await embedderTool.execute(
+          { text },
+          this.kernel.getResources(),
+          { traceId: inst.meta?.traceId },
+        );
+        updates.vector = vector;
       }
 
-      await this.kernel.getVectorStorage().update(id, updates);
+      const vectorTool = this.kernel.getTool("builtin:vector");
+      await vectorTool.execute(
+        {
+          op: "update",
+          id,
+          updates,
+        },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
+
       return { success: true, data: { id } };
     } catch (error) {
       return {
@@ -181,7 +231,7 @@ export class InsightTrack implements ITrackProvider {
         error: {
           code: MemoErrorCode.ERR_KERNEL_OFFLINE,
           message: error instanceof Error ? error.message : String(error),
-        }
+        },
       };
     }
   }
@@ -194,12 +244,26 @@ export class InsightTrack implements ITrackProvider {
   ): Promise<Text2MemResult> {
     try {
       const { ids } = inst.payload ?? {};
-      if (!ids?.length)
-        return { success: false, error: "payload.ids 不能为空" };
+      if (!ids?.length) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.ids 不能为空",
+          },
+        };
+      }
 
-      const storage = this.kernel.getVectorStorage();
+      const vectorTool = this.kernel.getTool("builtin:vector");
       for (const id of ids) {
-        await storage.delete(`id = '${id}'`);
+        await vectorTool.execute(
+          {
+            op: "delete",
+            id,
+          },
+          this.kernel.getResources(),
+          { traceId: inst.meta?.traceId },
+        );
       }
       return { success: true };
     } catch (error) {
@@ -208,7 +272,7 @@ export class InsightTrack implements ITrackProvider {
         error: {
           code: MemoErrorCode.ERR_KERNEL_OFFLINE,
           message: error instanceof Error ? error.message : String(error),
-        }
+        },
       };
     }
   }
@@ -216,21 +280,35 @@ export class InsightTrack implements ITrackProvider {
   /**
    * 合并多个知识条目
    */
-  private async handleMerge(
-    inst: Text2MemInstruction,
-  ): Promise<Text2MemResult> {
+  private async handleMerge(inst: Text2MemInstruction): Promise<Text2MemResult> {
     try {
       const { ids, summary } = inst.payload ?? {};
-      if (!ids?.length || ids.length < 2)
-        return { success: false, error: "合并至少需要 2 个 ID" };
+      if (!ids?.length || ids.length < 2) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "合并至少需要 2 个 ID",
+          },
+        };
+      }
 
       const storage = this.kernel.getVectorStorage();
-      const cas = this.kernel.getCAS();
+      const casTool = this.kernel.getTool("builtin:cas");
 
       const records = await storage.list(`track_id = '${this.id}'`);
       const toMerge = records.filter((r) => ids.includes(r.id));
 
-      const texts = await Promise.all(toMerge.map((r) => cas.read(r.hash)));
+      const texts = await Promise.all(
+        toMerge.map(async (r) => {
+          const { content } = await casTool.execute(
+            { op: "read", hash: r.hash },
+            this.kernel.getResources(),
+            { traceId: inst.meta?.traceId },
+          );
+          return content;
+        }),
+      );
       const combinedText = summary || texts.join("\n\n---\n\n");
 
       const addResult = await this.handleAdd({
@@ -242,6 +320,7 @@ export class InsightTrack implements ITrackProvider {
           tags: [...new Set(toMerge.flatMap((r) => r.tags || []))],
           importance: Math.max(...toMerge.map((r) => r.importance || 0.5)),
         },
+        meta: inst.meta,
       });
 
       if (addResult.success) {
@@ -249,6 +328,7 @@ export class InsightTrack implements ITrackProvider {
           op: MemoOp.DELETE,
           trackId: this.id,
           payload: { ids },
+          meta: inst.meta,
         });
       }
 
@@ -259,7 +339,7 @@ export class InsightTrack implements ITrackProvider {
         error: {
           code: MemoErrorCode.ERR_KERNEL_OFFLINE,
           message: error instanceof Error ? error.message : String(error),
-        }
+        },
       };
     }
   }
@@ -270,9 +350,17 @@ export class InsightTrack implements ITrackProvider {
   private async handleClarify(
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
-    // 澄清通常涉及用户反馈，此处更新置信度或添加备注
+    // 澄清通常涉及 user 反馈，此处更新置信度或添加备注
     const { id, question, answer } = inst.payload ?? {};
-    if (!id) return { success: false, error: "payload.id 不能为空" };
+    if (!id) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_CONFIG_INVALID,
+          message: "payload.id 不能为空",
+        },
+      };
+    }
 
     return this.handleUpdate({
       op: MemoOp.UPDATE,
@@ -302,13 +390,20 @@ export class InsightTrack implements ITrackProvider {
       const records = await this.kernel
         .getVectorStorage()
         .list(`track_id = '${this.id}'`);
-      const cas = this.kernel.getCAS();
+      const casTool = this.kernel.getTool("builtin:cas");
 
       const fullData = await Promise.all(
-        records.map(async (r) => ({
-          ...r,
-          text: await cas.read(r.hash).catch(() => ""),
-        })),
+        records.map(async (r) => {
+          const { content } = await casTool
+            .execute({ op: "read", hash: r.hash }, this.kernel.getResources(), {
+              traceId: inst.meta?.traceId,
+            })
+            .catch(() => ({ content: "" }));
+          return {
+            ...r,
+            text: content,
+          };
+        }),
       );
 
       return {
@@ -321,7 +416,7 @@ export class InsightTrack implements ITrackProvider {
         error: {
           code: MemoErrorCode.ERR_KERNEL_OFFLINE,
           message: error instanceof Error ? error.message : String(error),
-        }
+        },
       };
     }
   }
@@ -332,33 +427,70 @@ export class InsightTrack implements ITrackProvider {
   private async handleDistill(
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
-    const { ids } = inst.payload ?? {};
-    if (!ids?.length) return { success: false, error: "payload.ids 不能为空" };
+    try {
+      const { ids } = inst.payload ?? {};
+      if (!ids?.length) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "payload.ids 不能为空",
+          },
+        };
+      }
 
-    const completer = this.kernel.getCompleter();
-    if (!completer)
-      return { success: false, error: "内核未配置 AI Completer，无法执行蒸馏" };
+      const completer = this.kernel.getCompleter();
+      if (!completer) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_TOOL_NOT_FOUND,
+            message: "内核未配置 AI Completer，无法执行蒸馏",
+          },
+        };
+      }
 
-    const records = await this.kernel
-      .getVectorStorage()
-      .list(`track_id = '${this.id}'`);
-    const toDistill = records.filter((r) => ids.includes(r.id));
-    const texts = await Promise.all(
-      toDistill.map((r) => this.kernel.getCAS().read(r.hash)),
-    );
+      const records = await this.kernel
+        .getVectorStorage()
+        .list(`track_id = '${this.id}'`);
+      const toDistill = records.filter((r) => ids.includes(r.id));
+      const casTool = this.kernel.getTool("builtin:cas");
+      const texts = await Promise.all(
+        toDistill.map(async (r) => {
+          const { content } = await casTool.execute(
+            { op: "read", hash: r.hash },
+            this.kernel.getResources(),
+            { traceId: inst.meta?.traceId },
+          );
+          return content;
+        }),
+      );
 
-    const summary = await completer.summarize(texts.join("\n\n"));
+      const summary = await completer.summarize(texts.join("\n\n"));
 
-    return this.handleAdd({
-      op: MemoOp.ADD,
-      trackId: this.id,
-      payload: {
-        text: summary,
-        category: "distilled",
-        importance: 0.9,
-        tags: ["distilled", ...new Set(toDistill.flatMap((r) => r.tags || []))],
-      },
-    });
+      return this.handleAdd({
+        op: MemoOp.ADD,
+        trackId: this.id,
+        payload: {
+          text: summary,
+          category: "distilled",
+          importance: 0.9,
+          tags: [
+            "distilled",
+            ...new Set(toDistill.flatMap((r) => r.tags || [])),
+          ],
+        },
+        meta: inst.meta,
+      });
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
   }
 
   /**
@@ -368,13 +500,21 @@ export class InsightTrack implements ITrackProvider {
     inst: Text2MemInstruction,
   ): Promise<Text2MemResult> {
     const { id, external_ref } = inst.payload ?? {};
-    if (!id || !external_ref)
-      return { success: false, error: "id 和 external_ref 均不能为空" };
+    if (!id || !external_ref) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_CONFIG_INVALID,
+          message: "id 和 external_ref 均不能为空",
+        },
+      };
+    }
 
     return this.handleUpdate({
       op: MemoOp.UPDATE,
       trackId: this.id,
       payload: { id, metadata: { anchor: external_ref } },
+      meta: inst.meta,
     });
   }
 
@@ -382,31 +522,64 @@ export class InsightTrack implements ITrackProvider {
    * 对比知识差异
    */
   private async handleDiff(inst: Text2MemInstruction): Promise<Text2MemResult> {
-    const { source_id, target_id } = inst.payload ?? {};
-    if (!source_id || !target_id)
-      return { success: false, error: "source_id 和 target_id 不能为空" };
+    try {
+      const { source_id, target_id } = inst.payload ?? {};
+      if (!source_id || !target_id) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_CONFIG_INVALID,
+            message: "source_id 和 target_id 不能为空",
+          },
+        };
+      }
 
-    const cas = this.kernel.getCAS();
-    const storage = this.kernel.getVectorStorage();
+      const casTool = this.kernel.getTool("builtin:cas");
+      const storage = this.kernel.getVectorStorage();
 
-    const [src] = await storage.list(`id = '${source_id}'`);
-    const [tgt] = await storage.list(`id = '${target_id}'`);
+      const [src] = await storage.list(`id = '${source_id}'`);
+      const [tgt] = await storage.list(`id = '${target_id}'`);
 
-    if (!src || !tgt) return { success: false, error: "记录未找到" };
+      if (!src || !tgt) {
+        return {
+          success: false,
+          error: {
+            code: MemoErrorCode.ERR_VECTOR_SEARCH_FAILED,
+            message: "记录未找到",
+          },
+        };
+      }
 
-    const srcText = await cas.read(src.hash);
-    const tgtText = await cas.read(tgt.hash);
+      const { content: srcText } = await casTool.execute(
+        { op: "read", hash: src.hash },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
+      const { content: tgtText } = await casTool.execute(
+        { op: "read", hash: tgt.hash },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
 
-    return {
-      success: true,
-      data: {
-        text_diff: srcText === tgtText ? "identical" : "different",
-        metadata_diff:
-          JSON.stringify(src) === JSON.stringify(tgt)
-            ? "identical"
-            : "different",
-      },
-    };
+      return {
+        success: true,
+        data: {
+          text_diff: srcText === tgtText ? "identical" : "different",
+          metadata_diff:
+            JSON.stringify(src) === JSON.stringify(tgt)
+              ? "identical"
+              : "different",
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: MemoErrorCode.ERR_KERNEL_OFFLINE,
+          message: error instanceof Error ? error.message : String(error),
+        },
+      };
+    }
   }
 
   /**
@@ -428,7 +601,13 @@ export class InsightTrack implements ITrackProvider {
       }
       return { success: true, data: results };
     }
-    return { success: false, error: "Sync 模式暂仅支持 add" };
+    return {
+      success: false,
+      error: {
+        code: MemoErrorCode.ERR_CONFIG_INVALID,
+        message: "Sync 模式暂仅支持 add",
+      },
+    };
   }
 
   /**

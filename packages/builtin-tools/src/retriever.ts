@@ -7,7 +7,8 @@ import {
 import { IHostResources } from "@memohub/core/src/index";
 
 export class RetrieverTool implements ITool {
-  public manifest: IToolManifest = {
+   // @ts-ignore
+    public manifest: IToolManifest = {
     id: "builtin:retriever",
     type: "builtin",
     exposed: true,

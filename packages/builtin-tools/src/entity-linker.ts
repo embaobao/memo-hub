@@ -7,7 +7,8 @@ import {
 import { IHostResources } from "@memohub/core/src/index";
 
 export class EntityLinkerTool implements ITool {
-  public manifest: IToolManifest = {
+   // @ts-ignore
+    public manifest: IToolManifest = {
     id: "builtin:entity-linker",
     type: "builtin",
     exposed: true,

@@ -69,6 +69,19 @@ export const DispatcherSchema = z
   })
   .passthrough();
 
+export const RoutingRuleSchema = z.object({
+  type: z.enum(["file_suffix", "content_keyword", "default"]),
+  trackId: z.string().min(1),
+  suffixes: z.array(z.string()).optional(),
+  keywords: z.array(z.string()).optional(),
+});
+
+export const RoutingConfigSchema = z.object({
+  enabled: z.boolean().default(true),
+  defaultTrack: z.string().default("track-insight"),
+  rules: z.array(RoutingRuleSchema).default([]),
+});
+
 export const MemoHubConfigSchema = z.object({
   $schema: z.string().url().optional(),
   version: z.string().optional(),
@@ -96,6 +109,7 @@ export const MemoHubConfigSchema = z.object({
     })
     .default({}),
   dispatcher: DispatcherSchema.default({ fallback: "track-insight" }),
+  routing: RoutingConfigSchema.default({}),
   tools: z.array(ToolManifestSchema).default([]),
   tracks: z.array(TrackSchema).default([
     {

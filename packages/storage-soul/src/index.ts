@@ -1,4 +1,3 @@
-import * as lancedb from "@lancedb/lancedb";
 import * as path from "node:path";
 import * as os from "node:os";
 import type {
@@ -10,8 +9,8 @@ import type {
 export type { VectorRecord, SearchOptions, VectorStorageConfig };
 
 export class VectorStorage {
-  private db: lancedb.Connection | null = null;
-  private table: lancedb.Table | null = null;
+  private db: any = null;
+  private table: any = null;
   private config: VectorStorageConfig;
 
   constructor(config: VectorStorageConfig) {
@@ -19,6 +18,7 @@ export class VectorStorage {
   }
 
   async initialize(): Promise<void> {
+    const lancedb = await import("@lancedb/lancedb");
     const dbPath = this.config.dbPath.replace(/^~/, os.homedir());
     const absolutePath = path.resolve(dbPath);
 
