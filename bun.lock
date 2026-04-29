@@ -40,6 +40,7 @@
         "@memohub/ai-provider": "workspace:*",
         "@memohub/config": "workspace:*",
         "@memohub/core": "workspace:*",
+        "@memohub/integration-hub": "workspace:*",
         "@memohub/librarian": "workspace:*",
         "@memohub/protocol": "workspace:*",
         "@memohub/storage-flesh": "workspace:*",
@@ -119,6 +120,19 @@
       "devDependencies": {
         "@types/lodash": "^4.17.24",
         "@types/lru-cache": "^7.10.10",
+        "typescript": "^5.9.3",
+      },
+    },
+    "packages/integration-hub": {
+      "name": "@memohub/integration-hub",
+      "version": "1.0.0",
+      "dependencies": {
+        "@memohub/config": "workspace:*",
+        "@memohub/core": "workspace:*",
+        "@memohub/protocol": "workspace:*",
+        "@memohub/storage-flesh": "workspace:*",
+      },
+      "devDependencies": {
         "typescript": "^5.9.3",
       },
     },
@@ -282,6 +296,8 @@
     "@memohub/config": ["@memohub/config@workspace:packages/config"],
 
     "@memohub/core": ["@memohub/core@workspace:packages/core"],
+
+    "@memohub/integration-hub": ["@memohub/integration-hub@workspace:packages/integration-hub"],
 
     "@memohub/librarian": ["@memohub/librarian@workspace:packages/librarian"],
 

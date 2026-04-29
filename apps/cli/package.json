@@ -26,6 +26,7 @@
     "@memohub/ai-provider": "workspace:*",
     "@memohub/config": "workspace:*",
     "@memohub/core": "workspace:*",
+    "@memohub/integration-hub": "workspace:*",
     "@memohub/librarian": "workspace:*",
     "@memohub/protocol": "workspace:*",
     "@memohub/storage-flesh": "workspace:*",

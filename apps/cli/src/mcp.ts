@@ -4,6 +4,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { MemoOp } from "@memohub/protocol";
 import { createKernel } from "./index.js";
+import { IntegrationHub } from "@memohub/integration-hub";
+import { createIngestEventHandler, INGEST_TOOL_METADATA } from "./mcp/tools/ingest.js";
 
 /**
  * 运行全量 MCP 服务器 (MVP 版本)
@@ -11,6 +13,30 @@ import { createKernel } from "./index.js";
 export async function runMcpServer(kernel: any): Promise<void> {
   const server = McpServer ? new McpServer({ name: "memohub", version: "1.0.0" }) : null;
   if (!server) throw new Error("MCP SDK not loaded correctly.");
+
+  // 创建 IntegrationHub 实例
+  const integrationHub = new IntegrationHub(kernel);
+
+  // 0. INGEST: 事件摄取 (Integration Hub)
+  server.tool(
+    INGEST_TOOL_METADATA.name,
+    {
+      event: z.object({
+        source: z.enum(["hermes", "ide", "cli", "mcp", "external"]),
+        channel: z.string(),
+        kind: z.enum(["memory"]),
+        projectId: z.string(),
+        confidence: z.enum(["reported", "observed", "inferred", "provisional", "verified"]),
+        payload: z.object({
+          text: z.string(),
+          kind: z.enum(["memory"]).optional(),
+          file_path: z.string().optional(),
+          category: z.string().optional()
+        })
+      })
+    },
+    createIngestEventHandler(integrationHub)
+  );
 
   // 1. ADD: 记忆注入
   server.tool(
