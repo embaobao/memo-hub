@@ -39,15 +39,45 @@ bun apps/cli/src/index.ts ui
 
 ### 3. 命令行操作
 ```bash
-# 注入一条记忆
-bun apps/cli/src/index.ts add "MemoHub V1 采用极简设计语言"
+# 注入一条记忆（新方式：推荐）
+bun apps/cli/src/index.ts ingest --source hermes --channel session-123 --project my-project "MemoHub V1 采用极简设计语言"
 
-# 语义检索
-bun apps/cli/src/index.ts search "设计语言是什么？"
+# 语义检索（新方式：推荐）
+bun apps/cli/src/index.ts query --type memory --project my-project "设计语言是什么？"
 
 # 启动 MCP 服务供 Claude 使用
 bun apps/cli/src/index.ts mcp
 ```
+
+### 4. Integration Hub (新增)
+MemoHub v1.0.0 引入了 **Integration Hub**，支持外部系统的标准化事件摄取：
+
+```bash
+# 使用 MCP 工具摄取事件
+{
+  "event": {
+    "source": "hermes",
+    "channel": "session-123",
+    "kind": "memory",
+    "projectId": "my-project",
+    "confidence": "reported",
+    "payload": {
+      "text": "事件内容",
+      "kind": "memory"
+    }
+  }
+}
+
+# 查询事件
+{
+  "type": "memory",
+  "projectId": "my-project",
+  "query": "查询内容",
+  "limit": 10
+}
+```
+
+详见 [Integration Hub 文档](docs/integration/architecture.md)。
 
 ---
 
