@@ -1,5 +1,6 @@
 import { Text2MemInstruction } from "@memohub/protocol";
 import { MemoHubConfig, RoutingRuleSchema } from "@memohub/config";
+import { EventKind } from "@memohub/protocol";
 
 /**
  * 记忆分发路由器 (Memory Router)
@@ -50,14 +51,18 @@ export class MemoryRouter {
     switch (rule.type) {
       case "file_suffix":
         if (!rule.suffixes || !inst.payload?.file_path) return false;
-        return rule.suffixes.some((s: string) => 
+        return rule.suffixes.some((s: string) =>
           String(inst.payload.file_path).toLowerCase().endsWith(s.toLowerCase())
         );
-      
+
       case "content_keyword":
         if (!rule.keywords || !inst.payload?.text) return false;
         const text = String(inst.payload.text).toLowerCase();
         return rule.keywords.some((k: string) => text.includes(k.toLowerCase()));
+
+      case "kind_match":
+        if (!rule.kind || !inst.payload?.kind) return false;
+        return inst.payload.kind === rule.kind;
 
       case "default":
         return true;

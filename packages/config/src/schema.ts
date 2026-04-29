@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { EventKind } from "@memohub/protocol";
 
 export const ProviderSchema = z
   .object({
@@ -70,10 +71,11 @@ export const DispatcherSchema = z
   .passthrough();
 
 export const RoutingRuleSchema = z.object({
-  type: z.enum(["file_suffix", "content_keyword", "default"]),
+  type: z.enum(["file_suffix", "content_keyword", "kind_match", "default"]),
   trackId: z.string().min(1),
   suffixes: z.array(z.string()).optional(),
   keywords: z.array(z.string()).optional(),
+  kind: z.nativeEnum(EventKind).optional(),
 });
 
 export const RoutingConfigSchema = z.object({
