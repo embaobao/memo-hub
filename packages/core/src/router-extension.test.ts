@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import { MemoryRouter } from "./router.js";
-import { DEFAULT_ROUTING_CONFIG } from "./router-defaults.js";
+import { MemoryRouter } from "../dist/router.js";
+import { DEFAULT_ROUTING_CONFIG } from "../dist/router-defaults.js";
 import { MemoOp } from "@memohub/protocol";
 import { EventKind } from "@memohub/protocol";
 
@@ -50,9 +50,6 @@ describe("MemoryRouter Extension - Kind Match", () => {
       }
     };
 
-    // 验证 EventKind 值
-    console.log("EventKind.MEMORY:", EventKind.MEMORY);
-
     const router = new MemoryRouter(config);
 
     const instruction = {
@@ -63,12 +60,7 @@ describe("MemoryRouter Extension - Kind Match", () => {
       }
     };
 
-    console.log("Instruction kind:", instruction.payload.kind);
-    console.log("Config rules:", JSON.stringify(config.routing.rules, null, 2));
-
     const trackId = router.route(instruction);
-    console.log("Routed to:", trackId);
-
     expect(trackId).toBe("track-insight");
   });
 

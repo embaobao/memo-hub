@@ -19,9 +19,14 @@ export class MemoryRouter {
    * @returns 匹配到的 trackId
    */
   public route(instruction: Text2MemInstruction): string {
-    // 1. 如果配置关闭了路由，或者指令已经明确指定了 trackId 且不是默认值
+    // 1. 如果配置关闭了路由，返回默认值
     if (!this.config.routing?.enabled) {
        return instruction.trackId || this.config.routing?.defaultTrack || "track-insight";
+    }
+
+    // 如果指令已经明确指定了 trackId，优先使用显式 trackId
+    if (instruction.trackId) {
+      return instruction.trackId;
     }
 
     // 2. 检查规则匹配
