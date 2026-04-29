@@ -1,0 +1,9 @@
+schema: spec-driven
+created: 2026-04-29
+title: E2E Tests
+stage: ready
+status: pending
+priority: P1
+depends:
+  - 2026-04-29-07-integration-tests
+estimated: 1 day

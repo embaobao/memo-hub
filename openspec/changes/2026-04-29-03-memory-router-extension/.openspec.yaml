@@ -1,0 +1,9 @@
+schema: spec-driven
+created: 2026-04-29
+title: MemoryRouter Extension
+stage: ready
+status: pending
+priority: P0
+depends:
+  - 2026-04-29-01-event-protocol
+estimated: 1 day

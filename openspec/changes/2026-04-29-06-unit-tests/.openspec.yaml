@@ -1,0 +1,10 @@
+schema: spec-driven
+created: 2026-04-29
+title: Unit Tests
+stage: ready
+status: pending
+priority: P0
+depends:
+  - 2026-04-29-02-integration-hub-core
+  - 2026-04-29-03-memory-router-extension
+estimated: 1 day

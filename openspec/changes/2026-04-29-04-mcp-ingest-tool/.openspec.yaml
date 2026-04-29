@@ -1,0 +1,9 @@
+schema: spec-driven
+created: 2026-04-29
+title: MCP Ingest Tool
+stage: ready
+status: pending
+priority: P0
+depends:
+  - 2026-04-29-02-integration-hub-core
+estimated: 1 day
