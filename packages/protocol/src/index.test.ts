@@ -4,8 +4,8 @@ import { MemoOp, validateInstruction } from "./index.js";
 const ALL_OPS = Object.values(MemoOp);
 
 describe("MemoOp", () => {
-  it("contains 6 operations", () => {
-    expect(ALL_OPS).toHaveLength(6);
+  it("contains 12 operations", () => {
+    expect(ALL_OPS).toHaveLength(12);
     expect(ALL_OPS).toContain(MemoOp.ADD);
     expect(ALL_OPS).toContain(MemoOp.RETRIEVE);
     expect(ALL_OPS).toContain(MemoOp.UPDATE);
