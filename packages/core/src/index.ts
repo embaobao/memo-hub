@@ -8,3 +8,4 @@ export * from "./types.js";
 export * from "./types-host.js";
 export * from "./router.js";
 export * from "./performance.js";
+export * from "./router-defaults.js";

@@ -150,7 +150,7 @@ apps/cli → tracks/* → packages/core → packages/protocol
 2. **类型安全**: 使用 TypeScript 严格模式
 3. **测试覆盖**: 新功能必须有测试
 4. **文档更新**: 修改功能时更新相关文档
-5. **代码风格**: 使用 ESLint 和 Prettier
+5. **代码风格**: 使用 ESLint 和 Prettier,必须有函数和文件已经具体关键步骤的注释和解释
 
 ### 代码质量
 
@@ -221,6 +221,7 @@ bun run build
 - ✅ 添加完整测试
 - ✅ 更新相关文档
 - ✅ 遵循代码规范
+- ✅ 准寻优秀的代码编写规范 如
 
 ---
 
