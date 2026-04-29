@@ -4,6 +4,7 @@ Generated from `openspec/changes` and `openspec/specs`.
 
 ## Active Changes
 
+- [add-source-adapters-dependency-intelligence](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-source-adapters-dependency-intelligence/proposal.md)
 
 ## Specs
 
