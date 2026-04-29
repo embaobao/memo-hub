@@ -6,6 +6,7 @@ import { MemoOp } from "@memohub/protocol";
 import { createKernel } from "./index.js";
 import { IntegrationHub } from "@memohub/integration-hub";
 import { createIngestEventHandler, INGEST_TOOL_METADATA } from "./mcp/tools/ingest.js";
+import { createQueryHandler, QUERY_TOOL_METADATA } from "./mcp/tools/query.js";
 
 /**
  * 运行全量 MCP 服务器 (MVP 版本)
@@ -38,7 +39,21 @@ export async function runMcpServer(kernel: any): Promise<void> {
     createIngestEventHandler(integrationHub)
   );
 
-  // 1. ADD: 记忆注入
+  // 1. QUERY: 统一查询接口
+  server.tool(
+    QUERY_TOOL_METADATA.name,
+    {
+      type: z.enum(["memory", "coding_context"]),
+      projectId: z.string(),
+      sessionId: z.string().optional(),
+      taskId: z.string().optional(),
+      query: z.string().optional(),
+      limit: z.number().default(10).optional()
+    },
+    createQueryHandler(kernel)
+  );
+
+  // 2. ADD: 记忆注入
   server.tool(
     "memohub_add",
     {
