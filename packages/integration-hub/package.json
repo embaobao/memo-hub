@@ -1,0 +1,28 @@
+{
+  "name": "@memohub/integration-hub",
+  "version": "1.0.0",
+  "description": "Integration Hub - External event processing and projection",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test",
+    "lint": "eslint src/**/*.ts"
+  },
+  "dependencies": {
+    "@memohub/protocol": "workspace:*",
+    "@memohub/core": "workspace:*",
+    "@memohub/storage-flesh": "workspace:*",
+    "@memohub/config": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  }
+}
