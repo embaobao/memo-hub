@@ -1,450 +1,311 @@
-# API 文档
+# MemoHub API 参考
 
-MemoHub 提供了完整的 CLI API 和 TypeScript API。
+最后更新：2026-04-29
 
-## CLI API
+本页记录当前代码里真实存在的 CLI 与 MCP 接口。
 
-### 全局命令
+## CLI
 
-#### `mh --help`
-显示帮助信息。
-
-```bash
-mh --help
-mh -h
-```
-
----
-
-### 统计命令
-
-#### `mh stats`
-显示数据库统计信息。
+### `inspect`
 
 ```bash
-mh stats
+memohub inspect
 ```
 
-**输出示例**：
-```
-GBrain (通用知识):
-  总记录数: 69
-  数据库路径: ~/.memohub/track-insight.lancedb
-  嵌入模型: nomic-embed-text-v2-moe
-  向量维度: 768
+用途：
 
-ClawMem (代码记忆):
-  总记录数: 833
-  数据库路径: ~/.memohub/track-source.lancedb
-  嵌入模型: nomic-embed-text-v2-moe
-  向量维度: 768
-```
+- 查看统一记忆运行时、存储、视图和 Agent 操作能力
 
----
-
-### GBrain 命令
-
-#### `mh add-knowledge`
-添加知识到 GBrain。
+### `add`
 
 ```bash
-mh add-knowledge <text> [options]
+memohub add "文本内容" --project memo-hub --source cli --category decision
 ```
 
-**参数**：
-- `<text>`: 知识内容（必需）
+参数：
 
-**选项**：
-- `-c, --category <category>`: 分类（默认：other）
-- `-i, --importance <number>`: 重要性评分 0-1（默认：0.5）
-- `-t, --tags <tags>`: 标签列表（逗号分隔）
+- `text`: 必填
+- `--project <projectId>`: 可选，默认 `default`
+- `--source <source>`: 可选，默认 `cli`
+- `--category <category>`: 可选，记忆分类或 domain hint
+- `--file <filePath>`: 可选，关联代码文件路径
 
-**示例**：
-```bash
-mh add-knowledge "用户喜欢 TypeScript" \
-  -c user \
-  -i 0.9 \
-  -t preference,typescript
-```
+返回：
 
-#### `mh search-knowledge`
-搜索知识。
+- 终端输出成功或失败信息
+- 成功时输出 `eventId` 和 `contentHash` 摘要
+
+### `query`
 
 ```bash
-mh search-knowledge <query> [options]
+memohub query "查询文本" --view project_context --actor hermes --project memo-hub --limit 5
 ```
 
-**参数**：
-- `<query>`: 搜索查询（必需）
+参数：
 
-**选项**：
-- `-l, --limit <number>`: 返回结果数量（默认：5）
-- `-c, --category <category>`: 按分类过滤
+- `query`: 必填
+- `--view <view>`: 可选，支持 `agent_profile`、`recent_activity`、`project_context`、`coding_context`
+- `--actor <actorId>`: 可选，请求方 Agent/Actor
+- `--project <projectId>`: 可选，默认 `default`
+- `--limit <limit>`: 可选，默认 `5`
 
-**示例**：
-```bash
-mh search-knowledge "TypeScript" -l 3
-mh search-knowledge "用户偏好" -c user -l 5
-```
+返回：
 
-#### `mh delete-knowledge`
-删除知识。
+- `selfContext`
+- `projectContext`
+- `globalContext`
+- `conflictsOrGaps`
+- `sources`
+- `metadata.policyId` 和评分解释信息
 
-```bash
-mh delete-knowledge <ids>
-```
-
-**参数**：
-- `<ids>`: 知识 ID 列表（逗号分隔）
-
-**示例**：
-```bash
-mh delete-knowledge track-insight-id1,track-insight-id2,track-insight-id3
-```
-
----
-
-### ClawMem 命令
-
-#### `mh add-code`
-添加代码到 ClawMem。
+### `summarize`
 
 ```bash
-mh add-code <code> [options]
+memohub summarize "Hermes 最近完成了查询链路收敛" --agent hermes
 ```
 
-**参数**：
-- `<code>`: 代码内容（必需）
+用途：
 
-**选项**：
-- `-f, --file-path <path>`: 文件路径
-- `-a, --ast-type <type>`: AST 类型
-- `-s, --symbol-name <name>`: 符号名
-- `-l, --language <language>`: 编程语言
-- `-i, --importance <number>`: 重要性评分 0-1（默认：0.5）
-- `-t, --tags <tags>`: 标签列表（逗号分隔）
+- 从显式文本创建受治理的总结候选记忆
+- 输出包含 `operationId`、输入/输出记忆 ID、Agent 来源、置信度和 `reviewState`
 
-**示例**：
-```bash
-mh add-code "interface User { name: string; }" \
-  -f user.ts \
-  -a interface \
-  -s User \
-  -l typescript \
-  -i 0.8 \
-  -t user,model
-```
-
-#### `mh search-code`
-搜索代码。
+### `clarify`
 
 ```bash
-mh search-code <query> [options]
+memohub clarify "这里存在冲突的项目约定" --agent hermes
 ```
 
-**参数**：
-- `<query>`: 搜索查询（必需）
+用途：
 
-**选项**：
-- `-l, --limit <number>`: 返回结果数量（默认：5）
-- `-a, --ast-type <type>`: 按 AST 类型过滤
-- `-l, --language <language>`: 按语言过滤
+- 从显式文本创建澄清项
+- 输出 `clarifications`，用于后续冲突或缺口处理
 
-**示例**：
-```bash
-mh search-code "interface User" -l 3
-mh search-code "function search" -a function -l 5
-```
-
----
-
-### 配置命令
-
-#### `mh config`
-配置管理。
+### `resolve-clarification`
 
 ```bash
-mh config [options]
+memohub resolve-clarification clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
 ```
 
-**选项**：
-- `--validate`: 验证配置
-- `--show`: 显示配置
+用途：
 
-**示例**：
-```bash
-mh config --validate
-mh config --show
-```
+- 将外部对话中的澄清答案写回为 `curated MemoryObject`
+- 输出 resolved clarification、memoryObject、contentHash 和 vectorRecordCount
 
----
-
-## TypeScript API
-
-### 安装
+### `config`
 
 ```bash
-npm install memohub
+memohub config
 ```
 
-### 导入
+用途：
 
-```typescript
-import { GBrain, ClawMem, Embedder, ConfigManager } from 'memohub';
+- 查看解析后的新架构运行时配置，包括 storage、ai、mcp、memory 能力维度
+
+### MCP 辅助命令
+
+```bash
+memohub mcp-config
+memohub mcp-tools
+memohub mcp-status
+memohub mcp-logs --tail 50
 ```
 
-### 初始化
+用途：
 
-```typescript
-import { GBrain, ClawMem, Embedder, ConfigManager } from 'memohub';
+- 生成 Agent 可读取的 MCP 接入配置
+- 查看当前 MCP 工具/资源/视图/操作目录
+- 查看服务状态与日志
 
-// 加载配置
-const configManager = new ConfigManager();
-const config = configManager.getConfig();
+### `serve`
 
-// 初始化嵌入器
-const embedder = new Embedder(config.embedding);
-
-// 初始化数据库
-const track-insight = new GBrain(config.track-insight, embedder);
-const track-source = new ClawMem(config.track-source, embedder);
-
-// 初始化数据库
-await track-insight.initialize();
-await track-source.initialize();
+```bash
+memohub serve
 ```
 
-### GBrain API
+启动别名：
 
-#### 添加知识
+```bash
+memohub mcp
+```
 
-```typescript
-interface GBrainRecord {
-  id: string;
+## MCP
+
+### 推荐工具
+
+#### `memohub_ingest_event`
+
+输入：
+
+```ts
+{
+  event: {
+    source: string;
+    channel: string;
+    kind: "memory";
+    projectId: string;
+    confidence: "reported" | "observed" | "inferred" | "provisional" | "verified";
+    payload: {
+      text: string;
+      kind?: "memory";
+      file_path?: string;
+      category?: string;
+      tags?: string[];
+      metadata?: Record<string, unknown>;
+    };
+  };
+}
+```
+
+成功响应：
+
+```ts
+{
+  success: true;
+  eventId: string;
+  contentHash?: string;
+  canonicalEvent?: unknown;
+  memoryObject?: unknown;
+  contentLength: number;
+}
+```
+
+失败响应：
+
+```ts
+{
+  success: false;
+  error: string;
+  details?: unknown;
+  eventId?: string;
+}
+```
+
+#### `memohub_query`
+
+输入：
+
+```ts
+{
+  view: "agent_profile" | "recent_activity" | "project_context" | "coding_context";
+  actorId?: string;
+  projectId: string;
+  workspaceId?: string;
+  sessionId?: string;
+  taskId?: string;
+  query?: string;
+  limit?: number;
+}
+```
+
+返回：
+
+- `selfContext/projectContext/globalContext`
+- `conflictsOrGaps`
+- `sources`
+- `metadata.policyId` 和评分解释信息
+
+#### `memohub_summarize`
+
+输入：
+
+```ts
+{
   text: string;
-  category: string;
-  tags: string[];
-  importance: number;
-  embedding: number[];
-  createdAt: string;
+  agentId?: string;
 }
-
-const record: GBrainRecord = {
-  id: 'unique-id',
-  text: '用户喜欢 TypeScript',
-  category: 'user',
-  tags: ['preference', 'typescript'],
-  importance: 0.9,
-  embedding: [], // 自动生成
-  createdAt: new Date().toISOString()
-};
-
-await track-insight.add(record);
 ```
 
-#### 搜索知识
+说明：
 
-```typescript
-interface SearchResult {
-  record: GBrainRecord;
-  similarity: number;
-}
+- 创建总结候选记忆，默认 `reviewState` 为 `proposed`，输出保留 operation provenance。
 
-const results = await track-insight.search('TypeScript', 5);
-console.log(results);
-```
+#### `memohub_clarify`
 
-#### 获取统计信息
+输入：
 
-```typescript
-const stats = await track-insight.getStats();
-console.log(stats);
-// { totalRecords: 69, dbPath: '...', ... }
-```
-
-#### 删除知识
-
-```typescript
-await track-insight.delete(['id1', 'id2']);
-```
-
-### ClawMem API
-
-#### 添加代码
-
-```typescript
-interface ClawMemRecord {
-  id: string;
+```ts
+{
   text: string;
-  filePath: string;
-  symbolName: string;
-  astType: string;
-  language: string;
-  tags: string[];
-  importance: number;
-  embedding: number[];
-  createdAt: string;
-}
-
-const record: ClawMemRecord = {
-  id: 'unique-id',
-  text: 'interface User { name: string; }',
-  filePath: 'user.ts',
-  symbolName: 'User',
-  astType: 'interface',
-  language: 'typescript',
-  tags: ['user', 'model'],
-  importance: 0.8,
-  embedding: [], // 自动生成
-  createdAt: new Date().toISOString()
-};
-
-await track-source.add(record);
-```
-
-#### 搜索代码
-
-```typescript
-const results = await track-source.search('interface User', 5);
-console.log(results);
-```
-
-#### 获取统计信息
-
-```typescript
-const stats = await track-source.getStats();
-console.log(stats);
-```
-
-### Embedder API
-
-#### 生成嵌入向量
-
-```typescript
-const embedder = new Embedder(config.embedding);
-const embedding = await embedder.embed('用户喜欢 TypeScript');
-console.log(embedding);
-// [0.123, 0.456, ...] (768 维向量)
-```
-
-#### 批量嵌入
-
-```typescript
-const texts = ['文本1', '文本2', '文本3'];
-const embeddings = await embedder.embedBatch(texts);
-console.log(embeddings);
-```
-
-### ConfigManager API
-
-#### 加载配置
-
-```typescript
-const configManager = new ConfigManager();
-const config = configManager.getConfig();
-console.log(config);
-```
-
-#### 应用环境变量覆盖
-
-```typescript
-configManager.applyEnvOverrides();
-const config = configManager.getConfig();
-```
-
-#### 验证配置
-
-```typescript
-const isValid = configManager.validate();
-console.log(isValid); // true/false
-```
-
----
-
-## 错误处理
-
-### 错误类型
-
-```typescript
-class MemoHubError extends Error {
-  constructor(message: string, public code: string) {
-    super(message);
-  }
-}
-
-// 使用示例
-try {
-  await track-insight.add(record);
-} catch (error) {
-  if (error instanceof MemoHubError) {
-    console.error(`错误代码: ${error.code}`);
-    console.error(`错误消息: ${error.message}`);
-  }
+  agentId?: string;
 }
 ```
 
-### 常见错误代码
+说明：
 
-| 错误代码 | 描述 |
-|---------|------|
-| `CONFIG_INVALID` | 配置无效 |
-| `DB_NOT_INITIALIZED` | 数据库未初始化 |
-| `EMBEDDING_FAILED` | 嵌入生成失败 |
-| `RECORD_NOT_FOUND` | 记录未找到 |
-| `DUPLICATE_RECORD` | 重复记录 |
+- 创建澄清项，作为冲突/缺口治理入口。
 
----
+#### `memohub_resolve_clarification`
 
-## 示例代码
+输入：
 
-### 完整示例
-
-```typescript
-import { GBrain, ClawMem, Embedder, ConfigManager } from 'memohub';
-
-async function main() {
-  try {
-    // 1. 加载配置
-    const configManager = new ConfigManager();
-    configManager.applyEnvOverrides();
-    const config = configManager.getConfig();
-
-    // 2. 初始化组件
-    const embedder = new Embedder(config.embedding);
-    const track-insight = new GBrain(config.track-insight, embedder);
-    const track-source = new ClawMem(config.track-source, embedder);
-
-    // 3. 初始化数据库
-    await track-insight.initialize();
-    await track-source.initialize();
-
-    // 4. 添加知识
-    await track-insight.add({
-      id: `track-insight-${Date.now()}`,
-      text: '用户喜欢 TypeScript',
-      category: 'user',
-      tags: ['preference', 'typescript'],
-      importance: 0.9,
-      embedding: [],
-      createdAt: new Date().toISOString()
-    });
-
-    // 5. 搜索知识
-    const results = await track-insight.search('TypeScript', 3);
-    console.log('搜索结果:', results);
-
-    // 6. 获取统计
-    const stats = await track-insight.getStats();
-    console.log('统计信息:', stats);
-
-  } catch (error) {
-    console.error('错误:', error);
-  }
+```ts
+{
+  clarificationId: string;
+  answer: string;
+  resolvedBy?: string;
+  projectId?: string;
+  actorId?: string;
+  source?: string;
+  memoryIds?: string[];
+  question?: string;
+  reason?: string;
 }
-
-main();
 ```
 
----
+说明：
 
-需要更多帮助？查看 [快速开始](../guides/quickstart.md) 或 [常见问题](faq.md)。
+- 将澄清答案写回为可检索的 curated memory
+- 写回记忆包含 `resolves` 和 `derived_from` links
+
+### 资源
+
+#### `memohub_stats`
+
+URI：
+
+```text
+memohub://stats
+```
+
+返回内容包含：
+
+- `status`
+- `runtime`
+- `stores`
+- `model`
+- `queryLayers`
+- `views`
+- `agentOperations`
+- `tools`
+- `resources`
+- `storage`
+- `logPath`
+
+#### `memohub_tools`
+
+URI：
+
+```text
+memohub://tools
+```
+
+返回内容包含：
+
+- 当前工具目录
+- 当前资源目录
+- 支持的 views、layers、operations
+- Agent 接入指令
+- MCP 启动命令和日志路径
+
+## 当前接口合同
+
+- 当前 `kind` 只支持 `memory`
+- CLI 查询通过命名 `view` 表达读取意图
+- MCP 工具目录以 `memohub://tools` 和本页为准
+- 配置读写通过 `config`、`config-get`、`config-set` 和 MCP 配置工具完成
+
+## 相关文档
+
+- [CLI 集成](../integration/cli-integration.md)
+- [MCP 集成](../integration/mcp-integration.md)
+- [当前状态](../development/current-status.md)

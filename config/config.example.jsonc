@@ -1,26 +1,56 @@
 {
-  "version": "1.0.0",
+  // 配置结构版本，用于后续迁移和兼容检查，不等同于 npm 包版本。
+  "configVersion": "unified-memory-1",
   "system": {
+    "root": "~/.memohub",
     "trace_enabled": true,
     "log_level": "info",
-    "root": "~/.memohub"
+    "lang": "auto"
+  },
+  "storage": {
+    "root": "~/.memohub",
+    "blobPath": "~/.memohub/blobs",
+    "vectorDbPath": "~/.memohub/data/memohub.lancedb",
+    "vectorTable": "memohub",
+    "dimensions": 768
   },
   "ai": {
     "providers": [
-      { "id": "local", "type": "ollama", "url": "http://localhost:11434/v1" }
+      {
+        "id": "local",
+        "type": "ollama",
+        "url": "http://localhost:11434/v1"
+      }
     ],
     "agents": {
-      "embedder": { "provider": "local", "model": "nomic-embed-text-v2-moe", "dimensions": 768 },
-      "summarizer": { "provider": "local", "model": "qwen2.5:7b" }
+      "embedder": {
+        "provider": "local",
+        "model": "nomic-embed-text-v2-moe",
+        "dimensions": 768
+      },
+      "summarizer": {
+        "provider": "local",
+        "model": "qwen2.5:7b"
+      }
     }
   },
-  "dispatcher": {
-    "fallback": "track-insight"
+  "mcp": {
+    "enabled": true,
+    "transport": "stdio",
+    "logPath": "~/.memohub/logs/mcp.ndjson",
+    "toolsResourceUri": "memohub://tools",
+    "statsResourceUri": "memohub://stats",
+    "exposeToolCatalog": true,
+    "exposeStatus": true
   },
-  "tracks": [
-    { "id": "track-insight", "name": "Insight Track" },
-    { "id": "track-source", "name": "Source Track" },
-    { "id": "track-stream", "name": "Stream Track" },
-    { "id": "track-wiki", "name": "Wiki Track" }
-  ]
+  "memory": {
+    "queryLayers": ["self", "project", "global"],
+    "views": ["agent_profile", "recent_activity", "project_context", "coding_context"],
+    "operations": ["ingest_event", "query", "summarize", "clarify", "resolve_clarification"]
+  },
+  "dispatcher": {
+    "fallback": "memory-object"
+  },
+  "tools": [],
+  "tracks": []
 }

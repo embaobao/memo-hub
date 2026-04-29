@@ -1,165 +1,31 @@
-# MemoHub v1 MCP 配置示例
-# 
-# 将此配置添加到 ~/.hermes/config.jsonc 中的 mcp_servers 部分
-# 请根据您的实际路径调整配置值
+# MemoHub Hermes MCP 配置示例
+#
+# 前置条件：
+#   bun run build:cli
+#   bun run verify:cli
+#   bun run link:cli
+#   memohub config-check
+#   memohub mcp-doctor
 
-mcp_servers:
-  # ── MemoHub v1 记忆系统 ─────────────────────────────────────
+mcpServers:
   memohub:
-    # 启动命令 (使用 Node.js 运行)
-    command: node
-    
-    # 命令参数
+    command: memohub
     args:
-      # MemoHub CLI 入口点
-      - /Users/embaobao/workspace/ai/memo-hub/apps/cli/dist/index.js
-      # 启动 MCP 服务器模式
       - serve
-    
-    # 环境变量配置
-    env:
-      # 数据库路径 (LanceDB 向量数据库)
-      MEMOHUB_DB_PATH: ~/.hermes/data/memohub.lancedb
-      
-      # CAS 内容存储路径
-      MEMOHUB_CAS_PATH: ~/.hermes/data/memohub-cas
-      
-      # 嵌入服务地址 (Ollama)
-      EMBEDDING_URL: http://localhost:11434/v1
-      
-      # 嵌入模型 (必须预先在 Ollama 中拉取)
-      EMBEDDING_MODEL: nomic-embed-text-v2-moe
-    
-    # MCP 通信超时时间 (秒)
-    # 较长的超时时间确保向量检索和嵌入生成完成
     timeout: 60
 
-# ── 可选: 其他 MCP 服务器配置 ───────────────────────────────
-# 您可以在此添加其他 MCP 服务器
-
-# 例如:
-#  other_mcp_server:
-#    command: python
-#    args: ["-m", "other_server"]
-#    env: {...}
-#    timeout: 30
-
-# ── 配置说明 ─────────────────────────────────────────────────
-# 
-# 1. 路径配置:
-#    - MEMOHUB_DB_PATH: 向量数据库存储位置
-#      - 存储: track-insight, track-source, track-librarian 的向量
-#      - 格式: LanceDB (高效向量搜索)
-#    
-#    - MEMOHUB_CAS_PATH: 内容寻址存储位置
-#      - 存储: 原始文本、代码等内容
-#      - 格式: 基于哈希的文件系统
-#    
-# 2. 嵌入配置:
-#    - EMBEDDING_URL: Ollama API 地址
-#      - 本地: http://localhost:11434/v1
-#      - 远程: 修改为您的嵌入服务地址
-#    
-#    - EMBEDDING_MODEL: 嵌入模型名称
-#      - 推荐: nomic-embed-text-v2-moe (768维)
-#      - 其他: 支持 Ollama 中的任何嵌入模型
-#    
-# 3. 超时配置:
-#    - timeout: MCP 工具调用超时时间
-#      - 推荐: 60秒 (包含嵌入生成 + 向量检索)
-#      - 复杂检索: 可增加到 120秒
-#    
-# 4. 数据初始化:
-#    - 首次启动会自动创建数据库和 CAS 存储
-#    - 不需要预先创建目录
-#    - 数据会在首次使用时自动初始化
-
-# ── 故障排除 ─────────────────────────────────────────────────
-# 
-# 问题1: "Module not found" 错误
-#   解决: 确保路径正确，文件存在: ls -la /path/to/memo-hub/apps/cli/dist/
-#   
-# 问题2: "Cannot connect to Ollama" 错误
-#   解决: 启动 Ollama 服务: ollama serve
-#   
-# 问题3: "Model not found" 错误
-#   解决: 拉取嵌入模型: ollama pull nomic-embed-text-v2-moe
-#   
-# 问题4: "Permission denied" 错误
-#   解决: 检查路径权限: chmod +x /path/to/memo-hub/apps/cli/dist/index.js
-#   
-# 问题5: "Timeout" 错误
-#   解决: 增加 timeout 值到 120 或 180 秒
-
-# ── 验证配置 ─────────────────────────────────────────────────
-# 
-# 配置完成后，重启 Hermes 并验证:
-# 
-# 1. 重启 Hermes:
-#    hermes restart
-# 
-# 2. 检查 MCP 服务器:
-#    hermes mcp list
-#    # 应该看到 "memohub" 在列表中
-# 
-# 3. 测试连接:
-#    mcp_memohub_get_stats()
-#    # 应该返回系统状态信息
-# 
-# 4. 添加测试数据:
-#    mcp_memohub_add_knowledge(
-#      text="测试记录",
-#      category="test",
-#      importance=0.5
-#    )
-#    # 应该返回 {"success": true, "id": "insight-..."}
-# 
-# 5. 检索数据:
-#    mcp_memohub_query_knowledge(
-#      query="测试",
-#      limit=3
-#    )
-#    # 应该返回刚才添加的记录
-
-# ── 高级配置 ─────────────────────────────────────────────────
-# 
-# 1. 自定义数据路径:
-#    env:
-#      MEMOHUB_DB_PATH: /custom/path/to/database.lancedb
-#      MEMOHUB_CAS_PATH: /custom/path/to/cas-storage
-#    
-# 2. 使用远程嵌入服务:
-#    env:
-#      EMBEDDING_URL: https://your-embedding-service.com/v1
-#      EMBEDDING_MODEL: your-custom-model
-#    
-# 3. 增加性能:
-#    env:
-#      MEMOHUB_CACHE_SIZE: 1000  # 增加缓存大小
-#    
-# 4. 调试模式:
-#    env:
-#      DEBUG: memohub:*  # 启用调试日志
-#    
-# 5. 性能监控:
-#    env:
-#      MEMOHUB_METRICS: true  # 启用性能指标
-
-# ── 数据安全 ─────────────────────────────────────────────────
-# 
-# - 数据完全本地存储，不上传到云端
-# - 使用哈希值作为文件名，确保数据完整性
-# - 向量数据库提供高效的语义搜索
-# - 建议定期备份数据目录
-
-# ── 备份建议 ─────────────────────────────────────────────────
-# 
-# 定期备份以下目录:
-# 
-# ~/.hermes/data/memohub.lancedb
-# ~/.hermes/data/memohub-cas
-# 
-# 备份命令:
-# tar -czf memohub-backup-$(date +%Y%m%d).tar.gz \
-#   ~/.hermes/data/memohub.lancedb \
-#   ~/.hermes/data/memohub-cas
+# Agent 接入后应先读取 memohub://tools，再选择工具。
+#
+# 当前推荐工具：
+#   - memohub_ingest_event
+#   - memohub_query
+#   - memohub_summarize
+#   - memohub_clarify
+#   - memohub_resolve_clarification
+#   - memohub_config_get
+#   - memohub_config_set
+#   - memohub_config_manage
+#
+# 当前资源：
+#   - memohub://tools
+#   - memohub://stats

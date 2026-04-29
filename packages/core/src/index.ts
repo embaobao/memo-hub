@@ -9,3 +9,5 @@ export * from "./types-host.js";
 export * from "./router.js";
 export * from "./performance.js";
 export * from "./router-defaults.js";
+export * from "./query-planner.js";
+export * from "./agent-memory-operations.js";

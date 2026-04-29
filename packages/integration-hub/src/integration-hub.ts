@@ -12,12 +12,15 @@ import { MemoryKernel } from "@memohub/core";
 import { PerformanceMonitor, globalPerformanceMonitor } from "@memohub/core";
 import { CASAdapter } from "./cas-adapter.js";
 import { EventProjector } from "./projector.js";
+import { normalizeMemoHubEvent, NormalizedMemory } from "./normalizer.js";
 
 export interface IngestResult {
   success: boolean;
   eventId: string;
   contentHash?: string;
   instruction?: any;
+  canonicalEvent?: NormalizedMemory["canonicalEvent"];
+  memoryObject?: NormalizedMemory["memoryObject"];
   error?: string;
 }
 
@@ -85,6 +88,12 @@ export class IntegrationHub {
         occurredAt
       };
 
+      const normalized = normalizeMemoHubEvent(enrichedEvent, {
+        eventId,
+        receivedAt: occurredAt,
+        contentHash: casResult.hash,
+      });
+
       const instruction = await this.projector.projectEvent(
         enrichedEvent,
         casResult.hash
@@ -107,6 +116,8 @@ export class IntegrationHub {
         success: result.success,
         eventId,
         contentHash: casResult.hash,
+        canonicalEvent: normalized.canonicalEvent,
+        memoryObject: normalized.memoryObject,
         instruction: result,
         error: result.error?.message
       };

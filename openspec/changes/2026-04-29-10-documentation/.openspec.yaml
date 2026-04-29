@@ -1,9 +1,0 @@
-schema: spec-driven
-created: 2026-04-29
-title: Documentation and Release
-stage: ready
-status: pending
-priority: P1
-depends:
-  - 2026-04-29-09-performance-validation
-estimated: 1 day

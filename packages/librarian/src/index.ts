@@ -24,6 +24,9 @@ export {
   type PipelineResult,
 } from "./retrieval-pipeline.js";
 
+/**
+ * @internal
+ */
 export interface ConflictReport {
   recordA: any;
   recordB: any;
@@ -31,6 +34,9 @@ export interface ConflictReport {
   trackId: string;
 }
 
+/**
+ * @internal
+ */
 export class Librarian implements ITrackProvider {
   id = "track-librarian";
   name = "Librarian";

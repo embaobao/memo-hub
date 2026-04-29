@@ -41,14 +41,16 @@ export class EventProjector {
       throw IntegrationHubError.missingField("payload.text");
     }
 
-    // 构建 Text2Mem 指令
+    // 构建内部 Text2Mem 指令。新架构不再允许外部事件通过 metadata.trackId
+    // 覆盖投影目标，具体存储投影由 domain policy/QueryPlanner 上层模型决定。
     const instruction = {
       op: MemoOp.ADD,
-      // 注意：不设置 trackId，让 MemoryRouter 根据 kind 决定
       payload: {
         text: payload.text,
         // CAS 引用（如果提供）
         ...(contentHash && { contentHash }),
+        ...(payload.file_path && { file_path: payload.file_path }),
+        ...(payload.category && { category: payload.category }),
         // 事件元数据
         source: event.source,
         channel: event.channel,

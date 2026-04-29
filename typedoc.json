@@ -1,0 +1,44 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPointStrategy": "packages",
+  "packageOptions": {
+    "excludeInternal": true,
+    "gitRemote": "github",
+    "sourceLinkTemplate": "https://github.com/embaobao/memo-hub/blob/{gitRevision}/{path}#L{line}"
+  },
+  "entryPoints": [
+    "packages/protocol",
+    "packages/core",
+    "packages/integration-hub",
+    "packages/config",
+    "packages/ai-provider",
+    "packages/storage-flesh",
+    "packages/storage-soul",
+    "packages/builtin-tools",
+    "packages/librarian"
+  ],
+  "out": "docs/api/generated",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "excludeInternal": true,
+  "exclude": ["**/*.test.ts", "**/node_modules/**"],
+  "categorizeByGroup": true,
+  "defaultCategory": "Other",
+  "categoryOrder": [
+    "Types",
+    "Interfaces",
+    "Classes",
+    "Enums",
+    "Functions",
+    "Variables"
+  ],
+  "sort": ["source-order"],
+  "sortEntryPoints": true,
+  "hideGenerator": true,
+  "hideBreadcrumbs": true,
+  "gitRemote": "github",
+  "sourceLinkTemplate": "https://github.com/embaobao/memo-hub/blob/{gitRevision}/{path}#L{line}",
+  "navigationLinks": {
+    "Home": "https://github.com/embaobao/memo-hub"
+  }
+}

@@ -1,0 +1,49 @@
+# OpenSpec Index
+
+Generated from `openspec/changes` and `openspec/specs`.
+
+## Active Changes
+
+
+## Specs
+
+- [agent-memory-operations](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/agent-memory-operations/spec.md)
+- [ai-hub](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/ai-hub/spec.md)
+- [ai-provider-plugin](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/ai-provider-plugin/spec.md)
+- [app-cli-entry](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/app-cli-entry/spec.md)
+- [build-performance-gates](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/build-performance-gates/spec.md)
+- [builtin-graph-store](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/builtin-graph-store/spec.md)
+- [config-kernel](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/config-kernel/spec.md)
+- [config-modular-loader](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/config-modular-loader/spec.md)
+- [daemon-kernel](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/daemon-kernel/spec.md)
+- [documentation-governance](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/documentation-governance/spec.md)
+- [dual-level-cross-track-retrieval](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/dual-level-cross-track-retrieval/spec.md)
+- [engineering-directory-layout](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/engineering-directory-layout/spec.md)
+- [execution-cache](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/execution-cache/spec.md)
+- [flow-engine](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/flow-engine/spec.md)
+- [flow-visualizer-api](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/flow-visualizer-api/spec.md)
+- [governance-scheduler](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/governance-scheduler/spec.md)
+- [layered-memory-query](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/layered-memory-query/spec.md)
+- [legacy-track-migration](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/legacy-track-migration/spec.md)
+- [librarian-governance](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/librarian-governance/spec.md)
+- [memory-kernel](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/memory-kernel/spec.md)
+- [monorepo-workspace](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/monorepo-workspace/spec.md)
+- [observation-kernel](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/observation-kernel/spec.md)
+- [proactive-memory-workflow](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/proactive-memory-workflow/spec.md)
+- [projection-governance](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/projection-governance/spec.md)
+- [pseudo-graph-entities](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/pseudo-graph-entities/spec.md)
+- [retrieval-enhancement](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/retrieval-enhancement/spec.md)
+- [retrieval-pipeline](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/retrieval-pipeline/spec.md)
+- [secret-manager](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/secret-manager/spec.md)
+- [session-cache-layer](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/session-cache-layer/spec.md)
+- [source-normalization](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/source-normalization/spec.md)
+- [storage-cas](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/storage-cas/spec.md)
+- [storage-vector](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/storage-vector/spec.md)
+- [test-layout-governance](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/test-layout-governance/spec.md)
+- [text2mem-protocol](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/text2mem-protocol/spec.md)
+- [tool-registry](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/tool-registry/spec.md)
+- [track-insight](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/track-insight/spec.md)
+- [track-source](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/track-source/spec.md)
+- [track-stream](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/track-stream/spec.md)
+- [track-wiki](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/track-wiki/spec.md)
+- [unified-memory-object](https://github.com/embaobao/memo-hub/blob/main/openspec/specs/unified-memory-object/spec.md)

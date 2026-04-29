@@ -1,71 +1,93 @@
-# Text2Mem Protocol (v1.0.0)
+# Text2Mem Protocol
 
-Text2Mem 是 MemoHub 的核心通信协议，它将复杂的“记忆生命周期”抽象为 12 个原子操作。该协议确保了 CLI、MCP 和 Web 界面能够以统一的语义与 `MemoryKernel` 交互。
+最后更新：2026-04-29
 
----
+Text2Mem 是 MemoHub 内部执行协议，不作为 CLI/MCP 对外心智。当前产品层以 `CanonicalMemoryEvent`、`MemoryObject` 和 `ContextView` 为主。
 
-## 📜 指令结构 (Instruction)
+## 当前定位
 
-每条指令必须包含：
-- **`op`**: 操作类型（MemoOp）。
-- **`trackId`**: 目标轨道（如 `track-insight`）。
-- **`payload`**: 业务数据。
-- **`meta`**: 包含 `traceId`（链路追踪）和 `sessionId`。
+- 对外写入：`CanonicalMemoryEvent`
+- 对外查询：命名 `ContextView`
+- 内部执行：`Text2MemInstruction`
+- 标准结果：`Text2MemResult`
 
----
+## 外部写入模型
 
-## 🛠️ 12 项原子操作 (MVP 核心)
+```typescript
+type CanonicalMemoryEvent = {
+  source: string;
+  channel: string;
+  kind: "memory";
+  projectId: string;
+  confidence: "reported" | "observed" | "inferred" | "provisional" | "verified";
+  payload: {
+    text: string;
+    category?: string;
+    tags?: string[];
+    file_path?: string;
+    metadata?: Record<string, unknown>;
+  };
+};
+```
 
-### 1. ADD (注入)
-- **描述**: 向特定轨道添加新记忆。
-- **CLI**: `mh add "内容"`
-- **行为**: 触发 Flow：`提取实体 -> CAS 存储 -> 向量索引`。
+## 记忆对象模型
 
-### 2. RETRIEVE (检索)
-- **描述**: 基于自然语言的语义检索。
-- **CLI**: `mh search "查询"`
-- **行为**: 向量召回 -> Rerank 过滤 -> 内容回填（Hydration）。
+```typescript
+type MemoryObject = {
+  id: string;
+  contentHash: string;
+  state: "raw" | "curated" | "conflicted" | "archived";
+  domains: string[];
+  scope: "self" | "project" | "global";
+  source: string;
+  projectId?: string;
+  actorId?: string;
+  content: {
+    text: string;
+  };
+  links?: Record<string, string[]>;
+  metadata?: Record<string, unknown>;
+};
+```
 
-### 3. DELETE (撤销)
-- **描述**: 彻底移除某项记忆碎片。
-- **CLI**: `mh delete --hash <hash>`
+## 查询视图
 
-### 4. UPDATE (更正)
-- **描述**: 修改现有记忆内容，自动更新索引。
+当前命名视图：
 
-### 5. LIST (罗列)
-- **描述**: 扫描轨道元数据，返回记录清单。
+- `agent_profile`
+- `recent_activity`
+- `project_context`
+- `coding_context`
 
-### 6. VERSION (版本)
-- **描述**: 管理知识的版本历史，主要用于 Wiki 轨道。
+查询层级：
 
-### 7. CONNECT (关联)
-- **描述**: 在两个记忆实体之间建立逻辑连线（知识图谱基础）。
+- `self`
+- `project`
+- `global`
 
-### 8. DISCONNECT (切断)
-- **描述**: 移除实体间的逻辑关联。
+默认融合策略：先查自己，再查项目，再查全局，并保留来源解释。
 
-### 9. CLARIFY (澄清)
-- **描述**: 触发冲突检测，进入 A/B 差异比对模式。
+## 内部操作
 
-### 10. COMPRESS (压缩)
-- **描述**: 对时序流（Stream）进行总结并沉淀到 Insight 轨。
+Text2Mem 仍可作为内部原子操作集合使用：
 
-### 11. ARCHIVE (归档)
-- **描述**: 将不活跃记忆移入冷存储。
+- `ADD`
+- `RETRIEVE`
+- `UPDATE`
+- `DELETE`
+- `MERGE`
+- `CLARIFY`
+- `LIST`
+- `EXPORT`
+- `DISTILL`
+- `ANCHOR`
+- `DIFF`
+- `SYNC`
 
-### 12. INSPECT (探测)
-- **描述**: 反射内核的实时配置与 Flow 拓扑。
+这些操作不要求一一暴露为 CLI/MCP 命令。
 
----
+## 接口边界
 
-## 🚀 CLI/MCP 集成范式
-
-在 MVP 验证阶段，我们强制要求：
-1. **确定性**: 所有的 ADD 操作必须返回 CAS 哈希。
-2. **可感知**: 所有的操作必须在 `inspect` 大盘中可见。
-3. **低延迟**: RETRIEVE 响应必须在 200ms 内完成。
-
----
-
-**Text2Mem 是数字大脑的通用电气标准。**
+- CLI/MCP 对外使用 `CanonicalMemoryEvent`、命名 `ContextView` 和配置工具。
+- 内部执行细节必须封装在统一运行时或 projection 层。
+- 配置结构演进通过 `configVersion` 管理。

@@ -44,6 +44,9 @@ export enum EventConfidence {
  */
 export interface MemoryEventPayload {
   text: string;
+  kind?: "memory";
+  file_path?: string;
+  category?: string;
   tags?: string[];
   metadata?: Record<string, unknown>;
 }

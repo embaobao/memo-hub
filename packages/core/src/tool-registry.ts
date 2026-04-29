@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { ToolManifestConfig } from "@memohub/config";
 import { IHostResources } from "./types-host.js";
 
@@ -17,8 +16,8 @@ export interface ExecutionContext {
 export interface IToolManifest extends ToolManifestConfig {
   id: string;
   type: "builtin" | "extension";
-  inputSchema: z.ZodSchema;
-  outputSchema: z.ZodSchema;
+  inputSchema: unknown;
+  outputSchema: unknown;
 }
 
 /**

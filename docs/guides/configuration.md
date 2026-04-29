@@ -1,67 +1,82 @@
-# Configuration Guide (v1.0.0)
+# MemoHub 配置指南
 
-MemoHub 的所有行为均由 `config.jsonc` 驱动。该文件不仅定义了存储路径，还通过 **Flow-Driven 架构** 定义了每个操作的原子执行链。
+最后更新：2026-04-29
 
----
+MemoHub 当前配置服务于统一记忆中枢。CLI 和 MCP 共享同一份解析后的运行时配置。
 
-## 📂 路径说明
-- **全局配置**: `~/.memohub/config.jsonc`
-- **项目配置**: `./.memohub/config.jsonc` (覆盖全局)
+## 配置位置
 
----
+- 全局配置：`~/.memohub/memohub.json`
+- 自动检查：CLI 启动时会检查配置；缺失时可通过 `memohub config-check` 初始化。
+- 配置语言：`system.lang` 支持 `zh`、`en`、`auto`。默认 `auto`，无法判断系统语言时输出中文。
 
-## 🛠️ 核心配置块
+## 常用命令
 
-### 1. System (核心系统)
-```jsonc
-"system": {
-  "root": "~/.memohub",   // 所有数据存放的物理根目录
-  "port": 3000            // Web UI 与 API 监听端口
-}
+```bash
+memohub config-check
+memohub config
+memohub config-get system.lang
+memohub config-set system.lang '"zh"'
+memohub config-uninstall
 ```
 
-### 2. AI Providers (AI 供应商)
-您可以自由切换 Ollama (本地) 或 OpenAI (云端)。
-```jsonc
-"ai": {
-  "providers": {
-    "ollama": {
-      "baseURL": "http://localhost:11434/v1",
-      "model": "nomic-embed-text-v2-moe",
-      "dimensions": 768
-    }
+`config-set` 的值会先按 JSON 解析；字符串值建议保留 JSON 引号。
+
+## 核心配置块
+
+```json
+{
+  "configVersion": "unified-memory-1",
+  "system": {
+    "root": "~/.memohub",
+    "lang": "auto"
+  },
+  "storage": {
+    "blobPath": "~/.memohub/blobs",
+    "vectorDbPath": "~/.memohub/vector.lancedb",
+    "vectorTable": "memohub"
+  },
+  "ai": {
+    "provider": "ollama",
+    "embeddingModel": "nomic-embed-text-v2-moe",
+    "chatModel": "llama3.1",
+    "dimensions": 768
+  },
+  "mcp": {
+    "transport": "stdio",
+    "logPath": "~/.memohub/logs/mcp.ndjson",
+    "resources": ["memohub://tools", "memohub://stats"]
+  },
+  "memory": {
+    "layers": ["self", "project", "global"],
+    "views": ["agent_profile", "recent_activity", "project_context", "coding_context"],
+    "operations": ["ingest", "query", "summarize", "clarify", "resolve_clarification"]
   }
 }
 ```
 
-### 3. Tracks & Flows (轨道与编排) ⭐
-这是 MemoHub 最强大的部分。您可以定义一个 `op`（操作）在经过该轨道时，具体调用哪些原子工具。
+`configVersion` 是配置结构版本，用于后续迁移和诊断；它不等同于 CLI 包版本。
 
-```jsonc
-"tracks": [
-  {
-    "id": "track-insight",
-    "flows": {
-      "ADD": [
-        // 第一步：调用实体链接器提取关键词
-        { "step": "extract", "tool": "builtin:entity-linker" },
-        // 第二步：将原始内容存入 CAS
-        { "step": "store", "tool": "builtin:cas" },
-        // 第三步：生成向量并存入 Soul
-        { "step": "index", "tool": "builtin:vector", "input": "$.nodes.extract.output" }
-      ]
-    }
-  }
-]
+## MCP 配置能力
+
+Agent 可以通过 MCP 直接读写配置：
+
+- `memohub_config_get`: 读取解析配置或点分路径。
+- `memohub_config_set`: 写入点分路径。
+- `memohub_config_manage`: 执行 `check`、`init`、`uninstall`。
+
+## 接入前验证
+
+```bash
+bun run build:cli
+bun run verify:cli
+memohub config-check
+memohub mcp-doctor
+memohub mcp-tools
 ```
 
----
+如果日志路径不可写，可临时使用：
 
-## 🚀 MVP 调优建议
-
-1. **向量维度**: 确保 `dimensions` 与您的 Ollama 模型对齐（如 `nomic` 为 768）。
-2. **影子同步**: 在 Web UI 修改此文件后，CLI 无需重启即可实时读取内存中的新 Flow。
-
----
-
-**MemoHub 的灵活性源于将逻辑从代码抽离到配置。**
+```bash
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp-doctor
+```

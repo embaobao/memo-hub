@@ -38,6 +38,9 @@ export enum InstructionState {
   FAILED = "FAILED",
 }
 
+/**
+ * @internal
+ */
 export interface Text2MemInstruction {
   op: MemoOp;
   trackId: string;
@@ -54,6 +57,9 @@ export interface Text2MemInstruction {
   };
 }
 
+/**
+ * @internal
+ */
 export interface Text2MemResult {
   success: boolean;
   data?: any;
@@ -80,6 +86,9 @@ export interface ITool {
   execute(input: any, resources: any, context: any): Promise<any>;
 }
 
+/**
+ * @internal
+ */
 export interface IKernel {
   getCAS(): ICAS;
   getVectorStorage(): IVectorStorage;
@@ -90,6 +99,9 @@ export interface IKernel {
   dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult>;
 }
 
+/**
+ * @internal
+ */
 export interface ITrackProvider {
   id: string;
   name: string;

@@ -2,9 +2,7 @@
 
 ## Purpose
 The text2mem-protocol capability defines the formal communication contract between MemoHub components, specifying the 12 atomic operations and the five-element JSON instruction format.
-
 ## Requirements
-
 ### Requirement: Define Text2Mem operation enumeration
 The system SHALL define a `MemoOp` enum containing exactly 12 atomic operations: ADD, RETRIEVE, UPDATE, DELETE, MERGE, CLARIFY, LIST, EXPORT, DISTILL, ANCHOR, DIFF, SYNC.
 
@@ -13,15 +11,15 @@ The system SHALL define a `MemoOp` enum containing exactly 12 atomic operations:
 - **THEN** it contains exactly the values: ADD, RETRIEVE, UPDATE, DELETE, MERGE, CLARIFY, LIST, EXPORT, DISTILL, ANCHOR, DIFF, SYNC
 
 ### Requirement: Define Text2Mem five-element JSON contract
-The system SHALL define a `Text2MemInstruction` interface with five fields: `op` (MemoOp), `trackId` (string), `payload` (any), `context` (optional Record<string, any>), `meta` (optional Record<string, any>).
+The system SHALL continue to support `Text2MemInstruction` for dispatch, and SHALL also define canonical memory event/object contracts above dispatch-level instructions.
 
-#### Scenario: Create a valid instruction
-- **WHEN** a Text2MemInstruction is constructed with op=ADD, trackId="track-insight", payload={text: "hello"}
-- **THEN** the instruction is valid and contains all five fields with context and meta as undefined
+#### Scenario: Existing instruction remains valid
+- **WHEN** existing code constructs a Text2MemInstruction with op, trackId, and payload
+- **THEN** validation continues to support the existing dispatch path during migration
 
-#### Scenario: Reject invalid operation
-- **WHEN** a Text2MemInstruction is constructed with op="INVALID" (not in MemoOp enum)
-- **THEN** validation SHALL fail with a descriptive error message
+#### Scenario: Canonical memory object can be converted to instruction
+- **WHEN** a canonical memory object needs execution through existing internals
+- **THEN** an adapter can convert it to one or more Text2MemInstruction objects without exposing `trackId` as the product-level model
 
 ### Requirement: Validate instruction schema at runtime
 The system SHALL provide a `validateInstruction` function that uses Zod schema validation to verify a Text2MemInstruction at runtime, returning a typed result or error.
@@ -51,3 +49,18 @@ The `protocol` package SHALL have zero external runtime dependencies (only devDe
 #### Scenario: Check package dependencies
 - **WHEN** the protocol package's package.json is inspected
 - **THEN** dependencies field SHALL only contain "zod"
+
+### Requirement: Canonical Memory Event Contract
+The protocol package SHALL define a canonical event contract for source adapters.
+
+#### Scenario: Normalize external event
+- **WHEN** an adapter receives source input from an agent, IDE, CLI, MCP, scanner, document, user, or external service
+- **THEN** it can represent the input as a canonical event before creating a MemoryObject
+
+### Requirement: Canonical Memory Object Validation
+The protocol package SHALL provide validation for the canonical memory object core fields.
+
+#### Scenario: Validate required fields
+- **WHEN** a MemoryObject is created
+- **THEN** validation ensures required query-critical fields exist before persistence
+

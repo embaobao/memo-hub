@@ -1,9 +1,0 @@
-schema: spec-driven
-created: 2026-04-29
-title: MCP Query Tool
-stage: ready
-status: pending
-priority: P0
-depends:
-  - 2026-04-29-03-memory-router-extension
-estimated: 1.5 days

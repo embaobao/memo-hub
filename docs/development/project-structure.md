@@ -1,136 +1,90 @@
-# MemoHub v1 项目结构说明
+# MemoHub 项目结构
 
-## 📁 Monorepo 架构
+最后更新：2026-04-29
 
-MemoHub v1 使用 **Bun Workspace Monorepo** 架构，模块化设计，清晰分离关注点。
+MemoHub 使用 Bun Workspace Monorepo。当前对外架构以统一记忆运行时为中心，CLI 和 MCP 是统一入口。
 
-```
+## 目录
+
+```text
 memohub/
-├── apps/                         # 📱 应用层
-│   └── cli/                      # CLI 应用 + MCP Server
-│       ├── src/                  #   源代码
-│       │   ├── index.ts          #   CLI 主入口
-│       │   └── mcp.ts            #   MCP 服务器实现
-│       ├── dist/                 #   编译产物
-│       │   └── index.js          #   可执行文件 ⭐
-│       └── package.json
-│
-├── packages/                     # 📦 核心层
-│   ├── protocol/                 #   Text2Mem 协议 (零依赖)
-│   ├── core/                     #   MemoryKernel 总线
-│   ├── ai-provider/              #   AI 适配器 (Ollama)
-│   ├── storage-flesh/            #   CAS 内容寻址存储
-│   ├── storage-soul/             #   LanceDB 向量索引
-│   └── librarian/                #   检索流水线 + 治理
-│
-├── tracks/                       # 🛤️ 轨道层
-│   ├── track-insight/            #   知识/事实记忆
-│   ├── track-source/             #   代码/AST 记忆
-│   └── track-stream/             #   会话上下文 (预留)
-│
-├── docs/                         # 📚 文档
-├── guides/                       # 📚 指南
-├── config/                       # ⚙️ 配置文件
-│
-├── .deprecated/                  # 🗃️ 归档区
-│   ├── v2-src/                   #   旧的 v2 源代码
-│   ├── plugins/                  #   旧的插件
-│   └── docs/                     #   旧文档
-│
-├── HERMES_INTEGRATION_GUIDE.md  # 📖 Hermes 完整集成指南
-├── HERMES_QUICKSTART.md         # 📖 Hermes 快速开始
-├── README.md                     # 📖 项目说明
-├── CLAUDE.md                     # 📖 开发指南
-└── package.json                  # 项目配置
+├── apps/
+│   └── cli/                         # CLI + MCP Server
+├── packages/
+│   ├── protocol/                    # CanonicalMemoryEvent、MemoryObject、治理类型
+│   ├── core/                        # Kernel、工具注册、查询规划
+│   ├── integration-hub/             # 外部事件归一和投影
+│   ├── ai-provider/                 # AI Provider 适配
+│   ├── storage-flesh/               # CAS 内容存储
+│   ├── storage-soul/                # 向量索引
+│   └── librarian/                   # 检索与治理流水线
+├── tracks/                          # 过渡期内部处理切片，不是对外产品概念
+├── scripts/engineering/             # 根目录工程化脚本
+├── skills/memohub/                  # npx skills 安装源
+├── test/                            # 跨包测试、E2E、基准测试
+├── docs/                            # 业务、架构、接入、开发文档唯一入口
+├── AGENTS.md                        # AI 协作唯一内容源
+├── AGENT.md / CLAUDE.md / GEMINI.md # 指向 AGENTS.md 的入口软链接
+├── CODEX.md / TRAE.md               # 指向 AGENTS.md 的入口软链接
+└── openspec/                        # 提案和规格维护
 ```
 
-## 🎯 设计原则
+根目录不再维护独立 `guides/`。所有业务文档必须放在 `docs/` 下。
+AI 协作文档只维护 `AGENTS.md`，其他工具入口必须用软链接指向它。
 
-### 依赖方向
+## 依赖方向
 
+```text
+apps/cli
+  -> packages/integration-hub
+  -> packages/core
+  -> packages/protocol
 ```
-apps/cli → tracks/* → packages/core → packages/protocol
-```
 
-**规则**：
-- ✅ 依赖单向，禁止循环
-- ✅ tracks 只依赖 protocol
-- ✅ apps 依赖所有需要的包
-- ❌ packages 不能依赖 apps 或 tracks
+规则：
 
-### 包职责
+- `apps/cli` 暴露 CLI/MCP，并通过统一运行时进入业务链路。
+- `packages/protocol` 只放协议和类型，不依赖具体运行时。
+- `packages/core` 不依赖具体内置工具实现。
+- `scripts/engineering` 负责仓库级工程能力，例如生成文档和根目录 skill。
+- `tracks/*` 仅作为过渡期内部切片存在，不作为新功能入口。
 
-| 包 | 职责 | 大小 |
-|---|------|------|
-| **apps/cli** | CLI 入口 + MCP Server | 92K |
-| **packages/protocol** | Text2Mem 协议定义 | - |
-| **packages/core** | MemoryKernel 总线 | - |
-| **packages/ai-provider** | AI 适配器 | - |
-| **packages/storage-flesh** | CAS 内容存储 | - |
-| **packages/storage-soul** | 向量索引存储 | - |
-| **packages/librarian** | 检索流水线 | - |
-| **tracks/track-insight** | 知识记忆轨道 | - |
-| **tracks/track-source** | 代码记忆轨道 | - |
-| **tracks/track-stream** | 会话上下文轨道 | - |
+## 构建命令
 
-## 🚀 构建流程
+根目录聚合命令：
 
 ```bash
-# 构建所有包
 bun run build
-
-# 构建特定包
-bun run --filter @memohub/cli build
-bun run --filter @memohub/protocol build
-
-# 构建所有 apps
-bun run --filter './apps/*' build
-
-# 构建所有 packages
-bun run --filter './packages/*' build
-
-# 构建所有 tracks
-bun run --filter './tracks/*' build
+bun run build:cli
+bun run verify:cli
+bun run skill:memohub
+bun run docs:generate
+bun run docs:check
 ```
 
-## 📊 目录大小统计
+CLI 包内命令：
 
-| 目录 | 大小 | 说明 |
-|------|------|------|
-| `apps/` | 92K | 应用入口 |
-| `packages/` | 620K | 核心包 |
-| `tracks/` | 96K | 轨道实现 |
-| `.deprecated/` | 1.4M | 已归档代码 |
-
-**总计**: ~2.2M (不含 node_modules)
-
-## 🎨 MCP 服务器架构
-
-### 集成方式
-
-MemoHub v1 的 MCP 服务器通过 **CLI 暴露**，符合 monorepo 最佳实践：
-
-```
-用户调用
-  ↓
-Hermes
-  ↓
-node apps/cli/dist/index.js serve
-  ↓
-apps/cli/src/mcp.ts
-  ↓
-MemoryKernel + Tracks
+```bash
+cd apps/cli
+bun run build
+bun run verify:bin
+bun run link:global
 ```
 
-### 优势
+## 测试目录
 
-- ✅ 统一入口：CLI 和 MCP 共享代码
-- ✅ 模块化：清晰的包依赖关系
-- ✅ 可维护：独立的包版本管理
-- ✅ 可扩展：轻松添加新的轨道
-- ✅ 类型安全：TypeScript 严格模式
+测试必须放在 `test/` 或各包的 `test/` 目录下，不允许散落在 `src/`：
 
----
+```text
+apps/cli/test/
+packages/*/test/
+tracks/*/test/
+test/
+```
 
-**文档版本**: 3.0.0
-**最后更新**: 2026-04-24
+验证：
+
+```bash
+bun run check:test-layout
+bun run test
+```

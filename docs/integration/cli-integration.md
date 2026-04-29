@@ -1,657 +1,282 @@
-# MemoHub v1 - CLI 命令集成指南
+# MemoHub CLI 接入文档
 
-> **🎯 适用对象**: 所有需要通过命令行使用 MemoHub 的用户
-> **⚡ 集成难度**: ⭐ (非常简单)
-> **🔧 功能完整度**: ⭐⭐⭐⭐ (90%)
+最后更新：2026-04-29
 
----
+CLI 是统一记忆运行时的本地入口。它与 MCP 暴露相同业务能力：写入、查询、总结、澄清和状态查看。
 
-## 📋 目录
-
-- [快速开始](#快速开始)
-- [全局安装](#全局安装)
-- [命令参考](#命令参考)
-- [使用示例](#使用示例)
-- [脚本集成](#脚本集成)
-- [故障排除](#故障排除)
-
----
-
-## 🚀 快速开始
-
-### 方式 1: npm link (推荐)
+## 命令面
 
 ```bash
-# 1. 进入项目目录
-cd /path/to/memo-hub
-
-# 2. 安装依赖
-bun install
-
-# 3. 构建项目
-bun run build
-
-# 4. 全局安装 CLI
-cd apps/cli
-npm link --force
-
-# 5. 验证安装
-memohub --version
+memohub inspect
+memohub add "文本内容" --project memo-hub --source cli --category decision
+memohub query "查询文本" --view project_context --actor hermes --project memo-hub
+memohub summarize "需要总结的文本" --agent hermes
+memohub clarify "需要澄清的冲突文本" --agent hermes
+memohub resolve-clarification clarify_op_1 "澄清答案" --agent hermes --project memo-hub
+memohub config
+memohub mcp-config
+memohub mcp-tools
+memohub mcp-status
+memohub mcp-doctor
+memohub mcp-logs --tail 50
+memohub serve
 ```
 
-**预期输出**:
-```
-3.0.0
-```
+全局参数：
 
-如果看到版本号，说明 CLI 安装成功！
+- `--lang zh|en`: 覆盖本次输出语言。
+- `--json`: 输出机器可读 JSON。
 
----
+默认人类可读输出使用中文；配置 `system.lang=auto` 时会读取系统语言，无法判断时仍使用中文。
 
-### 方式 2: npm pack
+开发态可直接运行源码入口：
 
 ```bash
-# 1. 构建项目
-cd /path/to/memo-hub
-bun run build
-
-# 2. 打包
-cd apps/cli
-npm pack
-
-# 3. 全局安装
-npm install -g memohub-cli-3.0.0.tgz
-
-# 4. 验证安装
-memohub --version
+bun apps/cli/src/index.ts inspect
+bun apps/cli/src/index.ts add "文本内容" --project memo-hub --source cli
+bun apps/cli/src/index.ts query "查询文本" --view coding_context --project memo-hub
+bun apps/cli/src/index.ts summarize "近期活动文本" --agent hermes
+bun apps/cli/src/index.ts clarify "冲突文本" --agent hermes
+bun apps/cli/src/index.ts resolve-clarification clarify_op_1 "澄清答案" --agent hermes --project memo-hub
+bun apps/cli/src/index.ts mcp-tools
+bun apps/cli/src/index.ts serve
 ```
 
----
+## CLI 到运行时的数据流
 
-### 方式 3: 直接运行（不推荐）
+```mermaid
+sequenceDiagram
+    participant User as 用户/脚本
+    participant CLI as CLI
+    participant Runtime as UnifiedMemoryRuntime
+    participant Store as CAS + Vector
+    participant Planner as QueryPlanner
 
-```bash
-# 使用 bun 运行
-cd /path/to/memo-hub
-bun run --filter @memohub/cli start -- add "知识内容"
+    User->>CLI: memohub add
+    CLI->>Runtime: ingest(MemoHubEvent)
+    Runtime->>Store: CAS + vector projection
+    Runtime-->>CLI: canonicalEvent + memoryObject
 
-# 或使用 node 运行
-node /path/to/memo-hub/apps/cli/dist/index.js add "知识内容"
+    User->>CLI: memohub query
+    CLI->>Runtime: queryView(request)
+    Runtime->>Planner: self/project/global recall
+    Planner-->>CLI: ContextView
+
+    User->>CLI: memohub resolve-clarification
+    CLI->>Runtime: resolveClarification(request)
+    Runtime->>Store: curated MemoryObject + vector projection
+    Runtime-->>CLI: resolved clarification + memoryObject
 ```
 
-**注意**: 这种方式需要每次都指定完整路径，不推荐使用。
+## `add`
 
----
-
-## 📦 全局安装
-
-### 完整安装步骤
+写入一条记忆事件。
 
 ```bash
-# 1. 克隆或下载项目
-cd /path/to/memo-hub
-
-# 2. 安装依赖
-bun install
-
-# 3. 构建项目
-bun run build
-
-# 4. 进入 CLI 目录
-cd apps/cli
-
-# 5. 全局链接
-npm link --force
-
-# 6. 验证安装
-memohub --version
+memohub add "MemoHub 使用统一记忆运行时" --project memo-hub --source cli --category architecture
 ```
 
-### 验证安装
+参数：
+
+- `text`: 必填，记忆文本。
+- `--project <projectId>`: 可选，默认 `default`。
+- `--source <source>`: 可选，默认 `cli`。
+- `--category <category>`: 可选，用于辅助 domain/category 归类。
+- `--file <filePath>`: 可选，关联代码文件路径；存在时会进入 `code-intelligence` domain。
+
+输出包含：
+
+- `eventId`
+- `contentHash`
+- `canonicalEvent`
+- `memoryObject`
+
+## `query`
+
+查询命名上下文视图。
 
 ```bash
-# 检查版本
-memohub --version
+memohub query "Hermes 最近在做什么" --view recent_activity --actor hermes --project memo-hub --limit 5
+```
 
-# 查看帮助
-memohub --help
+参数：
 
-# 查看配置
+- `query`: 必填，自然语言查询。
+- `--view <view>`: 可选，默认 `project_context`。
+- `--actor <actorId>`: 可选，请求方 Agent/Actor。
+- `--project <projectId>`: 可选，默认 `default`。
+- `--limit <limit>`: 可选，每层结果数量，默认 `5`。
+
+支持视图：
+
+- `agent_profile`
+- `recent_activity`
+- `project_context`
+- `coding_context`
+
+## `summarize`
+
+创建受治理的总结候选。
+
+```bash
+memohub summarize "Hermes 最近完成了 CLI/MCP 新链路重构" --agent hermes
+```
+
+输出会包含：
+
+- `operationId`
+- `inputMemoryIds`
+- `outputMemoryIds`
+- `confidence`
+- `reviewState`
+- `provenance.parentIds`
+
+## `clarify`
+
+创建澄清项。
+
+```bash
+memohub clarify "文档和实现对于查询入口描述不一致，需要用户确认" --agent hermes
+```
+
+输出会包含 `ClarificationItem`，用于后续冲突或缺口治理。
+
+## `resolve-clarification`
+
+把用户或 Agent 的澄清答案写回为可检索记忆。
+
+```bash
+memohub resolve-clarification clarify_op_1 "当前以 UnifiedMemoryRuntime 为准" --agent hermes --project memo-hub --memory mem_old_note
+```
+
+输出会包含：
+
+- `clarification.status=resolved`
+- `memoryObject.state=curated`
+- `links.resolves`
+- `contentHash`
+- `vectorRecordCount`
+
+## `config`
+
+查看新架构解析后的运行时配置。
+
+```bash
 memohub config
 ```
 
-### 查看 CLI 路径
+返回包含：
+
+- 存储路径：`storage.blobPath`、`storage.vectorDbPath`、`storage.vectorTable`
+- AI 配置：provider、embedding model、chat model、dimensions
+- MCP 配置：transport、logPath、resources
+- 记忆能力：query layers、views、operations
+
+## MCP 辅助命令
+
+生成 Agent 可读取的接入配置：
 
 ```bash
-# 查看 CLI 安装位置
-which memohub
-
-# 或
-where memohub
+memohub mcp-config
+memohub mcp-config --target hermes
 ```
 
-**示例输出**:
-```bash
-# macOS/Linux
-/usr/local/bin/memohub
-
-# Windows
-C:\Users\your-username\AppData\Roaming\npm\memohub.cmd
-```
-
----
-
-## 📖 命令参考
-
-### 知识管理命令
-
-#### 1. add - 添加知识
+查看 MCP 工具目录：
 
 ```bash
-memohub add <text> [options]
+memohub mcp-tools
 ```
 
-**参数**:
-- `text` - 知识内容 (必填)
-
-**选项**:
-- `-c, --category <category>` - 分类 (默认: "other")
-- `-i, --importance <importance>` - 重要性 0-1 (默认: 0.5)
-- `-t, --tags <tags>` - 标签，逗号分隔 (例如: "tag1,tag2")
-
-**示例**:
-```bash
-# 添加简单知识
-memohub add "用户喜欢 TypeScript"
-
-# 添加带分类和标签的知识
-memohub add "用户注重代码质量" -c user -i 0.8 -t "preference,quality"
-
-# 添加项目信息
-memohub add "这是一个 React 项目" -c project -t "frontend,react"
-```
-
----
-
-#### 2. search - 搜索知识
+查看运行时状态和日志：
 
 ```bash
-memohub search <query> [options]
+memohub mcp-status
+memohub mcp-doctor
+memohub mcp-logs --tail 100
 ```
 
-**参数**:
-- `query` - 查询内容 (必填)
+## 配置读写
 
-**选项**:
-- `-l, --limit <limit>` - 返回数量 (默认: 5)
-
-**示例**:
-```bash
-# 搜索知识
-memohub search "TypeScript 偏好"
-
-# 搜索并返回更多结果
-memohub search "开发习惯" -l 10
-```
-
----
-
-#### 3. list - 列出分类
+读取原始配置值：
 
 ```bash
-memohub list
+memohub config-get mcp.logPath
+memohub config-get storage.vectorDbPath
 ```
 
-**示例**:
-```bash
-# 列出所有分类和数量
-memohub list
-```
-
-**输出**:
-```
-✔ Categories:
-  uncategorized: 5
-  user: 3
-  project: 2
-  Total: 10
-```
-
----
-
-#### 4. delete - 删除知识
+写入原始配置值：
 
 ```bash
-memohub delete [options]
+memohub config-set mcp.logPath '"/tmp/memohub-mcp.ndjson"'
 ```
 
-**选项**:
-- `--ids <ids>` - ID 列表，逗号分隔
-- `--category <category>` - 按分类删除
+注意：`config-set` 的 value 会先尝试按 JSON 解析；字符串值建议显式带 JSON 引号。
 
-**示例**:
-```bash
-# 删除指定 ID
-memohub delete --ids "insight-1713990000-abc123,insight-1713990001-def456"
-
-# 删除整个分类
-memohub delete --category "user"
-```
-
----
-
-### 代码管理命令
-
-#### 5. add-code - 添加代码
+配置生命周期：
 
 ```bash
-memohub add-code <file> [options]
+memohub config-check
+memohub config-init --force
+memohub config-uninstall
 ```
 
-**参数**:
-- `file` - 文件路径 (必填)
+`config-check` 会在配置缺失时自动初始化新架构配置。`config-uninstall` 直接删除 MemoHub 全局配置片段。
 
-**选项**:
-- `-l, --language <language>` - 编程语言 (默认: "typescript")
-
-**示例**:
-```bash
-# 添加 TypeScript 文件
-memohub add-code ./src/utils.ts
-
-# 添加 Python 文件
-memohub add-code ./script.py -l python
-
-# 添加 JavaScript 文件
-memohub add-code ./index.js -l javascript
-```
-
----
-
-#### 6. search-code - 搜索代码
+## Agent Skill 生成
 
 ```bash
-memohub search-code <query> [options]
+bun run skill:memohub
 ```
 
-**参数**:
-- `query` - 查询内容 (必填)
+生成结果固定为仓库根目录 `skills/memohub/SKILL.md`，用于后续通过 `npx skills add <repo> --skill memohub` 安装。Agent 读取该 skill 后会执行本地 CLI 构建/链接、配置检查、MCP 启动和工具发现。CLI 不负责写入 `.codex`、`.claude`、`.gemini` 或其他 Agent 私有 skill 目录。
 
-**选项**:
-- `-l, --limit <limit>` - 返回数量 (默认: 5)
+## `inspect`
 
-**示例**:
-```bash
-# 搜索代码
-memohub search-code "fetch function"
-
-# 搜索并返回更多结果
-memohub search-code "react hook" -l 10
-```
-
----
-
-### 高级命令
-
-#### 7. search-all - 统一检索
+查看统一运行时能力。
 
 ```bash
-memohub search-all <query> [options]
+memohub inspect
 ```
 
-**参数**:
-- `query` - 查询内容 (必填)
+返回包含：
 
-**选项**:
-- `-l, --limit <limit>` - 返回数量 (默认: 10)
-- `--lexical` - 启用词法通道 (默认: false)
-- `--entity-expansion` - 启用实体扩展 (默认: true)
+- `runtime`
+- `stores`
+- `model`
+- `queryLayers`
+- `views`
+- `agentOperations`
 
-**示例**:
-```bash
-# 统一检索
-memohub search-all "用户认证"
+## `serve`
 
-# 启用词法通道
-memohub search-all "数据库配置" --lexical
-
-# 返回更多结果
-memohub search-all "API 调用" -l 20
-```
-
----
-
-#### 8. dedup - 去重扫描
-
-```bash
-memohub dedup [options]
-```
-
-**选项**:
-- `--track <trackId>` - 轨道 ID (默认: "track-insight")
-- `--threshold <threshold>` - 相似度阈值 (默认: "0.95")
-
-**示例**:
-```bash
-# 扫描知识轨道
-memohub dedup --track track-insight
-
-# 扫描代码轨道
-memohub dedup --track track-source
-
-# 调整阈值
-memohub dedup --threshold 0.90
-```
-
----
-
-#### 9. distill - 知识蒸馏
-
-```bash
-memohub distill [options]
-```
-
-**选项**:
-- `--track <trackId>` - 轨道 ID (默认: "track-insight")
-
-**示例**:
-```bash
-# 蒸馏知识轨道
-memohub distill --track track-insight
-
-# 蒸馏代码轨道
-memohub distill --track track-source
-```
-
----
-
-### 配置命令
-
-#### 10. config - 配置管理
-
-```bash
-memohub config [options]
-```
-
-**选项**:
-- `--validate` - 验证配置
-
-**示例**:
-```bash
-# 显示配置
-memohub config
-
-# 验证配置
-memohub config --validate
-```
-
----
-
-### 服务命令
-
-#### 11. serve - 启动 MCP Server
+启动 MCP server。
 
 ```bash
 memohub serve
 ```
 
-**示例**:
-```bash
-# 启动 MCP Server
-memohub serve
-```
-
-**注意**: 此命令用于 MCP 协议集成，详见 [MCP 集成指南](./mcp-integration.md)
-
----
-
-## 💡 使用示例
-
-### 场景 1: 记住用户偏好
+启动别名：
 
 ```bash
-# 记住用户偏好
-memohub add "用户喜欢 TypeScript 进行开发" -c user -i 0.9 -t "preference,typescript"
-
-# 查询用户偏好
-memohub search "TypeScript 偏好"
+memohub mcp
 ```
 
----
+## 接口合同
 
-### 场景 2: 管理项目信息
+CLI 使用当前统一模型字段表达处理意图：
 
-```bash
-# 添加项目信息
-memohub add "这是一个基于 React 的前端项目" -c project -t "frontend,react"
+- 写入来源：`source`
+- 项目边界：`project`
+- 内容分类：`category`
+- 代码关联：`file`
+- 查询视图：`view`
 
-# 添加技术栈
-memohub add "使用 TypeScript + Vite + TailwindCSS" -c project -t "techstack"
+如需影响处理方式，应通过这些字段表达。
 
-# 查询项目信息
-memohub search "项目技术栈"
-```
+## 相关文档
 
----
-
-### 场景 3: 管理代码片段
-
-```bash
-# 添加代码文件
-memohub add-code ./src/hooks/useFetch.ts -l typescript
-
-# 搜索代码
-memohub search-code "fetch hook"
-```
-
----
-
-### 场景 4: 统一检索
-
-```bash
-# 同时搜索知识和代码
-memohub search-all "用户认证"
-
-# 查看检索结果，包括知识和代码
-```
-
----
-
-## 🔧 脚本集成
-
-### Shell 脚本
-
-```bash
-#!/bin/bash
-# remember-user-preference.sh
-
-# 记住用户偏好
-memohub add "$1" -c user -i 0.8 -t "preference"
-
-echo "已记住用户偏好: $1"
-```
-
-**使用**:
-```bash
-chmod +x remember-user-preference.sh
-./remember-user-preference.sh "用户喜欢深色主题"
-```
-
----
-
-### Node.js 脚本
-
-```javascript
-// remember.js
-const { execSync } = require('child_process');
-
-function remember(text, options = {}) {
-  const category = options.category || 'other';
-  const tags = options.tags ? options.tags.join(',') : '';
-  const importance = options.importance || 0.5;
-
-  const cmd = `memohub add "${text}" -c ${category} -i ${importance} -t "${tags}"`;
-  execSync(cmd, { stdio: 'inherit' });
-}
-
-// 使用
-remember('用户喜欢使用 VS Code', {
-  category: 'user',
-  importance: 0.9,
-  tags: ['preference', 'editor']
-});
-```
-
----
-
-### Python 脚本
-
-```python
-# remember.py
-import subprocess
-
-def remember(text, category='other', importance=0.5, tags=None):
-    cmd = ['memohub', 'add', text, '-c', category, '-i', str(importance)]
-    if tags:
-        cmd.extend(['-t', ','.join(tags)])
-    subprocess.run(cmd)
-
-# 使用
-remember('用户喜欢 Python 编程',
-         category='user',
-         importance=0.8,
-         tags=['preference', 'python'])
-```
-
----
-
-## 🔍 故障排除
-
-### 问题 1: 命令未找到
-
-**症状**: `memohub: command not found`
-
-**解决方案**:
-
-1. **检查安装**
-   ```bash
-   npm list -g @memohub/cli
-   ```
-
-2. **重新安装**
-   ```bash
-   cd /path/to/memo-hub/apps/cli
-   npm link --force
-   ```
-
-3. **检查 PATH**
-   ```bash
-   echo $PATH | grep -o "[^:]*npm"
-   ```
-
----
-
-### 问题 2: 添加知识失败
-
-**症状**: `Error: Cannot connect to Ollama`
-
-**解决方案**:
-
-1. **检查 Ollama 是否运行**
-   ```bash
-   ollama list
-   ```
-
-2. **启动 Ollama**
-   ```bash
-   ollama serve
-   ```
-
-3. **检查配置**
-   ```bash
-   memohub config
-   ```
-
----
-
-### 问题 3: 搜索结果为空
-
-**症状**: 搜索返回 "No results found"
-
-**解决方案**:
-
-1. **检查是否有数据**
-   ```bash
-   memohub list
-   ```
-
-2. **调整查询文本**
-   - 使用更相关的查询
-   - 尝试不同的关键词
-
-3. **增加返回数量**
-   ```bash
-   memohub search "查询" -l 10
-   ```
-
----
-
-## 🎯 最佳实践
-
-### 1. 分类规范
-
-```bash
-# 用户偏好
-memohub add "..." -c user -t "preference,..."
-
-# 项目信息
-memohub add "..." -c project -t "config,..."
-
-# 环境信息
-memohub add "..." -c environment -t "system,..."
-
-# 代码片段
-memohub add "..." -c code -t "snippet,..."
-```
-
----
-
-### 2. 批量添加
-
-```bash
-# 使用循环批量添加
-for item in "item1" "item2" "item3"; do
-  memohub add "$item" -c batch -t "import"
-done
-```
-
----
-
-### 3. 定期维护
-
-```bash
-# 定期去重
-memohub dedup
-
-# 定期蒸馏
-memohub distill
-
-# 查看统计
-memohub list
-```
-
----
-
-## 📚 相关文档
-
-- [集成指南首页](./index.md) - 所有集成方式
-- [MCP 协议集成](./mcp-integration.md) - MCP 协议集成
-- [配置指南](../guides/configuration.md) - 详细配置
-- [快速开始](../guides/quickstart.md) - 5 分钟上手
-
----
-
-**版本**: 3.0.0
-**最后更新**: 2026-04-24
-**集成难度**: ⭐ (非常简单)
-**功能完整度**: ⭐⭐⭐⭐ (90%)
+- [MCP 接入文档](./mcp-integration.md)
+- [接入场景验证](./access-scenarios.md)
+- [API 参考](../api/reference.md)
+- [业务链路](../architecture/business-workflows.md)
+- [当前状态](../development/current-status.md)

@@ -109,10 +109,16 @@ export class WikiTrack implements ITrackProvider {
   ): Promise<Text2MemResult> {
     try {
       const { query, limit = 5 } = inst.payload ?? {};
+      const embedderTool = this.kernel.getTool("builtin:embedder");
       const retrieverTool = this.kernel.getTool("builtin:retriever");
+      const { vector } = await embedderTool.execute(
+        { text: query },
+        this.kernel.getResources(),
+        { traceId: inst.meta?.traceId },
+      );
 
-      const results = await retrieverTool.execute(
-        { query, limit, filter: `track_id = '${this.id}'` },
+      const { results } = await retrieverTool.execute(
+        { vector, limit, filter: `track_id = '${this.id}'`, hydrate: true },
         this.kernel.getResources(),
         { traceId: inst.meta?.traceId },
       );
@@ -230,4 +236,3 @@ export class WikiTrack implements ITrackProvider {
     return { success: true };
   }
 }
-

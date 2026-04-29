@@ -2,9 +2,7 @@
 
 ## Purpose
 The memory-kernel capability acts as the central engine of MemoHub, managing track registration and routing Text2Mem instructions to the appropriate providers.
-
 ## Requirements
-
 ### Requirement: Implement MemoryKernel class
 The system SHALL implement a `MemoryKernel` class that serves as the central dispatch bus for all memory operations.
 
@@ -35,15 +33,15 @@ The system SHALL provide an `unregisterTrack(trackId: string)` method that remov
 - **THEN** subsequent dispatches to that track id SHALL fail
 
 ### Requirement: Dispatch instructions to tracks
-The system SHALL provide a `dispatch(instruction: Text2MemInstruction): Promise<Text2MemResult>` method that routes an instruction to the appropriate track provider.
+The system SHALL keep `MemoryKernel.dispatch()` as the execution boundary, while allowing higher-level planners to work with canonical memory objects and query views.
 
-#### Scenario: Dispatch to registered track
-- **WHEN** dispatch is called with an instruction having trackId="track-insight"
-- **THEN** the instruction is forwarded to the track-insight provider's execute method
+#### Scenario: Dispatch legacy instruction
+- **WHEN** existing code dispatches a Text2MemInstruction
+- **THEN** MemoryKernel routes it through the current execution path
 
-#### Scenario: Dispatch to unregistered track
-- **WHEN** dispatch is called with an instruction having trackId="unknown-track"
-- **THEN** a Text2MemResult with success=false and an error message is returned
+#### Scenario: Execute canonical memory object via adapter
+- **WHEN** a planner needs to execute a canonical memory object through existing internals
+- **THEN** it converts the object to one or more dispatch instructions and preserves canonical metadata
 
 ### Requirement: Expose kernel capabilities to tracks
 The system SHALL implement an `IKernel` interface passed to tracks during initialization, providing access to: `getEmbedder()`, `getCAS()`, `getVectorStorage()`, `getConfig()`, `dispatch()`.
@@ -66,3 +64,18 @@ The system SHALL emit events before and after each instruction dispatch, allowin
 #### Scenario: Emit post-dispatch event
 - **WHEN** an instruction completes (success or failure)
 - **THEN** a "post-dispatch" event is emitted with the instruction and result
+
+### Requirement: Query Planner Boundary
+The system SHALL introduce a query planning boundary above dispatch for layered recall.
+
+#### Scenario: Layered query
+- **WHEN** a caller requests a context view
+- **THEN** the query planner resolves self, project, and global recall scopes before dispatching retrieval operations
+
+### Requirement: Context View Assembly
+The system SHALL assemble query results into named context views.
+
+#### Scenario: Assemble coding context
+- **WHEN** coding context is requested
+- **THEN** the system returns a structured view with layer attribution, source metadata, and conflicts or gaps
+

@@ -19,11 +19,7 @@ export function applyEnvOverrides(
         .slice(prefix.length)
         .toLowerCase()
         .split("__")
-        .map((part) => {
-          // Convert parts back to camelCase or keep as is if it matches expected schema structure
-          // This is a simple implementation; ideally, we'd map this perfectly to the schema.
-          return part;
-        })
+        .map((part) => snakeToCamel(part))
         .join(".");
 
       // Simple type inference for booleans and numbers
@@ -37,6 +33,10 @@ export function applyEnvOverrides(
   }
 
   return result;
+}
+
+function snakeToCamel(value: string): string {
+  return value.replace(/_([a-z0-9])/g, (_, char: string) => char.toUpperCase());
 }
 
 /**

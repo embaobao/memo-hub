@@ -3,76 +3,50 @@ import fastifyWebsocket from "@fastify/websocket";
 import chalk from "chalk";
 
 /**
- * 启动 MemoHub 守护进程 API 服务
+ * 启动 MemoHub 守护进程 API 服务。
+ *
+ * HTTP API 与 CLI/MCP 一样只面向统一运行时，入口层不暴露内部调度细节。
  */
-export async function startApiServer(kernel: any) {
+export async function startApiServer(runtime: any) {
   const server = Fastify({ logger: false });
 
-  // 1. 注册 WebSocket 插件用于实时事件监控 (TUI 监控基础)
+  // 预留 WebSocket 通道：后续用于推送统一运行时事件。
   await server.register(fastifyWebsocket);
 
   server.get("/ws/trace", { websocket: true }, (connection: any) => {
-    const eventHandler = (event: any) => {
-      connection.socket.send(
-        JSON.stringify({
-          type: "KERNEL_EVENT",
-          payload: event,
-          timestamp: Date.now(),
-        }),
-      );
-    };
-
-    kernel.on("dispatch", eventHandler);
-    connection.socket.on("close", () => {
-      kernel.off("dispatch", eventHandler);
-    });
+    connection.socket.send(JSON.stringify({
+      type: "RUNTIME_READY",
+      payload: { runtime: "unified-memory-runtime" },
+      timestamp: Date.now(),
+    }));
   });
 
-  // 2. 核心状态检查
+  // 核心状态检查：返回统一运行时能力视图。
   server.get("/api/inspect", async () => {
     try {
-      const config = kernel.getConfig();
-      const tools = kernel.listTools();
-      const tracks = await kernel.listTracks();
+      const stats = await runtime.inspect();
       return {
         status: 'online',
         version: '1.0.0',
-        config: { system: config.system || {} },
-        tools: tools || [],
-        tracks: tracks.map((t: any) => ({ id: t.id, name: t.name }))
+        ...stats,
       };
     } catch (e) {
       return { status: 'error', error: String(e) };
     }
   });
 
-  // 3. 生产力接口
-  server.post("/api/dispatch", async (request: any) => {
-    return await kernel.dispatch(request.body);
+  // 统一摄取接口：只接受规范事件，由 runtime 负责归一化和投影。
+  server.post("/api/ingest", async (request: any) => {
+    return await runtime.ingest(request.body);
   });
 
-  server.get("/api/assets", async (request: any) => {
-    try {
-      const { trackId } = request.query as any;
-      const storage = kernel.getVectorStorage();
-      const cas = kernel.getCAS();
-      let filter = "";
-      if (trackId) filter = `track_id = '${trackId}'`;
-      const records = await storage.list(filter, 100);
-      const items = await Promise.all(
-        records.map(async (r: any) => ({
-          ...r,
-          text: await cas.read(r.hash).catch(() => "Content Missing"),
-        })),
-      );
-      return { items };
-    } catch (e) {
-      return { items: [], error: String(e) };
-    }
+  // 统一查询接口：使用命名视图，不支持按轨道查询。
+  server.post("/api/query", async (request: any) => {
+    return await runtime.queryView(request.body);
   });
 
   try {
-    const port = kernel.getConfig().system.port || 3000;
+    const port = Number(process.env.MEMOHUB_PORT ?? 3000);
     await server.listen({ port, host: "0.0.0.0" });
     console.log(chalk.cyan(`\n🧠 MemoHub Daemon is running on port ${port}`));
   } catch (err) {

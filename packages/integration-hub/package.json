@@ -4,10 +4,10 @@
   "description": "Integration Hub - External event processing and projection",
   "type": "module",
   "main": "dist/index.js",
-  "types": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "bun test",
+    "test": "bun test test",
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
@@ -21,7 +21,7 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     }
   }

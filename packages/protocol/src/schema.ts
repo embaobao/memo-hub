@@ -3,6 +3,9 @@ import { MemoOp, type Text2MemInstruction } from "./types.js";
 
 export const MemoOpSchema = z.nativeEnum(MemoOp);
 
+/**
+ * @internal
+ */
 export const Text2MemInstructionSchema = z.object({
   op: MemoOpSchema,
   trackId: z.string().min(1),

@@ -1,105 +1,302 @@
-# 🧠 MemoHub v1.0.0
-> **The First Memory-First Orchestration OS for Personal Agents.**
+<p align="center">
+  <img src="docs/assets/memohub-logo.svg" alt="MemoHub - Unified Memory for AI" width="520" />
+</p>
 
-MemoHub 是一个专为个人 Agent 打造的数字记忆操作系统。它将碎片化的信息通过 **Text2Mem 协议** 转化为结构化的、可编排的记忆资产，并提供 iOS 级审美的 **Ether UI** 可视化控制台。
+<p align="center">
+  <strong>Turn temporary AI context into your own durable memory assets.</strong>
+</p>
 
-![V1 Status](https://img.shields.io/badge/Status-v1.0.0_Ready-emerald?style=for-the-badge)
-![Tech Stack](https://img.shields.io/badge/Stack-Bun_|_TS_|_LanceDB-blue?style=for-the-badge)
+<p align="center">
+  <a href="README.md">English</a>
+  ·
+  <a href="README_CN.md">中文</a>
+</p>
 
----
+<p align="center">
+  <a href="docs/guides/quickstart.md">Quick Start</a>
+  ·
+  <a href="docs/integration/access-scenarios.md">Real Scenarios</a>
+  ·
+  <a href="docs/integration/mcp-integration.md">MCP Integration</a>
+  ·
+  <a href="skills/memohub/SKILL.md">Agent Skill</a>
+  ·
+  <a href="docs/README.md">Docs</a>
+</p>
 
-## 💎 核心特性
+<p align="center">
+  <img alt="Runtime" src="https://img.shields.io/badge/runtime-Bun_+_Node-102A63" />
+  <img alt="MCP" src="https://img.shields.io/badge/MCP-ready-2F7BFF" />
+  <img alt="Memory" src="https://img.shields.io/badge/memory-private_assets-7D4DFF" />
+  <img alt="Release Check" src="https://img.shields.io/badge/check:release-passing-0F9D68" />
+</p>
 
-- **Flow-Driven 编排**: 采用 n8n/Dify 风格的流引擎，支持通过 `config.jsonc` 动态定义记忆的存取逻辑。
-- **Ether UI 控制台**: 极致简约的拟态设计（Hardcore Minimalism）。
-  - **Flow Studio**: 可视化编排记忆轨道，实时热生效。
-  - **Memory Matrix**: 跨轨道记忆资产大盘，支持多维检索。
-  - **Agent Sandbox**: 集成记忆感知能力的智能对话调试环境。
-- **Text2Mem 协议**: 统一的 12 项原子操作，抹平不同类型知识（代码、语义、流）的存取差异。
-- **全栈 Monorepo**: 基于 Bun Workspaces 构建，模块化程度高，核心、工具、轨道完全解耦。
+## Why MemoHub
 
----
+AI Agents are getting stronger, but their memory is often trapped inside one chat, one IDE, one tool, or one temporary session. Switch Agents, and you explain the project again. Switch tools, and the code context is gone. Clarify a fact once, and another Agent may still ask the same question later.
 
-## 🚀 快速开始
+MemoHub closes that gap. It turns memories written by Hermes, Codex, Gemini, AI IDEs, scripts, and external tools into a local, traceable, searchable, and governable memory center.
 
-### 1. 环境准备
-确保您的系统已安装 [Bun](https://bun.sh/) 运行时。
+It is not another note-taking app. It is memory infrastructure for AI: private code memory, durable Agent habits, project decisions, task history, clarification results, and multi-Agent shared context become assets that belong to you.
+
+## The Simple Model
+
+MemoHub gives every Agent portable long-term memory:
+
+```mermaid
+flowchart LR
+    A[Hermes / Codex / Gemini / IDE] --> B[Write tasks, preferences, code analysis, project facts]
+    B --> C[MemoHub local memory center]
+    C --> D[Query self first]
+    D --> E[Then project]
+    E --> F[Then global]
+    F --> G[Continue work with context]
+    G --> C
+```
+
+## What It Is For
+
+- Private code memory: build a private context layer for your repositories, including files, components, APIs, dependencies, and project conventions.
+- Durable Hermes memory: Hermes can remember who it is, how it usually works, what the user prefers, and what it recently did.
+- Multi-Agent collaboration: Codex, Gemini, Hermes, and IDE extensions can write into the same project memory layer.
+- Agent memory replay: ask “What did Hermes do recently?”, “What am I building now?”, or “Why did we choose this design?” and retrieve the chain.
+- Clarification write-back: user-confirmed facts become curated memories and are reused in later queries.
+- MCP self-discovery: an Agent can read `memohub://tools` to discover tools, resources, views, logs, and config entry points.
+
+See [Real Scenarios](docs/integration/access-scenarios.md) for complete workflows.
+
+## Core Capabilities
+
+| Capability | What it gives you |
+| --- | --- |
+| Unified memory objects | Organizes all sources through `CanonicalMemoryEvent`, `MemoryObject`, and `ContextView`. |
+| Layered retrieval | Defaults to “self first, then project, then global”. |
+| Private code memory | Stores file, component, API, dependency, convention, and code analysis facts in `coding_context`. |
+| Multi-Agent memory | Lets Hermes, Codex, Gemini, and IDE tools share project memory. |
+| Clarification loop | Writes user-confirmed answers back as curated memories. |
+| MCP discovery | Lets Agents inspect `memohub://tools` instead of guessing available tools. |
+
+## Tool Value Map
+
+| Goal | Use | Value |
+| --- | --- | --- |
+| Store a useful fact | `memohub add` / `memohub_ingest_event` | Turns a one-off conversation result into durable memory. |
+| Query the Agent itself | `agent_profile` | Hermes can recover its habits, preferences, and durable rules. |
+| Replay recent work | `recent_activity` | Answers what happened recently and who participated. |
+| Read project background | `project_context` | Keeps decisions and business context across Agent switches. |
+| Read code context | `coding_context` | Gives private repositories their own code memory layer. |
+| Write clarification | `resolve-clarification` / `memohub_resolve_clarification` | Prevents repeated explanations after the user confirms a fact. |
+| Let Agents self-integrate | `memohub://tools` / Skill | Exposes tools, resources, views, and configuration to Agents. |
+
+## End-to-End Chain
+
+```text
+Agent / IDE / CLI
+  -> start MCP with memohub serve
+  -> read memohub://tools to discover capabilities
+  -> query agent_profile / recent_activity / project_context / coding_context
+  -> execute the task with retrieved context
+  -> write new facts, task results, code analysis, and preferences through memohub_ingest_event
+  -> write user clarifications through memohub_resolve_clarification
+  -> later Hermes / Codex / Gemini / IDE continue from the same memory assets
+```
+
+For Hermes, MemoHub is not just a tool catalog. It is long-term memory: before a task, Hermes can ask “Who am I, how do I usually work, and what did I do recently?” For Codex and AI IDEs, MemoHub is a private code context layer that survives tool switches.
+
+## Identity Binding
+
+Every integration should use stable identities so memories remain traceable, aggregatable, and replayable:
+
+- `actorId`: the Agent using memory, for example `hermes`, `codex`, `gemini`, `vscode`.
+- `source`: the writer, for example `hermes`, `codex`, `vscode`, `scanner`.
+- `channel`: the source channel or session, for example `hermes:session:2026-04-29` or `vscode:workspace:memo-hub`.
+- `projectId`: the project boundary, for example `memo-hub`.
+- `sessionId/taskId`: optional IDs that connect a memory to a session or task.
+
+Recommended naming pattern: `<agent-or-tool>:<scope>:<stable-name>`, for example `hermes:agent:default`, `codex:session:2026-04-29-docs`, or `vscode:workspace:memo-hub`.
+
+## Five-Minute Start
 
 ```bash
-# 克隆并安装依赖
 bun install
 bun run build
+bun run verify:cli
 ```
 
-### 2. 启动控制台
-```bash
-bun apps/cli/src/index.ts ui
-```
-访问 `http://localhost:3000` 进入可视化界面。
-
-### 3. 命令行操作
-```bash
-# 注入一条记忆（新方式：推荐）
-bun apps/cli/src/index.ts ingest --source hermes --channel session-123 --project my-project "MemoHub V1 采用极简设计语言"
-
-# 语义检索（新方式：推荐）
-bun apps/cli/src/index.ts query --type memory --project my-project "设计语言是什么？"
-
-# 启动 MCP 服务供 Claude 使用
-bun apps/cli/src/index.ts mcp
-```
-
-### 4. Integration Hub (新增)
-MemoHub v1.0.0 引入了 **Integration Hub**，支持外部系统的标准化事件摄取：
+Link the local CLI globally:
 
 ```bash
-# 使用 MCP 工具摄取事件
-{
-  "event": {
-    "source": "hermes",
-    "channel": "session-123",
-    "kind": "memory",
-    "projectId": "my-project",
-    "confidence": "reported",
-    "payload": {
-      "text": "事件内容",
-      "kind": "memory"
-    }
-  }
-}
-
-# 查询事件
-{
-  "type": "memory",
-  "projectId": "my-project",
-  "query": "查询内容",
-  "limit": 10
-}
+bun run link:cli
+memohub --help
 ```
 
-详见 [Integration Hub 文档](docs/integration/architecture.md)。
+Start MCP:
 
----
+```bash
+memohub config-check
+memohub mcp-doctor
+memohub serve
+```
 
-## 🏗️ 架构概览
+After an Agent connects, read:
 
-- **MemoryKernel**: 纯粹的调度器，通过 `FlowEngine` 执行工作流。
-- **ToolRegistry**: 原子工具（CAS, Vector, AST）的注册中心。
-- **Track System**: 业务轨道（Insight, Source, Stream, Wiki）高度热插拔。
-- **Storage**: 
-  - **Flesh (CAS)**: 内容寻址存储，确保数据去重与一致性。
-  - **Soul (LanceDB)**: 向量化长期记忆，支持毫秒级语义检索。
+```text
+memohub://tools
+```
 
----
+Then choose a view:
 
-## 📚 深入阅读
+- `agent_profile`: who am I and what are my habits?
+- `recent_activity`: what happened recently?
+- `project_context`: what is the current project background?
+- `coding_context`: what private code memory exists for files, APIs, components, and dependencies?
 
-- [架构设计详解](docs/architecture/overview.md)
-- [Text2Mem 协议规范](docs/architecture/text2mem-protocol.md)
-- [轨道开发指南](docs/development/contributing.md)
-- [配置说明](docs/guides/configuration.md)
+## Verify One Complete Chain
 
----
+1. Write a project memory:
 
-**MemoHub 让 Agent 拥有灵魂。**  
-Made with ❤️ for the AI Era.
+```bash
+memohub add "MemoHub is a local AI memory asset center" --project memo-hub --source cli --category positioning
+```
+
+2. Query project context:
+
+```bash
+memohub query "What is MemoHub's positioning?" --view project_context --actor hermes --project memo-hub
+```
+
+3. Write private code memory:
+
+```bash
+memohub add "apps/cli/src/interface-metadata.ts is the source of generated CLI/MCP capability docs" --project memo-hub --source codex --file apps/cli/src/interface-metadata.ts --category private-code-memory
+```
+
+4. Query code context:
+
+```bash
+memohub query "Where is the CLI/MCP capability catalog generated from?" --view coding_context --actor codex --project memo-hub
+```
+
+5. Verify MCP discovery:
+
+```bash
+memohub mcp-tools
+memohub mcp-doctor
+```
+
+6. Ask an Agent to read:
+
+```text
+memohub://tools
+```
+
+This validates MemoHub’s core loop: write durable memory, query project context, query code context, and let MCP Agents discover usable tools.
+
+## Common CLI Commands
+
+```bash
+memohub inspect
+memohub add "MemoHub uses a unified memory hub" --project memo-hub --source cli --category architecture
+memohub query "current project context" --view project_context --actor hermes --project memo-hub
+memohub summarize "recent activity text" --agent hermes
+memohub clarify "project convention conflict" --agent hermes
+memohub resolve-clarification clarify_op_1 "use the current architecture" --agent hermes --project memo-hub
+memohub config
+memohub config-check
+memohub mcp-tools
+memohub mcp-doctor
+memohub serve
+```
+
+## MCP Capabilities
+
+Recommended tools:
+
+- `memohub_ingest_event`
+- `memohub_query`
+- `memohub_summarize`
+- `memohub_clarify`
+- `memohub_resolve_clarification`
+- `memohub_config_get`
+- `memohub_config_set`
+- `memohub_config_manage`
+
+Recommended resources:
+
+- `memohub://tools`
+- `memohub://stats`
+
+Agents should read `memohub://tools` before selecting a tool.
+
+## Agent Skill
+
+MemoHub ships a repository-root Skill so Agents can learn how to connect themselves:
+
+```bash
+bun run skill:memohub
+npx skills add <repo> --skill memohub
+```
+
+The Skill tells Agents:
+
+- MemoHub is their local memory asset center.
+- Read `memohub://tools` first.
+- Hermes should query `agent_profile` and `recent_activity`.
+- Codex and IDEs should query `project_context` and `coding_context`.
+- Useful facts, code analysis, user preferences, and clarifications should be written back.
+
+## Build And Release Checks
+
+Root-level commands:
+
+```bash
+bun run build
+bun run build:cli
+bun run verify:cli
+bun run link:cli
+bun run skill:memohub
+bun run docs:site
+bun run check:release
+```
+
+CLI package commands:
+
+```bash
+cd apps/cli
+bun run build
+bun run verify:bin
+bun run link:global
+```
+
+The CLI artifact is `apps/cli/dist/index.js`, and `bin.memohub` points to `dist/index.js`.
+
+## Documentation
+
+- [Documentation Home](docs/README.md)
+- [Changelog](docs/CHANGELOG.md)
+- [AI Collaboration Entry](AGENTS.md)
+- [Preflight Checklist](docs/integration/preflight-checklist.md)
+- [Real Scenarios](docs/integration/access-scenarios.md)
+- [CLI Integration](docs/integration/cli-integration.md)
+- [MCP Integration](docs/integration/mcp-integration.md)
+- [Agent Skill](skills/memohub/SKILL.md)
+- [Current Status](docs/development/current-status.md)
+- [Business Workflows](docs/architecture/business-workflows.md)
+
+## License
+
+MemoHub is source-available for learning, research, personal use, and other non-commercial use. Commercial use is not permitted without prior written permission from the copyright holder.
+
+See [LICENSE](LICENSE) for details. For commercial licensing, contact the project owner before use.
+
+## AI Tool Entry
+
+This repository keeps one AI collaboration source: [AGENTS.md](AGENTS.md).
+
+The following files are tool-specific entry symlinks pointing to the same source:
+
+- `AGENT.md`
+- `CLAUDE.md`
+- `GEMINI.md`
+- `CODEX.md`
+- `TRAE.md`

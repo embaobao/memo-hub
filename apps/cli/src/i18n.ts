@@ -1,0 +1,96 @@
+export type CliLang = "zh" | "en";
+
+export function resolveLang(input?: string, configured?: string): CliLang {
+  if (input === "en" || input === "zh") return input;
+  if (configured === "en" || configured === "zh") return configured;
+  const env = `${process.env.MEMOHUB_LANG ?? ""} ${process.env.LC_ALL ?? ""} ${process.env.LANG ?? ""}`.toLowerCase();
+  // 配置为 auto 时按系统语言；无法判断时默认中文。
+  return env.includes("en") ? "en" : "zh";
+}
+
+const messages = {
+  zh: {
+    runtimeTitle: "MemoHub 运行时",
+    configTitle: "MemoHub 配置",
+    configVersion: "配置版本",
+    mcpCatalogTitle: "MemoHub MCP 能力",
+    mcpConfigTitle: "MemoHub MCP 接入配置",
+    mcpStatusTitle: "MemoHub MCP 状态",
+    mcpDoctorTitle: "MemoHub MCP 检查",
+    root: "根目录",
+    vectorDb: "向量库",
+    table: "数据表",
+    blob: "Blob",
+    embedder: "嵌入模型",
+    mcpLog: "MCP 日志",
+    views: "查询视图",
+    operations: "操作能力",
+    command: "命令",
+    cwd: "工作目录",
+    agentHint: "Agent 接入后先读取: memohub://tools",
+    runtime: "运行时",
+    model: "模型",
+    stores: "存储",
+    layers: "查询层级",
+    tools: "工具",
+    resources: "资源",
+    status: "状态",
+    ready: "ready",
+    toolCount: "工具数",
+    passed: "通过",
+    failed: "失败",
+    accessible: "可接入",
+    inaccessible: "不可接入",
+    configInitialized: "全局配置已初始化为新架构配置。",
+    configFile: "配置文件",
+    removedStale: "已删除无效配置目录",
+    configUpdated: "配置已更新",
+    noLogs: "暂无 MCP 日志。",
+    memoryCommitted: "记忆已写入",
+    failedPrefix: "失败",
+  },
+  en: {
+    runtimeTitle: "MemoHub Runtime",
+    configTitle: "MemoHub Configuration",
+    configVersion: "Config version",
+    mcpCatalogTitle: "MemoHub MCP Capabilities",
+    mcpConfigTitle: "MemoHub MCP Access Config",
+    mcpStatusTitle: "MemoHub MCP Status",
+    mcpDoctorTitle: "MemoHub MCP Check",
+    root: "Root",
+    vectorDb: "Vector DB",
+    table: "Table",
+    blob: "Blob",
+    embedder: "Embedder",
+    mcpLog: "MCP log",
+    views: "Views",
+    operations: "Operations",
+    command: "Command",
+    cwd: "Working directory",
+    agentHint: "Agent should read first: memohub://tools",
+    runtime: "Runtime",
+    model: "Model",
+    stores: "Stores",
+    layers: "Query layers",
+    tools: "Tools",
+    resources: "Resources",
+    status: "Status",
+    ready: "ready",
+    toolCount: "Tool count",
+    passed: "PASS",
+    failed: "FAIL",
+    accessible: "accessible",
+    inaccessible: "inaccessible",
+    configInitialized: "Global configuration initialized for the new architecture.",
+    configFile: "Config file",
+    removedStale: "Removed stale config directories",
+    configUpdated: "Config updated",
+    noLogs: "No MCP logs yet.",
+    memoryCommitted: "Memory committed",
+    failedPrefix: "Failed",
+  },
+} as const;
+
+export function t(lang: CliLang, key: keyof typeof messages.zh): string {
+  return messages[lang][key];
+}

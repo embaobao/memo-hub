@@ -1,0 +1,35 @@
+<svg width="900" height="460" viewBox="0 0 900 460" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">MemoHub</title>
+  <desc id="desc">MemoHub unified memory for AI logo.</desc>
+  <defs>
+    <linearGradient id="top" x1="300" y1="54" x2="610" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E86FF"/>
+      <stop offset="0.52" stop-color="#4254FF"/>
+      <stop offset="1" stop-color="#9338F5"/>
+    </linearGradient>
+    <linearGradient id="side" x1="270" y1="126" x2="630" y2="276" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E86FF"/>
+      <stop offset="1" stop-color="#7C2BF2"/>
+    </linearGradient>
+    <linearGradient id="word" x1="168" y1="360" x2="730" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#001B5C"/>
+      <stop offset="0.58" stop-color="#052669"/>
+      <stop offset="1" stop-color="#7E42F4"/>
+    </linearGradient>
+    <filter id="soft" x="240" y="34" width="420" height="280" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#122B7A" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="900" height="460" fill="white"/>
+  <g filter="url(#soft)">
+    <path d="M426 54C441 45 459 45 474 54L608 136C634 152 634 188 608 204L474 286C459 295 441 295 426 286L292 204C266 188 266 152 292 136L426 54Z" fill="url(#top)"/>
+    <path d="M358 180L426 222C441 231 459 231 474 222L542 180L590 209L474 280C459 289 441 289 426 280L310 209L358 180Z" fill="#DCE6FF"/>
+    <path d="M358 232L426 274C441 283 459 283 474 274L542 232L590 261L474 332C459 341 441 341 426 332L310 261L358 232Z" fill="#C7D6FF"/>
+    <path d="M283 161C262 177 250 201 250 228V296C250 318 265 336 286 341V242C286 230 292 220 302 214L330 197L283 161Z" fill="url(#side)"/>
+    <path d="M617 161C638 177 650 201 650 228V296C650 318 635 336 614 341V242C614 230 608 220 598 214L570 197L617 161Z" fill="url(#side)"/>
+    <path d="M286 262L426 348C441 357 459 357 474 348L614 262V324L488 401C465 415 435 415 412 401L286 324V262Z" fill="#001B5C"/>
+    <path d="M426 348C441 357 459 357 474 348V401C459 410 441 410 426 401V348Z" fill="#001B5C"/>
+  </g>
+  <text x="450" y="382" text-anchor="middle" fill="url(#word)" font-family="Avenir Next, Montserrat, Inter, system-ui, sans-serif" font-size="86" font-weight="800" letter-spacing="-4">MemoHub</text>
+  <text x="450" y="428" text-anchor="middle" fill="#52617F" font-family="Avenir Next, Montserrat, Inter, system-ui, sans-serif" font-size="23" font-weight="600" letter-spacing="13">UNIFIED MEMORY FOR AI</text>
+</svg>

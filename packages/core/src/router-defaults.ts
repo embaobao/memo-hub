@@ -7,23 +7,19 @@
 import { EventKind } from "@memohub/protocol";
 
 /**
- * 默认的路由规则
+ * 默认的内部路由规则。
  *
- * 优先级从高到低：
- * 1. kind_match - 基于事件类型
- * 2. file_suffix - 基于文件后缀
- * 3. content_keyword - 基于内容关键词
- * 4. default - 默认规则
+ * @internal
  */
 export const DEFAULT_ROUTING_RULES = [
-  // Memory 事件路由到 track-insight
+  // Memory 事件路由到默认知识处理目标。
   {
     type: "kind_match",
     kind: EventKind.MEMORY,
     trackId: "track-insight"
   },
 
-  // 文件后缀规则（向后兼容）
+  // 文件后缀规则用于代码处理目标。
   {
     type: "file_suffix",
     suffixes: [".ts", ".js", ".py", ".java", ".go", ".rs"],
@@ -38,7 +34,9 @@ export const DEFAULT_ROUTING_RULES = [
 ];
 
 /**
- * MemoryRouter 默认配置
+ * MemoryRouter 默认配置。
+ *
+ * @internal
  */
 export const DEFAULT_ROUTING_CONFIG = {
   enabled: true,

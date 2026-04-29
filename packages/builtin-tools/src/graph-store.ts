@@ -3,8 +3,8 @@ import {
   ITool,
   IToolManifest,
   ExecutionContext,
-} from "@memohub/core/src/index";
-import { IHostResources } from "@memohub/core/src/index";
+} from "@memohub/core";
+import { IHostResources } from "@memohub/core";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { resolvePath } from "@memohub/config";

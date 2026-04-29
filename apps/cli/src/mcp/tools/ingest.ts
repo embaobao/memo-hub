@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { MemoHubEvent, validateMemoHubEventBasic } from "@memohub/protocol";
-import { IntegrationHub } from "@memohub/integration-hub";
+import { MemoHubEvent } from "@memohub/protocol";
 
 /**
  * memohub_ingest_event MCP 工具
@@ -23,17 +22,34 @@ export const IngestEventInputSchema = z.object({
       text: z.string().describe("文本内容"),
       kind: z.enum(["memory"]).optional().describe("Payload kind (用于路由)"),
       file_path: z.string().optional().describe("文件路径 (可选)"),
-      category: z.string().optional().describe("分类 (可选)")
+      category: z.string().optional().describe("分类 (可选)"),
+      tags: z.array(z.string()).optional().describe("标签 (可选)"),
+      metadata: z.record(z.any()).optional().describe("来源元数据 (可选)")
     }).describe("事件负载数据")
   }).describe("MemoHubEvent 对象")
 });
 
 export type IngestEventInput = z.infer<typeof IngestEventInputSchema>;
 
+type IngestRuntimeLike = {
+  ingest(event: MemoHubEvent): Promise<{
+    success: boolean;
+    eventId: string;
+    contentHash?: string;
+    canonicalEvent?: unknown;
+    memoryObject?: unknown;
+    instruction?: unknown;
+    error?: string;
+  }>;
+};
+
 /**
- * 创建 memohub_ingest_event 工具处理器
+ * 创建 memohub_ingest_event 工具处理器。
+ *
+ * 这里使用开放 source descriptor，确保 gemini、scanner、browser extension
+ * 等新来源接入时不需要改协议枚举。
  */
-export function createIngestEventHandler(integrationHub: IntegrationHub) {
+export function createIngestEventHandler(integrationHub: IngestRuntimeLike) {
   return async (params: IngestEventInput) => {
     try {
       // 1. 验证输入
@@ -48,20 +64,10 @@ export function createIngestEventHandler(integrationHub: IntegrationHub) {
 
       const { event } = validationResult.data;
 
-      // 2. 验证事件基本结构
-      const basicValidation = validateMemoHubEventBasic(event);
-      if (!basicValidation.valid) {
-        return {
-          success: false,
-          error: "Invalid event structure",
-          details: basicValidation.errors
-        };
-      }
-
-      // 3. 构造完整的事件对象
+      // 2. 构造完整事件对象，统一交给运行时归一化为 CanonicalMemoryEvent/MemoryObject。
       const fullEvent: MemoHubEvent = {
         id: crypto.randomUUID(),
-        timestamp: Date.now(),
+        occurredAt: new Date().toISOString(),
         source: event.source as any,
         channel: event.channel,
         kind: event.kind as any,
@@ -70,10 +76,10 @@ export function createIngestEventHandler(integrationHub: IntegrationHub) {
         payload: event.payload
       };
 
-      // 4. 调用 IntegrationHub.ingest()
+      // 3. 调用统一 ingest 入口。CLI/MCP 不关心后续存储投影细节。
       const ingestResult = await integrationHub.ingest(fullEvent);
 
-      // 5. 检查摄取结果
+      // 4. 检查摄取结果，并把 canonical event/object 返回给调用方用于审计。
       if (!ingestResult.success) {
         return {
           success: false,
@@ -82,17 +88,17 @@ export function createIngestEventHandler(integrationHub: IntegrationHub) {
         };
       }
 
-      // 6. 返回成功响应
       return {
         success: true,
         eventId: ingestResult.eventId,
         contentHash: ingestResult.contentHash,
+        canonicalEvent: ingestResult.canonicalEvent,
+        memoryObject: ingestResult.memoryObject,
         instruction: ingestResult.instruction,
-        contentLength: fullEvent.payload.text?.length || 0
+        contentLength: (fullEvent.payload as any).text?.length || 0
       };
 
     } catch (error) {
-      // 6. 错误处理
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -158,6 +164,15 @@ export const INGEST_TOOL_METADATA = {
               category: {
                 type: "string" as const,
                 description: "分类"
+              },
+              tags: {
+                type: "array" as const,
+                items: { type: "string" as const },
+                description: "标签"
+              },
+              metadata: {
+                type: "object" as const,
+                description: "来源元数据"
               }
             },
             required: ["text"]

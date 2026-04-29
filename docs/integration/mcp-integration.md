@@ -1,12 +1,52 @@
-# MCP Server Integration (MVP)
+# MemoHub MCP 接入文档
 
-MemoHub 作为一个符合 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 的服务端，允许 AI Agent (如 Claude Desktop) 直接读写您的个人记忆库。
+最后更新：2026-04-29
 
----
+MCP 是统一记忆运行时的标准协议入口。它与 CLI 保持同等业务能力，但使用 MCP tool/resource 形式暴露。
 
-## 🛠️ 配置 Claude Desktop
+## 快速发现
 
-编辑您的 `claude_desktop_config.json`（通常位于 `~/Library/Application Support/Claude/`）：
+Agent 接入前可以先通过 CLI 获取当前 MCP 配置和工具目录：
+
+```bash
+memohub mcp-config
+memohub mcp-tools
+memohub mcp-status
+memohub mcp-doctor
+```
+
+开发态：
+
+```bash
+bun apps/cli/src/index.ts mcp-config --target hermes
+bun apps/cli/src/index.ts mcp-tools
+```
+
+真实 MCP Client 应先读取 `memohub://tools`，再根据工具目录选择写入、查询、总结、澄清或澄清写回工具。
+
+## 启动方式
+
+开发态：
+
+```bash
+bun apps/cli/src/index.ts serve
+```
+
+安装后：
+
+```bash
+memohub serve
+```
+
+启动别名：
+
+```bash
+memohub mcp
+```
+
+## Claude Desktop 配置
+
+开发态配置：
 
 ```json
 {
@@ -14,43 +54,307 @@ MemoHub 作为一个符合 [Model Context Protocol (MCP)](https://modelcontextpr
     "memohub": {
       "command": "bun",
       "args": [
-        "run",
-        "/path/to/memo-hub/apps/cli/src/index.ts",
-        "mcp"
-      ],
-      "env": {
-        "MEMOHUB_ROOT": "/Users/yourname/.memohub"
+        "/absolute/path/to/memo-hub/apps/cli/src/index.ts",
+        "serve"
+      ]
+    }
+  }
+}
+```
+
+全局命令配置：
+
+```json
+{
+  "mcpServers": {
+    "memohub": {
+      "command": "memohub",
+      "args": ["serve"]
+    }
+  }
+}
+```
+
+## 工具集合
+
+- `memohub_ingest_event`
+- `memohub_query`
+- `memohub_summarize`
+- `memohub_clarify`
+- `memohub_resolve_clarification`
+- `memohub_config_get`
+- `memohub_config_set`
+- `memohub_config_manage`
+
+资源：
+
+- `memohub://stats`
+- `memohub://tools`
+
+## MCP 到运行时的数据流
+
+```mermaid
+sequenceDiagram
+    participant Agent as MCP Client / Agent
+    participant MCP as MCP Server
+    participant Runtime as UnifiedMemoryRuntime
+    participant Store as CAS + Vector
+    participant Planner as QueryPlanner
+
+    Agent->>MCP: memohub_ingest_event(event)
+    MCP->>Runtime: ingest(event)
+    Runtime->>Store: CAS + vector projection
+    Runtime-->>MCP: canonicalEvent + memoryObject
+    MCP-->>Agent: ingest result
+
+    Agent->>MCP: memohub_query(view, query)
+    MCP->>Runtime: queryView(request)
+    Runtime->>Planner: layered recall
+    Planner-->>Runtime: ContextView
+    Runtime-->>MCP: ContextView
+    MCP-->>Agent: query result
+
+    Agent->>MCP: memohub_resolve_clarification(answer)
+    MCP->>Runtime: resolveClarification(request)
+    Runtime->>Store: curated MemoryObject + vector projection
+    Runtime-->>MCP: resolved ClarificationItem + memoryObject
+    MCP-->>Agent: write-back result
+```
+
+## `memohub_ingest_event`
+
+标准事件摄取工具。
+
+```json
+{
+  "name": "memohub_ingest_event",
+  "arguments": {
+    "event": {
+      "source": "hermes",
+      "channel": "session-123",
+      "kind": "memory",
+      "projectId": "memo-hub",
+      "confidence": "reported",
+      "payload": {
+        "text": "用户偏好 TypeScript",
+        "kind": "memory",
+        "category": "preference",
+        "tags": ["typescript"],
+        "metadata": {
+          "sourceName": "Hermes"
+        }
       }
     }
   }
 }
 ```
 
----
+字段说明：
 
-## 🧰 暴露的工具 (Tools)
+- `source`: 开放来源标识，如 `hermes`、`codex`、`gemini`、`vscode`、`scanner`。
+- `channel`: 来源通道，如 session、IDE extension、scanner job。
+- `kind`: 当前只支持 `memory`。
+- `projectId`: 项目 ID。
+- `confidence`: `reported`、`observed`、`inferred`、`provisional`、`verified`。
+- `payload.text`: 记忆正文。
+- `payload.file_path`: 可选，关联代码文件路径。
+- `payload.category`: 可选，分类或 domain hint。
+- `payload.tags`: 可选，标签。
+- `payload.metadata`: 可选，来源元数据。
 
-集成后，Claude 将具备以下能力：
+返回包含：
 
-### 1. `add_knowledge`
-- **功能**: 手动向 `track-insight` 注入重要事实。
-- **参数**: `text` (String).
+- `eventId`
+- `contentHash`
+- `canonicalEvent`
+- `memoryObject`
+- `contentLength`
 
-### 2. `retrieve_knowledge`
-- **功能**: 执行语义检索。
-- **参数**: `query` (String), `limit` (Number).
+## `memohub_query`
 
-### 3. `inspect_kernel`
-- **功能**: 让 Agent 了解当前有哪些轨道可用，并查看系统的负载状态。
+命名视图查询工具。通过 `view` 表达 Agent 想读取的上下文形态。
 
----
+```json
+{
+  "name": "memohub_query",
+  "arguments": {
+    "view": "coding_context",
+    "actorId": "hermes",
+    "projectId": "memo-hub",
+    "workspaceId": "repo:memo-hub",
+    "sessionId": "session-123",
+    "query": "router 和 MCP query 的关系",
+    "limit": 5
+  }
+}
+```
 
-## 🧪 MVP 验证场景
+支持视图：
 
-1. **知识沉淀**: 在对话中告诉 Claude：“帮我记住，这个项目的 API 根路径是 /v1/api”。
-2. **跨 Session 召回**: 开启新对话，问 Claude：“这个项目的 API 路径是什么？”
-3. **代码理解**: 将 `track-source` 挂载，让 Agent 能够检索特定函数的 AST 结构。
+- `agent_profile`
+- `recent_activity`
+- `project_context`
+- `coding_context`
 
----
+返回结构：
 
-**通过 MCP，MemoHub 赋予 Agent 真正的“长期记忆”。**
+- `selfContext`
+- `projectContext`
+- `globalContext`
+- `conflictsOrGaps`
+- `sources`
+- `metadata`
+
+## `memohub_summarize`
+
+显式总结操作。
+
+```json
+{
+  "name": "memohub_summarize",
+  "arguments": {
+    "text": "Hermes 最近完成了新架构接入层重构",
+    "agentId": "hermes"
+  }
+}
+```
+
+返回 `AgentMemoryOperationResult`，默认 `reviewState=proposed`。
+
+## `memohub_clarify`
+
+澄清项生成。
+
+```json
+{
+  "name": "memohub_clarify",
+  "arguments": {
+    "text": "文档和实现对于查询入口存在冲突",
+    "agentId": "hermes"
+  }
+}
+```
+
+返回 `ClarificationItem`，用于后续人工或 Agent 解决冲突。
+
+## `memohub_resolve_clarification`
+
+外部对话中用户澄清某个冲突或缺口时，调用此工具写回答案。写回结果会生成 `curated MemoryObject`，因此后续 `project_context`、`coding_context` 等查询可以读到该修正。
+
+```json
+{
+  "name": "memohub_resolve_clarification",
+  "arguments": {
+    "clarificationId": "clarify_op_1",
+    "answer": "当前以 UnifiedMemoryRuntime 和命名视图查询为准。",
+    "resolvedBy": "hermes",
+    "projectId": "memo-hub",
+    "actorId": "hermes",
+    "memoryIds": ["mem_old_note"]
+  }
+}
+```
+
+返回包含：
+
+- `clarification.status=resolved`
+- `clarification.resolution`
+- `memoryObject.state=curated`
+- `memoryObject.links`，包含 `resolves` 和 `derived_from`
+- `contentHash`
+- `vectorRecordCount`
+
+## `memohub_stats`
+
+运行时状态资源。
+
+URI：
+
+```text
+memohub://stats
+```
+
+返回统一运行时状态、视图、工具、资源、存储和日志信息。
+
+## `memohub_tools`
+
+工具目录资源。
+
+URI：
+
+```text
+memohub://tools
+```
+
+返回：
+
+- 当前 MCP tools 与输入摘要
+- 当前 MCP resources
+- 支持的 views、layers、operations
+- MCP 启动命令和 agent 接入说明
+- 存储路径和日志路径
+
+## 状态与日志
+
+CLI 状态命令：
+
+```bash
+memohub mcp-status
+memohub mcp-doctor
+memohub mcp-logs --tail 100
+```
+
+MCP 服务日志为 NDJSON，默认路径来自配置 `mcp.logPath`，默认值为 `~/.memohub/logs/mcp.ndjson`。MCP stdio 服务不会向 stdout 输出启动提示，避免污染 JSON-RPC 协议。
+
+可通过环境变量覆盖：
+
+```bash
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub serve
+```
+
+## 配置读写
+
+查看解析后的新架构配置：
+
+```bash
+memohub config
+memohub config-get mcp.logPath
+memohub config-get storage.vectorDbPath
+```
+
+写入配置：
+
+```bash
+memohub config-set mcp.logPath '"/tmp/memohub-mcp.ndjson"'
+memohub config-set storage.vectorTable '"memohub"'
+```
+
+配置更新后，CLI/MCP 会从 `storage`、`ai`、`mcp`、`memory` 配置节解析运行时。
+
+MCP 也暴露配置工具，便于 Agent 直接维护接入配置：
+
+- `memohub_config_get`: 不传 `path` 时返回解析后的运行时配置；传 `path` 时读取点分路径。
+- `memohub_config_set`: 写入点分路径，value 使用 MCP 结构化值。
+- `memohub_config_manage`: 执行 `check`、`init` 或 `uninstall`。
+
+## Agent Skill
+
+仓库维护根目录 skill 安装源：
+
+```bash
+bun run skill:memohub
+```
+
+产物固定为 `skills/memohub/SKILL.md`。它用于后续通过 `npx skills add <repo> --skill memohub` 安装；Agent 读取该 skill 后会完成本地 CLI 安装、MCP 配置检查、`memohub serve` 启动和 `memohub://tools` 能力发现。MemoHub 构建脚本不直接写入 `.codex`、`.claude`、`.gemini`、`apps/cli/skills` 或其他本机 Agent 私有目录。
+
+## 接口合同
+
+MCP 入口以 `memohub://tools` 返回的目录为准。Agent 应先读取该资源，再选择写入、查询、总结、澄清、澄清写回或配置工具。
+
+## 相关文档
+
+- [CLI 接入文档](./cli-integration.md)
+- [接入场景验证](./access-scenarios.md)
+- [API 参考](../api/reference.md)
+- [业务链路](../architecture/business-workflows.md)
+- [当前状态](../development/current-status.md)

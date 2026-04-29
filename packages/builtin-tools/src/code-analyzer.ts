@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { ITool, ExecutionContext } from "@memohub/core/src/index";
-import { IHostResources } from "@memohub/core/src/index";
+import { ITool, ExecutionContext } from "@memohub/core";
+import { IHostResources } from "@memohub/core";
 import { Parser } from "web-tree-sitter";
 
 /**

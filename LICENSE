@@ -1,21 +1,37 @@
-MIT License
+MemoHub Non-Commercial Source License
 
 Copyright (c) 2026 盟哥
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This source code and its documentation are made available for open-source
+reading, learning, research, personal use, and other non-commercial use.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+You may:
+
+- read, copy, modify, and run the Software for personal, educational,
+  research, evaluation, or internal non-commercial purposes;
+- fork the repository and contribute changes back to the project;
+- share non-commercial modifications, provided that this license notice is
+  preserved.
+
+You may not use the Software, any modified version of the Software, or any
+substantial part of the Software for commercial purposes without prior written
+permission from the copyright holder.
+
+Commercial purposes include, but are not limited to:
+
+- offering MemoHub or a modified MemoHub as a paid product, hosted service,
+  SaaS, managed service, paid integration, or paid consulting deliverable;
+- embedding MemoHub into a commercial product or internal business workflow
+  intended to create commercial value;
+- selling, sublicensing, renting, or otherwise commercially distributing the
+  Software or derivative works.
+
+Commercial licensing is available by contacting the copyright holder.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR AVAILABILITY. IN NO
+EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OF THE SOFTWARE.
+

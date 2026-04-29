@@ -1,9 +1,0 @@
-schema: spec-driven
-created: 2026-04-28
-title: MCP UX Improvements
-stage: proposal
-status: pending
-priority: P3
-depends:
-  - 2026-04-28-mcp-integration-hub-mvp
-  - 2026-04-28-mcp-event-projectors

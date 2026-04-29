@@ -61,7 +61,7 @@ export class ConfigLoader {
     }
 
     const rootDir = path.dirname(expandedPath);
-    const subDirs = ["tracks", "tools", "agents", "ai/providers", "ai/agents"];
+    const subDirs = ["tools", "agents", "ai/providers", "ai/agents"];
 
     for (const subDir of subDirs) {
       const targetDir = path.join(rootDir, subDir);
@@ -73,13 +73,7 @@ export class ConfigLoader {
             const content = fs.readFileSync(file, "utf-8");
             const fragment = parse(content) as any;
 
-            if (subDir === "tracks") {
-              mainConfig.tracks = unionBy(
-                mainConfig.tracks || [],
-                isArray(fragment) ? fragment : [fragment],
-                "id",
-              );
-            } else if (subDir === "tools") {
+            if (subDir === "tools") {
               mainConfig.tools = unionBy(
                 mainConfig.tools || [],
                 isArray(fragment) ? fragment : [fragment],
@@ -163,7 +157,7 @@ export class ConfigLoader {
       throw new Error(`Configuration file already exists at ${expandedPath}`);
 
     const rootDir = path.dirname(expandedPath);
-    const subDirs = ["tracks", "tools", "agents", "ai/providers", "ai/agents"];
+    const subDirs = ["tools", "agents", "ai/providers", "ai/agents"];
     for (const subDir of subDirs) {
       const targetDir = path.join(rootDir, subDir);
       if (!fs.existsSync(targetDir))

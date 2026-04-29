@@ -1,114 +1,65 @@
-# 🚀 快速开始指南 (v1.0.0)
+# MemoHub 快速开始
 
-本指南将帮助您在 5 分钟内启动 MemoHub 并开始您的记忆编排之旅。
+最后更新：2026-04-29
 
-## 🛠️ 环境准备
+## 环境准备
 
-### 1. 安装 Bun (运行时)
-MemoHub 深度依赖 Bun 引擎提供高性能的源码执行与包管理。
 ```bash
-curl -fsSL https://bun.sh/install | sh
+bun install
+bun run build
+bun run verify:cli
 ```
 
-### 2. 安装并启动 Ollama (向量嵌入)
-默认使用本地模型 `nomic-embed-text-v2-moe`。
+默认嵌入模型来自本地 Ollama。首次使用前建议准备模型：
+
 ```bash
 ollama pull nomic-embed-text-v2-moe
 ollama serve
 ```
 
----
-
-## 📦 安装与构建
+## 全局注册 CLI
 
 ```bash
-# 1. 克隆仓库
-git clone https://github.com/embaobao/memo-hub.git
-cd memo-hub
-
-# 2. 安装依赖并构建
-bun install
-bun run build
+bun run link:cli
+memohub --version
+memohub --help
 ```
 
----
-
-## 🖥️ 启动 Web 控制台 (推荐)
-
-MemoHub 提供了一个极致简约、功能强大的可视化管理界面。
+## 写入和查询
 
 ```bash
-bun apps/cli/src/index.ts ui
+memohub add "用户偏好极简设计风格" --project memo-hub --source cli --category preference
+memohub query "用户设计偏好是什么" --view project_context --actor hermes --project memo-hub
 ```
-访问 **`http://localhost:3000`** 即可进入控制台：
-- **Studio**: 拖拽原子工具（CAS, Vector）构建您的记忆轨道逻辑。
-- **Sandbox**: 直接与您的 Agent 对话，观察其如何检索并引用记忆。
-- **Matrix**: 像浏览文件一样管理您的所有记忆碎片。
 
----
+## 代码上下文
 
-## ⌨️ 命令行交互
-
-如果您更喜欢终端操作，MemoHub 提供了一套完整的指令集：
-
-### 1. 注入记忆 (Add)
 ```bash
-bun apps/cli/src/index.ts add "用户喜欢极简设计风格" -t track-insight
+memohub add "apps/cli/src/mcp.ts 注册 MCP 工具和资源" --project memo-hub --source vscode --file apps/cli/src/mcp.ts --category mcp-code
+memohub query "MCP 工具注册在哪里" --view coding_context --actor codex --project memo-hub
 ```
 
-### 2. 语义搜索 (Search)
+## MCP 接入
+
 ```bash
-bun apps/cli/src/index.ts search "用户的设计偏好是什么？"
+memohub mcp-config
+memohub mcp-tools
+memohub mcp-doctor
+memohub serve
 ```
 
-### 3. 查看状态 (Inspect)
+Agent 接入后应先读取 `memohub://tools`，再选择具体工具。
+
+## 澄清写回
+
 ```bash
-bun apps/cli/src/index.ts inspect
+memohub clarify "项目上下文里存在需要用户确认的接口描述冲突" --agent hermes
+memohub resolve-clarification clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件和命名视图查询为准" --agent hermes --project memo-hub
 ```
 
-### 4. MCP 模式
-将 MemoHub 挂载为 MCP 服务器，供 Claude Desktop 使用：
-```bash
-bun apps/cli/src/index.ts mcp
-```
+## 下一步
 
----
-
-## ⚙️ 配置文件
-
-核心配置文件位于 `~/.memohub/config.jsonc`。
-您可以定义 AI 供应商、向量维度、以及自定义的 Flow 编排逻辑。
-
-```jsonc
-{
-  "system": { "root": "~/.memohub" },
-  "ai": {
-    "providers": {
-      "ollama": { "baseURL": "http://localhost:11434/v1" }
-    }
-  },
-  "tracks": [
-    {
-      "id": "track-insight",
-      "flows": {
-        "ADD": [
-          { "step": "extract", "tool": "builtin:entity-linker" },
-          { "step": "save", "tool": "builtin:vector" }
-        ]
-      }
-    }
-  ]
-}
-```
-
----
-
-## 💡 下一步建议
-
-- 深入了解 [Text2Mem 协议](../architecture/text2mem-protocol.md)。
-- 学习如何 [开发自定义轨道](../development/contributing.md)。
-- 探索 [存储架构](../architecture/storage.md) 的“灵肉分离”设计。
-
----
-
-**MemoHub: 让记忆可被编排。**
+- [接入前检查清单](../integration/preflight-checklist.md)
+- [接入场景验证](../integration/access-scenarios.md)
+- [CLI 集成](../integration/cli-integration.md)
+- [MCP 集成](../integration/mcp-integration.md)

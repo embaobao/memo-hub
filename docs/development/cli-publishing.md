@@ -1,232 +1,87 @@
-# MemoHub v1 CLI 发布和安装指南
+# CLI 构建、链接和发布
 
-## 📦 发布流程
+最后更新：2026-04-29
 
-### 准备发布
+## 职责边界
 
-1. **更新版本号**
-   ```bash
-   # 更新 apps/cli/package.json 中的版本号
-   "version": "3.0.1"
-   ```
-
-2. **构建项目**
-   ```bash
-   bun run build
-   ```
-
-3. **测试打包**
-   ```bash
-   cd apps/cli
-   npm pack
-   ```
-
-4. **发布到 npm**
-   ```bash
-   # 登录 npm（如果未登录）
-   npm login
-
-   # 发布包
-   npm publish --access public
-   ```
-
-### 开发者本地测试
+CLI 包维护自己的构建和 bin 准备逻辑：
 
 ```bash
-# 1. 构建项目
-bun run build
-
-# 2. 全局链接（开发模式）
 cd apps/cli
-npm link
+bun run build
+bun run verify:bin
+bun run link:global
+```
 
-# 3. 验证
+根目录只提供聚合命令：
+
+```bash
+bun run build:cli
+bun run verify:cli
+bun run link:cli
+bun run skill:memohub
+```
+
+## 正式产物
+
+- CLI 入口：`apps/cli/dist/index.js`
+- package bin：`bin.memohub = dist/index.js`
+- bin 准备脚本：`apps/cli/scripts/prepare-bin.ts`
+- Agent Skill 安装源：`skills/memohub/SKILL.md`
+
+`prepare-bin.ts` 会检查：
+
+- `dist/index.js` 存在。
+- 文件包含 `#!/usr/bin/env node` shebang。
+- 编译产物没有运行时 `.ts` import。
+- `dist/index.js` 具有可执行权限。
+
+## 本地全局链接
+
+```bash
+bun run link:cli
 memohub --version
 memohub --help
 ```
 
----
+如果全局链接指向其他路径，重新执行 `bun run link:cli` 即可刷新到当前 `dist/index.js`。
 
-## 🚀 安装方式
-
-### 方式 1: npm 全局安装（推荐）
-
-#### 从 npm 安装（稳定版）
+## 发布前检查
 
 ```bash
-npm install -g @memohub/cli
+bun run check:release
 ```
 
-#### 从本地开发版本安装
+发布前至少应确认：
+
+- `bun run build:cli` 通过。
+- `bun run verify:cli` 通过。
+- `memohub --help` 显示当前命令集。
+- `memohub mcp-doctor` 通过，或使用 `MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson` 验证日志可写。
+- `bun run skill:memohub` 已生成 `skills/memohub/SKILL.md`，且没有生成到本机 Agent 私有目录。
+
+## 打包
 
 ```bash
-# 1. 在项目根目录
-cd /Users/embaobao/workspace/ai/memo-hub
-
-# 2. 构建项目
-bun run build
-
-# 3. 全局链接
-npm link --global
-```
-
-#### 使用 bun 安装
-
-```bash
-# npm 安装
-bun install -g @memohub/cli
-
-# 本地链接
-bun link --global
-```
-
-### 方式 2: 使用打包文件
-
-```bash
-# 1. 打包
 cd apps/cli
 npm pack
-
-# 2. 全局安装
-npm install -g memohub-cli-3.0.0.tgz
 ```
 
-### 方式 3: 本地包装脚本
+## 发布
 
 ```bash
-./install-cli.sh
-```
-
----
-
-## ✅ 验证安装
-
-安装完成后验证：
-
-```bash
-# 检查版本
-memohub --version
-
-# 查看帮助
-memohub --help
-
-# 测试命令
-memohub list
-```
-
----
-
-## 🔧 开发流程
-
-### 本地开发
-
-```bash
-# 1. 修改代码
-vim apps/cli/src/index.ts
-
-# 2. 重新构建
-bun run --filter @memohub/cli build
-
-# 3. 全局链接（重新安装）
-npm link --global
-
-# 4. 测试
-memohub --version
-```
-
-### 发布新版本
-
-```bash
-# 1. 更新版本号
-npm version patch  # 3.0.0 -> 3.0.1
-npm version minor  # 3.0.0 -> 3.1.0
-npm version major  # 3.0.0 -> 4.0.0
-
-# 2. 构建
-bun run build
-
-# 3. 发布
-npm publish
-```
-
----
-
-## 📋 版本管理
-
-### 语义化版本
-
-- **主版本** (Major): 不兼容的 API 变更
-- **次版本** (Minor): 向下兼容的功能新增
-- **修订版本** (Patch): 向下兼容的问题修复
-
-### 示例
-
-```json
-{
-  "name": "@memohub/cli",
-  "version": "3.0.0",
-  "bin": {
-    "memohub": "dist/index.js"
-  }
-}
-```
-
----
-
-## 🚨 常见问题
-
-### 问题 1: npm link 失败
-
-**症状**: `EACCES: permission denied`
-
-**解决**:
-```bash
-# 使用 sudo
-sudo npm link --global
-
-# 或者使用 bun
-bun link --global
-```
-
-### 问题 2: 命令未找到
-
-**症状**: `memohub: command not found`
-
-**解决**:
-```bash
-# 检查安装
-npm list -g @memohub/cli
-
-# 重新安装
-npm install -g @memohub/cli
-
-# 或使用完整路径
-node /Users/embaobao/workspace/ai/memo-hub/apps/cli/dist/index.js
-```
-
-### 问题 3: 依赖问题
-
-**症状**: 运行时缺少依赖
-
-**解决**:
-```bash
-# 确保依赖已安装
 cd apps/cli
-bun install
-
-# 重新构建
-bun run build
+npm publish --access public
 ```
 
----
+发布前不要手工改 `dist` 路径或临时 symlink，必须走 `bun run build` 生成正式产物。
 
-## 📚 相关文档
+## Agent Skill
 
-- **[项目结构](docs/development/project-structure.md)**
-- **[开发规范](AGENT.md)**
-- **[CLAUDE.md](CLAUDE.md)**
+Skill 由根目录工程化脚本生成，不属于 CLI 包能力；产物只落在仓库根目录：
 
----
+```bash
+bun run skill:memohub
+```
 
-**发布版本**: 3.0.0  
-**最后更新**: 2026-04-24
+后续安装交给 `npx skills add <repo> --skill memohub`。Agent 读取该 skill 后会完成本地 CLI 构建/链接、配置检查、MCP 启动和工具发现。不要在构建脚本里直接写入 `.codex`、`.claude`、`.gemini` 等本机 Agent 私有目录。

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ITool, IToolManifest, ExecutionContext } from '@memohub/core/src/index';
-import { IHostResources } from '@memohub/core/src/index';
+import { ITool, IToolManifest, ExecutionContext } from '@memohub/core';
+import { IHostResources } from '@memohub/core';
 import pkg from 'lodash';
 const { uniqBy, sortBy } = pkg;
 
