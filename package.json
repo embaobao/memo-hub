@@ -11,7 +11,8 @@
     "lint": "eslint 'packages/*/src/**/*.ts' 'tracks/*/src/**/*.ts' 'apps/*/src/**/*.ts'",
     "format": "prettier --write 'packages/*/src/**/*.ts' 'tracks/*/src/**/*.ts' 'apps/*/src/**/*.ts'",
     "clean": "find . -name 'dist' -type d -exec rm -rf {} + 2>/dev/null; true",
-    "dev": "bun run --watch apps/cli/src/index.ts"
+    "dev": "bun run --watch apps/cli/src/index.ts",
+    "benchmark": "bun run scripts/benchmark.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

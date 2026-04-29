@@ -12,6 +12,7 @@ import {
 
 export * from "./schema.js";
 export * from "./utils.js";
+export * from "./performance.js";
 
 import pkg from "lodash";
 const { mergeWith, isArray, unionBy } = pkg;
