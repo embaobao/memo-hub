@@ -4,6 +4,7 @@ Generated from `openspec/changes` and `openspec/specs`.
 
 ## Active Changes
 
+- [add-data-environments-and-cleanup](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-data-environments-and-cleanup/proposal.md)
 - [add-source-adapters-dependency-intelligence](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-source-adapters-dependency-intelligence/proposal.md)
 
 ## Specs

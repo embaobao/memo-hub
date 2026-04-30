@@ -50,10 +50,14 @@ export function resetGlobalConfig(configPath = `${process.env.HOME}/.memohub/mem
   const root = dirname(configPath);
   const removed = [
     join(root, "tracks"),
+    join(root, "data"),
+    join(root, "blobs"),
+    join(root, "logs"),
+    join(root, "cache"),
   ];
 
   for (const target of removed) {
-    // 用户已明确要求不保留备份，无效配置目录直接删除。
+    // 重置配置用于真实接入前清场，直接删除 MemoHub 管理的数据目录，避免测试数据污染。
     rmSync(target, { recursive: true, force: true });
   }
 

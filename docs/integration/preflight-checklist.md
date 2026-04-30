@@ -23,6 +23,14 @@ memohub --help
 
 ## 2. 配置检查
 
+如果这是第一次真实接入，先清理开发和测试阶段的本地数据：
+
+```bash
+memohub config-init
+```
+
+该命令会重写全局配置，并删除 MemoHub 管理的 `data`、`blobs`、`logs`、`cache` 和旧 `tracks` 目录。它不会删除仓库源码。
+
 ```bash
 memohub config
 memohub config-get mcp.logPath
@@ -55,6 +63,16 @@ memohub mcp-doctor
 
 ```bash
 MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp-doctor
+```
+
+如果只是临时验证，不想污染默认数据目录：
+
+```bash
+MEMOHUB_STORAGE__ROOT=/tmp/memohub-test \
+MEMOHUB_STORAGE__BLOB_PATH=/tmp/memohub-test/blobs \
+MEMOHUB_STORAGE__VECTOR_DB_PATH=/tmp/memohub-test/data/memohub.lancedb \
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-test/logs/mcp.ndjson \
+memohub mcp-doctor
 ```
 
 ## 4. Agent Skill 安装源

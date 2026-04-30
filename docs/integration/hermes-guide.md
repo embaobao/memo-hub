@@ -29,10 +29,13 @@ bun install
 bun run build:cli
 bun run verify:cli
 bun run link:cli
+memohub config-init
 memohub config-check
 memohub mcp-doctor
 memohub mcp-tools
 ```
+
+首次真实接入前建议执行 `memohub config-init`，它会重写默认配置，并清理 MemoHub 管理的历史 `data`、`blobs`、`logs`、`cache` 和旧 `tracks` 目录，避免开发测试数据污染 Hermes 的第一批真实记忆。
 
 ## Hermes MCP 配置
 

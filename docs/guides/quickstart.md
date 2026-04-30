@@ -25,6 +25,15 @@ memohub --version
 memohub --help
 ```
 
+如果要开始第一次真实接入，先清理开发测试数据并初始化配置：
+
+```bash
+memohub config-init
+memohub config-check
+```
+
+`config-init` 会删除 MemoHub 管理的 `data`、`blobs`、`logs`、`cache` 和旧 `tracks` 目录，不会删除当前仓库源码。
+
 ## 写入和查询
 
 ```bash
