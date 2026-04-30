@@ -53,7 +53,7 @@ export function createResolveClarificationHandler(runtime: UnifiedMemoryRuntime)
 }
 
 export const RESOLVE_CLARIFICATION_TOOL_METADATA = {
-  name: "memohub_resolve_clarification",
+  name: "memohub_clarification_resolve",
   description: "写回外部澄清答案，并生成可检索的 curated MemoryObject",
   inputSchema: {
     type: "object" as const,

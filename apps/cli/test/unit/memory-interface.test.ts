@@ -64,6 +64,38 @@ describe("CLI/MCP shared memory interface", () => {
     });
   });
 
+  test("buildMemoryEvent 保留 Hermes 来源用于 self 层身份绑定", () => {
+    const event = buildMemoryEvent({
+      text: "Hermes prefers reading memohub://tools before querying.",
+      source: EventSource.HERMES,
+      channel: "cli-command",
+      projectId: "memo-hub",
+      category: "habit-convention",
+      metadata: { sourceId: "hermes" },
+    });
+
+    expect(event.source).toBe(EventSource.HERMES);
+    expect(event.channel).toBe("cli-command");
+    expect(event.payload).toMatchObject({
+      category: "habit-convention",
+      metadata: { sourceId: "hermes" },
+    });
+  });
+
+  test("buildMemoryEvent 保留 sessionId 和 taskId 供渠道治理与召回使用", () => {
+    const event = buildMemoryEvent({
+      text: "Hermes session memory",
+      source: EventSource.HERMES,
+      channel: "hermes:session:memo-hub:docs",
+      projectId: "memo-hub",
+      sessionId: "session:2026-04-30-hermes-docs",
+      taskId: "task:channel-registry",
+    });
+
+    expect(event.sessionId).toBe("session:2026-04-30-hermes-docs");
+    expect(event.taskId).toBe("task:channel-registry");
+  });
+
   test("queryMemoryView 委托统一运行时生成分层视图", async () => {
     let receivedRequest: unknown;
     const runtime = {

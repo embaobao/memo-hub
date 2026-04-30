@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "bun:test";
 import { ContentAddressableStorage } from "@memohub/storage-flesh";
+import { ChannelRegistry } from "../../src/channel-registry.js";
 import { UnifiedMemoryRuntime } from "../../src/unified-memory-runtime.js";
 
 class FakeVectorStorage {
@@ -16,7 +17,19 @@ class FakeVectorStorage {
     this.records.push(...(Array.isArray(records) ? records : [records]));
   }
 
-  async search() {
+  async search(queryVector: number[], options?: { limit?: number }) {
+    const limit = options?.limit ?? this.records.length;
+    return this.records
+      .map((record) => {
+        const vector = Array.isArray(record.vector) ? record.vector : [];
+        const distance = Math.abs((vector[0] ?? 0) - (queryVector[0] ?? 0));
+        return { ...record, _distance: distance / 100 };
+      })
+      .sort((left, right) => Number(left._distance ?? 0) - Number(right._distance ?? 0))
+      .slice(0, limit);
+  }
+
+  async list() {
     return this.records;
   }
 }
@@ -42,6 +55,7 @@ describe("UnifiedMemoryRuntime business chain", () => {
       cas: new ContentAddressableStorage(join(tempDir, "blobs")),
       vector: vector as never,
       embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
     });
 
     await runtime.initialize();
@@ -89,6 +103,7 @@ describe("UnifiedMemoryRuntime business chain", () => {
       cas: new ContentAddressableStorage(join(tempDir, "blobs")),
       vector: vector as never,
       embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
     });
 
     await runtime.initialize();
@@ -126,6 +141,7 @@ describe("UnifiedMemoryRuntime business chain", () => {
       cas: new ContentAddressableStorage(join(tempDir, "blobs")),
       vector: vector as never,
       embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
     });
 
     await runtime.initialize();
@@ -154,5 +170,135 @@ describe("UnifiedMemoryRuntime business chain", () => {
 
     expect(view.projectContext).toHaveLength(1);
     expect(view.projectContext[0].object.domains.map((domain) => domain.type)).toContain("code-intelligence");
+  });
+
+  test("recalls Hermes memory in agent_profile after a real agent-scoped write", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-runtime-"));
+    const vector = new FakeVectorStorage();
+    const runtime = new UnifiedMemoryRuntime({
+      cas: new ContentAddressableStorage(join(tempDir, "blobs")),
+      vector: vector as never,
+      embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
+    });
+
+    await runtime.initialize();
+
+    await runtime.ingest({
+      id: "evt-hermes-profile-1",
+      source: "hermes" as never,
+      channel: "hermes:primary:memo-hub",
+      kind: "memory" as never,
+      projectId: "memo-hub",
+      confidence: "reported" as never,
+      payload: {
+        text: "Hermes should treat MemoHub as its durable memory center.",
+        kind: "memory",
+        category: "habit-convention",
+      },
+    });
+
+    // 模拟真实库里向量候选召回过浅；运行时应能通过兜底扫描补回 Hermes 自身记忆。
+    vector.search = async () => [];
+
+    const view = await runtime.queryView({
+      view: "agent_profile",
+      actorId: "hermes",
+      projectId: "memo-hub",
+      query: "durable memory center",
+      limit: 5,
+    });
+
+    expect(view.selfContext).toHaveLength(1);
+    expect(view.selfContext[0].object.actor?.id).toBe("hermes");
+    expect(view.selfContext[0].object.content[0]?.text).toContain("durable memory center");
+  });
+
+  test("ranks the most relevant newly written actor memory ahead of older broader memories", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-runtime-"));
+    const vector = new FakeVectorStorage();
+    const runtime = new UnifiedMemoryRuntime({
+      cas: new ContentAddressableStorage(join(tempDir, "blobs")),
+      vector: vector as never,
+      embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
+    });
+
+    await runtime.initialize();
+
+    await runtime.ingest({
+      id: "evt-hermes-old-1",
+      source: "hermes" as never,
+      channel: "hermes:primary:memo-hub",
+      kind: "memory" as never,
+      projectId: "memo-hub",
+      confidence: "reported" as never,
+      payload: {
+        text: "Hermes first real onboarding verification: MemoHub is Hermes durable memory center and shared project context hub.",
+        kind: "memory",
+        category: "habit-convention",
+      },
+    });
+
+    await runtime.ingest({
+      id: "evt-hermes-new-1",
+      source: "hermes" as never,
+      channel: "hermes:test:memo-hub:actor-first-check",
+      kind: "memory" as never,
+      projectId: "memo-hub",
+      confidence: "reported" as never,
+      payload: {
+        text: "Hermes actor-first governance validation memory",
+        kind: "memory",
+        category: "project-knowledge",
+      },
+    });
+
+    const view = await runtime.queryView({
+      view: "project_context",
+      actorId: "hermes",
+      projectId: "memo-hub",
+      query: "Hermes actor-first governance validation memory",
+      limit: 5,
+    });
+
+    expect(view.selfContext).toHaveLength(2);
+    expect(view.selfContext[0].object.id).toBe("mem_evt-hermes-new-1");
+    expect(view.projectContext[0].object.id).toBe("mem_evt-hermes-new-1");
+  });
+
+  test("lists governed memories directly by actor perspective without semantic query dependency", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-runtime-"));
+    const vector = new FakeVectorStorage();
+    const runtime = new UnifiedMemoryRuntime({
+      cas: new ContentAddressableStorage(join(tempDir, "blobs")),
+      vector: vector as never,
+      embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
+    });
+
+    await runtime.initialize();
+
+    await runtime.ingest({
+      id: "evt-hermes-list-1",
+      source: "hermes" as never,
+      channel: "hermes:test:memo-hub:list",
+      kind: "memory" as never,
+      projectId: "memo-hub",
+      confidence: "reported" as never,
+      payload: {
+        text: "Hermes governance list validation memory",
+        kind: "memory",
+        category: "project-knowledge",
+      },
+    });
+
+    const memories = await runtime.listMemories({
+      perspective: "actor",
+      actorId: "hermes",
+      limit: 10,
+    });
+
+    expect(memories.some((memory) => memory.id === "mem_evt-hermes-list-1")).toBe(true);
   });
 });

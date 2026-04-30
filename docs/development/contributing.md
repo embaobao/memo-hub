@@ -53,7 +53,7 @@ CLI/MCP 变更必须按顺序处理：
 - 更新 `packages/config/src/schema.ts`。
 - 更新 `config/config.example.jsonc`。
 - 更新 [配置指南](../guides/configuration.md)。
-- 验证 `memohub config`、`memohub config-check` 和 MCP 配置工具。
+- 验证 `memohub config show`、`memohub config check`、`memohub data status` 和 MCP 配置/数据治理工具。
 
 ## Agent Skill 变更流程
 
@@ -76,7 +76,7 @@ bun run check:test-layout
 bun run check:deps
 bun run build:cli
 bun run docs:check
-memohub mcp-doctor
+memohub mcp doctor
 ```
 
 如果改动影响完整链路，再运行：

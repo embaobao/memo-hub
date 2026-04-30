@@ -35,5 +35,5 @@
 - `bun run docs:check`
 - `bun run check:test-layout`
 - `memohub config`
-- `memohub mcp-tools`
-- `memohub mcp-status`
+- `memohub mcp tools`
+- `memohub mcp status`

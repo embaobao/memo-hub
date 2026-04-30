@@ -35,6 +35,23 @@ Inputs:
 - `query`
 - `limit`
 
+### memohub_list
+
+Status: `recommended`
+
+List governed memory objects directly by actor/project/global perspective
+
+Inputs:
+
+- `perspective`
+- `actorId`
+- `projectId`
+- `workspaceId`
+- `sessionId`
+- `taskId`
+- `domains`
+- `limit`
+
 ### memohub_summarize
 
 Status: `recommended`
@@ -46,7 +63,7 @@ Inputs:
 - `text`
 - `agentId`
 
-### memohub_clarify
+### memohub_clarification_create
 
 Status: `recommended`
 
@@ -57,7 +74,7 @@ Inputs:
 - `text`
 - `agentId`
 
-### memohub_resolve_clarification
+### memohub_clarification_resolve
 
 Status: `recommended`
 
@@ -71,6 +88,23 @@ Inputs:
 - `projectId`
 - `actorId`
 - `memoryIds`
+
+### memohub_logs_query
+
+Status: `recommended`
+
+Query MemoHub logs by event, level, channel, project, session, task, or source for agent self-diagnosis
+
+Inputs:
+
+- `tail`
+- `event`
+- `level`
+- `channel`
+- `projectId`
+- `sessionId`
+- `taskId`
+- `source`
 
 ### memohub_config_get
 
@@ -97,11 +131,86 @@ Inputs:
 
 Status: `recommended`
 
-Check, initialize, or uninstall MemoHub global configuration
+Check config or uninstall global config with second confirmation.
 
 Inputs:
 
-- `action=check|init|uninstall`
+- `action=check|uninstall`
+- `confirm=DELETE_MEMOHUB_CONFIG for uninstall`
+
+### memohub_data_manage
+
+Status: `recommended`
+
+Preview cleanup targets, clean one channel, clean all MemoHub-managed data with second confirmation, or rebuild schema. clean_channel, clean_all, and rebuild_schema require explicit user authorization.
+
+Inputs:
+
+- `action=status|clean_channel|clean_all|rebuild_schema`
+- `channel or ownerActorId/source/projectId/purpose/status for clean_channel`
+- `confirm=DELETE_MEMOHUB_DATA for deletion`
+- `dryRun`
+
+### memohub_channel_open
+
+Status: `recommended`
+
+Open or restore a governed channel binding for an Agent or workspace source
+
+Inputs:
+
+- `ownerActorId`
+- `source`
+- `projectId`
+- `purpose`
+- `workspaceId`
+- `sessionId`
+- `taskId`
+- `channelId`
+
+### memohub_channel_list
+
+Status: `recommended`
+
+List governed channels and their current lifecycle state
+
+Inputs:
+
+- `ownerActorId`
+- `source`
+- `projectId`
+- `purpose`
+- `status`
+
+### memohub_channel_status
+
+Status: `recommended`
+
+Read one governed channel entry by channelId
+
+Inputs:
+
+- `channelId`
+
+### memohub_channel_close
+
+Status: `recommended`
+
+Close a governed channel so it is no longer implicitly reused
+
+Inputs:
+
+- `channelId`
+
+### memohub_channel_use
+
+Status: `recommended`
+
+Restore an existing governed channel as the current active binding
+
+Inputs:
+
+- `channelId`
 
 ## Resources
 

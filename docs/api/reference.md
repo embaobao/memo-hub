@@ -69,10 +69,10 @@ memohub summarize "Hermes 最近完成了查询链路收敛" --agent hermes
 - 从显式文本创建受治理的总结候选记忆
 - 输出包含 `operationId`、输入/输出记忆 ID、Agent 来源、置信度和 `reviewState`
 
-### `clarify`
+### `clarification create`
 
 ```bash
-memohub clarify "这里存在冲突的项目约定" --agent hermes
+memohub clarification create "这里存在冲突的项目约定" --agent hermes
 ```
 
 用途：
@@ -80,10 +80,10 @@ memohub clarify "这里存在冲突的项目约定" --agent hermes
 - 从显式文本创建澄清项
 - 输出 `clarifications`，用于后续冲突或缺口处理
 
-### `resolve-clarification`
+### `clarification resolve`
 
 ```bash
-memohub resolve-clarification clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
+memohub clarification resolve clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
 ```
 
 用途：
@@ -91,10 +91,10 @@ memohub resolve-clarification clarify_op_1 "以新架构为准" --agent hermes -
 - 将外部对话中的澄清答案写回为 `curated MemoryObject`
 - 输出 resolved clarification、memoryObject、contentHash 和 vectorRecordCount
 
-### `config`
+### `config show`
 
 ```bash
-memohub config
+memohub config show
 ```
 
 用途：
@@ -104,10 +104,10 @@ memohub config
 ### MCP 辅助命令
 
 ```bash
-memohub mcp-config
-memohub mcp-tools
-memohub mcp-status
-memohub mcp-logs --tail 50
+memohub mcp config
+memohub mcp tools
+memohub mcp status
+memohub logs query --tail 50
 ```
 
 用途：
@@ -119,7 +119,7 @@ memohub mcp-logs --tail 50
 ### `serve`
 
 ```bash
-memohub serve
+memohub mcp serve
 ```
 
 启动别名：
@@ -219,7 +219,7 @@ memohub mcp
 
 - 创建总结候选记忆，默认 `reviewState` 为 `proposed`，输出保留 operation provenance。
 
-#### `memohub_clarify`
+#### `memohub_clarification_create`
 
 输入：
 
@@ -234,7 +234,7 @@ memohub mcp
 
 - 创建澄清项，作为冲突/缺口治理入口。
 
-#### `memohub_resolve_clarification`
+#### `memohub_clarification_resolve`
 
 输入：
 
@@ -302,7 +302,7 @@ memohub://tools
 - 当前 `kind` 只支持 `memory`
 - CLI 查询通过命名 `view` 表达读取意图
 - MCP 工具目录以 `memohub://tools` 和本页为准
-- 配置读写通过 `config`、`config-get`、`config-set` 和 MCP 配置工具完成
+- 配置读写通过 `config show/check/get/set/uninstall`、`data status/clean/rebuild-schema` 和 MCP 配置/数据治理工具完成
 
 ## 相关文档
 

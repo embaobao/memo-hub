@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MemoHubEvent } from "@memohub/protocol";
+import type { McpBoundChannelContext } from "../session-context.js";
 
 /**
  * memohub_ingest_event MCP 工具
@@ -13,10 +14,12 @@ import { MemoHubEvent } from "@memohub/protocol";
  */
 export const IngestEventInputSchema = z.object({
   event: z.object({
-    source: z.string().describe("事件来源 (hermes, ide, cli, mcp, external)"),
-    channel: z.string().describe("事件通道 (用户定义)"),
+    source: z.string().optional().describe("事件来源 (hermes, ide, cli, mcp, external)"),
+    channel: z.string().optional().describe("事件通道 (用户定义)"),
     kind: z.enum(["memory"]).describe("事件类型 (目前仅支持 memory)"),
-    projectId: z.string().describe("项目标识符"),
+    projectId: z.string().optional().describe("项目标识符"),
+    sessionId: z.string().optional().describe("会话 ID (可选)"),
+    taskId: z.string().optional().describe("任务 ID (可选)"),
     confidence: z.enum(["reported", "observed", "inferred", "provisional", "verified"]).describe("置信度级别"),
     payload: z.object({
       text: z.string().describe("文本内容"),
@@ -49,7 +52,7 @@ type IngestRuntimeLike = {
  * 这里使用开放 source descriptor，确保 gemini、scanner、browser extension
  * 等新来源接入时不需要改协议枚举。
  */
-export function createIngestEventHandler(integrationHub: IngestRuntimeLike) {
+export function createIngestEventHandler(integrationHub: IngestRuntimeLike, context?: McpBoundChannelContext | null) {
   return async (params: IngestEventInput) => {
     try {
       // 1. 验证输入
@@ -68,13 +71,22 @@ export function createIngestEventHandler(integrationHub: IngestRuntimeLike) {
       const fullEvent: MemoHubEvent = {
         id: crypto.randomUUID(),
         occurredAt: new Date().toISOString(),
-        source: event.source as any,
-        channel: event.channel,
+        source: (event.source ?? context?.source) as any,
+        channel: event.channel ?? context?.channelId ?? "",
         kind: event.kind as any,
-        projectId: event.projectId,
+        projectId: event.projectId ?? context?.projectId ?? "",
+        ...(event.sessionId ?? context?.sessionId ? { sessionId: event.sessionId ?? context?.sessionId } : {}),
+        ...(event.taskId ?? context?.taskId ? { taskId: event.taskId ?? context?.taskId } : {}),
         confidence: event.confidence as any,
         payload: event.payload
       };
+
+      if (!fullEvent.source || !fullEvent.channel || !fullEvent.projectId) {
+        return {
+          success: false,
+          error: "Missing source, channel, or projectId. Provide them explicitly or bind a channel first.",
+        };
+      }
 
       // 3. 调用统一 ingest 入口。CLI/MCP 不关心后续存储投影细节。
       const ingestResult = await integrationHub.ingest(fullEvent);
@@ -124,11 +136,11 @@ export const INGEST_TOOL_METADATA = {
           source: {
             type: "string" as const,
             enum: ["hermes", "ide", "cli", "mcp", "external"],
-            description: "事件来源"
+            description: "事件来源；可从当前绑定渠道继承"
           },
           channel: {
             type: "string" as const,
-            description: "事件通道"
+            description: "事件通道；可从当前绑定渠道继承"
           },
           kind: {
             type: "string" as const,
@@ -137,7 +149,15 @@ export const INGEST_TOOL_METADATA = {
           },
           projectId: {
             type: "string" as const,
-            description: "项目标识符"
+            description: "项目标识符；可从当前绑定渠道继承"
+          },
+          sessionId: {
+            type: "string" as const,
+            description: "会话 ID"
+          },
+          taskId: {
+            type: "string" as const,
+            description: "任务 ID"
           },
           confidence: {
             type: "string" as const,
@@ -178,7 +198,7 @@ export const INGEST_TOOL_METADATA = {
             required: ["text"]
           }
         },
-        required: ["source", "channel", "kind", "projectId", "confidence", "payload"]
+        required: ["kind", "confidence", "payload"]
       }
     },
     required: ["event"]

@@ -16,6 +16,7 @@
     "test": "bun run scripts/engineering/workspace-run.ts test && bun test test",
     "test:unit": "bun run scripts/engineering/run-tests.ts unit",
     "test:integration": "bun run scripts/engineering/run-tests.ts integration",
+    "test:hermes-isolated": "bun run test/scenarios/hermes-isolated-validation.ts",
     "bench": "bun run scripts/engineering/run-tests.ts benchmarks",
     "lint": "eslint 'packages/*/src/**/*.ts' 'tracks/*/src/**/*.ts' 'apps/*/src/**/*.ts' 'scripts/**/*.ts'",
     "format": "prettier --write 'packages/*/src/**/*.ts' 'tracks/*/src/**/*.ts' 'apps/*/src/**/*.ts' 'scripts/**/*.ts' 'test/**/*.ts'",

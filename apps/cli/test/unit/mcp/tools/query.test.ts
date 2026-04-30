@@ -84,4 +84,46 @@ describe("MCP Query Tool", () => {
 
     expect(result.success).toBe(true);
   });
+
+  test("应该在缺少 projectId 时继承当前绑定渠道上下文", async () => {
+    const handler = createQueryHandler({
+      queryView: async (request: unknown) => {
+        receivedRequest = request;
+        return {
+          selfContext: [],
+          projectContext: [],
+          globalContext: [],
+        };
+      },
+    } as never, {
+      channelId: "hermes:primary:memo-hub",
+      ownerActorId: "hermes",
+      source: "hermes",
+      projectId: "memo-hub",
+      workspaceId: "repo:memo-hub",
+      purpose: "primary",
+    });
+
+    const result = await handler({
+      view: "project_context",
+      query: "current project facts",
+    });
+
+    expect(result.success).toBe(true);
+    expect(receivedRequest).toMatchObject({
+      actorId: "hermes",
+      projectId: "memo-hub",
+      workspaceId: "repo:memo-hub",
+    });
+  });
+
+  test("应该在没有绑定上下文且未传 projectId 时返回错误", async () => {
+    const result = await queryHandler({
+      view: "project_context",
+      query: "current project facts",
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("Missing projectId");
+  });
 });

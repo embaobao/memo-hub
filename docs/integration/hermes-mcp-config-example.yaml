@@ -4,8 +4,8 @@
 #   bun run build:cli
 #   bun run verify:cli
 #   bun run link:cli
-#   memohub config-check
-#   memohub mcp-doctor
+#   memohub config check
+#   memohub mcp doctor
 
 mcpServers:
   memohub:
@@ -20,11 +20,12 @@ mcpServers:
 #   - memohub_ingest_event
 #   - memohub_query
 #   - memohub_summarize
-#   - memohub_clarify
-#   - memohub_resolve_clarification
+#   - memohub_clarification_create
+#   - memohub_clarification_resolve
 #   - memohub_config_get
 #   - memohub_config_set
 #   - memohub_config_manage
+#   - memohub_data_manage
 #
 # 当前资源：
 #   - memohub://tools

@@ -43,6 +43,19 @@ taskId: task:docs-skill-memory-center
 
 Default retrieval order: query yourself first, then project, then global. In practice: read `agent_profile` and `recent_activity` with your `actorId`, then read `project_context` or `coding_context` with `projectId`.
 
+## Channel Governance
+
+MemoHub now supports governed channels. Do not treat `channel` as a throwaway string when you can avoid it.
+
+Recommended MCP flow:
+
+1. Read `memohub://tools`
+2. Call `memohub_channel_list`
+3. If needed, call `memohub_channel_open`
+4. Then call `memohub_query` / `memohub_ingest_event`
+
+Once a channel is opened in the current MCP session, MemoHub can inherit `source`, `channel`, `projectId`, `workspaceId`, `sessionId`, and `taskId` for later calls when those fields are omitted. Explicit fields still override inherited values.
+
 ## Installation Flow
 
 When this skill is installed into an Agent, the Agent should use these steps to prepare MemoHub access from the repository root:
@@ -60,21 +73,51 @@ memohub --version
 2. Initialize and check runtime configuration:
 
 ```bash
-memohub config-check
-memohub config
+memohub config check
+memohub config show
 ```
+
+For the first real integration test, or when schema mismatch appears, clear MemoHub-managed test data and rebuild the managed data store:
+
+```bash
+memohub data rebuild-schema --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+This is a high-risk operation. Do not run it during normal access. It deletes MemoHub-managed `data`, `blobs`, `logs`, `cache`, and old `tracks` directories under `~/.memohub`, so use it only when the user explicitly authorizes a clean first verification run or schema recovery. After this command, restart any running `memohub mcp serve` process before retesting.
+
+Agents can discover cleanup scope without deleting anything:
+
+```bash
+memohub data status
+memohub data clean --dry-run
+memohub data clean --actor hermes --purpose test --dry-run
+```
+
+Channel-scoped cleanup is useful for validating one integration channel without clearing other memory:
+
+```bash
+memohub data clean --actor hermes --purpose test --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+Full cleanup is more destructive and requires the same second confirmation phrase:
+
+```bash
+memohub data clean --all --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+Through MCP, use `memohub_data_manage` with `{ "action": "status" }` for global preview, `{ "action": "clean_channel", "ownerActorId": "hermes", "purpose": "test", "dryRun": true }` for channel preview, and `{ "action": "clean_channel", "ownerActorId": "hermes", "purpose": "test", "confirm": "DELETE_MEMOHUB_DATA" }` only after user authorization.
 
 3. Validate MCP readiness:
 
 ```bash
-memohub mcp-doctor
-memohub mcp-tools
+memohub mcp doctor
+memohub mcp tools
 ```
 
 4. Start MCP for Agent clients:
 
 ```bash
-memohub serve
+memohub mcp serve
 ```
 
 MCP client config should use:
@@ -89,6 +132,25 @@ MCP client config should use:
   }
 }
 ```
+
+MemoHub data must remain shared across Agents. Do not point Hermes, Codex, Gemini, or IDE clients at separate private data stores. If a deployment needs explicit paths, set these environment variables on every MemoHub MCP server process and make them point to the same shared MemoHub storage:
+
+```yaml
+env:
+  MEMOHUB_DB_PATH: ~/.memohub/data/memohub.lancedb
+  MEMOHUB_CAS_PATH: ~/.memohub/blobs
+  EMBEDDING_URL: http://localhost:11434/v1
+  EMBEDDING_MODEL: nomic-embed-text-v2-moe
+```
+
+MemoHub maps these deployment variables into the new architecture fields:
+
+- `MEMOHUB_DB_PATH` -> `storage.vectorDbPath` for the shared vector store
+- `MEMOHUB_CAS_PATH` -> `storage.blobPath` for the shared Blob/CAS store
+- `EMBEDDING_URL` -> embedding provider URL
+- `EMBEDDING_MODEL` -> embedding model
+
+After connection, read `memohub://tools` or `memohub://stats` and verify the returned `storage.dataPath` and `storage.blobPath`; those are the actual paths in use.
 
 After MCP is connected, read `memohub://tools` before choosing tools. Treat that resource as the live contract for tools, resources, views, logs, and configuration.
 
@@ -107,7 +169,7 @@ Then use the returned views and tools to decide the next action:
 - Need project facts and decisions: query `project_context`.
 - Need repository files, APIs, components, dependencies, or coding conventions: query `coding_context`.
 - Need to preserve a new fact, decision, task result, code analysis, or user preference: call `memohub_ingest_event`.
-- Need to store a user clarification: call `memohub_resolve_clarification`.
+- Need to store a user clarification: call `memohub_clarification_resolve`.
 
 ## Skill Distribution
 
@@ -129,12 +191,19 @@ Do not copy this skill into local Agent directories manually during MemoHub buil
 
 - `memohub_ingest_event`: Ingest external events through the Integration Hub
 - `memohub_query`: Query named layered context views through the unified query tool
+- `memohub_channel_open`: Open or restore a governed channel binding
+- `memohub_channel_list`: List governed channels and lifecycle state
+- `memohub_channel_status`: Read one governed channel entry
+- `memohub_channel_close`: Close a governed channel
+- `memohub_channel_use`: Restore an existing governed channel as the active binding
 - `memohub_summarize`: Create a governed summary candidate from explicit memory text
-- `memohub_clarify`: Create clarification items for explicit conflicting or missing memory text
-- `memohub_resolve_clarification`: Write external clarification answers back as curated searchable memory
+- `memohub_clarification_create`: Create clarification items for explicit conflicting or missing memory text
+- `memohub_clarification_resolve`: Write external clarification answers back as curated searchable memory
+- `memohub_logs_query`: Query MemoHub logs for self-diagnosis and onboarding verification
 - `memohub_config_get`: Read MemoHub resolved runtime configuration or a dotted raw config path
 - `memohub_config_set`: Write MemoHub configuration by dotted path
-- `memohub_config_manage`: Check, initialize, or uninstall MemoHub global configuration
+- `memohub_config_manage`: Check MemoHub configuration health or uninstall global config with second confirmation.
+- `memohub_data_manage`: Preview cleanup targets, clean one channel, clean all MemoHub-managed data with second confirmation, or rebuild schema. `{ "action": "clean_all", "confirm": "DELETE_MEMOHUB_DATA" }` and `{ "action": "rebuild_schema", "confirm": "DELETE_MEMOHUB_DATA" }` are high-risk; use only with explicit user authorization, then restart MCP.
 
 ## MCP Resources
 
@@ -146,6 +215,56 @@ Do not copy this skill into local Agent directories manually during MemoHub buil
 ### 1. Hermes Bootstraps Its Memory
 
 When Hermes starts a task, it should treat MemoHub as its own memory asset center:
+
+First restore the governed primary channel:
+
+```json
+{
+  "name": "memohub_channel_open",
+  "arguments": {
+    "ownerActorId": "hermes",
+    "source": "hermes",
+    "projectId": "memo-hub",
+    "purpose": "primary"
+  }
+}
+```
+
+If this is the user-authorized first connection verification and the user explicitly asks for a clean test dataset, clear old MemoHub-managed test data first:
+
+```json
+{
+  "name": "memohub_data_manage",
+  "arguments": {
+    "action": "rebuild_schema",
+    "confirm": "DELETE_MEMOHUB_DATA"
+  }
+}
+```
+
+Restart MCP, then write a Hermes-owned probe memory:
+
+```json
+{
+  "name": "memohub_ingest_event",
+  "arguments": {
+    "event": {
+      "source": "hermes",
+      "channel": "hermes:first-integration",
+      "kind": "memory",
+      "projectId": "memo-hub",
+      "confidence": "reported",
+      "payload": {
+        "text": "Hermes first integration probe: MemoHub is my durable memory center.",
+        "category": "habit-convention",
+        "tags": ["hermes", "first-integration"]
+      }
+    }
+  }
+}
+```
+
+Then confirm self-layer recall:
 
 ```json
 {
@@ -274,7 +393,7 @@ When the user clarifies a memory, write the resolved answer back:
 
 ```json
 {
-  "name": "memohub_resolve_clarification",
+  "name": "memohub_clarification_resolve",
   "arguments": {
     "clarificationId": "clarify_op_1",
     "answer": "MemoHub should be treated as the Agent's local memory asset center.",
@@ -293,7 +412,7 @@ When the user clarifies a memory, write the resolved answer back:
 - Project context: query `memohub_query` with `view=project_context` before planning or implementing project work.
 - Code context: query `memohub_query` with `view=coding_context` before explaining files, APIs, components, dependencies, or repository conventions.
 - Memory write: call `memohub_ingest_event` when a task decision, user preference, project fact, code analysis, or external tool result should be retained.
-- Clarification write-back: call `memohub_resolve_clarification` after the user resolves a conflict or missing detail in conversation.
+- Clarification write-back: call `memohub_clarification_resolve` after the user resolves a conflict or missing detail in conversation.
 - Runtime config: use `memohub_config_get`, `memohub_config_set`, and `memohub_config_manage` to inspect or maintain local configuration.
 
 ## Expected End-to-End Chain
@@ -304,17 +423,17 @@ Agent starts
   -> queries agent_profile / recent_activity / project_context / coding_context
   -> performs task with retrieved context
   -> writes useful facts through memohub_ingest_event
-  -> writes user clarifications through memohub_resolve_clarification
+  -> writes user clarifications through memohub_clarification_resolve
   -> later Agents query the same memory layers and continue from there
 ```
 
 ## CLI Fallback
 
 ```bash
-memohub config
-memohub config-check
-memohub mcp-doctor
-memohub mcp-tools
+memohub config show
+memohub config check
+memohub mcp doctor
+memohub mcp tools
 memohub add "memory text" --project memo-hub --source cli
 memohub query "question" --view project_context --project memo-hub
 memohub query "code question" --view coding_context --project memo-hub

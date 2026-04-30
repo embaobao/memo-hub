@@ -85,19 +85,19 @@ See [Real Scenarios](docs/integration/access-scenarios.md) for complete workflow
 | Replay recent work | `recent_activity` | Answers what happened recently and who participated. |
 | Read project background | `project_context` | Keeps decisions and business context across Agent switches. |
 | Read code context | `coding_context` | Gives private repositories their own code memory layer. |
-| Write clarification | `resolve-clarification` / `memohub_resolve_clarification` | Prevents repeated explanations after the user confirms a fact. |
+| Write clarification | `clarification resolve` / `memohub_clarification_resolve` | Prevents repeated explanations after the user confirms a fact. |
 | Let Agents self-integrate | `memohub://tools` / Skill | Exposes tools, resources, views, and configuration to Agents. |
 
 ## End-to-End Chain
 
 ```text
 Agent / IDE / CLI
-  -> start MCP with memohub serve
+  -> start MCP with memohub mcp serve
   -> read memohub://tools to discover capabilities
   -> query agent_profile / recent_activity / project_context / coding_context
   -> execute the task with retrieved context
   -> write new facts, task results, code analysis, and preferences through memohub_ingest_event
-  -> write user clarifications through memohub_resolve_clarification
+  -> write user clarifications through memohub_clarification_resolve
   -> later Hermes / Codex / Gemini / IDE continue from the same memory assets
 ```
 
@@ -133,9 +133,9 @@ memohub --help
 Start MCP:
 
 ```bash
-memohub config-check
-memohub mcp-doctor
-memohub serve
+memohub config check
+memohub mcp doctor
+memohub mcp serve
 ```
 
 After an Agent connects, read:
@@ -180,8 +180,8 @@ memohub query "Where is the CLI/MCP capability catalog generated from?" --view c
 5. Verify MCP discovery:
 
 ```bash
-memohub mcp-tools
-memohub mcp-doctor
+memohub mcp tools
+memohub mcp doctor
 ```
 
 6. Ask an Agent to read:
@@ -199,13 +199,14 @@ memohub inspect
 memohub add "MemoHub uses a unified memory hub" --project memo-hub --source cli --category architecture
 memohub query "current project context" --view project_context --actor hermes --project memo-hub
 memohub summarize "recent activity text" --agent hermes
-memohub clarify "project convention conflict" --agent hermes
-memohub resolve-clarification clarify_op_1 "use the current architecture" --agent hermes --project memo-hub
-memohub config
-memohub config-check
-memohub mcp-tools
-memohub mcp-doctor
-memohub serve
+memohub clarification create "project convention conflict" --agent hermes
+memohub clarification resolve clarify_op_1 "use the current architecture" --agent hermes --project memo-hub
+memohub config show
+memohub config check
+memohub mcp tools
+memohub mcp doctor
+memohub logs query --tail 50
+memohub mcp serve
 ```
 
 ## MCP Capabilities
@@ -215,11 +216,16 @@ Recommended tools:
 - `memohub_ingest_event`
 - `memohub_query`
 - `memohub_summarize`
-- `memohub_clarify`
-- `memohub_resolve_clarification`
+- `memohub_clarification_create`
+- `memohub_clarification_resolve`
 - `memohub_config_get`
 - `memohub_config_set`
 - `memohub_config_manage`
+- `memohub_logs_query`
+- `memohub_data_manage`
+- `memohub_channel_open`
+- `memohub_channel_list`
+- `memohub_channel_status`
 
 Recommended resources:
 

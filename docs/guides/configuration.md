@@ -7,20 +7,20 @@ MemoHub 当前配置服务于统一记忆中枢。CLI 和 MCP 共享同一份解
 ## 配置位置
 
 - 全局配置：`~/.memohub/memohub.json`
-- 自动检查：CLI 启动时会检查配置；缺失时可通过 `memohub config-check` 初始化。
+- 自动检查：CLI 启动时会检查配置；缺失时可通过 `memohub config check` 初始化。
 - 配置语言：`system.lang` 支持 `zh`、`en`、`auto`。默认 `auto`，无法判断系统语言时输出中文。
 
 ## 常用命令
 
 ```bash
-memohub config-check
-memohub config
-memohub config-get system.lang
-memohub config-set system.lang '"zh"'
-memohub config-uninstall
+memohub config check
+memohub config show
+memohub config get system.lang
+memohub config set system.lang '"zh"'
+memohub config uninstall --yes --confirm DELETE_MEMOHUB_CONFIG
 ```
 
-`config-set` 的值会先按 JSON 解析；字符串值建议保留 JSON 引号。
+`config set` 的值会先按 JSON 解析；字符串值建议保留 JSON 引号。
 
 ## 核心配置块
 
@@ -63,20 +63,21 @@ Agent 可以通过 MCP 直接读写配置：
 
 - `memohub_config_get`: 读取解析配置或点分路径。
 - `memohub_config_set`: 写入点分路径。
-- `memohub_config_manage`: 执行 `check`、`init`、`uninstall`。
+- `memohub_config_manage`: 执行 `check`、`uninstall`。
+- `memohub_data_manage`: 执行 `status`、`clean_channel`、`clean_all`、`rebuild_schema`。
 
 ## 接入前验证
 
 ```bash
 bun run build:cli
 bun run verify:cli
-memohub config-check
-memohub mcp-doctor
-memohub mcp-tools
+memohub config check
+memohub mcp doctor
+memohub mcp tools
 ```
 
 如果日志路径不可写，可临时使用：
 
 ```bash
-MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp-doctor
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp doctor
 ```

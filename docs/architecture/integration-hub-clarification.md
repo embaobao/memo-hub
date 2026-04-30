@@ -35,7 +35,7 @@ CLI 和 MCP 使用同一条业务链路：
 外部对话中用户澄清某个记忆时，应调用：
 
 ```text
-memohub_resolve_clarification
+memohub_clarification_resolve
 ```
 
 写回结果会生成 `curated MemoryObject`，后续 `project_context`、`coding_context` 等视图可以检索到该修正。

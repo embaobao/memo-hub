@@ -15,11 +15,13 @@ import {
   normalizeMemoHubEvent,
 } from "@memohub/integration-hub";
 import type { ResolvedMemoHubRuntimeConfig } from "./runtime-config.js";
+import { ChannelRegistry, type ChannelRegistryEntry, type ChannelOpenRequest } from "./channel-registry.js";
 
 export interface UnifiedMemoryRuntimeConfig {
   cas: ContentAddressableStorage;
   vector: VectorStorage;
   embedder: IEmbedder;
+  channels: ChannelRegistry;
   runtimeConfig?: ResolvedMemoHubRuntimeConfig;
 }
 
@@ -57,8 +59,41 @@ export interface ClarificationResolutionResult {
 export class UnifiedMemoryRuntime {
   constructor(private readonly config: UnifiedMemoryRuntimeConfig) {}
 
+  get vectorStore(): VectorStorage {
+    return this.config.vector;
+  }
+
+  get channelRegistry(): ChannelRegistry {
+    return this.config.channels;
+  }
+
   async initialize(): Promise<void> {
     await this.config.vector.initialize();
+    this.config.channels.initialize();
+  }
+
+  openChannel(request: ChannelOpenRequest): { reused: boolean; entry: ChannelRegistryEntry } {
+    return this.config.channels.open(request);
+  }
+
+  listChannels(filters?: Parameters<ChannelRegistry["list"]>[0]): ChannelRegistryEntry[] {
+    return this.config.channels.list(filters);
+  }
+
+  getChannel(channelId: string): ChannelRegistryEntry | undefined {
+    return this.config.channels.get(channelId);
+  }
+
+  useChannel(channelId: string): ChannelRegistryEntry {
+    return this.config.channels.use(channelId);
+  }
+
+  closeChannel(channelId: string): ChannelRegistryEntry {
+    return this.config.channels.close(channelId);
+  }
+
+  autoBindWorkspaceChannel(input: Parameters<ChannelRegistry["autoBindWorkspaceChannel"]>[0]) {
+    return this.config.channels.autoBindWorkspaceChannel(input);
   }
 
   async ingest(event: MemoHubEvent): Promise<UnifiedIngestResult> {
@@ -117,6 +152,40 @@ export class UnifiedMemoryRuntime {
     });
 
     return planner.query(request);
+  }
+
+  async listMemories(request: {
+    perspective: "actor" | "project" | "global";
+    actorId?: string;
+    projectId?: string;
+    workspaceId?: string;
+    sessionId?: string;
+    taskId?: string;
+    domains?: string[];
+    limit?: number;
+  }): Promise<MemoryObject[]> {
+    const limit = request.limit ?? 20;
+    const domains = request.domains ?? [];
+    const scopes = buildListScopes(request);
+    const records = await this.listFallbackCandidates({
+      layer: request.perspective === "actor" ? "self" : request.perspective === "project" ? "project" : "global",
+      scopes,
+      domains,
+      limit,
+    }, limit);
+
+    return dedupeMemoryObjects(
+      records
+        .map((record, index) => vectorRecordToMemoryObject(record, {
+          layer: request.perspective === "actor" ? "self" : request.perspective === "project" ? "project" : "global",
+          scopes,
+          domains,
+          limit,
+        }, index))
+        .filter((memory) => scopes.length === 0 || matchesList(memory, scopes))
+        .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
+        .slice(0, limit),
+    );
   }
 
   async resolveClarification(request: ClarificationResolutionRequest): Promise<ClarificationResolutionResult> {
@@ -203,14 +272,37 @@ export class UnifiedMemoryRuntime {
   }
 
   private async recall(query: RecallQuery): Promise<MemoryObject[]> {
-    // 当前存储 MVP 使用向量检索加元数据过滤；对外查询仍然保持 view/domain/scope 语义。
+    // 当前存储 MVP 先走向量检索；如果候选不足，再回退到作用域/领域兜底扫描，
+    // 避免真实接入时“刚写入但未被前几条向量候选召回”的问题。
     const queryText = query.query ?? query.scopes.map((scope) => `${scope.type}:${scope.id}`).join(" ");
     const queryVector = await this.config.embedder.embed(queryText || query.layer);
-    const records = await this.config.vector.search(queryVector, { limit: Math.max(query.limit * 3, query.limit) });
-    return records
+    const candidateLimit = Math.max(query.limit * 3, query.limit);
+    const searched = await this.config.vector.search(queryVector, { limit: candidateLimit });
+    const fallback = await this.listFallbackCandidates(query, candidateLimit);
+    const merged = dedupeVectorRecords([...searched, ...fallback]);
+
+    return merged
       .map((record, index) => vectorRecordToMemoryObject(record, query, index))
       .filter((memory) => matchesRecall(memory, query))
       .slice(0, query.limit);
+  }
+
+  private async listFallbackCandidates(query: RecallQuery, limit: number): Promise<VectorRecord[]> {
+    const list = (this.config.vector as VectorStorage & { list?: (filter?: string, limit?: number) => Promise<VectorRecord[]> }).list;
+    if (typeof list !== "function") return [];
+
+    const records = await list.call(this.config.vector, undefined, Math.max(limit * 10, 200));
+    return records.filter((record) => {
+      const scopeTypes = arrayField(record.scope_types);
+      const scopeIds = arrayField(record.scope_ids);
+      const domainTypes = arrayField(record.domain_types);
+      const scopeMatch = query.scopes.length === 0
+        || query.scopes.some((scope) =>
+          scopeTypes.some((type, index) => type === scope.type && scopeIds[index] === scope.id));
+      const domainMatch = query.domains.length === 0
+        || domainTypes.some((domain) => query.domains.includes(domain));
+      return scopeMatch && domainMatch;
+    }).slice(0, limit);
   }
 }
 
@@ -295,6 +387,34 @@ function matchesRecall(memory: MemoryObject, query: RecallQuery): boolean {
   return memory.scopes.some((scope) => query.scopes.some((expected) => expected.type === scope.type && expected.id === scope.id));
 }
 
+function matchesList(memory: MemoryObject, scopes: { type: string; id: string }[]): boolean {
+  return memory.scopes.some((scope) => scopes.some((expected) => expected.type === scope.type && expected.id === scope.id));
+}
+
+function buildListScopes(request: {
+  perspective: "actor" | "project" | "global";
+  actorId?: string;
+  projectId?: string;
+  workspaceId?: string;
+  sessionId?: string;
+  taskId?: string;
+}): { type: string; id: string }[] {
+  if (request.perspective === "global") return [];
+
+  if (request.perspective === "actor") {
+    return [
+      ...(request.actorId ? [{ type: "agent", id: request.actorId }] : []),
+      ...(request.sessionId ? [{ type: "session", id: request.sessionId }] : []),
+      ...(request.taskId ? [{ type: "task", id: request.taskId }] : []),
+    ];
+  }
+
+  return [
+    ...(request.projectId ? [{ type: "project", id: request.projectId }] : []),
+    ...(request.workspaceId ? [{ type: "workspace", id: request.workspaceId }] : []),
+  ];
+}
+
 function vectorRecordToMemoryObject(record: VectorRecord, query: RecallQuery, index: number): MemoryObject {
   const now = new Date().toISOString();
   const scopeTypes = arrayField(record.scope_types);
@@ -338,4 +458,23 @@ function vectorRecordToMemoryObject(record: VectorRecord, query: RecallQuery, in
 
 function arrayField(value: unknown): string[] {
   return Array.isArray(value) ? value.map(String) : [];
+}
+
+function dedupeVectorRecords(records: VectorRecord[]): VectorRecord[] {
+  const seen = new Set<string>();
+  return records.filter((record) => {
+    const id = String(record.id ?? "");
+    if (!id || seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+}
+
+function dedupeMemoryObjects(records: MemoryObject[]): MemoryObject[] {
+  const seen = new Set<string>();
+  return records.filter((record) => {
+    if (seen.has(record.id)) return false;
+    seen.add(record.id);
+    return true;
+  });
 }

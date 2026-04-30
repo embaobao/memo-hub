@@ -21,7 +21,7 @@ MemoHub 即将接入第一个真实场景，当前默认数据目录已经包含
 
 ## Impact
 
-- CLI：`config-init` 当前先补最小清场；后续新增 `data status`、`data clean`、`env` 等命令。
+- CLI：当前以 `data rebuild-schema` 作为首个真实接入的高风险清场入口，并继续演进 `data status`、`data clean`、`env` 等命令。
 - MCP：后续可通过配置/数据管理工具暴露安全的数据状态与清洗能力。
 - 配置：后续增加 data profile/env、active profile、managed root guard 和 retention policy。
 - 测试：所有集成/E2E 默认使用临时 root，避免污染 `~/.memohub`。

@@ -57,7 +57,7 @@ bun run check:release
 - `bun run build:cli` 通过。
 - `bun run verify:cli` 通过。
 - `memohub --help` 显示当前命令集。
-- `memohub mcp-doctor` 通过，或使用 `MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson` 验证日志可写。
+- `memohub mcp doctor` 通过，或使用 `MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson` 验证日志可写。
 - `bun run skill:memohub` 已生成 `skills/memohub/SKILL.md`，且没有生成到本机 Agent 私有目录。
 
 ## 打包

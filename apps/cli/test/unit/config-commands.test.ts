@@ -5,6 +5,8 @@ import { join } from "node:path";
 import { afterEach, describe, expect, test } from "bun:test";
 import { ConfigLoader } from "@memohub/config";
 import {
+  cleanManagedData,
+  DATA_CLEAN_CONFIRMATION,
   getConfigValue,
   parseConfigValue,
   resetGlobalConfig,
@@ -67,5 +69,109 @@ describe("CLI config commands", () => {
       expect(existsSync(join(tempDir, dir))).toBe(false);
     }
     expect(result.removed).toEqual(managedDirs.map((dir) => join(tempDir, dir)));
+  });
+
+  test("resetGlobalConfig returns explicit schema rebuild recovery paths", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-schema-reset-"));
+    const configPath = join(tempDir, "memohub.json");
+
+    const result = resetGlobalConfig(configPath);
+
+    expect(result.removed).toContain(join(tempDir, "data"));
+    expect(result.configPath).toBe(configPath);
+    expect(existsSync(configPath)).toBe(true);
+  });
+
+  test("cleanManagedData defaults to dry-run and requires second confirmation", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-data-clean-"));
+    const configPath = join(tempDir, "memohub.json");
+    const dataDir = join(tempDir, "data");
+    mkdirSync(dataDir, { recursive: true });
+    writeFileSync(join(dataDir, "record.txt"), "keep", "utf8");
+
+    const dryRun = cleanManagedData({ configPath, all: true });
+    expect(dryRun.success).toBe(true);
+    expect(dryRun.dryRun).toBe(true);
+    expect(existsSync(dataDir)).toBe(true);
+
+    const refused = cleanManagedData({ configPath, all: true, yes: true, confirm: "WRONG", dryRun: false });
+    expect(refused.success).toBe(false);
+    expect(existsSync(dataDir)).toBe(true);
+
+    const deleted = cleanManagedData({
+      configPath,
+      all: true,
+      yes: true,
+      confirm: DATA_CLEAN_CONFIRMATION,
+      dryRun: false,
+    });
+    expect(deleted.success).toBe(true);
+    expect(deleted.dryRun).toBe(false);
+    expect(existsSync(dataDir)).toBe(false);
+  });
+
+  test("cleanChannelData previews and deletes only the requested channel", async () => {
+    const { cleanChannelData } = await import("../../src/config-commands.js");
+    const vector = {
+      deletedFilter: "",
+      async list(filter: string) {
+        return filter === "channel = 'hermes:mcp-test'"
+          ? [{ id: "rec-1" }, { id: "rec-2" }]
+          : [];
+      },
+      async delete(filter: string) {
+        this.deletedFilter = filter;
+      },
+    };
+
+    const dryRun = await cleanChannelData(vector as never, { channel: "hermes:mcp-test" });
+    expect(dryRun.success).toBe(true);
+    expect(dryRun.dryRun).toBe(true);
+    expect(dryRun.matchedRecords).toBe(2);
+    expect(vector.deletedFilter).toBe("");
+
+    const refused = await cleanChannelData(vector as never, {
+      channel: "hermes:mcp-test",
+      dryRun: false,
+      yes: true,
+      confirm: "WRONG",
+    });
+    expect(refused.success).toBe(false);
+    expect(vector.deletedFilter).toBe("");
+
+    const deleted = await cleanChannelData(vector as never, {
+      channel: "hermes:mcp-test",
+      dryRun: false,
+      yes: true,
+      confirm: DATA_CLEAN_CONFIRMATION,
+    });
+    expect(deleted.success).toBe(true);
+    expect(deleted.deletedRecords).toBe(2);
+    expect(vector.deletedFilter).toBe("channel = 'hermes:mcp-test'");
+  });
+
+  test("cleanChannelData reports old schema without deleting", async () => {
+    const { cleanChannelData } = await import("../../src/config-commands.js");
+    const vector = {
+      deleteCalled: false,
+      async list() {
+        throw new Error("Schema error: No field named channel. Valid fields are id, vector.");
+      },
+      async delete() {
+        this.deleteCalled = true;
+      },
+    };
+
+    const result = await cleanChannelData(vector as never, {
+      channel: "hermes:mcp-test",
+      dryRun: false,
+      yes: true,
+      confirm: DATA_CLEAN_CONFIRMATION,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.schemaMismatch).toBe(true);
+    expect(result.destructive).toBe(false);
+    expect(vector.deleteCalled).toBe(false);
   });
 });

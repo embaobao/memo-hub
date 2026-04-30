@@ -229,7 +229,7 @@ await operator.run({
 澄清操作：
 
 ```bash
-memohub clarify "项目文档说 track 是主模型，但 OpenSpec 要求统一记忆对象为主模型" --agent hermes
+memohub clarification create "项目文档说 track 是主模型，但 OpenSpec 要求统一记忆对象为主模型" --agent hermes
 ```
 
 ## 与内部处理切片的关系

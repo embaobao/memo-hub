@@ -86,10 +86,10 @@ CLI：
 ```bash
 memohub add "文本" --project memo-hub --source cli
 memohub query "问题" --view project_context --actor hermes --project memo-hub
-memohub resolve-clarification clarify_op_1 "答案" --agent hermes --project memo-hub
-memohub config
-memohub mcp-tools
-memohub serve
+memohub clarification resolve clarify_op_1 "答案" --agent hermes --project memo-hub
+memohub config show
+memohub mcp tools
+memohub mcp serve
 ```
 
 MCP：
@@ -97,8 +97,8 @@ MCP：
 - `memohub_ingest_event`
 - `memohub_query`
 - `memohub_summarize`
-- `memohub_clarify`
-- `memohub_resolve_clarification`
+- `memohub_clarification_create`
+- `memohub_clarification_resolve`
 - `memohub_config_get`
 - `memohub_config_set`
 - `memohub_config_manage`

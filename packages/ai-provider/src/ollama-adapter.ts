@@ -44,10 +44,10 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
       if (error instanceof DOMException && error.name === "AbortError") {
-        throw new AIProviderError("Embedding request timed out", "ollama");
+        throw new AIProviderError(this.buildEmbeddingAccessHint("Embedding request timed out"), "ollama");
       }
       throw new AIProviderError(
-        `Embedding failed: ${error instanceof Error ? error.message : String(error)}`,
+        this.buildEmbeddingAccessHint(`Embedding failed: ${error instanceof Error ? error.message : String(error)}`),
         "ollama",
         error instanceof Error ? error : undefined,
       );
@@ -104,5 +104,17 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
       { role: "system", content: "Summarize the following text concisely." },
       { role: "user", content: text },
     ]);
+  }
+
+  private buildEmbeddingAccessHint(prefix: string): string {
+    return [
+      prefix,
+      `Provider URL: ${this.config.url}`,
+      `Embedding model: ${this.config.embeddingModel}`,
+      "Check Ollama availability with: ollama serve",
+      `Ensure the model exists with: ollama pull ${this.config.embeddingModel}`,
+      "Inspect MemoHub config with: memohub config show",
+      "Verify MemoHub readiness with: memohub mcp-doctor",
+    ].join(" | ");
   }
 }

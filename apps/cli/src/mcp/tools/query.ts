@@ -2,6 +2,7 @@ import { z } from "zod";
 import { EventSource } from "@memohub/protocol";
 import { queryMemoryView } from "../../memory-interface.js";
 import type { UnifiedMemoryRuntime } from "../../unified-memory-runtime.js";
+import type { McpBoundChannelContext } from "../session-context.js";
 
 export const QUERY_VIEWS = ["agent_profile", "recent_activity", "project_context", "coding_context"] as const;
 
@@ -11,7 +12,7 @@ export const QUERY_VIEWS = ["agent_profile", "recent_activity", "project_context
 export const QueryInputSchema = z.object({
   view: z.enum(QUERY_VIEWS).describe("命名上下文视图"),
   actorId: z.string().optional().describe("Agent/Actor ID（可选）"),
-  projectId: z.string().describe("项目 ID"),
+  projectId: z.string().optional().describe("项目 ID"),
   workspaceId: z.string().optional().describe("工作区 ID（可选）"),
   sessionId: z.string().optional().describe("会话 ID（可选）"),
   taskId: z.string().optional().describe("任务 ID（可选）"),
@@ -26,7 +27,7 @@ export type QueryInput = z.infer<typeof QueryInputSchema>;
  *
  * 关键边界：这里只调用统一记忆运行时，不直接构造 Text2MemInstruction。
  */
-export function createQueryHandler(runtime: UnifiedMemoryRuntime) {
+export function createQueryHandler(runtime: UnifiedMemoryRuntime, context?: McpBoundChannelContext | null) {
   return async (params: QueryInput) => {
     try {
       const validationResult = QueryInputSchema.safeParse(params);
@@ -38,10 +39,23 @@ export function createQueryHandler(runtime: UnifiedMemoryRuntime) {
         };
       }
 
-      const view = await queryMemoryView(runtime, {
+      const resolvedInput = {
         ...validationResult.data,
+        actorId: validationResult.data.actorId ?? context?.ownerActorId,
+        projectId: validationResult.data.projectId ?? context?.projectId,
+        workspaceId: validationResult.data.workspaceId ?? context?.workspaceId,
+        sessionId: validationResult.data.sessionId ?? context?.sessionId,
+        taskId: validationResult.data.taskId ?? context?.taskId,
         source: EventSource.MCP,
-      });
+      };
+      if (!resolvedInput.projectId) {
+        return {
+          success: false,
+          error: "Missing projectId. Provide it explicitly or bind a channel first.",
+        };
+      }
+
+      const view = await queryMemoryView(runtime, resolvedInput);
 
       return {
         success: true,
@@ -74,7 +88,7 @@ export const QUERY_TOOL_METADATA = {
       },
       projectId: {
         type: "string" as const,
-        description: "项目 ID",
+        description: "项目 ID；可从当前绑定渠道继承",
       },
       workspaceId: {
         type: "string" as const,
@@ -98,6 +112,6 @@ export const QUERY_TOOL_METADATA = {
         description: "每层结果数量限制",
       },
     },
-    required: ["view", "projectId"],
+    required: ["view"],
   },
 };

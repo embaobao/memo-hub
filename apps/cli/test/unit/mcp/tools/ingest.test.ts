@@ -239,4 +239,47 @@ describe("MCP Ingest Tool", () => {
     expect(result.success).toBe(true);
     expect(result.contentLength).toBe(1000);
   });
+
+  test("应该在缺少 source/channel/projectId 时继承当前绑定渠道上下文", async () => {
+    const handler = createIngestEventHandler(mockHub, {
+      channelId: "hermes:primary:memo-hub",
+      ownerActorId: "hermes",
+      source: EventSource.HERMES,
+      projectId: "memo-hub",
+      sessionId: "session-123",
+      taskId: "task-123",
+      purpose: "primary",
+    });
+
+    const result = await handler({
+      event: {
+        kind: EventKind.MEMORY,
+        confidence: EventConfidence.REPORTED,
+        payload: {
+          text: "Context inherited ingest",
+        },
+      },
+    } as never);
+
+    expect(result.success).toBe(true);
+    expect(receivedEvent.source).toBe(EventSource.HERMES);
+    expect(receivedEvent.channel).toBe("hermes:primary:memo-hub");
+    expect(receivedEvent.projectId).toBe("memo-hub");
+    expect(receivedEvent.sessionId).toBe("session-123");
+  });
+
+  test("应该在没有绑定渠道且缺少关键字段时返回错误", async () => {
+    const result = await ingestHandler({
+      event: {
+        kind: EventKind.MEMORY,
+        confidence: EventConfidence.REPORTED,
+        payload: {
+          text: "Context missing ingest",
+        },
+      },
+    } as never);
+
+    expect(result.success).toBe(false);
+    expect(result.error).toContain("Missing source, channel, or projectId");
+  });
 });

@@ -5,12 +5,12 @@
 ## 已实现且本轮已核实的部分
 
 - 主架构口径已切换到“统一记忆中枢”，CLI/MCP 不再注册或暴露 `track-*` 入口。
-- CLI 当前对外命令是 `inspect`、`add`、`query`、`summarize`、`clarify`、`resolve-clarification`、`config`、`mcp-config`、`mcp-tools`、`mcp-status`、`mcp-logs`、`serve`。
-- `serve` 是当前正式的 MCP 启动命令，`mcp` 是启动别名。
-- MCP 当前推荐工具是 `memohub_ingest_event`、`memohub_query`、`memohub_summarize`、`memohub_clarify`、`memohub_resolve_clarification`、`memohub_config_get`、`memohub_config_set` 和 `memohub_config_manage`。
+- CLI 当前对外命令是 `inspect`、`add`、`query`、`summarize`、`clarification create/resolve`、`config show/check/get/set/uninstall`、`channel open/list/status/use/close`、`data status/clean/rebuild-schema`、`mcp config/tools/status/doctor/serve`、`logs query`、`serve`。
+- `memohub mcp serve` 是当前推荐的 MCP 启动命令，根级 `serve` 仍保留为直接启动别名。
+- MCP 当前推荐工具是 `memohub_ingest_event`、`memohub_query`、`memohub_summarize`、`memohub_clarification_create`、`memohub_clarification_resolve`、`memohub_config_get`、`memohub_config_set`、`memohub_config_manage`、`memohub_data_manage` 和 `memohub_channel_*`。
 - MCP 资源入口为 `memohub://stats` 和 `memohub://tools`。
 - 配置系统已接入新架构运行时，CLI/MCP 从 `storage`、`ai`、`mcp`、`memory` 配置解析存储路径、模型、日志、资源和视图能力。
-- MCP stdio 启动不向 stdout 输出非 JSON 内容，服务状态和日志通过 `mcp-status`、`mcp-logs` 与 `memohub://stats` 维护。
+- MCP stdio 启动不向 stdout 输出非 JSON 内容，服务状态和日志通过 `mcp status`、`logs query` 与 `memohub://stats` 维护。
 - `cli add` 和 MCP `memohub_ingest_event` 复用统一运行时写入路径：event -> canonical event -> MemoryObject -> storage projection。
 - `file_path`、`category` 作为统一记忆内容元数据保留。
 - 仓库中散落在 `src/` 下的测试文件已全部迁移到各包自己的 `test/` 目录，并更新了对应引用。
@@ -28,15 +28,22 @@ memohub inspect
 memohub add "文本内容" --project memo-hub --source cli --category decision
 memohub query "Hermes habits" --view agent_profile --actor hermes --project memo-hub
 memohub summarize "Hermes 最近完成了查询链路收敛" --agent hermes
-memohub clarify "项目约定存在冲突" --agent hermes
-memohub resolve-clarification clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
-memohub config
-memohub mcp-config
-memohub mcp-tools
-memohub mcp-status
-memohub mcp-doctor
-memohub mcp-logs --tail 50
-memohub serve
+memohub clarification create "项目约定存在冲突" --agent hermes
+memohub clarification resolve clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
+memohub config show
+memohub config check
+memohub config get mcp.logPath
+memohub config set system.lang '"zh"'
+memohub channel open --actor hermes --source hermes --project memo-hub --purpose primary
+memohub channel list --actor hermes
+memohub data status
+memohub data clean --actor hermes --purpose test --dry-run
+memohub mcp config
+memohub mcp tools
+memohub mcp status
+memohub mcp doctor
+memohub logs query --tail 50
+memohub mcp serve
 ```
 
 开发态也可以直接运行源码入口：
@@ -46,11 +53,11 @@ bun apps/cli/src/index.ts inspect
 bun apps/cli/src/index.ts add "文本内容"
 bun apps/cli/src/index.ts query "当前项目上下文" --view project_context --project memo-hub
 bun apps/cli/src/index.ts summarize "近期活动文本" --agent hermes
-bun apps/cli/src/index.ts clarify "冲突文本" --agent hermes
-bun apps/cli/src/index.ts resolve-clarification clarify_op_1 "澄清答案" --agent hermes --project memo-hub
-bun apps/cli/src/index.ts mcp-tools
-bun apps/cli/src/index.ts mcp-doctor
-bun apps/cli/src/index.ts serve
+bun apps/cli/src/index.ts clarification create "冲突文本" --agent hermes
+bun apps/cli/src/index.ts clarification resolve clarify_op_1 "澄清答案" --agent hermes --project memo-hub
+bun apps/cli/src/index.ts mcp tools
+bun apps/cli/src/index.ts mcp doctor
+bun apps/cli/src/index.ts mcp serve
 ```
 
 ### MCP
@@ -60,8 +67,17 @@ bun apps/cli/src/index.ts serve
 - `memohub_ingest_event`
 - `memohub_query`
 - `memohub_summarize`
-- `memohub_clarify`
-- `memohub_resolve_clarification`
+- `memohub_clarification_create`
+- `memohub_clarification_resolve`
+- `memohub_config_get`
+- `memohub_config_set`
+- `memohub_config_manage`
+- `memohub_data_manage`
+- `memohub_channel_open`
+- `memohub_channel_list`
+- `memohub_channel_status`
+- `memohub_channel_close`
+- `memohub_channel_use`
 
 资源：
 

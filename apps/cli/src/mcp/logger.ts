@@ -37,4 +37,17 @@ export class McpLogger {
       return "";
     }
   }
+
+  readEntries(lines = 200): McpLogEntry[] {
+    try {
+      const content = readFileSync(this.logPath, "utf8");
+      return content
+        .split("\n")
+        .filter(Boolean)
+        .slice(-lines)
+        .map((line) => JSON.parse(line) as McpLogEntry);
+    } catch {
+      return [];
+    }
+  }
 }

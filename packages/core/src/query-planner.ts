@@ -65,6 +65,7 @@ export interface MemoryRecallStore {
 export const DEFAULT_RECALL_WEIGHT_POLICY: RecallWeightPolicy = {
   id: "default-self-project-global",
   layer: { self: 3, project: 2, global: 1 },
+  recency: { halfLifeDays: 14, weight: 1 },
   confidence: { verified: 1, observed: 0.8, reported: 0.6, inferred: 0.4, provisional: 0.2 },
   state: { curated: 1, raw: 0.6, conflicted: -1, archived: -2 },
   domain: {
@@ -97,9 +98,9 @@ export class QueryPlanner {
       this.store.recall(recallQueries.global),
     ]);
 
-    const selfContext = this.rank(self, "self", policy, domains);
-    const projectContext = this.rank(project, "project", policy, domains);
-    const globalContext = this.rank(global, "global", policy, domains);
+    const selfContext = this.rank(self, "self", policy, domains, request.query);
+    const projectContext = this.rank(project, "project", policy, domains, request.query);
+    const globalContext = this.rank(global, "global", policy, domains, request.query);
     const visibleSelfContext = selfContext.filter((result) => isDefaultVisibleMemory(result.object));
     const visibleProjectContext = projectContext.filter((result) => isDefaultVisibleMemory(result.object));
     const visibleGlobalContext = globalContext.filter((result) => isDefaultVisibleMemory(result.object));
@@ -119,7 +120,7 @@ export class QueryPlanner {
       metadata: {
         query: request.query,
         policyId: policy.id,
-        appliedFactors: ["layer", "confidence", "domain", "state", "sourceTrust"],
+        appliedFactors: ["layer", "confidence", "domain", "state", "sourceTrust", "recency", "similarity"],
         layers: { self: self.length, project: project.length, global: global.length },
       },
     };
@@ -130,10 +131,11 @@ export class QueryPlanner {
     layer: RecallLayer,
     policy: RecallWeightPolicy,
     requestedDomains: string[],
+    query?: string,
   ): WeightedMemoryResult[] {
     return objects
       .map((object) => {
-        const scoreBreakdown = scoreMemory(object, layer, policy, requestedDomains);
+        const scoreBreakdown = scoreMemory(object, layer, policy, requestedDomains, query);
         const score = Object.values(scoreBreakdown).reduce((sum, value) => sum + value, 0);
         return { object, layer, score, scoreBreakdown };
       })
@@ -218,6 +220,7 @@ export function scoreMemory(
   layer: RecallLayer,
   policy: RecallWeightPolicy,
   requestedDomains: string[],
+  query?: string,
 ): Record<string, number> {
   const confidence = String(object.metadata?.confidence ?? object.provenance.metadata?.confidence ?? "");
   const matchingDomainCount = object.domains.filter((domain) => requestedDomains.includes(domain.type)).length;
@@ -228,6 +231,9 @@ export function scoreMemory(
     domain: matchingDomainCount > 0 ? matchingDomainCount * 0.5 : 0,
     state: policy.state?.[object.state] ?? 0,
     sourceTrust: policy.sourceTrust?.[object.source.id] ?? policy.sourceTrust?.[object.source.type] ?? 0,
+    recency: scoreRecency(object, policy),
+    similarity: scoreSimilarity(object),
+    lexical: scoreLexicalMatch(object, query),
   };
 }
 
@@ -250,4 +256,45 @@ function uniqueSources(objects: MemoryObject[]): SourceDescriptor[] {
     map.set(`${object.source.type}:${object.source.id}`, object.source);
   }
   return Array.from(map.values());
+}
+
+function scoreRecency(object: MemoryObject, policy: RecallWeightPolicy): number {
+  const weight = policy.recency?.weight ?? 0;
+  if (weight <= 0) return 0;
+
+  const halfLifeDays = policy.recency?.halfLifeDays ?? 14;
+  const timestamp = object.updatedAt ?? object.createdAt ?? object.provenance.ingestedAt;
+  if (!timestamp) return 0;
+
+  const ageMs = Date.now() - new Date(timestamp).getTime();
+  if (!Number.isFinite(ageMs) || ageMs < 0) return weight;
+
+  const ageDays = ageMs / (1000 * 60 * 60 * 24);
+  return weight * Math.pow(0.5, ageDays / halfLifeDays);
+}
+
+function scoreSimilarity(object: MemoryObject): number {
+  const distance = Number(object.metadata?.vectorDistance);
+  if (!Number.isFinite(distance)) return 0;
+
+  // 距离越小越相关，限制上界避免覆盖层级治理权重。
+  return Math.max(0, 1 - distance);
+}
+
+function scoreLexicalMatch(object: MemoryObject, query?: string): number {
+  const normalizedQuery = query?.trim().toLowerCase();
+  if (!normalizedQuery) return 0;
+
+  const haystack = object.content
+    .map((block) => `${block.text ?? ""} ${JSON.stringify(block.data ?? "")}`.toLowerCase())
+    .join(" ");
+  if (!haystack) return 0;
+
+  if (haystack.includes(normalizedQuery)) return 2;
+
+  const tokens = normalizedQuery.split(/\s+/).filter((token) => token.length >= 3);
+  if (tokens.length === 0) return 0;
+
+  const matched = tokens.filter((token) => haystack.includes(token)).length;
+  return matched === 0 ? 0 : (matched / tokens.length);
 }

@@ -6,6 +6,9 @@ const runtimeConfig: ResolvedMemoHubRuntimeConfig = {
   version: "1.1.0",
   configVersion: "unified-memory-1",
   root: "/tmp/memohub",
+  registry: {
+    channelRegistryPath: "/tmp/memohub/state/channels.json",
+  },
   storage: {
     blobPath: "/tmp/memohub/blobs",
     vectorDbPath: "/tmp/memohub/data/memohub.lancedb",
@@ -41,11 +44,14 @@ describe("MCP access catalog", () => {
   test("exposes tools, resources, storage and agent instructions from runtime config", () => {
     const catalog = createMcpAccessCatalog("/repo/memo-hub", runtimeConfig);
 
-    expect(catalog.tools.map((tool) => tool.name)).toContain("memohub_resolve_clarification");
+    expect(catalog.tools.map((tool) => tool.name)).toContain("memohub_clarification_resolve");
     expect(catalog.resources.map((resource) => resource.uri)).toContain("memohub://tools");
     expect(catalog.views).toContain("coding_context");
     expect(catalog.storage.logPath).toBe("/tmp/memohub/logs/mcp.ndjson");
+    expect(catalog.registry.channelRegistryPath).toBe("/tmp/memohub/state/channels.json");
     expect(catalog.agentInstructions.join("\n")).toContain("memohub://tools");
+    expect(catalog.ingestContract.identity).toContain("actorId: querying or resolving agent identity, for example hermes");
+    expect(catalog.ingestContract.metadataRecommended).toContain("component");
   });
 
   test("generates agent-readable MCP client config", () => {

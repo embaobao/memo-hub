@@ -19,22 +19,43 @@ memohub --help
 - `apps/cli/dist/index.js` 存在且可执行。
 - `bin.memohub` 指向 `dist/index.js`。
 - `memohub --version` 能输出版本。
-- `memohub --help` 能看到 `mcp-doctor`、`mcp-tools`、`resolve-clarification`。
+- `memohub --help` 能看到 `mcp doctor`、`mcp tools`、`clarification resolve`。
+- 中文环境或 `memohub --lang zh --help` 下，帮助信息应以中文显示关键命令、选项和流程指引。
 
 ## 2. 配置检查
 
-如果这是第一次真实接入，先清理开发和测试阶段的本地数据：
+如果这是第一次真实接入，先检查共享配置与当前运行时：
 
 ```bash
-memohub config-init
+memohub config check
+memohub config show
 ```
 
-该命令会重写全局配置，并删除 MemoHub 管理的 `data`、`blobs`、`logs`、`cache` 和旧 `tracks` 目录。它不会删除仓库源码。
+如果发现旧 schema 或明确需要清空验证污染数据，再由用户授权执行高风险命令：
 
 ```bash
-memohub config
-memohub config-get mcp.logPath
-memohub config-get storage.vectorDbPath
+memohub data rebuild-schema --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+如果只是验证某一个接入渠道，不要默认清空全部数据。先查看状态和按渠道 dry-run：
+
+```bash
+memohub data status
+memohub data clean --actor hermes --purpose test --dry-run
+```
+
+只有用户明确授权时，才执行按渠道删除：
+
+```bash
+memohub data clean --actor hermes --purpose test --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+如果 dry-run 返回 `schemaMismatch: true`，说明本机向量表缺少 `channel` 字段。此时不要继续删除，也不要让 Hermes/Codex/Gemini 使用独立私有数据源；应由用户决定是否重建 MemoHub 管理数据目录。
+
+```bash
+memohub config show
+memohub config get mcp.logPath
+memohub config get storage.vectorDbPath
 ```
 
 通过标准：
@@ -47,22 +68,23 @@ memohub config-get storage.vectorDbPath
 ## 3. MCP 能力发现
 
 ```bash
-memohub mcp-config
-memohub mcp-tools
-memohub mcp-status
-memohub mcp-doctor
+memohub mcp config
+memohub mcp tools
+memohub mcp status
+memohub mcp doctor
 ```
 
 通过标准：
 
-- `mcp-tools` 返回当前 tools、resources、views、layers、operations。
-- `mcp-doctor.ok=true`。
-- `mcp-status` 能返回 storage、logPath、views 和 operations。
+- `mcp tools` 返回当前 tools、resources、views、layers、operations。
+- `mcp doctor.ok=true`。
+- `mcp status` 能返回 storage、logPath、views 和 operations。
+- `memohub://tools` 或 `mcp tools` 能看到 `memohub_data_manage action=clean_channel`。
 
 如果默认日志路径无权限：
 
 ```bash
-MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp-doctor
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp doctor
 ```
 
 如果只是临时验证，不想污染默认数据目录：
@@ -72,7 +94,7 @@ MEMOHUB_STORAGE__ROOT=/tmp/memohub-test \
 MEMOHUB_STORAGE__BLOB_PATH=/tmp/memohub-test/blobs \
 MEMOHUB_STORAGE__VECTOR_DB_PATH=/tmp/memohub-test/data/memohub.lancedb \
 MEMOHUB_MCP__LOG_PATH=/tmp/memohub-test/logs/mcp.ndjson \
-memohub mcp-doctor
+memohub mcp doctor
 ```
 
 ## 4. Agent Skill 安装源
@@ -101,9 +123,10 @@ bun run skill:memohub
 
 通过标准：
 
-- `tools/list` 包含 `memohub_ingest_event`、`memohub_query`、`memohub_resolve_clarification` 和 `memohub_config_manage`。
+- `tools/list` 包含 `memohub_ingest_event`、`memohub_query`、`memohub_clarification_resolve`、`memohub_config_manage` 和 `memohub_data_manage`。
 - `resources/list` 包含 `memohub://tools` 和 `memohub://stats`。
 - `resources/read memohub://tools` 返回 Agent 可读接入说明。
+- `memohub_data_manage` 的工具说明包含 `status`、`clean_channel`、`clean_all` 和 `rebuild_schema` 的风险边界。
 
 ## 6. 业务链路验证
 
@@ -118,6 +141,23 @@ bun run skill:memohub
 - 写入链路返回 `eventId`、`contentHash` 和 `memoryObject`。
 - 查询链路返回 `selfContext/projectContext/globalContext`。
 - 澄清写回返回 `clarification.status=resolved` 和 `memoryObject.state=curated`。
+
+如果要先验证 Hermes 新库闭环，而不触碰真实共享数据，使用隔离脚本：
+
+```bash
+bun run build:cli
+bun run test:hermes-isolated
+```
+
+通过标准：
+
+- 临时配置和临时存储根目录被自动创建。
+- Hermes 主渠道和测试渠道都能正常打开。
+- `memohub list --perspective actor --actor hermes` 能列出刚写入的隔离记忆。
+- `memohub query ... --view project_context` 能召回隔离记忆。
+- `memohub data clean --actor hermes --purpose test --dry-run --json` 能返回匹配记录数。
+- 验证链路默认只使用 `test` 渠道，不应触碰真实共享数据。
+- 脚本结束后自动删除临时目录，不污染真实 `~/.memohub`。
 
 ## 7. 文档一致性检查
 

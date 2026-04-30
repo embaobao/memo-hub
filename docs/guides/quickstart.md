@@ -25,14 +25,28 @@ memohub --version
 memohub --help
 ```
 
-如果要开始第一次真实接入，先清理开发测试数据并初始化配置：
+如果要开始第一次真实接入，先检查配置和当前运行时：
 
 ```bash
-memohub config-init
-memohub config-check
+memohub config check
+memohub config show
 ```
 
-`config-init` 会删除 MemoHub 管理的 `data`、`blobs`、`logs`、`cache` 和旧 `tracks` 目录，不会删除当前仓库源码。
+正常接入不会删除任何数据。
+
+如果本机已经创建过旧 schema 的向量表，且用户明确授权清空 MemoHub 管理数据，才执行 `memohub data rebuild-schema --yes --confirm DELETE_MEMOHUB_DATA` 重建数据目录，并重启 MCP 服务。正常接入不要默认清空数据。
+
+需要显式查看或清空 MemoHub 管理数据时，使用数据命令。默认只预览，不删除：
+
+```bash
+memohub data status
+memohub data clean --dry-run
+memohub data clean --actor hermes --purpose test --dry-run
+memohub data clean --actor hermes --purpose test --yes --confirm DELETE_MEMOHUB_DATA
+memohub data clean --all --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+带 `--channel` 的命令只清理该渠道的向量记录，适合验证单个接入渠道。带 `--all` 的命令会清理所有 MemoHub 管理数据，风险更高。删除命令只能在用户明确授权时执行。
 
 ## 写入和查询
 
@@ -51,10 +65,10 @@ memohub query "MCP 工具注册在哪里" --view coding_context --actor codex --
 ## MCP 接入
 
 ```bash
-memohub mcp-config
-memohub mcp-tools
-memohub mcp-doctor
-memohub serve
+memohub mcp config
+memohub mcp tools
+memohub mcp doctor
+memohub mcp serve
 ```
 
 Agent 接入后应先读取 `memohub://tools`，再选择具体工具。
@@ -62,8 +76,8 @@ Agent 接入后应先读取 `memohub://tools`，再选择具体工具。
 ## 澄清写回
 
 ```bash
-memohub clarify "项目上下文里存在需要用户确认的接口描述冲突" --agent hermes
-memohub resolve-clarification clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件和命名视图查询为准" --agent hermes --project memo-hub
+memohub clarification create "项目上下文里存在需要用户确认的接口描述冲突" --agent hermes
+memohub clarification resolve clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件和命名视图查询为准" --agent hermes --project memo-hub
 ```
 
 ## 下一步

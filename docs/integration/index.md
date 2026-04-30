@@ -23,9 +23,9 @@ memohub --help
 3. 检查 MCP 可接入性：
 
 ```bash
-memohub mcp-config
-memohub mcp-tools
-memohub mcp-doctor
+memohub mcp config
+memohub mcp tools
+memohub mcp doctor
 ```
 
 详见：[接入前检查清单](./preflight-checklist.md)
@@ -36,7 +36,7 @@ memohub mcp-doctor
 bun run skill:memohub
 ```
 
-该命令只生成仓库根目录 `skills/memohub/SKILL.md`。Agent 通过 `npx skills add <repo> --skill memohub` 安装后，会读取该 skill 来完成本地 CLI 构建/链接、MCP 配置检查、`memohub serve` 启动和工具发现。不要生成到 `.codex`、`.claude`、`.gemini` 或 `apps/cli/skills`。
+该命令只生成仓库根目录 `skills/memohub/SKILL.md`。Agent 通过 `npx skills add <repo> --skill memohub` 安装后，会读取该 skill 来完成本地 CLI 构建/链接、MCP 配置检查、`memohub mcp serve` 启动和工具发现。不要生成到 `.codex`、`.claude`、`.gemini` 或 `apps/cli/skills`。
 
 ## 如何选择入口
 
@@ -44,10 +44,10 @@ bun run skill:memohub
 
 使用 MCP：
 
-- 启动命令：`memohub serve`
+- 启动命令：`memohub mcp serve`
 - 能力发现：读取 `memohub://tools`
 - 状态资源：读取 `memohub://stats`
-- 接入验证：`memohub mcp-doctor`
+- 接入验证：`memohub mcp doctor`
 
 详见：[MCP 集成](./mcp-integration.md)
 
@@ -57,9 +57,9 @@ bun run skill:memohub
 
 - `memohub add`
 - `memohub query`
-- `memohub resolve-clarification`
-- `memohub config`
-- `memohub mcp-status`
+- `memohub clarification resolve`
+- `memohub config show`
+- `memohub mcp status`
 
 详见：[CLI 集成](./cli-integration.md)
 
@@ -72,15 +72,19 @@ CLI 命令：
 - `query`
 - `summarize`
 - `clarify`
-- `resolve-clarification`
-- `config`
-- `config-get`
-- `config-set`
-- `mcp-config`
-- `mcp-tools`
-- `mcp-status`
-- `mcp-doctor`
-- `mcp-logs`
+- `clarification resolve`
+- `config show`
+- `config check`
+- `config get`
+- `config set`
+- `config uninstall`
+- `channel open/list/status/use/close`
+- `data status/clean/rebuild-schema`
+- `mcp config`
+- `mcp tools`
+- `mcp status`
+- `mcp doctor`
+- `logs query`
 - `serve`
 
 MCP 工具：
@@ -88,11 +92,18 @@ MCP 工具：
 - `memohub_ingest_event`
 - `memohub_query`
 - `memohub_summarize`
-- `memohub_clarify`
-- `memohub_resolve_clarification`
+- `memohub_clarification_create`
+- `memohub_clarification_resolve`
+- `memohub_logs_query`
 - `memohub_config_get`
 - `memohub_config_set`
 - `memohub_config_manage`
+- `memohub_data_manage`
+- `memohub_channel_open`
+- `memohub_channel_list`
+- `memohub_channel_status`
+- `memohub_channel_close`
+- `memohub_channel_use`
 
 MCP 资源：
 

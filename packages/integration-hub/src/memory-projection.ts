@@ -16,6 +16,7 @@ export interface MemoryVectorRecord {
   state: string;
   source_type: string;
   source_id: string;
+  channel?: string;
   actor_id?: string;
   subject_id?: string;
   text?: string;
@@ -100,6 +101,11 @@ export async function createVectorRecordsFromMemoryObject(
       state: memory.state,
       source_type: memory.source.type,
       source_id: memory.source.id,
+      channel: typeof memory.metadata?.channel === "string"
+        ? memory.metadata.channel
+        : typeof memory.source.metadata?.channel === "string"
+          ? memory.source.metadata.channel
+          : undefined,
       actor_id: memory.actor?.id,
       subject_id: memory.subject?.id,
       text,
