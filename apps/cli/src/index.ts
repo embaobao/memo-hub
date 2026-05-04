@@ -162,6 +162,42 @@ function printListBlock(label: string, values: string[]): void {
   for (const value of values) console.log(`- ${value}`);
 }
 
+function printMemoryOverview(memories: any[], lang: CliLang, limit: number): void {
+  const grouped = new Map<string, any[]>();
+  for (const memory of memories) {
+    const actorId = memory.actor?.id ?? memory.source?.id ?? "unknown";
+    const current = grouped.get(actorId) ?? [];
+    current.push(memory);
+    grouped.set(actorId, current);
+  }
+
+  const entries = Array.from(grouped.entries())
+    .map(([actorId, items]) => ({
+      actorId,
+      count: items.length,
+      latest: items.sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0],
+    }))
+    .sort((left, right) => right.latest.updatedAt.localeCompare(left.latest.updatedAt))
+    .slice(0, limit);
+
+  printSectionTitle(t(lang, "listOverviewTitle"));
+  printKeyValue(t(lang, "actorCount"), String(entries.length));
+  printKeyValue(t(lang, "memoryCount"), String(memories.length));
+  console.log();
+
+  for (const entry of entries) {
+    const preview = previewText(entry.latest?.content?.[0]?.text ?? "", 120);
+    console.log(chalk.bold(entry.actorId));
+    console.log(`  ${t(lang, "resultCount")}: ${entry.count}`);
+    if (entry.latest?.subject?.id) console.log(`  ${t(lang, "projectId")}: ${entry.latest.subject.id}`);
+    console.log(`  ${t(lang, "updatedAt")}: ${entry.latest.updatedAt}`);
+    if (preview) console.log(`  ${t(lang, "recentMemory")}: ${preview}`);
+    console.log();
+  }
+
+  console.log(chalk.gray(`${t(lang, "filters")}: ${t(lang, "listOverviewHint")}`));
+}
+
 function printMcpToolsSummary(catalog: ReturnType<typeof createMcpAccessCatalog>, lang: CliLang): void {
   const coreTools = catalog.tools.filter((tool) =>
     ["memohub_ingest_event", "memohub_query", "memohub_summarize", "memohub_clarification_create", "memohub_clarification_resolve"].includes(tool.name)
@@ -506,9 +542,9 @@ program
   .command(cliCommand("list").name)
   .alias(cliCommand("list").alias ?? "ls")
   .description(helpText(cliCommand("list").description))
-  .option("--perspective <perspective>", helpText("Governance perspective: actor, project, or global"), "project")
+  .option("--perspective <perspective>", helpText("Governance perspective: actor, project, or global"))
   .option("--actor <actorId>", helpText("Actor id for actor perspective"))
-  .option("--project <projectId>", helpText("Project id for project perspective"), "default")
+  .option("--project <projectId>", helpText("Project id for project perspective"))
   .option("--workspace <workspaceId>", helpText("Workspace binding"))
   .option("--session <sessionId>", helpText("Session binding"))
   .option("--task <taskId>", helpText("Task binding"))
@@ -517,24 +553,35 @@ program
   .option("--json", helpText("Output raw JSON"))
   .action(async (options) => {
     const runtime = await createRuntime();
+    const limit = Number(options.limit);
+    const explicitPerspective = typeof options.perspective === "string" && options.perspective.length > 0;
+    const hasScopedFilter = Boolean(
+      explicitPerspective || options.actor || options.project || options.workspace || options.session || options.task || options.domain?.length,
+    );
+    const perspective = (options.perspective ?? "global") as "actor" | "project" | "global";
     const memories = await runtime.listMemories({
-      perspective: options.perspective,
+      perspective,
       actorId: options.actor,
       projectId: options.project,
       workspaceId: options.workspace,
       sessionId: options.session,
       taskId: options.task,
       domains: options.domain,
-      limit: Number(options.limit),
+      limit,
     } as never);
 
     if (options.json) {
-      console.log(JSON.stringify({ perspective: options.perspective, memories }, null, 2));
+      console.log(JSON.stringify({ perspective: hasScopedFilter ? perspective : "overview", memories }, null, 2));
       return;
     }
 
     const lang = currentLang(program.opts().lang);
-    printSectionTitle(`MemoHub List · ${options.perspective}`);
+    if (!hasScopedFilter) {
+      printMemoryOverview(memories, lang, limit);
+      return;
+    }
+
+    printSectionTitle(`MemoHub List · ${perspective}`);
     printKeyValue(t(lang, "resultCount"), String(memories.length));
     for (const memory of memories) {
       console.log();

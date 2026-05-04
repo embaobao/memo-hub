@@ -6,6 +6,7 @@ Generated from `openspec/changes` and `openspec/specs`.
 
 - [add-channel-registry-and-agent-binding](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-channel-registry-and-agent-binding/proposal.md)
 - [add-data-environments-and-cleanup](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-data-environments-and-cleanup/proposal.md)
+- [add-git-code-asset-layer](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-git-code-asset-layer/proposal.md)
 - [add-source-adapters-dependency-intelligence](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-source-adapters-dependency-intelligence/proposal.md)
 - [close-hermes-onboarding-and-i18n](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/close-hermes-onboarding-and-i18n/proposal.md)
 

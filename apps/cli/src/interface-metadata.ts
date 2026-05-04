@@ -75,11 +75,11 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
   {
     name: "list",
     alias: "ls",
-    description: "List governed memory objects directly by actor/project/global perspective",
+    description: "List memory overview by act first, or inspect governed memory objects by actor/project/global perspective",
     options: [
-      { name: "--perspective <perspective>", description: "Governance perspective: actor, project, or global", defaultValue: "project" },
+      { name: "--perspective <perspective>", description: "Governance perspective: actor, project, or global" },
       { name: "--actor <actorId>", description: "Actor id for actor perspective" },
-      { name: "--project <projectId>", description: "Project id for project perspective", defaultValue: "default" },
+      { name: "--project <projectId>", description: "Project id for project perspective" },
       { name: "--workspace <workspaceId>", description: "Workspace binding" },
       { name: "--session <sessionId>", description: "Session binding" },
       { name: "--task <taskId>", description: "Task binding" },
@@ -88,6 +88,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
       { name: "--json", description: "Output raw JSON" },
     ],
     examples: [
+      "memohub ls",
       "memohub list --perspective actor --actor hermes --limit 10",
       "memohub list --perspective project --project memo-hub --limit 20",
       "memohub ls --perspective global --limit 20 --json",

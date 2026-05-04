@@ -393,6 +393,11 @@ const messages = {
     noMatches: "没有匹配结果。",
     clarificationCreated: "已生成澄清项",
     clarificationResolved: "已写回澄清结果",
+    listOverviewTitle: "MemoHub 记忆总览",
+    recentMemory: "最近记忆",
+    actorCount: "Act 数量",
+    memoryCount: "记忆数量",
+    listOverviewHint: "使用 memohub ls --perspective actor --actor <act> 或 --perspective project --project <project> 继续筛选",
   },
   en: {
     runtimeTitle: "MemoHub Runtime",
@@ -506,6 +511,11 @@ const messages = {
     noMatches: "No matching log entries.",
     clarificationCreated: "Clarification created",
     clarificationResolved: "Clarification resolved",
+    listOverviewTitle: "MemoHub Memory Overview",
+    recentMemory: "Recent memory",
+    actorCount: "Act count",
+    memoryCount: "Memory count",
+    listOverviewHint: "Use memohub ls --perspective actor --actor <act> or --perspective project --project <project> to continue filtering",
   },
 } as const;
 

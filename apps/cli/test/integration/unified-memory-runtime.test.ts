@@ -301,4 +301,39 @@ describe("UnifiedMemoryRuntime business chain", () => {
 
     expect(memories.some((memory) => memory.id === "mem_evt-hermes-list-1")).toBe(true);
   });
+
+  test("lists memories across projects without assuming a default project", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-runtime-"));
+    const vector = new FakeVectorStorage();
+    const runtime = new UnifiedMemoryRuntime({
+      cas: new ContentAddressableStorage(join(tempDir, "blobs")),
+      vector: vector as never,
+      embedder: fakeEmbedder,
+      channels: new ChannelRegistry(join(tempDir, "state", "channels.json")),
+    });
+
+    await runtime.initialize();
+
+    await runtime.ingest({
+      id: "evt-overview-1",
+      source: "hermes" as never,
+      channel: "hermes:primary:hermes-cli",
+      kind: "memory" as never,
+      projectId: "hermes-cli",
+      confidence: "reported" as never,
+      payload: {
+        text: "Hermes overview memory in hermes-cli project",
+        kind: "memory",
+        category: "project-knowledge",
+      },
+    });
+
+    const globalMemories = await runtime.listMemories({
+      perspective: "global",
+      limit: 20,
+    });
+
+    expect(globalMemories.length).toBeGreaterThan(0);
+    expect(globalMemories.some((memory) => memory.subject?.id === "hermes-cli")).toBe(true);
+  });
 });
