@@ -8,7 +8,7 @@ import { McpLogger } from "./mcp/logger.js";
 import { loadRuntimeConfig } from "./runtime-config.js";
 import type { UnifiedMemoryRuntime } from "./unified-memory-runtime.js";
 import type { VectorStorage } from "@memohub/storage-soul";
-import type { ChannelPurpose, ChannelStatus } from "./channel-registry.js";
+import type { ChannelPurpose, ChannelStatus } from "@memohub/channel";
 
 export const DATA_CLEAN_CONFIRMATION = "DELETE_MEMOHUB_DATA";
 export const CONFIG_UNINSTALL_CONFIRMATION = "DELETE_MEMOHUB_CONFIG";
@@ -187,7 +187,7 @@ export async function cleanChannelData(vector: VectorStorage, options: {
 export async function cleanChannelsBySelector(
   runtime: UnifiedMemoryRuntime,
   options: {
-    ownerActorId?: string;
+    actorId?: string;
     source?: string;
     projectId?: string;
     purpose?: ChannelPurpose;
@@ -198,7 +198,7 @@ export async function cleanChannelsBySelector(
   },
 ): Promise<Record<string, unknown>> {
   const selected = runtime.listChannels({
-    ownerActorId: options.ownerActorId,
+    actorId: options.actorId,
     source: options.source,
     projectId: options.projectId,
     purpose: options.purpose,
@@ -336,7 +336,7 @@ export function resetGlobalConfig(configPath = `${process.env.HOME}/.memohub/mem
     memory: {
       queryLayers: ["self", "project", "global"],
       views: ["agent_profile", "recent_activity", "project_context", "coding_context"],
-      operations: ["ingest_event", "query", "summarize", "clarify", "resolve_clarification"],
+      operations: ["ingest", "query", "summarize", "clarification_create", "clarification_resolve"],
     },
     tools: [],
     tracks: [],

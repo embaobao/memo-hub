@@ -50,7 +50,7 @@ memohub config uninstall --yes --confirm DELETE_MEMOHUB_CONFIG
   "memory": {
     "layers": ["self", "project", "global"],
     "views": ["agent_profile", "recent_activity", "project_context", "coding_context"],
-    "operations": ["ingest", "query", "summarize", "clarify", "resolve_clarification"]
+    "operations": ["ingest", "query", "summarize", "clarification_create", "clarification_resolve"]
   }
 }
 ```

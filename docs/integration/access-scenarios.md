@@ -231,13 +231,13 @@ memohub query "CLI/MCP 工具目录的生成源在哪里" --view coding_context 
 生成澄清：
 
 ```bash
-memohub clarification create "文档和实现对于查询入口描述不一致，需要确认以哪个接口合同为准" --agent hermes
+memohub clarification create "文档和实现对于查询入口描述不一致，需要确认以哪个接口合同为准" --actor hermes
 ```
 
 写回澄清：
 
 ```bash
-memohub clarification resolve clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件摄取和命名视图查询为准" --agent hermes --project memo-hub --memory mem_conflicting_note
+memohub clarification resolve clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件摄取和命名视图查询为准" --actor hermes --project memo-hub --memory mem_conflicting_note
 ```
 
 读取澄清后的项目上下文：

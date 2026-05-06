@@ -11,10 +11,12 @@ Generated from workspace package manifests.
 | `@memohub/storage-flesh` | `packages/storage-flesh` | `@memohub/protocol`, `@memohub/storage-soul` |
 | `@memohub/core` | `packages/core` | `@memohub/ai-provider`, `@memohub/config`, `@memohub/protocol`, `@memohub/storage-flesh`, `@memohub/storage-soul` |
 | `@memohub/librarian` | `packages/librarian` | `@memohub/protocol`, `@memohub/core` |
-| `@memohub/builtin-tools` | `packages/builtin-tools` | `@memohub/protocol`, `@memohub/config`, `@memohub/core` |
+| `@memohub/channel` | `packages/channel` | - |
 | `@memohub/integration-hub` | `packages/integration-hub` | `@memohub/protocol`, `@memohub/core`, `@memohub/storage-flesh`, `@memohub/config` |
+| `@memohub/memory` | `packages/memory` | `@memohub/channel`, `@memohub/core`, `@memohub/integration-hub`, `@memohub/protocol`, `@memohub/storage-flesh`, `@memohub/storage-soul` |
+| `@memohub/builtin-tools` | `packages/builtin-tools` | `@memohub/protocol`, `@memohub/config`, `@memohub/core` |
 | `@memohub/track-wiki` | `tracks/track-wiki` | `@memohub/protocol` |
 | `@memohub/track-stream` | `tracks/track-stream` | `@memohub/protocol` |
 | `@memohub/track-source` | `tracks/track-source` | `@memohub/protocol` |
 | `@memohub/track-insight` | `tracks/track-insight` | `@memohub/protocol` |
-| `@memohub/cli` | `apps/cli` | `@memohub/ai-provider`, `@memohub/config`, `@memohub/core`, `@memohub/integration-hub`, `@memohub/protocol`, `@memohub/storage-flesh`, `@memohub/storage-soul` |
+| `@memohub/cli` | `apps/cli` | `@memohub/ai-provider`, `@memohub/channel`, `@memohub/config`, `@memohub/core`, `@memohub/integration-hub`, `@memohub/memory`, `@memohub/protocol`, `@memohub/storage-flesh`, `@memohub/storage-soul` |

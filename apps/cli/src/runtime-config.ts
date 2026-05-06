@@ -89,7 +89,7 @@ export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRun
     memory: {
       queryLayers: config.memory?.queryLayers ?? ["self", "project", "global"],
       views: config.memory?.views ?? ["agent_profile", "recent_activity", "project_context", "coding_context"],
-      operations: config.memory?.operations ?? ["ingest_event", "query", "summarize", "clarify", "resolve_clarification"],
+      operations: config.memory?.operations ?? ["ingest", "query", "summarize", "clarification_create", "clarification_resolve"],
     },
     sources: config._sources ?? [],
   };

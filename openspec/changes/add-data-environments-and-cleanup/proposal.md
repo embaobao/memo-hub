@@ -5,15 +5,15 @@ MemoHub 即将接入第一个真实场景，当前默认数据目录已经包含
 ## What Changes
 
 - 让配置 reset 流程清理 MemoHub 管理的数据目录，首个真实接入前能一键清场。
-- 新增数据环境规划，区分 `default`、`test`、`sandbox` 等 profile/env。
-- 新增数据清洗规划，支持 dry-run、按 project/source/channel/session/task 清理。
+- 新增数据根与测试隔离规划，区分默认用户数据、临时测试 root、项目级验证 root。
+- 新增数据清洗规划，支持 dry-run、按 actor/source/project/channel/session/purpose/task 清理。
 - 新增数据状态规划，展示当前 root、向量库、blob、日志、表名和数据量。
 - 新增安全约束，避免误删非 MemoHub 管理路径，并保留后续 export/import 扩展位。
 
 ## Capabilities
 
 ### New Capabilities
-- `data-environment-governance`: 管理 MemoHub 数据环境、测试隔离、清洗、状态和安全边界。
+- `data-environment-governance`: 管理 MemoHub 数据 root、测试隔离、清洗、状态和安全边界。
 
 ### Modified Capabilities
 - `app-cli-entry`: 配置初始化和后续数据命令需要暴露清场与数据状态入口。
@@ -21,7 +21,7 @@ MemoHub 即将接入第一个真实场景，当前默认数据目录已经包含
 
 ## Impact
 
-- CLI：当前以 `data rebuild-schema` 作为首个真实接入的高风险清场入口，并继续演进 `data status`、`data clean`、`env` 等命令。
+- CLI：当前以 `data rebuild-schema` 作为首个真实接入的高风险清场入口，并继续演进 `data status`、`data clean` 等命令。
 - MCP：后续可通过配置/数据管理工具暴露安全的数据状态与清洗能力。
-- 配置：后续增加 data profile/env、active profile、managed root guard 和 retention policy。
+- 配置：后续增加 managed root guard、test root override 和 retention policy。
 - 测试：所有集成/E2E 默认使用临时 root，避免污染 `~/.memohub`。

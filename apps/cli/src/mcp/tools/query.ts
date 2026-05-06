@@ -41,7 +41,7 @@ export function createQueryHandler(runtime: UnifiedMemoryRuntime, context?: McpB
 
       const resolvedInput = {
         ...validationResult.data,
-        actorId: validationResult.data.actorId ?? context?.ownerActorId,
+        actorId: validationResult.data.actorId ?? context?.actorId,
         projectId: validationResult.data.projectId ?? context?.projectId,
         workspaceId: validationResult.data.workspaceId ?? context?.workspaceId,
         sessionId: validationResult.data.sessionId ?? context?.sessionId,

@@ -5,7 +5,7 @@ import type { McpBoundChannelContext } from "../session-context.js";
 /**
  * memohub_ingest_event MCP 工具
  *
- * 功能：摄取外部事件到 MemoHub Integration Hub
+ * 功能：把外部事件摄取到共享 MemoHub 记忆中心
  * 位置：apps/cli/src/mcp/tools/ingest.ts
  */
 
@@ -125,7 +125,7 @@ export function createIngestEventHandler(integrationHub: IngestRuntimeLike, cont
  */
 export const INGEST_TOOL_METADATA = {
   name: "memohub_ingest_event",
-  description: "摄取外部事件到 MemoHub Integration Hub",
+  description: "摄取外部事件到共享 MemoHub 记忆中心",
   inputSchema: {
     type: "object" as const,
     properties: {

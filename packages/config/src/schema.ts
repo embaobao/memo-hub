@@ -148,7 +148,7 @@ export const MemoHubConfigSchema = z.object({
     .object({
       queryLayers: z.array(z.string()).default(["self", "project", "global"]),
       views: z.array(z.string()).default(["agent_profile", "recent_activity", "project_context", "coding_context"]),
-      operations: z.array(z.string()).default(["ingest_event", "query", "summarize", "clarify", "resolve_clarification"]),
+      operations: z.array(z.string()).default(["ingest", "query", "summarize", "clarification_create", "clarification_resolve"]),
     })
     .default({}),
   dispatcher: DispatcherSchema.default({ fallback: "memory-object" }),

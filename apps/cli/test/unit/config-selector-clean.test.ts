@@ -2,7 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "bun:test";
-import { ChannelRegistry } from "../../src/channel-registry.js";
+import { ChannelRegistry } from "@memohub/channel";
 import { cleanChannelsBySelector } from "../../src/config-commands.js";
 
 describe("selector-based channel cleanup", () => {
@@ -17,14 +17,14 @@ describe("selector-based channel cleanup", () => {
     const registry = new ChannelRegistry(join(tempDir, "channels.json"));
 
     registry.open({
-      ownerActorId: "hermes",
+      actorId: "hermes",
       source: "hermes",
       purpose: "test",
       projectId: "memo-hub",
       channelId: "hermes:test:memo-hub:first-onboarding",
     });
     registry.open({
-      ownerActorId: "hermes",
+      actorId: "hermes",
       source: "hermes",
       purpose: "primary",
       projectId: "memo-hub",
@@ -43,7 +43,7 @@ describe("selector-based channel cleanup", () => {
     };
 
     const result = await cleanChannelsBySelector(runtime as never, {
-      ownerActorId: "hermes",
+      actorId: "hermes",
       purpose: "test",
       dryRun: true,
     });

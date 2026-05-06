@@ -1,8 +1,8 @@
-import type { ChannelRegistryEntry } from "../channel-registry.js";
+import type { ChannelRegistryEntry } from "@memohub/channel";
 
 export interface McpBoundChannelContext {
   channelId: string;
-  ownerActorId: string;
+  actorId: string;
   source: string;
   projectId: string;
   workspaceId?: string;
@@ -21,7 +21,7 @@ export class McpSessionContextStore {
   setFromEntry(entry: ChannelRegistryEntry): McpBoundChannelContext {
     this.activeContext = {
       channelId: entry.channelId,
-      ownerActorId: entry.ownerActorId,
+      actorId: entry.actorId,
       source: entry.source,
       projectId: entry.projectId,
       workspaceId: entry.workspaceId,

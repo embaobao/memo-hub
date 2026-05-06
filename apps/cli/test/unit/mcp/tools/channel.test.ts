@@ -35,7 +35,7 @@ describe("MCP channel tools", () => {
     };
 
     const open = await createChannelOpenHandler(runtime as never)({
-      ownerActorId: "hermes",
+      actorId: "hermes",
       source: "hermes",
       projectId: "memo-hub",
       purpose: "primary",

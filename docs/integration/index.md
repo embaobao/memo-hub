@@ -71,7 +71,7 @@ CLI 命令：
 - `add`
 - `query`
 - `summarize`
-- `clarify`
+- `clarification create`
 - `clarification resolve`
 - `config show`
 - `config check`

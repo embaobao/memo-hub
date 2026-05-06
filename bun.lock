@@ -40,9 +40,11 @@
         "@fastify/websocket": "^11.2.0",
         "@lancedb/lancedb": "^0.27.2",
         "@memohub/ai-provider": "workspace:*",
+        "@memohub/channel": "workspace:*",
         "@memohub/config": "workspace:*",
         "@memohub/core": "workspace:*",
         "@memohub/integration-hub": "workspace:*",
+        "@memohub/memory": "workspace:*",
         "@memohub/protocol": "workspace:*",
         "@memohub/storage-flesh": "workspace:*",
         "@memohub/storage-soul": "workspace:*",
@@ -82,6 +84,13 @@
       },
       "devDependencies": {
         "@types/lodash": "^4.17.15",
+        "typescript": "^5.9.3",
+      },
+    },
+    "packages/channel": {
+      "name": "@memohub/channel",
+      "version": "1.0.0",
+      "devDependencies": {
         "typescript": "^5.9.3",
       },
     },
@@ -139,6 +148,21 @@
       "dependencies": {
         "@memohub/core": "workspace:*",
         "@memohub/protocol": "workspace:*",
+      },
+      "devDependencies": {
+        "typescript": "^5.9.3",
+      },
+    },
+    "packages/memory": {
+      "name": "@memohub/memory",
+      "version": "1.0.0",
+      "dependencies": {
+        "@memohub/channel": "workspace:*",
+        "@memohub/core": "workspace:*",
+        "@memohub/integration-hub": "workspace:*",
+        "@memohub/protocol": "workspace:*",
+        "@memohub/storage-flesh": "workspace:*",
+        "@memohub/storage-soul": "workspace:*",
       },
       "devDependencies": {
         "typescript": "^5.9.3",
@@ -290,6 +314,8 @@
 
     "@memohub/builtin-tools": ["@memohub/builtin-tools@workspace:packages/builtin-tools"],
 
+    "@memohub/channel": ["@memohub/channel@workspace:packages/channel"],
+
     "@memohub/cli": ["@memohub/cli@workspace:apps/cli"],
 
     "@memohub/config": ["@memohub/config@workspace:packages/config"],
@@ -299,6 +325,8 @@
     "@memohub/integration-hub": ["@memohub/integration-hub@workspace:packages/integration-hub"],
 
     "@memohub/librarian": ["@memohub/librarian@workspace:packages/librarian"],
+
+    "@memohub/memory": ["@memohub/memory@workspace:packages/memory"],
 
     "@memohub/protocol": ["@memohub/protocol@workspace:packages/protocol"],
 

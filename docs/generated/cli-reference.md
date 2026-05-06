@@ -20,7 +20,7 @@ Examples:
 
 ### add
 
-Inject a new memory through the Integration Hub write path
+Inject a new memory through the shared MemoHub memory write path
 
 Arguments:
 
@@ -36,6 +36,7 @@ Options:
 - `--task <taskId>`: Task binding.
 - `--category <category>`: Memory category/domain hint.
 - `--file <filePath>`: Related source file path.
+- `--json`: Output raw JSON.
 
 Examples:
 
@@ -62,15 +63,15 @@ Examples:
 
 ### list
 
-List governed memory objects directly by actor/project/global perspective
+List memory overview by actor first, or inspect governed memory objects by actor/project/global perspective
 
 Alias: `ls`
 
 Options:
 
-- `--perspective <perspective>`: Governance perspective: actor, project, or global. Default: `project`.
+- `--perspective <perspective>`: Governance perspective: actor, project, or global.
 - `--actor <actorId>`: Actor id for actor perspective.
-- `--project <projectId>`: Project id for project perspective. Default: `default`.
+- `--project <projectId>`: Project id for project perspective.
 - `--workspace <workspaceId>`: Workspace binding.
 - `--session <sessionId>`: Session binding.
 - `--task <taskId>`: Task binding.
@@ -80,6 +81,7 @@ Options:
 
 Examples:
 
+- `memohub ls`
 - `memohub list --perspective actor --actor hermes --limit 10`
 - `memohub list --perspective project --project memo-hub --limit 20`
 - `memohub ls --perspective global --limit 20 --json`
@@ -94,11 +96,11 @@ Arguments:
 
 Options:
 
-- `--agent <agentId>`: Agent identity. Default: `cli`.
+- `--actor <actorId>`: Actor identity. Default: `cli`.
 
 Examples:
 
-- `memohub summarize "Hermes recently refactored the query path" --agent hermes`
+- `memohub summarize "Hermes recently refactored the query path" --actor hermes`
 
 ### clarification create
 
@@ -110,11 +112,11 @@ Arguments:
 
 Options:
 
-- `--agent <agentId>`: Agent identity. Default: `cli`.
+- `--actor <actorId>`: Actor identity. Default: `cli`.
 
 Examples:
 
-- `memohub clarification create "Conflicting source ownership notes" --agent hermes`
+- `memohub clarification create "Conflicting source ownership notes" --actor hermes`
 
 ### clarification resolve
 
@@ -127,13 +129,13 @@ Arguments:
 
 Options:
 
-- `--agent <agentId>`: Resolving agent identity. Default: `cli`.
+- `--actor <actorId>`: Resolving actor identity. Default: `cli`.
 - `--project <projectId>`: Current project. Default: `default`.
 - `--memory <memoryId...>`: Memory ids resolved by this answer.
 
 Examples:
 
-- `memohub clarification resolve clarify_op_1 "以新架构文档为准" --agent hermes --project memo-hub`
+- `memohub clarification resolve clarify_op_1 "以新架构文档为准" --actor hermes --project memo-hub`
 
 ### mcp config
 
@@ -183,7 +185,7 @@ Open or restore a governed channel binding
 
 Options:
 
-- `--actor <actorId>`: Owner actor id. Default: `cli`.
+- `--actor <actorId>`: Actor id. Default: `cli`.
 - `--source <source>`: Source id. Default: `cli`.
 - `--project <projectId>`: Project id. Default: `default`.
 - `--purpose <purpose>`: Channel purpose. Default: `primary`.
@@ -203,7 +205,7 @@ List governed channels and current binding state
 
 Options:
 
-- `--actor <actorId>`: Filter by owner actor.
+- `--actor <actorId>`: Filter by actor.
 - `--project <projectId>`: Filter by project.
 - `--source <source>`: Filter by source.
 - `--purpose <purpose>`: Filter by purpose.
@@ -285,7 +287,7 @@ Options:
 - `--dry-run`: Preview cleanup targets without deleting data. Default: `true`.
 - `--all`: Select all MemoHub-managed data directories.
 - `--channel <channel>`: Clean only vector records from one channel, for example hermes:mcp-test.
-- `--actor <actorId>`: Select governed channels by owner actor, for example hermes.
+- `--actor <actorId>`: Select governed channels by actor, for example hermes.
 - `--project <projectId>`: Select governed channels by project id.
 - `--source <source>`: Select governed channels by source id.
 - `--purpose <purpose>`: Select governed channels by purpose, for example test.

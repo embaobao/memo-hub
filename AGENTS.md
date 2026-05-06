@@ -142,16 +142,16 @@ memohub mcp serve
 memohub inspect
 memohub add "文本内容" --project memo-hub --source cli --category decision
 memohub query "查询文本" --view project_context --actor hermes --project memo-hub
-memohub summarize "需要总结的文本" --agent hermes
-memohub clarification create "需要澄清的冲突文本" --agent hermes
-memohub clarification resolve clarify_op_1 "澄清答案" --agent hermes --project memo-hub
+memohub summarize "需要总结的文本" --actor hermes
+memohub clarification create "需要澄清的冲突文本" --actor hermes
+memohub clarification resolve clarify_op_1 "澄清答案" --actor hermes --project memo-hub
 memohub config show
 memohub config check
 memohub config get mcp.logPath
 memohub config set system.lang '"zh"'
 memohub config uninstall --yes --confirm DELETE_MEMOHUB_CONFIG
-memohub channel open --agent hermes --source hermes --project memo-hub --purpose primary
-memohub channel list --agent hermes
+memohub channel open --actor hermes --source hermes --project memo-hub --purpose primary
+memohub channel list --actor hermes
 memohub data status
 memohub data clean --channel hermes:mcp-test --dry-run
 memohub mcp config --target hermes

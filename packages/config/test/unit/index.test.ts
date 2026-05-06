@@ -14,7 +14,7 @@ describe("ConfigLoader", () => {
     expect(config.system.root).toBe("~/.memohub");
     expect(config.storage.vectorDbPath).toBe("~/.memohub/data/memohub.lancedb");
     expect(config.mcp.toolsResourceUri).toBe("memohub://tools");
-    expect(config.memory.operations).toContain("resolve_clarification");
+    expect(config.memory.operations).toContain("clarification_resolve");
     expect(config.configVersion).toBe("unified-memory-1");
     expect(config.dispatcher.fallback).toBe("memory-object");
   });

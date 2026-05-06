@@ -124,11 +124,10 @@ describe("MCP Tools Basic Integration Tests", () => {
   });
 
   describe("Schema 验证测试", () => {
-    test("ingest schema 验证所有必需字段", () => {
+    test("ingest schema 只强制校验不可从当前渠道继承的核心字段", () => {
       const { IngestEventInputSchema } = require("../../../src/mcp/tools/ingest.js");
 
-      // 测试缺少每个必需字段
-      const requiredFields = ["source", "channel", "kind", "projectId", "confidence", "payload"];
+      const requiredFields = ["kind", "confidence", "payload"];
 
       requiredFields.forEach(field => {
         const incompleteInput = {
@@ -152,23 +151,39 @@ describe("MCP Tools Basic Integration Tests", () => {
       });
     });
 
-    test("query schema 验证必需字段", () => {
+    test("ingest schema 允许 source/channel/projectId 由当前绑定渠道继承", () => {
+      const { IngestEventInputSchema } = require("../../../src/mcp/tools/ingest.js");
+
+      const inheritedInput = {
+        event: {
+          kind: "memory",
+          confidence: "reported",
+          payload: {
+            text: "test"
+          }
+        }
+      };
+
+      const result = IngestEventInputSchema.safeParse(inheritedInput);
+      expect(result.success).toBe(true);
+    });
+
+    test("query schema 只强制 view，projectId 可以从当前绑定渠道继承", () => {
       const { QueryInputSchema } = require("../../../src/mcp/tools/query.js");
 
-      // 测试缺少 view 和 projectId
       const missingView = {
         projectId: "test"
       };
 
-      const missingProjectId = {
+      const inheritedProject = {
         view: "project_context"
       };
 
       const result1 = QueryInputSchema.safeParse(missingView);
-      const result2 = QueryInputSchema.safeParse(missingProjectId);
+      const result2 = QueryInputSchema.safeParse(inheritedProject);
 
       expect(result1.success).toBe(false);
-      expect(result2.success).toBe(false);
+      expect(result2.success).toBe(true);
     });
   });
 

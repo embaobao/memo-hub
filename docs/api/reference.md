@@ -61,7 +61,7 @@ memohub query "查询文本" --view project_context --actor hermes --project mem
 ### `summarize`
 
 ```bash
-memohub summarize "Hermes 最近完成了查询链路收敛" --agent hermes
+memohub summarize "Hermes 最近完成了查询链路收敛" --actor hermes
 ```
 
 用途：
@@ -72,7 +72,7 @@ memohub summarize "Hermes 最近完成了查询链路收敛" --agent hermes
 ### `clarification create`
 
 ```bash
-memohub clarification create "这里存在冲突的项目约定" --agent hermes
+memohub clarification create "这里存在冲突的项目约定" --actor hermes
 ```
 
 用途：
@@ -83,7 +83,7 @@ memohub clarification create "这里存在冲突的项目约定" --agent hermes
 ### `clarification resolve`
 
 ```bash
-memohub clarification resolve clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
+memohub clarification resolve clarify_op_1 "以新架构为准" --actor hermes --project memo-hub
 ```
 
 用途：
@@ -188,7 +188,7 @@ memohub mcp
 {
   view: "agent_profile" | "recent_activity" | "project_context" | "coding_context";
   actorId?: string;
-  projectId: string;
+  projectId?: string;
   workspaceId?: string;
   sessionId?: string;
   taskId?: string;
@@ -211,7 +211,7 @@ memohub mcp
 ```ts
 {
   text: string;
-  agentId?: string;
+  actorId?: string;
 }
 ```
 
@@ -226,7 +226,7 @@ memohub mcp
 ```ts
 {
   text: string;
-  agentId?: string;
+  actorId?: string;
 }
 ```
 

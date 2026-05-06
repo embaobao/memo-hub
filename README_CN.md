@@ -85,7 +85,7 @@ flowchart LR
 | 回溯近期工作 | `recent_activity` | 直接回答“最近做了什么、谁参与过”。 |
 | 读取项目背景 | `project_context` | 换 Agent 不丢项目决策和业务上下文。 |
 | 读取代码上下文 | `coding_context` | 私有仓库拥有自己的代码记忆层。 |
-| 写回澄清 | `resolve-clarification` / `memohub_resolve_clarification` | 用户确认过的事实不再反复解释。 |
+| 写回澄清 | `clarification resolve` / `memohub_clarification_resolve` | 用户确认过的事实不再反复解释。 |
 | 让 Agent 自己接入 | `memohub://tools` / Skill | Agent 能发现工具、资源、视图和配置方式。 |
 
 ## 业务链路
@@ -97,7 +97,7 @@ Agent / IDE / CLI
   -> 查询 agent_profile / recent_activity / project_context / coding_context
   -> 带着召回上下文执行任务
   -> 通过 memohub_ingest_event 写入新事实、任务结果、代码分析和用户偏好
-  -> 通过 memohub_resolve_clarification 写回用户澄清
+  -> 通过 memohub_clarification_resolve 写回用户澄清
   -> 后续 Hermes / Codex / Gemini / IDE 继续读取同一份记忆资产
 ```
 
@@ -133,8 +133,8 @@ memohub --help
 启动 MCP：
 
 ```bash
-memohub config-check
-memohub mcp-doctor
+memohub config check
+memohub mcp doctor
 memohub serve
 ```
 
@@ -180,8 +180,8 @@ memohub query "CLI/MCP 能力目录的生成源在哪里" --view coding_context 
 5. 验证 MCP 能被 Agent 发现：
 
 ```bash
-memohub mcp-tools
-memohub mcp-doctor
+memohub mcp tools
+memohub mcp doctor
 ```
 
 6. 让 Agent 接入后读取：
@@ -198,14 +198,14 @@ memohub://tools
 memohub inspect
 memohub add "MemoHub 使用统一记忆中枢" --project memo-hub --source cli --category architecture
 memohub query "当前项目上下文" --view project_context --actor hermes --project memo-hub
-memohub summarize "近期活动文本" --agent hermes
-memohub clarify "项目约定存在冲突" --agent hermes
-memohub resolve-clarification clarify_op_1 "以新架构为准" --agent hermes --project memo-hub
-memohub config
-memohub config-check
-memohub mcp-tools
-memohub mcp-doctor
-memohub serve
+memohub summarize "近期活动文本" --actor hermes
+memohub clarification create "项目约定存在冲突" --actor hermes
+memohub clarification resolve clarify_op_1 "以新架构为准" --actor hermes --project memo-hub
+memohub config show
+memohub config check
+memohub mcp tools
+memohub mcp doctor
+memohub mcp serve
 ```
 
 ## MCP 能力
@@ -215,8 +215,8 @@ memohub serve
 - `memohub_ingest_event`
 - `memohub_query`
 - `memohub_summarize`
-- `memohub_clarify`
-- `memohub_resolve_clarification`
+- `memohub_clarification_create`
+- `memohub_clarification_resolve`
 - `memohub_config_get`
 - `memohub_config_set`
 - `memohub_config_manage`
@@ -272,18 +272,18 @@ CLI 正式产物为 `apps/cli/dist/index.js`，`bin.memohub` 指向 `dist/index.
 ## 接入前检查
 
 ```bash
-memohub config
-memohub config-check
-memohub mcp-config
-memohub mcp-tools
-memohub mcp-doctor
-memohub mcp-status
+memohub config show
+memohub config check
+memohub mcp config --target hermes
+memohub mcp tools
+memohub mcp doctor
+memohub mcp status
 ```
 
 若默认日志路径无权限，可临时覆盖：
 
 ```bash
-MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp-doctor
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-mcp.ndjson memohub mcp doctor
 ```
 
 ## 文档入口

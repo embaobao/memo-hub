@@ -9,7 +9,7 @@
 | 命令 | 用途 | 当前状态 |
 | --- | --- | --- |
 | `bun run check:test-layout` | 验证测试文件不在 `src/`，且位于标准 `test/` 结构 | 通过 |
-| `bun run check:deps` | 验证 app/package/track 依赖边界 | 通过 |
+| `bun run check:deps` | 验证 app/package/legacy internal package 依赖边界 | 通过 |
 | `bun run docs:generate` | 生成 CLI/MCP/Package/OpenSpec 索引 | 通过 |
 | `bun run docs:check` | 校验生成文档存在且内部链接有效 | 通过 |
 | `bun run test:unit` | 执行全仓单元测试 | 通过 |
@@ -30,7 +30,7 @@
 - `apps/<name>/test/e2e`
 - `packages/<name>/test/unit`
 - `packages/<name>/test/integration`
-- `tracks/<name>/test/unit`
+- `connectors/hermes/test`
 - `test/e2e`
 - `test/fixtures`
 - `test/benchmarks`
@@ -68,7 +68,7 @@ CLI/MCP 参考来自 `apps/cli/src/interface-metadata.ts`。后续新增 CLI 命
 
 - 工作区类型解析：移除了 base tsconfig 中会污染包级 `rootDir` 的源码 paths，改为 `node_modules/@memohub` 工作区链接和依赖顺序构建。
 - dist 类型：`@memohub/protocol` 和 `@memohub/integration-hub` 的 `types` 指向已修正为 `dist/index.d.ts`。
-- 内部切片单测：MockKernel 已补齐 `getResources()`，并修复 `track-wiki` 检索返回结构。
+- 历史内部包单测：MockKernel 已补齐 `getResources()`，并修复遗留检索返回结构问题。
 - Hermes e2e：删除了过时且重复的 `hermes-simulation.test.ts`，保留当前可维护的 `hermes-simulation-simple.test.ts`。
 
 性能基线：

@@ -46,7 +46,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
   },
   {
     name: "add",
-    description: "Inject a new memory through the Integration Hub write path",
+    description: "Inject a new memory through the shared MemoHub memory write path",
     arguments: [{ name: "text", description: "Text content", required: true }],
     options: [
       { name: "--project <projectId>", description: "Current project", defaultValue: "default" },
@@ -57,6 +57,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
       { name: "--task <taskId>", description: "Task binding" },
       { name: "--category <category>", description: "Memory category/domain hint" },
       { name: "--file <filePath>", description: "Related source file path" },
+      { name: "--json", description: "Output raw JSON" },
     ],
     examples: ['memohub add "MemoHub uses a unified memory hub" --project memo-hub --source cli'],
   },
@@ -75,7 +76,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
   {
     name: "list",
     alias: "ls",
-    description: "List memory overview by act first, or inspect governed memory objects by actor/project/global perspective",
+    description: "List memory overview by actor first, or inspect governed memory objects by actor/project/global perspective",
     options: [
       { name: "--perspective <perspective>", description: "Governance perspective: actor, project, or global" },
       { name: "--actor <actorId>", description: "Actor id for actor perspective" },
@@ -98,15 +99,15 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
     name: "summarize",
     description: "Create a governed summary candidate from explicit text",
     arguments: [{ name: "text", description: "Text to summarize", required: true }],
-    options: [{ name: "--agent <agentId>", description: "Agent identity", defaultValue: "cli" }],
-    examples: ['memohub summarize "Hermes recently refactored the query path" --agent hermes'],
+    options: [{ name: "--actor <actorId>", description: "Actor identity", defaultValue: "cli" }],
+    examples: ['memohub summarize "Hermes recently refactored the query path" --actor hermes'],
   },
   {
     name: "clarification create",
     description: "Create clarification questions for explicit conflicting or missing memory text",
     arguments: [{ name: "text", description: "Text needing clarification", required: true }],
-    options: [{ name: "--agent <agentId>", description: "Agent identity", defaultValue: "cli" }],
-    examples: ['memohub clarification create "Conflicting source ownership notes" --agent hermes'],
+    options: [{ name: "--actor <actorId>", description: "Actor identity", defaultValue: "cli" }],
+    examples: ['memohub clarification create "Conflicting source ownership notes" --actor hermes'],
   },
   {
     name: "clarification resolve",
@@ -116,11 +117,11 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
       { name: "answer", description: "Clarification answer", required: true },
     ],
     options: [
-      { name: "--agent <agentId>", description: "Resolving agent identity", defaultValue: "cli" },
+      { name: "--actor <actorId>", description: "Resolving actor identity", defaultValue: "cli" },
       { name: "--project <projectId>", description: "Current project", defaultValue: "default" },
       { name: "--memory <memoryId...>", description: "Memory ids resolved by this answer" },
     ],
-    examples: ['memohub clarification resolve clarify_op_1 "以新架构文档为准" --agent hermes --project memo-hub'],
+    examples: ['memohub clarification resolve clarify_op_1 "以新架构文档为准" --actor hermes --project memo-hub'],
   },
   {
     name: "mcp config",
@@ -151,7 +152,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
     name: "channel open",
     description: "Open or restore a governed channel binding",
     options: [
-      { name: "--actor <actorId>", description: "Owner actor id", defaultValue: "cli" },
+      { name: "--actor <actorId>", description: "Actor id", defaultValue: "cli" },
       { name: "--source <source>", description: "Source id", defaultValue: "cli" },
       { name: "--project <projectId>", description: "Project id", defaultValue: "default" },
       { name: "--purpose <purpose>", description: "Channel purpose", defaultValue: "primary" },
@@ -167,7 +168,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
     name: "channel list",
     description: "List governed channels and current binding state",
     options: [
-      { name: "--actor <actorId>", description: "Filter by owner actor" },
+      { name: "--actor <actorId>", description: "Filter by actor" },
       { name: "--project <projectId>", description: "Filter by project" },
       { name: "--source <source>", description: "Filter by source" },
       { name: "--purpose <purpose>", description: "Filter by purpose" },
@@ -210,7 +211,7 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
       { name: "--dry-run", description: "Preview cleanup targets without deleting data", defaultValue: "true" },
       { name: "--all", description: "Select all MemoHub-managed data directories" },
       { name: "--channel <channel>", description: "Clean only vector records from one channel, for example hermes:mcp-test" },
-      { name: "--actor <actorId>", description: "Select governed channels by owner actor, for example hermes" },
+      { name: "--actor <actorId>", description: "Select governed channels by actor, for example hermes" },
       { name: "--project <projectId>", description: "Select governed channels by project id" },
       { name: "--source <source>", description: "Select governed channels by source id" },
       { name: "--purpose <purpose>", description: "Select governed channels by purpose, for example test" },
@@ -300,7 +301,7 @@ export const MCP_TOOLS: McpToolMetadata[] = [
   {
     name: "memohub_ingest_event",
     status: "recommended",
-    description: "Ingest external events through the Integration Hub",
+    description: "Ingest external events into shared MemoHub memory with channel binding and project context",
     inputSummary: ["event.source", "event.channel", "event.kind", "event.projectId", "event.confidence", "event.payload.text"],
   },
   {
@@ -319,13 +320,13 @@ export const MCP_TOOLS: McpToolMetadata[] = [
     name: "memohub_summarize",
     status: "recommended",
     description: "Create a governed summary candidate from explicit memory text",
-    inputSummary: ["text", "agentId"],
+    inputSummary: ["text", "actorId"],
   },
   {
     name: "memohub_clarification_create",
     status: "recommended",
     description: "Create clarification items for explicit conflicting or missing memory text",
-    inputSummary: ["text", "agentId"],
+    inputSummary: ["text", "actorId"],
   },
   {
     name: "memohub_clarification_resolve",
@@ -361,19 +362,19 @@ export const MCP_TOOLS: McpToolMetadata[] = [
     name: "memohub_data_manage",
     status: "recommended",
     description: "Preview cleanup targets, clean one channel, clean all MemoHub-managed data with second confirmation, or rebuild schema. clean_channel, clean_all, and rebuild_schema require explicit user authorization.",
-    inputSummary: ["action=status|clean_channel|clean_all|rebuild_schema", "channel or ownerActorId/source/projectId/purpose/status for clean_channel", "confirm=DELETE_MEMOHUB_DATA for deletion", "dryRun"],
+    inputSummary: ["action=status|clean_channel|clean_all|rebuild_schema", "channel or actorId/source/projectId/purpose/status for clean_channel", "confirm=DELETE_MEMOHUB_DATA for deletion", "dryRun"],
   },
   {
     name: "memohub_channel_open",
     status: "recommended",
-    description: "Open or restore a governed channel binding for an Agent or workspace source",
-    inputSummary: ["ownerActorId", "source", "projectId", "purpose", "workspaceId", "sessionId", "taskId", "channelId"],
+    description: "Open or restore a governed channel binding for an actor or workspace source",
+    inputSummary: ["actorId", "source", "projectId", "purpose", "workspaceId", "sessionId", "taskId", "channelId"],
   },
   {
     name: "memohub_channel_list",
     status: "recommended",
     description: "List governed channels and their current lifecycle state",
-    inputSummary: ["ownerActorId", "source", "projectId", "purpose", "status"],
+    inputSummary: ["actorId", "source", "projectId", "purpose", "status"],
   },
   {
     name: "memohub_channel_status",

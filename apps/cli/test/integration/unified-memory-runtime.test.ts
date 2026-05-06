@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, test } from "bun:test";
 import { ContentAddressableStorage } from "@memohub/storage-flesh";
-import { ChannelRegistry } from "../../src/channel-registry.js";
+import { ChannelRegistry } from "@memohub/channel";
 import { UnifiedMemoryRuntime } from "../../src/unified-memory-runtime.js";
 
 class FakeVectorStorage {

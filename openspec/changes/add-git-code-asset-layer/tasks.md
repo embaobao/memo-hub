@@ -7,7 +7,7 @@
 
 ## 2. Git As Source Of Truth
 
-- [ ] 2.1 Define Git adapter boundary for repository discovery, branch/commit capture, and change-set extraction.
+- [ ] 2.1 Define Git Connector boundary for repository discovery, branch/commit capture, and change-set extraction.
 - [ ] 2.2 Define repository snapshot lifecycle and retention rules.
 - [ ] 2.3 Define file version and commit provenance requirements for code ingestion.
 - [ ] 2.4 Define how blame/author/message metadata is exposed without polluting memory content.
@@ -26,11 +26,11 @@
 - [ ] 4.3 Define CLI/MCP exposure plan for future `code` / `repo` capabilities.
 - [ ] 4.4 Define Hermes/IDE expectations for using code query first and memory query second.
 
-## 5. Adapter Integration Boundary
+## 5. Connector Integration Boundary
 
-- [ ] 5.1 Document that GitLab/local repo/IDE adapters must first write into the code asset layer.
+- [ ] 5.1 Document that GitLab/local repo/IDE Connectors must first write into the code asset layer.
 - [ ] 5.2 Document projection rules from code assets into `code-intelligence` / `project-knowledge`.
-- [ ] 5.3 Align this proposal with `add-source-adapters-dependency-intelligence` without duplicating adapter runtime design.
+- [ ] 5.3 Align this proposal with `Connector -> Channel -> Memory` without duplicating Connector runtime design.
 
 ## 6. Documentation And Validation
 

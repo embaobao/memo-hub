@@ -83,7 +83,7 @@ For the first real integration test, or when schema mismatch appears, clear Memo
 memohub data rebuild-schema --yes --confirm DELETE_MEMOHUB_DATA
 ```
 
-This is a high-risk operation. Do not run it during normal access. It deletes MemoHub-managed `data`, `blobs`, `logs`, `cache`, and old `tracks` directories under `~/.memohub`, so use it only when the user explicitly authorizes a clean first verification run or schema recovery. After this command, restart any running `memohub mcp serve` process before retesting.
+This is a high-risk operation. Do not run it during normal access. It deletes MemoHub-managed `data`, `blobs`, `logs`, and `cache` under `~/.memohub`, so use it only when the user explicitly authorizes a clean first verification run or schema recovery. After this command, restart any running `memohub mcp serve` process before retesting.
 
 Agents can discover cleanup scope without deleting anything:
 
@@ -105,7 +105,7 @@ Full cleanup is more destructive and requires the same second confirmation phras
 memohub data clean --all --yes --confirm DELETE_MEMOHUB_DATA
 ```
 
-Through MCP, use `memohub_data_manage` with `{ "action": "status" }` for global preview, `{ "action": "clean_channel", "ownerActorId": "hermes", "purpose": "test", "dryRun": true }` for channel preview, and `{ "action": "clean_channel", "ownerActorId": "hermes", "purpose": "test", "confirm": "DELETE_MEMOHUB_DATA" }` only after user authorization.
+Through MCP, use `memohub_data_manage` with `{ "action": "status" }` for global preview, `{ "action": "clean_channel", "actorId": "hermes", "purpose": "test", "dryRun": true }` for channel preview, and `{ "action": "clean_channel", "actorId": "hermes", "purpose": "test", "confirm": "DELETE_MEMOHUB_DATA" }` only after user authorization.
 
 3. Validate MCP readiness:
 
@@ -189,7 +189,7 @@ Do not copy this skill into local Agent directories manually during MemoHub buil
 
 ## MCP Tools
 
-- `memohub_ingest_event`: Ingest external events through the Integration Hub
+- `memohub_ingest_event`: Ingest external events into shared MemoHub memory with channel binding and project context
 - `memohub_query`: Query named layered context views through the unified query tool
 - `memohub_channel_open`: Open or restore a governed channel binding
 - `memohub_channel_list`: List governed channels and lifecycle state
@@ -222,7 +222,7 @@ First restore the governed primary channel:
 {
   "name": "memohub_channel_open",
   "arguments": {
-    "ownerActorId": "hermes",
+    "actorId": "hermes",
     "source": "hermes",
     "projectId": "memo-hub",
     "purpose": "primary"

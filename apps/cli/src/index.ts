@@ -21,7 +21,7 @@ import { UnifiedMemoryRuntime } from "./unified-memory-runtime.js";
 import { createMcpAccessCatalog, createMcpClientConfig } from "./mcp/catalog.js";
 import { McpLogger } from "./mcp/logger.js";
 import { loadRuntimeConfig } from "./runtime-config.js";
-import { ChannelRegistry, CHANNEL_PURPOSES } from "./channel-registry.js";
+import { ChannelRegistry, CHANNEL_PURPOSES } from "@memohub/channel";
 import {
   cleanManagedData,
   cleanChannelData,
@@ -80,6 +80,41 @@ function printJsonOrText(value: unknown, asJson?: boolean): void {
 
 function formatMaybeJson(value: unknown): string {
   return typeof value === "object" ? JSON.stringify(value) : String(value);
+}
+
+function writeCliLog(event: string, message: string, metadata: Record<string, unknown> = {}, level: "info" | "warn" | "error" = "info"): void {
+  try {
+    const runtimeConfig = loadRuntimeConfig();
+    const logger = new McpLogger(runtimeConfig.mcp.logPath);
+    logger.write({ level, event, message, metadata });
+  } catch {
+    // 日志写入不应阻断主流程；这里保持静默，避免 CLI 因日志目录异常而失效。
+  }
+}
+
+function sortTopLevelCommands(command: Command): void {
+  const order = [
+    "config",
+    "inspect",
+    "channel",
+    "list",
+    "query",
+    "add",
+    "summarize",
+    "clarification",
+    "logs",
+    "data",
+    "mcp",
+    "serve",
+    "help",
+  ];
+  const weight = new Map(order.map((name, index) => [name, index]));
+  command.commands.sort((left, right) => {
+    const leftWeight = weight.get(left.name()) ?? Number.MAX_SAFE_INTEGER;
+    const rightWeight = weight.get(right.name()) ?? Number.MAX_SAFE_INTEGER;
+    if (leftWeight !== rightWeight) return leftWeight - rightWeight;
+    return left.name().localeCompare(right.name());
+  });
 }
 
 function filterLogEntries(
@@ -292,7 +327,7 @@ function printChannelEntry(entry: any, lang: CliLang): void {
   ];
   console.log(chalk.bold(`${entry.channelId}`));
   console.log(`  ${badges.join("  ")}`);
-  console.log(`  ${t(lang, "owner")}: ${entry.ownerActorId}    ${t(lang, "projectId")}: ${entry.projectId}    source: ${entry.source}`);
+  console.log(`  ${t(lang, "owner")}: ${entry.actorId}    ${t(lang, "projectId")}: ${entry.projectId}    source: ${entry.source}`);
   if (entry.workspaceId) console.log(`  workspace: ${entry.workspaceId}`);
   if (entry.sessionId) console.log(`  session: ${entry.sessionId}`);
   if (entry.taskId) console.log(`  task: ${entry.taskId}`);
@@ -321,7 +356,7 @@ function resolveChannelForWrite(
   if (input.channel) {
     runtime.openChannel({
       channelId: input.channel,
-      ownerActorId: input.source,
+      actorId: input.source,
       source: input.source,
       projectId: input.projectId,
       workspaceId: input.workspaceId,
@@ -337,7 +372,7 @@ function resolveChannelForWrite(
   if (input.source === EventSource.IDE && input.workspaceId) {
     return runtime.autoBindWorkspaceChannel({
       source: input.source,
-      ownerActorId: input.source,
+      actorId: input.source,
       projectId: input.projectId,
       workspaceId: input.workspaceId,
       sessionId: input.sessionId,
@@ -346,7 +381,7 @@ function resolveChannelForWrite(
   }
 
   return runtime.openChannel({
-    ownerActorId: input.source,
+    actorId: input.source,
     source: input.source,
     projectId: input.projectId,
     workspaceId: input.workspaceId,
@@ -362,7 +397,7 @@ function resolveChannelForWrite(
  * 组装新架构运行时。
  *
  * 边界约束：
- * - CLI/MCP 只依赖统一记忆运行时，不注册 track provider。
+ * - CLI/MCP 只依赖统一记忆运行时，不再暴露旧 track 概念。
  * - 写入链路是 event -> MemoryObject -> storage projection。
  * - 查询链路是 view -> self/project/global recall -> ContextView。
  */
@@ -469,9 +504,18 @@ program
   .option("--task <taskId>", helpText("Task binding"))
   .option("--category <category>", helpText("Memory category/domain hint"))
   .option("--file <filePath>", helpText("Related source file path"))
+  .option("--json", helpText("Output raw JSON"))
   .action(async (text, options) => {
     const lang = currentLang(program.opts().lang);
-    const spinner = ora(lang === "zh" ? "正在写入记忆..." : "Processing memory...").start();
+    const spinner = options.json ? undefined : ora(lang === "zh" ? "正在写入记忆..." : "Processing memory...").start();
+    writeCliLog("cli.add.request", "CLI memory write requested", {
+      source: options.source,
+      projectId: options.project,
+      channel: options.channel,
+      sessionId: options.session,
+      taskId: options.task,
+      category: options.category,
+    });
     const runtime = await createRuntime();
 
     const result = await ingestMemory(runtime, {
@@ -496,11 +540,33 @@ program
         timestamp: new Date().toISOString()
       }
     });
+    writeCliLog(
+      "cli.add.result",
+      result.success ? "CLI memory write completed" : "CLI memory write failed",
+      {
+        success: result.success,
+        eventId: result.eventId,
+        source: options.source,
+        projectId: options.project,
+        channel: options.channel,
+        sessionId: options.session,
+        taskId: options.task,
+        category: options.category,
+      },
+      result.success ? "info" : "error",
+    );
+
+    if (options.json) {
+      spinner?.stop();
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.success) process.exitCode = 1;
+      return;
+    }
 
     if (result.success) {
-      spinner.succeed(chalk.green(`${t(lang, "memoryCommitted")}: ${result.eventId}, Hash: ${result.contentHash?.slice(0, 8)}...`));
+      spinner?.succeed(chalk.green(`${t(lang, "memoryCommitted")}: ${result.eventId}, Hash: ${result.contentHash?.slice(0, 8)}...`));
     } else {
-      spinner.fail(chalk.red(`${t(lang, "failedPrefix")}: ${result.error}`));
+      spinner?.fail(chalk.red(`${t(lang, "failedPrefix")}: ${result.error}`));
     }
   });
 
@@ -515,7 +581,13 @@ program
   .option("--json", helpText("Output raw JSON"))
   .action(async (query, options) => {
     const lang = currentLang(program.opts().lang);
-    const spinner = ora(lang === "zh" ? "正在分层检索..." : "Planning layered recall...").start();
+    const spinner = options.json ? undefined : ora(lang === "zh" ? "正在分层检索..." : "Planning layered recall...").start();
+    writeCliLog("cli.query.request", "CLI memory query requested", {
+      actorId: options.actor,
+      projectId: options.project,
+      view: options.view,
+      limit: Number(options.limit),
+    });
     const runtime = await createRuntime();
     const view = await queryMemoryView(runtime, {
       view: options.view,
@@ -525,8 +597,18 @@ program
       limit: Number(options.limit),
       source: EventSource.CLI,
     });
+    writeCliLog("cli.query.result", "CLI memory query completed", {
+      actorId: options.actor,
+      projectId: options.project,
+      view: options.view,
+      limit: Number(options.limit),
+      selfCount: view.selfContext?.length ?? 0,
+      projectCount: view.projectContext?.length ?? 0,
+      globalCount: view.globalContext?.length ?? 0,
+      conflictCount: view.conflictsOrGaps?.length ?? 0,
+    });
 
-    spinner.stop();
+    spinner?.stop();
     if (options.json) {
       console.log(JSON.stringify(view, null, 2));
       return;
@@ -569,6 +651,15 @@ program
       domains: options.domain,
       limit,
     } as never);
+    writeCliLog("cli.list.result", "CLI memory list completed", {
+      perspective: hasScopedFilter ? perspective : "overview",
+      actorId: options.actor,
+      projectId: options.project,
+      workspaceId: options.workspace,
+      sessionId: options.session,
+      taskId: options.task,
+      resultCount: memories.length,
+    });
 
     if (options.json) {
       console.log(JSON.stringify({ perspective: hasScopedFilter ? perspective : "overview", memories }, null, 2));
@@ -597,9 +688,9 @@ program
   .command(cliCommand("summarize").name)
   .description(helpText(cliCommand("summarize").description))
   .argument("<text>", helpText("Text to summarize"))
-  .option("--agent <agentId>", helpText("Agent identity"), "cli")
+  .option("--actor <actorId>", helpText("Actor identity"), "cli")
   .action(async (text, options) => {
-    const result = await runAgentOperation({ type: "summarize", text, sourceAgentId: options.agent });
+    const result = await runAgentOperation({ type: "summarize", text, sourceAgentId: options.actor });
     console.log(JSON.stringify(result, null, 2));
   });
 
@@ -608,8 +699,8 @@ const clarificationCommand = program
   .description(helpText("Manage clarification creation and resolution"));
 
 appendWorkflowGuidance(clarificationCommand, [
-  "Create when you detect a conflict or missing fact: memohub clarification create \"...\" --agent hermes",
-  "Resolve after user confirmation: memohub clarification resolve <clarificationId> \"answer\" --agent hermes --project memo-hub",
+  "Create when you detect a conflict or missing fact: memohub clarification create \"...\" --actor hermes",
+  "Resolve after user confirmation: memohub clarification resolve <clarificationId> \"answer\" --actor hermes --project memo-hub",
   "Then verify with query: memohub query \"what is the final clarified fact\" --view project_context --project memo-hub",
 ]);
 
@@ -617,10 +708,10 @@ clarificationCommand
   .command("create")
   .description(helpText(cliCommand("clarification create").description))
   .argument("<text>", helpText("Text needing clarification"))
-  .option("--agent <agentId>", helpText("Agent identity"), "cli")
+  .option("--actor <actorId>", helpText("Actor identity"), "cli")
   .action(async (text, options) => {
     const lang = currentLang(program.opts().lang);
-    const result = await runAgentOperation({ type: "clarify", text, sourceAgentId: options.agent });
+    const result = await runAgentOperation({ type: "clarify", text, sourceAgentId: options.actor });
     console.log(JSON.stringify({ message: t(lang, "clarificationCreated"), ...result }, null, 2));
   });
 
@@ -629,7 +720,7 @@ clarificationCommand
   .description(helpText(cliCommand("clarification resolve").description))
   .argument("<clarificationId>", helpText("Clarification item id"))
   .argument("<answer>", helpText("Clarification answer"))
-  .option("--agent <agentId>", helpText("Resolving agent identity"), "cli")
+  .option("--actor <actorId>", helpText("Resolving actor identity"), "cli")
   .option("--project <projectId>", helpText("Current project"), "default")
   .option("--memory <memoryIds...>", helpText("Memory ids resolved by this answer"))
   .action(async (clarificationId, answer, options) => {
@@ -638,8 +729,8 @@ clarificationCommand
     const result = await runtime.resolveClarification({
       clarificationId,
       answer,
-      resolvedBy: options.agent,
-      actorId: options.agent,
+      resolvedBy: options.actor,
+      actorId: options.actor,
       projectId: options.project,
       source: "cli",
       memoryIds: options.memory,
@@ -753,7 +844,7 @@ appendWorkflowGuidance(channelCommand, [
 channelCommand
   .command("open")
   .description("Open or restore a governed channel binding")
-  .option("--actor <actorId>", "Owner actor id", "cli")
+  .option("--actor <actorId>", "Actor id", "cli")
   .option("--source <source>", "Source id", "cli")
   .option("--project <projectId>", "Project id", "default")
   .option("--purpose <purpose>", "Channel purpose", "primary")
@@ -765,7 +856,7 @@ channelCommand
   .action(async (options) => {
     const runtime = await createRuntime();
     const result = runtime.openChannel({
-      ownerActorId: options.actor,
+      actorId: options.actor,
       source: options.source,
       projectId: options.project,
       purpose: options.purpose,
@@ -775,6 +866,16 @@ channelCommand
       channelId: options.channel,
       isPrimary: options.purpose === "primary",
       metadata: { createdBy: "cli.channel.open" },
+    });
+    writeCliLog("cli.channel.open", result.reused ? "CLI channel restored" : "CLI channel opened", {
+      actorId: options.actor,
+      source: options.source,
+      projectId: options.project,
+      purpose: options.purpose,
+      channel: result.entry.channelId,
+      sessionId: options.session,
+      taskId: options.task,
+      reused: result.reused,
     });
     if (options.json) {
       console.log(JSON.stringify({ success: true, ...result }, null, 2));
@@ -788,7 +889,7 @@ channelCommand
 channelCommand
   .command("list")
   .description("List governed channels")
-  .option("--actor <actorId>", "Owner actor id")
+  .option("--actor <actorId>", "Actor id")
   .option("--project <projectId>", "Project id")
   .option("--source <source>", "Source id")
   .option("--purpose <purpose>", "Channel purpose")
@@ -798,11 +899,19 @@ channelCommand
     const lang = currentLang(program.opts().lang);
     const runtime = await createRuntime();
     const entries = runtime.listChannels({
-      ownerActorId: options.actor,
+      actorId: options.actor,
       projectId: options.project,
       source: options.source,
       purpose: options.purpose,
       status: options.status,
+    });
+    writeCliLog("cli.channel.list", "CLI channel list completed", {
+      actorId: options.actor,
+      source: options.source,
+      projectId: options.project,
+      purpose: options.purpose,
+      status: options.status,
+      resultCount: entries.length,
     });
     if (options.json) {
       console.log(JSON.stringify({ success: true, entries }, null, 2));
@@ -828,10 +937,19 @@ channelCommand
     const runtime = await createRuntime();
     const entry = runtime.getChannel(channelId);
     if (!entry) {
+      writeCliLog("cli.channel.status", "CLI channel status lookup failed", { channel: channelId }, "warn");
       console.log(chalk.red(`${t(lang, "channelUnknown")}: ${channelId}`));
       process.exitCode = 1;
       return;
     }
+    writeCliLog("cli.channel.status", "CLI channel status completed", {
+      channel: channelId,
+      actorId: entry.actorId,
+      source: entry.source,
+      projectId: entry.projectId,
+      purpose: entry.purpose,
+      status: entry.status,
+    });
     if (options.json) {
       console.log(JSON.stringify({ success: true, entry }, null, 2));
       return;
@@ -848,6 +966,14 @@ channelCommand
   .action(async (channelId, options) => {
     const runtime = await createRuntime();
     const entry = runtime.useChannel(channelId);
+    writeCliLog("cli.channel.use", "CLI channel marked active", {
+      channel: channelId,
+      actorId: entry.actorId,
+      source: entry.source,
+      projectId: entry.projectId,
+      purpose: entry.purpose,
+      status: entry.status,
+    });
     if (options.json) {
       console.log(JSON.stringify({ success: true, entry }, null, 2));
       return;
@@ -863,6 +989,14 @@ channelCommand
   .action(async (channelId, options) => {
     const runtime = await createRuntime();
     const entry = runtime.closeChannel(channelId);
+    writeCliLog("cli.channel.close", "CLI channel closed", {
+      channel: channelId,
+      actorId: entry.actorId,
+      source: entry.source,
+      projectId: entry.projectId,
+      purpose: entry.purpose,
+      status: entry.status,
+    });
     if (options.json) {
       console.log(JSON.stringify({ success: true, entry }, null, 2));
       return;
@@ -928,7 +1062,7 @@ dataCommand
   .option("--dry-run", "Preview cleanup targets without deleting data", true)
   .option("--all", "Select all MemoHub-managed data directories")
   .option("--channel <channel>", "Clean only vector records from one channel")
-  .option("--actor <actorId>", "Select governed channels by owner actor")
+  .option("--actor <actorId>", "Select governed channels by actor")
   .option("--project <projectId>", "Select governed channels by project id")
   .option("--source <source>", "Select governed channels by source id")
   .option("--purpose <purpose>", "Select governed channels by purpose")
@@ -942,7 +1076,7 @@ dataCommand
       const runtime = await createRuntime();
       const shouldDeleteSelected = options.yes === true && options.confirm === DATA_CLEAN_CONFIRMATION;
       const result = await cleanChannelsBySelector(runtime, {
-        ownerActorId: options.actor,
+        actorId: options.actor,
         projectId: options.project,
         source: options.source,
         purpose: options.purpose,
@@ -1229,4 +1363,5 @@ program
     }
   });
 
+sortTopLevelCommands(program);
 program.parse();

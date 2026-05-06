@@ -1,6 +1,6 @@
 ## 1. Immediate Cleanup
 
-- [x] 1.1 Update config reset to delete MemoHub-managed `tracks`, `data`, `blobs`, `logs`, and `cache` directories.
+- [x] 1.1 Update config reset to delete MemoHub-managed legacy slices, `data`, `blobs`, `logs`, and `cache` directories.
 - [x] 1.2 Add unit test proving reset removes managed data directories.
 - [x] 1.3 Fix clean-environment unified memory vector schema so first Hermes write does not fail.
 - [x] 1.4 Preserve CLI `--source hermes` as event source so Hermes memories are recalled in the self layer.
@@ -13,12 +13,12 @@
 - [x] 2.4 Add scoped cleanup flag: `--channel`.
 - [ ] 2.5 Add path safety guard tests.
 
-## 3. Environment Profiles
+## 3. Data Root Isolation
 
-- [ ] 3.1 Add config schema for data environments/profiles.
-- [ ] 3.2 Add `memohub env list`, `env use`, `env create`, and `env status`.
-- [ ] 3.3 Ensure runtime config resolves storage/log paths from active env.
-- [ ] 3.4 Ensure tests default to temporary env roots.
+- [ ] 3.1 Add config validation for managed root guard and path overrides.
+- [ ] 3.2 Ensure `memohub data status` shows resolved storage/log/config roots.
+- [ ] 3.3 Ensure runtime config resolves storage/log paths from explicit config and environment overrides.
+- [ ] 3.4 Ensure tests default to temporary data roots.
 
 ## 4. MCP Data Management
 
@@ -30,6 +30,6 @@
 ## 5. Documentation And Verification
 
 - [x] 5.1 Update Hermes and MCP integration docs with first-integration cleanup.
-- [ ] 5.2 Add docs for temporary test data roots.
+- [ ] 5.2 Add docs for temporary test data roots and environment-variable path overrides.
 - [x] 5.3 Add data cleanup examples to README or integration guide.
 - [ ] 5.4 Run `bun run docs:site` and `bun run check:release`.

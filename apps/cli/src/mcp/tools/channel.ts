@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { CHANNEL_PURPOSES, CHANNEL_STATUSES, type ChannelPurpose, type ChannelStatus } from "../../channel-registry.js";
+import { CHANNEL_PURPOSES, CHANNEL_STATUSES, type ChannelPurpose, type ChannelStatus } from "@memohub/channel";
 import type { UnifiedMemoryRuntime } from "../../unified-memory-runtime.js";
 
 export const ChannelOpenInputSchema = z.object({
-  ownerActorId: z.string().min(1).describe("渠道归属 Actor，例如 hermes"),
+  actorId: z.string().min(1).describe("渠道归属 Actor，例如 hermes"),
   source: z.string().min(1).describe("来源，例如 hermes 或 vscode"),
   projectId: z.string().min(1).describe("项目 ID"),
   purpose: z.enum(CHANNEL_PURPOSES).default("primary").describe("渠道用途"),
@@ -14,7 +14,7 @@ export const ChannelOpenInputSchema = z.object({
 });
 
 export const ChannelListInputSchema = z.object({
-  ownerActorId: z.string().optional(),
+  actorId: z.string().optional(),
   source: z.string().optional(),
   projectId: z.string().optional(),
   workspaceId: z.string().optional(),
@@ -51,7 +51,7 @@ export function createChannelListHandler(runtime: UnifiedMemoryRuntime) {
   return async (params: ChannelListInput = {}) => {
     const parsed = ChannelListInputSchema.safeParse(params);
     if (!parsed.success) return { success: false, error: "Invalid input schema", details: parsed.error.errors };
-    return { success: true, entries: runtime.listChannels(parsed.data as { ownerActorId?: string; source?: string; projectId?: string; workspaceId?: string; purpose?: ChannelPurpose; status?: ChannelStatus }) };
+    return { success: true, entries: runtime.listChannels(parsed.data as { actorId?: string; source?: string; projectId?: string; workspaceId?: string; purpose?: ChannelPurpose; status?: ChannelStatus }) };
   };
 }
 

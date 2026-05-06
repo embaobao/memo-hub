@@ -1,0 +1,22 @@
+{
+  "name": "@memohub/memory",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "bun test test"
+  },
+  "dependencies": {
+    "@memohub/channel": "workspace:*",
+    "@memohub/core": "workspace:*",
+    "@memohub/integration-hub": "workspace:*",
+    "@memohub/protocol": "workspace:*",
+    "@memohub/storage-flesh": "workspace:*",
+    "@memohub/storage-soul": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

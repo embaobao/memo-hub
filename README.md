@@ -198,9 +198,9 @@ This validates MemoHub’s core loop: write durable memory, query project contex
 memohub inspect
 memohub add "MemoHub uses a unified memory hub" --project memo-hub --source cli --category architecture
 memohub query "current project context" --view project_context --actor hermes --project memo-hub
-memohub summarize "recent activity text" --agent hermes
-memohub clarification create "project convention conflict" --agent hermes
-memohub clarification resolve clarify_op_1 "use the current architecture" --agent hermes --project memo-hub
+memohub summarize "recent activity text" --actor hermes
+memohub clarification create "project convention conflict" --actor hermes
+memohub clarification resolve clarify_op_1 "use the current architecture" --actor hermes --project memo-hub
 memohub config show
 memohub config check
 memohub mcp tools

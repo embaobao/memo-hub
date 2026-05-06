@@ -208,7 +208,7 @@ sequenceDiagram
 {
   "name": "memohub_channel_open",
   "arguments": {
-    "ownerActorId": "hermes",
+    "actorId": "hermes",
     "source": "hermes",
     "projectId": "memo-hub",
     "purpose": "primary"
@@ -243,7 +243,7 @@ sequenceDiagram
   "name": "memohub_summarize",
   "arguments": {
     "text": "Hermes 最近完成了新架构接入层重构",
-    "agentId": "hermes"
+    "actorId": "hermes"
   }
 }
 ```
@@ -259,7 +259,7 @@ sequenceDiagram
   "name": "memohub_clarification_create",
   "arguments": {
     "text": "文档和实现对于查询入口存在冲突",
-    "agentId": "hermes"
+    "actorId": "hermes"
   }
 }
 ```

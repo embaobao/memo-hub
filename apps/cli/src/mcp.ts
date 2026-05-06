@@ -33,6 +33,7 @@ import { createMcpAccessCatalog } from "./mcp/catalog.js";
 import { McpLogger } from "./mcp/logger.js";
 import type { UnifiedMemoryRuntime } from "./unified-memory-runtime.js";
 import { McpSessionContextStore } from "./mcp/session-context.js";
+import { CHANNEL_PURPOSES } from "@memohub/channel";
 
 const mcpTool = (name: string) => {
   const tool = MCP_TOOLS.find((item) => item.name === name);
@@ -165,7 +166,7 @@ export async function runMcpServer(runtime: UnifiedMemoryRuntime): Promise<void>
     async (params: any) => {
       const result = await runtime.listMemories({
         perspective: params.perspective,
-        actorId: params.actorId ?? sessionContext.get()?.ownerActorId,
+        actorId: params.actorId ?? sessionContext.get()?.actorId,
         projectId: params.projectId ?? sessionContext.get()?.projectId,
         workspaceId: params.workspaceId ?? sessionContext.get()?.workspaceId,
         sessionId: params.sessionId ?? sessionContext.get()?.sessionId,
@@ -181,13 +182,13 @@ export async function runMcpServer(runtime: UnifiedMemoryRuntime): Promise<void>
     mcpTool("memohub_summarize").name,
     {
       text: z.string(),
-      agentId: z.string().default("mcp").optional()
+      actorId: z.string().default("mcp").optional()
     },
     async (params: any) => {
       const result = await runAgentOperation({
         type: "summarize",
         text: params.text,
-        sourceAgentId: params.agentId ?? "mcp",
+        sourceAgentId: params.actorId ?? "mcp",
       });
       return textResult(result);
     }
@@ -197,13 +198,13 @@ export async function runMcpServer(runtime: UnifiedMemoryRuntime): Promise<void>
     mcpTool("memohub_clarification_create").name,
     {
       text: z.string(),
-      agentId: z.string().default("mcp").optional()
+      actorId: z.string().default("mcp").optional()
     },
     async (params: any) => {
       const result = await runAgentOperation({
         type: "clarify",
         text: params.text,
-        sourceAgentId: params.agentId ?? "mcp",
+        sourceAgentId: params.actorId ?? "mcp",
       });
       return textResult(result);
     }
@@ -311,10 +312,10 @@ export async function runMcpServer(runtime: UnifiedMemoryRuntime): Promise<void>
     {
       action: z.enum(["status", "clean_all", "clean_channel", "rebuild_schema"]),
       channel: z.string().optional(),
-      ownerActorId: z.string().optional(),
+      actorId: z.string().optional(),
       source: z.string().optional(),
       projectId: z.string().optional(),
-      purpose: z.enum(["primary", "session", "test", "adapter", "import"]).optional(),
+      purpose: z.enum(CHANNEL_PURPOSES).optional(),
       status: z.enum(["active", "idle", "closed", "archived"]).optional(),
       confirm: z.string().optional(),
       dryRun: z.boolean().optional(),
@@ -334,10 +335,10 @@ export async function runMcpServer(runtime: UnifiedMemoryRuntime): Promise<void>
   server.tool(
     mcpTool("memohub_channel_open").name,
     {
-      ownerActorId: z.string(),
+      actorId: z.string(),
       source: z.string(),
       projectId: z.string(),
-      purpose: z.enum(["primary", "session", "test", "adapter", "import"]).default("primary").optional(),
+      purpose: z.enum(CHANNEL_PURPOSES).default("primary").optional(),
       workspaceId: z.string().optional(),
       sessionId: z.string().optional(),
       taskId: z.string().optional(),
@@ -355,11 +356,11 @@ export async function runMcpServer(runtime: UnifiedMemoryRuntime): Promise<void>
   server.tool(
     mcpTool("memohub_channel_list").name,
     {
-      ownerActorId: z.string().optional(),
+      actorId: z.string().optional(),
       source: z.string().optional(),
       projectId: z.string().optional(),
       workspaceId: z.string().optional(),
-      purpose: z.enum(["primary", "session", "test", "adapter", "import"]).optional(),
+      purpose: z.enum(CHANNEL_PURPOSES).optional(),
       status: z.enum(["active", "idle", "closed", "archived"]).optional(),
     },
     async (params: any) => textResult(await createChannelListHandler(runtime)(params))

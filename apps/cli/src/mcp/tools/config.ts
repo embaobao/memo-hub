@@ -14,6 +14,7 @@ import {
 } from "../../config-commands.js";
 import { loadRuntimeConfig } from "../../runtime-config.js";
 import type { UnifiedMemoryRuntime } from "../../unified-memory-runtime.js";
+import { CHANNEL_PURPOSES } from "@memohub/channel";
 
 export const ConfigGetInputSchema = z.object({
   path: z.string().optional().describe("点分配置路径；为空时返回解析后的运行时配置"),
@@ -32,10 +33,10 @@ export const ConfigManageInputSchema = z.object({
 export const DataManageInputSchema = z.object({
   action: z.enum(["status", "clean_all", "clean_channel", "rebuild_schema"]).describe("数据管理动作"),
   channel: z.string().optional().describe("渠道清理范围，例如 hermes:mcp-test"),
-  ownerActorId: z.string().optional().describe("按归属 Actor 选择渠道，例如 hermes"),
+  actorId: z.string().optional().describe("按归属 Actor 选择渠道，例如 hermes"),
   source: z.string().optional().describe("按来源筛选渠道"),
   projectId: z.string().optional().describe("按项目筛选渠道"),
-  purpose: z.enum(["primary", "session", "test", "adapter", "import"]).optional().describe("按渠道用途筛选"),
+  purpose: z.enum(CHANNEL_PURPOSES).optional().describe("按渠道用途筛选"),
   status: z.enum(["active", "idle", "closed", "archived"]).optional().describe("按渠道状态筛选"),
   confirm: z.string().optional().describe(`高风险清理二次确认，必须为 ${DATA_CLEAN_CONFIRMATION}`),
   dryRun: z.boolean().optional().describe("仅预览清理目标，不删除数据"),
@@ -96,9 +97,9 @@ export function createDataManageHandler(runtime?: UnifiedMemoryRuntime) {
       if (!runtime) {
         return { success: false, error: "Runtime is required for channel cleanup." };
       }
-      if (parsed.data.ownerActorId || parsed.data.source || parsed.data.projectId || parsed.data.purpose || parsed.data.status) {
+      if (parsed.data.actorId || parsed.data.source || parsed.data.projectId || parsed.data.purpose || parsed.data.status) {
         return cleanChannelsBySelector(runtime, {
-          ownerActorId: parsed.data.ownerActorId,
+          actorId: parsed.data.actorId,
           source: parsed.data.source,
           projectId: parsed.data.projectId,
           purpose: parsed.data.purpose,

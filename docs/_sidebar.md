@@ -10,6 +10,7 @@
   - [CLI 集成](integration/cli-integration.md)
   - [MCP 集成](integration/mcp-integration.md)
   - [Hermes 接入](integration/hermes-guide.md)
+  - [Hermes 验证报告](integration/hermes-validation-report.md)
   - [集成指南](integration/index.md)
 
 - **API**
@@ -22,8 +23,6 @@
   - [架构概览](architecture/overview.md)
   - [业务链路](architecture/business-workflows.md)
   - [检索流水线](architecture/retrieval-pipeline.md)
-  - [澄清链路](architecture/integration-hub-clarification.md)
-  - [统一记忆中枢草案](architecture/unified-memory-hub-draft.md)
 
 - **开发**
   - [项目结构](development/project-structure.md)

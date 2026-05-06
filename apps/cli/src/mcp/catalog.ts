@@ -50,13 +50,13 @@ export function createMcpAccessCatalog(cwd = process.cwd(), runtimeConfig?: Reso
     name: "memohub",
     version: CLI_METADATA.version,
     command: "memohub",
-    args: ["mcp", "serve"],
+    args: ["serve"],
     cwd,
     tools: MCP_TOOLS,
     resources: MCP_RESOURCES,
     views: runtimeConfig?.memory.views ?? MCP_QUERY_VIEWS,
     layers: runtimeConfig?.memory.queryLayers ?? MCP_QUERY_LAYERS,
-    operations: runtimeConfig?.memory.operations ?? ["ingest_event", "query", "summarize", "clarify", "resolve_clarification", "config_get", "config_set", "config_manage", "data_manage", "channel_governance"],
+    operations: runtimeConfig?.memory.operations ?? ["ingest", "query", "summarize", "clarification_create", "clarification_resolve", "config", "data", "channel", "logs"],
     storage: {
       root,
       dataPath: runtimeConfig?.storage.vectorDbPath ?? path.join(root, "data", "memohub.lancedb"),
@@ -116,8 +116,9 @@ export function createMcpAccessCatalog(cwd = process.cwd(), runtimeConfig?: Reso
       "按渠道删除也需要二次确认：CLI 使用 memohub data clean --channel <channel> --yes --confirm DELETE_MEMOHUB_DATA；MCP 使用 memohub_data_manage action=clean_channel channel=<channel> confirm=DELETE_MEMOHUB_DATA。",
       "如需清空所有 MemoHub 管理数据，必须二次确认：CLI 使用 memohub data clean --all --yes --confirm DELETE_MEMOHUB_DATA；MCP 使用 memohub_data_manage action=clean_all confirm=DELETE_MEMOHUB_DATA。",
       "如需直接重建 schema，CLI 使用 memohub data rebuild-schema --yes --confirm DELETE_MEMOHUB_DATA；MCP 使用 memohub_data_manage action=rebuild_schema confirm=DELETE_MEMOHUB_DATA。",
-      "重建 schema 会删除 MemoHub 管理的 data、blobs、logs、cache 和旧 tracks 目录；执行后必须重启正在运行的 memohub serve。",
+      "重建 schema 会删除 MemoHub 管理的 data、blobs、logs 和 cache 目录；执行后必须重启正在运行的 memohub serve。",
       "写入记忆使用 memohub_ingest_event，查询上下文使用 memohub_query。写入前先查看 ingestContract，确保身份字段、event 字段和 metadata 约定齐全。",
+      "Hermes 首次接入建议顺序：memohub_channel_open -> memohub_query / memohub_list -> memohub_ingest_event -> memohub_logs_query -> memohub_data_manage(dryRun)。",
       "验证链路使用 Hermes 身份写入一条记忆，再用 actorId=hermes 的 agent_profile 查询确认 selfContext 有返回。",
       "如果对话中用户澄清了冲突或缺口，调用 memohub_clarification_resolve 写回可检索记忆。",
       "如需调整接入配置，调用 memohub_config_get / memohub_config_set / memohub_config_manage。",
@@ -130,7 +131,7 @@ export function createMcpClientConfig(target = "generic", cwd = process.cwd(), r
   const catalog = createMcpAccessCatalog(cwd, runtimeConfig);
   const server = {
     command: catalog.command,
-    args: catalog.args,
+    args: ["serve"],
     cwd: catalog.cwd,
   };
 

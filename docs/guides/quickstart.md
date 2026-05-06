@@ -76,8 +76,8 @@ Agent 接入后应先读取 `memohub://tools`，再选择具体工具。
 ## 澄清写回
 
 ```bash
-memohub clarification create "项目上下文里存在需要用户确认的接口描述冲突" --agent hermes
-memohub clarification resolve clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件和命名视图查询为准" --agent hermes --project memo-hub
+memohub clarification create "项目上下文里存在需要用户确认的接口描述冲突" --actor hermes
+memohub clarification resolve clarify_op_1 "当前以 UnifiedMemoryRuntime、标准事件和命名视图查询为准" --actor hermes --project memo-hub
 ```
 
 ## 下一步

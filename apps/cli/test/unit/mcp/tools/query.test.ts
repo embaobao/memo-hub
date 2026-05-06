@@ -97,7 +97,7 @@ describe("MCP Query Tool", () => {
       },
     } as never, {
       channelId: "hermes:primary:memo-hub",
-      ownerActorId: "hermes",
+      actorId: "hermes",
       source: "hermes",
       projectId: "memo-hub",
       workspaceId: "repo:memo-hub",

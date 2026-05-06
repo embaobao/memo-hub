@@ -1,0 +1,38 @@
+[project]
+name = "memohub-hermes-connector"
+version = "1.0.0"
+description = "MemoHub Hermes memory provider connector"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+  "pytest>=8.4.0",
+  "ruff>=0.12.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["memohub_provider"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "memohub_provider",
+  "test",
+  "README.md",
+]
+
+[project.scripts]
+memohub-provider-debug = "memohub_provider.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

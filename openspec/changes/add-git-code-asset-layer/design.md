@@ -7,12 +7,12 @@
 - 原文是根，AST 是派生视图，记忆是治理结果。
 - Git 是代码版本事实源，不是附属元数据。
 - 代码查询和记忆查询是两条不同链路。
-- 所有 adapter 先进入代码资产层，再投影为统一记忆对象。
+- 所有代码类 Connector 先进入代码资产层，再投影为统一记忆对象。
 
 ## Target Chain
 
 ```text
-Git / local repo / IDE / GitLab adapter
+Git / local repo / IDE / GitLab Connector
   -> repo discovery
   -> repo snapshot (repo, branch, commit, files)
   -> raw corpus storage
@@ -190,18 +190,19 @@ Git 是一级事实源，至少提供：
 - 符号和关系对象也必须带 commit 维度。
 - 没有 Git 上下文的代码写入，应被视为降级模式，而不是标准模式。
 
-## Relationship With Existing Adapter Proposal
+## Relationship With Connector Architecture
 
-`add-source-adapters-dependency-intelligence` 关注“外部来源如何接入 MemoHub”。
+外部来源接入统一遵循 `Connector -> Channel -> Memory`。代码场景在 Connector 和 Memory 之间增加代码资产层，原因是代码原文、Git 版本和结构索引不能直接简化成普通记忆。
 
 本提案关注“代码进入 MemoHub 后，底层资产模型和查询模型应该是什么”。
 
 边界如下：
 
-- adapter proposal 负责接入入口
+- Connector 负责外部接入入口和 Channel 挂载
 - git code asset layer proposal 负责代码资产底座
+- Memory 负责代码资产投影后的治理记忆
 
-后续 GitLab/local repo/IDE adapter 都必须依赖本提案定义的资产层契约。
+后续 GitLab/local repo/IDE Connector 都必须依赖本提案定义的资产层契约。
 
 ## Non-Goals
 

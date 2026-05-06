@@ -243,7 +243,7 @@ describe("MCP Ingest Tool", () => {
   test("应该在缺少 source/channel/projectId 时继承当前绑定渠道上下文", async () => {
     const handler = createIngestEventHandler(mockHub, {
       channelId: "hermes:primary:memo-hub",
-      ownerActorId: "hermes",
+      actorId: "hermes",
       source: EventSource.HERMES,
       projectId: "memo-hub",
       sessionId: "session-123",

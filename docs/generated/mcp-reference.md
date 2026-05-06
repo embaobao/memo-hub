@@ -8,7 +8,7 @@ Generated from `apps/cli/src/interface-metadata.ts`.
 
 Status: `recommended`
 
-Ingest external events through the Integration Hub
+Ingest external events into shared MemoHub memory with channel binding and project context
 
 Inputs:
 
@@ -61,7 +61,7 @@ Create a governed summary candidate from explicit memory text
 Inputs:
 
 - `text`
-- `agentId`
+- `actorId`
 
 ### memohub_clarification_create
 
@@ -72,7 +72,7 @@ Create clarification items for explicit conflicting or missing memory text
 Inputs:
 
 - `text`
-- `agentId`
+- `actorId`
 
 ### memohub_clarification_resolve
 
@@ -147,7 +147,7 @@ Preview cleanup targets, clean one channel, clean all MemoHub-managed data with 
 Inputs:
 
 - `action=status|clean_channel|clean_all|rebuild_schema`
-- `channel or ownerActorId/source/projectId/purpose/status for clean_channel`
+- `channel or actorId/source/projectId/purpose/status for clean_channel`
 - `confirm=DELETE_MEMOHUB_DATA for deletion`
 - `dryRun`
 
@@ -155,11 +155,11 @@ Inputs:
 
 Status: `recommended`
 
-Open or restore a governed channel binding for an Agent or workspace source
+Open or restore a governed channel binding for an actor or workspace source
 
 Inputs:
 
-- `ownerActorId`
+- `actorId`
 - `source`
 - `projectId`
 - `purpose`
@@ -176,7 +176,7 @@ List governed channels and their current lifecycle state
 
 Inputs:
 
-- `ownerActorId`
+- `actorId`
 - `source`
 - `projectId`
 - `purpose`

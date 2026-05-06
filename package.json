@@ -8,6 +8,10 @@
   "scripts": {
     "build": "bun run scripts/engineering/workspace-run.ts build",
     "build:cli": "bun run --filter @memohub/cli build",
+    "connector:hermes:sync": "cd connectors/hermes && uv sync",
+    "connector:hermes:lint": "cd connectors/hermes && uv run ruff check memohub_provider test",
+    "connector:hermes:test": "cd connectors/hermes && uv run pytest",
+    "connector:hermes:check": "bun run connector:hermes:lint && bun run connector:hermes:test",
     "verify:cli": "bun run --filter @memohub/cli verify:bin",
     "link:cli": "bun run --filter @memohub/cli link:global",
     "skill:memohub": "bun run scripts/engineering/generate-memohub-skill.ts",

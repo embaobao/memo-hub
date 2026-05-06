@@ -105,7 +105,7 @@ const helpTextMap = {
     "Output language: zh or en": "输出语言：zh 或 en",
     "Inspect current Memory OS registry and AI resources": "检查当前记忆中枢注册表与 AI 资源",
     "Output raw JSON": "输出原始 JSON",
-    "Inject a new memory through the Integration Hub write path": "通过 Integration Hub 写入一条新记忆",
+    "Inject a new memory through the shared MemoHub memory write path": "通过共享 MemoHub 记忆写入路径注入一条新记忆",
     "Current project": "当前项目",
     "Source descriptor id": "来源标识",
     "Governed channel id": "治理渠道 ID",
@@ -118,17 +118,17 @@ const helpTextMap = {
     "Named context view": "命名上下文视图",
     "Requesting agent or actor": "请求方角色",
     "Per-layer result limit": "每层结果上限",
-    "List governed memory objects directly by actor/project/global perspective": "按角色/项目/全局视角直接列出治理后的记忆对象",
+    "List memory overview by actor first, or inspect governed memory objects by actor/project/global perspective": "默认按角色概览记忆，或按角色/项目/全局视角查看治理后的记忆对象",
     "Governance perspective: actor, project, or global": "治理视角：actor、project 或 global",
     "Actor id for actor perspective": "actor 视角对应的角色 ID",
     "Project id for project perspective": "project 视角对应的项目 ID",
     "Optional domain filter": "可选领域过滤",
     "Result limit": "结果上限",
     "Create a governed summary candidate from explicit text": "从显式文本生成治理摘要候选",
-    "Agent identity": "角色标识",
+    "Actor identity": "角色标识",
     "Manage clarification creation and resolution": "管理澄清创建与澄清回写",
     "Create clarification questions for explicit conflicting or missing memory text": "为冲突或缺失的记忆文本生成澄清问题",
-    "Resolving agent identity": "执行澄清回写的角色标识",
+    "Resolving actor identity": "执行澄清回写的角色标识",
     "Memory ids resolved by this answer": "被本次澄清解决的记忆 ID",
     "Manage MemoHub configuration": "管理 MemoHub 配置",
     "Print resolved new-architecture runtime configuration": "打印当前新架构运行时配置",
@@ -139,7 +139,7 @@ const helpTextMap = {
     "Write a raw configuration value by dotted path": "按点路径写入原始配置值",
     "Manage governed channel bindings": "管理治理渠道绑定",
     "Open or restore a governed channel binding": "打开或恢复一个治理渠道绑定",
-    "Owner actor id": "所有者角色 ID",
+    "Actor id": "角色 ID",
     "Source id": "来源 ID",
     "Project id": "项目 ID",
     "Channel purpose": "渠道用途",
@@ -148,7 +148,7 @@ const helpTextMap = {
     "Task id": "任务 ID",
     "Explicit channel id": "显式渠道 ID",
     "List governed channels": "列出治理渠道",
-    "Filter by owner actor": "按所有者角色过滤",
+    "Filter by actor": "按角色过滤",
     "Filter by project": "按项目过滤",
     "Filter by source": "按来源过滤",
     "Filter by purpose": "按用途过滤",
@@ -164,7 +164,7 @@ const helpTextMap = {
     "Preview cleanup targets without deleting data": "预览清理目标但不删除数据",
     "Select all MemoHub-managed data directories": "选择全部 MemoHub 托管数据目录",
     "Clean only vector records from one channel": "仅清理某个渠道的向量记录",
-    "Select governed channels by owner actor": "按所有者角色选择治理渠道",
+    "Select governed channels by actor": "按角色选择治理渠道",
     "Select governed channels by project id": "按项目 ID 选择治理渠道",
     "Select governed channels by source id": "按来源 ID 选择治理渠道",
     "Select governed channels by purpose": "按用途选择治理渠道",
@@ -253,7 +253,7 @@ export function localizeHelpOutput(text: string, lang: CliLang): string {
     .replace(/Run readiness checks before onboarding: memohub mcp doctor/gmu, "接入前执行就绪检查：memohub mcp doctor")
     .replace(/Start stdio MCP service for agents: memohub mcp serve/gmu, "为 Agent 启动 stdio MCP 服务：memohub mcp serve")
     .replace(/Inspect current Memory OS registry and AI\s+resources/gmu, "检查当前记忆中枢注册表与 AI 资源")
-    .replace(/Inject a new memory through the\s+Integration Hub write path/gmu, "通过 Integration Hub 写入一条新记忆")
+    .replace(/Inject a new memory through the\s+shared MemoHub memory write path/gmu, "通过共享 MemoHub 记忆写入路径注入一条新记忆")
     .replace(/Query a named layered context view through\s+self\/project\/global recall/gmu, "通过自己/项目/全局分层召回查询命名视图")
     .replace(/List governed memory objects directly by\s+actor\/project\/global perspective/gmu, "按角色/项目/全局视角直接列出治理后的记忆对象")
     .replace(/Create a governed summary candidate from\s+explicit text/gmu, "从显式文本生成治理摘要候选")

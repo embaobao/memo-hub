@@ -114,7 +114,7 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
       "Check Ollama availability with: ollama serve",
       `Ensure the model exists with: ollama pull ${this.config.embeddingModel}`,
       "Inspect MemoHub config with: memohub config show",
-      "Verify MemoHub readiness with: memohub mcp-doctor",
+      "Verify MemoHub readiness with: memohub mcp doctor",
     ].join(" | ");
   }
 }

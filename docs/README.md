@@ -4,7 +4,7 @@
 
 # MemoHub 文档中心
 
-最后更新：2026-04-29
+最后更新：2026-05-06
 
 MemoHub 是面向多 AI 场景的统一记忆中枢，用于整合 Agent 记忆、项目知识、代码上下文、任务脉络和外部工具写入数据。
 
@@ -41,6 +41,7 @@ Use it when you want your AI memory to belong to you: Hermes can remember durabl
 - [CLI 集成](integration/cli-integration.md)
 - [MCP 集成](integration/mcp-integration.md)
 - [Hermes 接入](integration/hermes-guide.md)
+- [Hermes 验证报告](integration/hermes-validation-report.md)
 - [接入场景验证](integration/access-scenarios.md)
 - [Agent Skill](https://github.com/embaobao/memo-hub/blob/main/skills/memohub/SKILL.md)
 - [API 参考](api/reference.md)
@@ -49,8 +50,6 @@ Use it when you want your AI memory to belong to you: Hermes can remember durabl
 
 - [架构概览](architecture/overview.md)
 - [新架构业务链路](architecture/business-workflows.md)
-- [统一记忆中枢草案](architecture/unified-memory-hub-draft.md)
-- [Integration Hub 澄清链路](architecture/integration-hub-clarification.md)
 - [检索流水线](architecture/retrieval-pipeline.md)
 - [Text2Mem 协议](architecture/text2mem-protocol.md)
 
