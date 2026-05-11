@@ -12,10 +12,13 @@ const baseConfig = {
     dimensions: 768,
   },
   ai: {
-    providers: [{ id: "local", type: "ollama", url: "http://localhost:11434/v1" }],
+    providers: [
+      { id: "ollama", type: "ollama", url: "http://localhost:11434/v1" },
+      { id: "lmstudio", type: "openai-compatible", url: "http://127.0.0.1:1234/v1" },
+    ],
     agents: {
-      embedder: { provider: "local", model: "nomic-embed-text-v2-moe", dimensions: 768 },
-      summarizer: { provider: "local", model: "qwen2.5:7b" },
+      embedder: { provider: "ollama", model: "nomic-embed-text-v2-moe", dimensions: 768 },
+      summarizer: { provider: "lmstudio", model: "qwen2.5:7b" },
     },
   },
   mcp: {
@@ -55,7 +58,17 @@ describe("runtime config", () => {
 
     expect(config.storage.vectorDbPath).toBe("/srv/memohub/shared/data/memohub.lancedb");
     expect(config.storage.blobPath).toBe("/srv/memohub/shared/blobs");
-    expect(config.ai.providerUrl).toBe("http://localhost:11434/v1");
+    expect(config.ai.embedderProviderUrl).toBe("http://localhost:11434/v1");
     expect(config.ai.embeddingModel).toBe("nomic-embed-text-v2-moe");
+  });
+
+  test("resolves separate embedder and summarizer providers", () => {
+    const config = resolveRuntimeConfig(baseConfig as never);
+
+    expect(config.ai.embedderProviderId).toBe("ollama");
+    expect(config.ai.embedderProviderUrl).toBe("http://localhost:11434/v1");
+    expect(config.ai.summarizerProviderId).toBe("lmstudio");
+    expect(config.ai.summarizerProviderUrl).toBe("http://127.0.0.1:1234/v1");
+    expect(config.ai.chatModel).toBe("qwen2.5:7b");
   });
 });

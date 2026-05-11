@@ -124,6 +124,37 @@ export const CLI_COMMANDS: CliCommandMetadata[] = [
     examples: ['memohub clarification resolve clarify_op_1 "以新架构文档为准" --actor hermes --project memo-hub'],
   },
   {
+    name: "hermes install",
+    description: "Install the official MemoHub Hermes memory provider into Hermes user plugin directories",
+    options: [
+      { name: "--hermes-home <path>", description: "Hermes home directory", defaultValue: "~/.hermes" },
+      { name: "--project <projectId>", description: "Optional default project id written to provider config" },
+      { name: "--language <lang>", description: "Provider output language: auto, zh, or en", defaultValue: "auto" },
+      { name: "--cwd <workingDirectory>", description: "Optional working directory written to provider config" },
+      { name: "--json", description: "Output raw JSON" },
+    ],
+    examples: ["memohub hermes install", "memohub hermes install --project memo-hub --language zh"],
+  },
+  {
+    name: "hermes doctor",
+    description: "Check Hermes plugin links, provider config, Python compatibility, and plugin discoverability",
+    options: [
+      { name: "--hermes-home <path>", description: "Hermes home directory", defaultValue: "~/.hermes" },
+      { name: "--json", description: "Output raw JSON" },
+    ],
+    examples: ["memohub hermes doctor", "memohub hermes doctor --hermes-home /tmp/hermes-profile"],
+  },
+  {
+    name: "hermes uninstall",
+    description: "Remove Hermes plugin links without touching MemoHub memory data",
+    options: [
+      { name: "--hermes-home <path>", description: "Hermes home directory", defaultValue: "~/.hermes" },
+      { name: "--purge-assets", description: "Also remove MemoHub-managed Hermes integration assets" },
+      { name: "--json", description: "Output raw JSON" },
+    ],
+    examples: ["memohub hermes uninstall", "memohub hermes uninstall --purge-assets"],
+  },
+  {
     name: "mcp config",
     description: "Print MCP client config and agent skill instructions",
     options: [{ name: "--target <target>", description: "Config target: generic or hermes", defaultValue: "generic" }],

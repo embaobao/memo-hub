@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { once } from "node:events";
 import { createServer } from "node:http";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
@@ -26,6 +26,19 @@ async function runMemohub(args: string[], expectJson = false): Promise<string | 
 
   if (!expectJson) return output;
   return JSON.parse(output) as JsonResult;
+}
+
+function resolveHermesPythonCommand(): string[] {
+  const hermesExecutable = process.env.HERMES_BIN ?? "hermes";
+  const scriptPath = hermesExecutable.includes("/")
+    ? hermesExecutable
+    : Bun.which(hermesExecutable);
+  assert(scriptPath, "Hermes executable is not available on PATH.");
+
+  const firstLine = readFileSync(scriptPath, "utf8").split(/\r?\n/u, 1)[0]?.trim();
+  assert(firstLine?.startsWith("#!"), "Hermes executable does not expose a Python shebang.");
+
+  return firstLine.slice(2).trim().split(/\s+/u).filter(Boolean);
 }
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -78,7 +91,10 @@ async function main() {
   const sandboxRoot = mkdtempSync(join(tmpdir(), "memohub-hermes-"));
   const storageRoot = join(sandboxRoot, "store");
   const configPath = join(sandboxRoot, "memohub.json");
+  const hermesHome = join(sandboxRoot, ".hermes");
+  const binRoot = join(sandboxRoot, "bin");
   mkdirSync(storageRoot, { recursive: true });
+  mkdirSync(binRoot, { recursive: true });
 
   const config = {
     configVersion: "unified-memory-1",
@@ -130,11 +146,19 @@ async function main() {
   };
 
   writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+  const memohubShim = join(binRoot, "memohub");
+  writeFileSync(
+    memohubShim,
+    `#!/bin/sh\nexec "${process.execPath}" "${cliEntry}" "$@"\n`,
+    "utf8",
+  );
+  chmodSync(memohubShim, 0o755);
 
   currentEnv = {
     ...process.env,
     MEMOHUB_CONFIG: configPath,
     MEMOHUB_LANG: "zh",
+    PATH: `${binRoot}:${process.env.PATH ?? ""}`,
   };
 
   const primaryChannel = "hermes:primary:memo-hub";
@@ -145,6 +169,59 @@ async function main() {
   try {
     await runMemohub(["config", "show"]);
     await runMemohub(["mcp", "tools"]);
+
+    const hermesInstall = await runMemohub([
+      "hermes",
+      "install",
+      "--hermes-home",
+      hermesHome,
+      "--project",
+      "memo-hub",
+      "--json",
+    ], true);
+    assert(hermesInstall.success === true, "Hermes install should succeed.");
+
+    const hermesDoctor = await runMemohub([
+      "hermes",
+      "doctor",
+      "--hermes-home",
+      hermesHome,
+      "--json",
+    ], true);
+    assert(hermesDoctor.success === true, "Hermes doctor should succeed in isolated mode.");
+
+    const hermesPython = resolveHermesPythonCommand();
+    const hermesPluginValidation = await execFileAsync(
+      hermesPython[0],
+      [
+        ...hermesPython.slice(1),
+        "-c",
+        [
+          "import json",
+          "from plugins.memory import discover_memory_providers, load_memory_provider",
+          "providers = [name for name, _, _ in discover_memory_providers()]",
+          "provider = load_memory_provider('memohub')",
+          "assert provider is not None, 'memohub provider not loaded'",
+          "init = provider.initialize('hermes-isolated', project_id='memo-hub', hermes_home=r'" + hermesHome.replaceAll("\\", "\\\\") + "')",
+          "prefetch = provider.prefetch('current memory state')",
+          "sync = provider.sync_turn('以后都先查自己记忆', '收到，写入长期偏好', {'project_id': 'memo-hub', 'session_id': 'hermes-isolated'})",
+          "future = getattr(provider, '_last_sync_future', None)",
+          "future.result(timeout=5) if future else None",
+          "print(json.dumps({'providers': providers, 'init': init, 'prefetch': prefetch, 'sync': sync}, ensure_ascii=False))",
+        ].join("; "),
+      ],
+      {
+        cwd: workspaceRoot,
+        env: {
+          ...currentEnv,
+          HERMES_HOME: hermesHome,
+        },
+        encoding: "utf8",
+      },
+    );
+    const hermesPluginResult = JSON.parse(hermesPluginValidation.stdout.trim()) as Record<string, unknown>;
+    assert(Array.isArray(hermesPluginResult.providers) && hermesPluginResult.providers.includes("memohub"), "Hermes should discover memohub provider.");
+    assert(JSON.stringify(hermesPluginResult.prefetch).includes("channelId"), "Hermes provider prefetch should return channel summary.");
 
     const openedPrimary = await runMemohub([
       "channel", "open",
@@ -277,6 +354,7 @@ async function main() {
       sandboxRoot,
       configPath,
       storageRoot,
+      hermesHome,
       primaryChannel,
       testChannel,
       actorMemories: actorMemories.length,

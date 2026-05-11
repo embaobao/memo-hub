@@ -8,10 +8,12 @@
   },
   "files": [
     "dist",
+    "assets",
     "README.md"
   ],
   "scripts": {
-    "build": "tsc && bun run prepare:bin",
+    "build": "tsc && bun run prepare:assets && bun run prepare:bin",
+    "prepare:assets": "bun scripts/sync-hermes-assets.ts",
     "prepare:bin": "bun scripts/prepare-bin.ts",
     "verify:bin": "bun run prepare:bin && node dist/index.js --version",
     "link:global": "bun run build && npm link",

@@ -137,6 +137,52 @@ Examples:
 
 - `memohub clarification resolve clarify_op_1 "以新架构文档为准" --actor hermes --project memo-hub`
 
+### hermes install
+
+Install the official MemoHub Hermes memory provider into Hermes user plugin directories
+
+Options:
+
+- `--hermes-home <path>`: Hermes home directory. Default: `~/.hermes`.
+- `--project <projectId>`: Optional default project id written to provider config.
+- `--language <lang>`: Provider output language: auto, zh, or en. Default: `auto`.
+- `--cwd <workingDirectory>`: Optional working directory written to provider config.
+- `--json`: Output raw JSON.
+
+Examples:
+
+- `memohub hermes install`
+- `memohub hermes install --project memo-hub --language zh`
+
+### hermes doctor
+
+Check Hermes plugin links, provider config, Python compatibility, and plugin discoverability
+
+Options:
+
+- `--hermes-home <path>`: Hermes home directory. Default: `~/.hermes`.
+- `--json`: Output raw JSON.
+
+Examples:
+
+- `memohub hermes doctor`
+- `memohub hermes doctor --hermes-home /tmp/hermes-profile`
+
+### hermes uninstall
+
+Remove Hermes plugin links without touching MemoHub memory data
+
+Options:
+
+- `--hermes-home <path>`: Hermes home directory. Default: `~/.hermes`.
+- `--purge-assets`: Also remove MemoHub-managed Hermes integration assets.
+- `--json`: Output raw JSON.
+
+Examples:
+
+- `memohub hermes uninstall`
+- `memohub hermes uninstall --purge-assets`
+
 ### mcp config
 
 Print MCP client config and agent skill instructions

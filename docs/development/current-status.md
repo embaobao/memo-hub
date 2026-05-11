@@ -1,6 +1,6 @@
 # MemoHub 当前状态
 
-最后更新：2026-05-06
+最后更新：2026-05-07
 
 ## 当前主线
 
@@ -22,6 +22,7 @@ Connector -> Channel -> Memory
 - `packages/channel` 已落地，CLI/MCP 不再在 app 层维护 channel registry 业务实现。
 - `packages/memory` 已落地，统一承接 Memory runtime、Hermes 预取、候选提取与列表概览。
 - `connectors/hermes` 已落地，使用 Python + uv 管理 Hermes memory provider plugin。
+- `memohub hermes install|doctor|uninstall` 已落地，统一管理 Hermes 官方 provider 安装链路。
 - CLI 新增 `list|ls` 概览能力，默认按 actor 展示记忆概览。
 - CLI 与 MCP 已统一使用 `actorId` 作为治理主体字段。
 - `memohub serve` / `memohub mcp serve` 都可作为 MCP 服务入口。
@@ -33,6 +34,9 @@ CLI：
 
 ```bash
 memohub inspect
+memohub hermes install
+memohub hermes doctor
+memohub hermes uninstall
 memohub add "文本内容" --project memo-hub --source cli --category decision
 memohub query "Hermes habits" --view agent_profile --actor hermes --project memo-hub
 memohub ls
@@ -74,16 +78,15 @@ MCP：
 说明：
 
 - CLI 单测已覆盖命令面、MCP 契约、渠道治理、国际化与统一运行时链路。
-- Hermes Connector 已通过 `ruff` 与 `pytest`，包括配置、初始化、prefetch、sync_turn 和工具调用契约。
+- Hermes Connector 已通过 `ruff` 与 `pytest`，包括官方插件注册、CLI 扩展、配置、初始化、prefetch、sync_turn 和工具调用契约。
+- Hermes 官方安装链路已通过隔离 home 验证：插件资产复制到 `~/.memohub/integrations/hermes/`、Hermes 固定目录软链接创建、`doctor` Python 3.9+ 检查。
 
 ## 当前活跃提案
 
-- `close-hermes-memory-loop`
 - `add-data-environments-and-cleanup`
 - `add-git-code-asset-layer`
 
 当前优先级：
 
-1. 先完成 Hermes 纯记忆闭环发布准备。
-2. 再推进数据环境治理与清理策略。
-3. Git / AST / 依赖 / 私有源代码资产层保持独立提案推进。
+1. 先推进数据环境治理与清理策略，补齐真实接入前的数据隔离、安全清理和路径治理。
+2. 再规划并收敛 Git / AST / 依赖 / 私有源代码资产层，保持独立提案推进。

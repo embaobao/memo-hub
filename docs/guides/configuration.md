@@ -37,10 +37,29 @@ memohub config uninstall --yes --confirm DELETE_MEMOHUB_CONFIG
     "vectorTable": "memohub"
   },
   "ai": {
-    "provider": "ollama",
-    "embeddingModel": "nomic-embed-text-v2-moe",
-    "chatModel": "llama3.1",
-    "dimensions": 768
+    "providers": [
+      {
+        "id": "ollama",
+        "type": "ollama",
+        "url": "http://localhost:11434/v1"
+      },
+      {
+        "id": "lmstudio",
+        "type": "openai-compatible",
+        "url": "http://127.0.0.1:1234/v1"
+      }
+    ],
+    "agents": {
+      "embedder": {
+        "provider": "ollama",
+        "model": "nomic-embed-text-v2-moe",
+        "dimensions": 768
+      },
+      "summarizer": {
+        "provider": "ollama",
+        "model": "qwen2.5:7b"
+      }
+    }
   },
   "mcp": {
     "transport": "stdio",
@@ -56,6 +75,58 @@ memohub config uninstall --yes --confirm DELETE_MEMOHUB_CONFIG
 ```
 
 `configVersion` 是配置结构版本，用于后续迁移和诊断；它不等同于 CLI 包版本。
+
+## 本地模型配置
+
+MemoHub 现在默认支持两类本地模型配置入口：
+
+- `ollama`
+- `lmstudio`
+
+推荐约定：
+
+- `embedder` 默认使用 `ollama`
+- `summarizer` 可以继续使用 `ollama`
+- 也可以切到 `lmstudio`
+
+例如：
+
+```json
+{
+  "ai": {
+    "providers": [
+      {
+        "id": "ollama",
+        "type": "ollama",
+        "url": "http://localhost:11434/v1"
+      },
+      {
+        "id": "lmstudio",
+        "type": "openai-compatible",
+        "url": "http://127.0.0.1:1234/v1"
+      }
+    ],
+    "agents": {
+      "embedder": {
+        "provider": "ollama",
+        "model": "nomic-embed-text-v2-moe",
+        "dimensions": 768
+      },
+      "summarizer": {
+        "provider": "lmstudio",
+        "model": "local-chat-model"
+      }
+    }
+  }
+}
+```
+
+说明：
+
+- `embedder.provider` 和 `summarizer.provider` 可以不同
+- `embedder.model` 用于向量 embedding 模型
+- `summarizer.model` 用于总结或对话模型
+- 如果使用 LM Studio，需要本地启动 OpenAI 兼容服务，并暴露 `/v1`
 
 ## MCP 配置能力
 

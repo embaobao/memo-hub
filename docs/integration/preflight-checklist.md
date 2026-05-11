@@ -14,6 +14,22 @@ memohub --version
 memohub --help
 ```
 
+如果本次目标是让 Hermes 通过官方 memory provider plugin 接入，额外执行：
+
+```bash
+memohub hermes install
+hermes memory setup
+hermes plugins reload
+memohub hermes doctor
+```
+
+通过标准：
+
+- `hermes memory setup` 中能看到 `memohub`
+- `memohub hermes doctor` 返回成功
+- Hermes 不使用私有数据源，而是与 MemoHub CLI / MCP 共用同一套数据
+- Hermes 插件入口来自 `~/.hermes/plugins/memohub`
+
 通过标准：
 
 - `apps/cli/dist/index.js` 存在且可执行。

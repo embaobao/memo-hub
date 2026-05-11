@@ -1,8 +1,6 @@
 name: memohub
-display_name: MemoHub
-kind: memory_provider
 version: 1.0.0
-entrypoint: memohub_provider.provider:MemoHubMemoryProvider
+entry: plugin:register
 description: |
   MemoHub official Hermes memory provider. It uses the MemoHub CLI as the
   shared Connector -> Channel -> Memory entry and does not create a second

@@ -26,8 +26,8 @@
 
 - [x] 3.1 新增 `connectors/hermes`。
 - [x] 3.1.1 增加 `pyproject.toml`，使用 uv 管理 Hermes 插件依赖和测试。
-- [x] 3.1.2 增加 `memohub_provider/plugin.yaml`。
-- [x] 3.1.3 增加 `memohub_provider/provider.py`，承载 Hermes 官方插件类。
+- [x] 3.1.2 增加 `plugins/memory/memohub/plugin.yaml`。
+- [x] 3.1.3 增加 `plugins/memory/memohub/provider.py`，承载 Hermes 官方插件类。
 - [x] 3.1.4 增加 `config.py`、`client.py`、`extractor.py`、`formatter.py`。
 - [x] 3.1.5 增加 `connectors/hermes/test/`，只放 Hermes 插件测试。
 - [x] 3.2 根目录脚本增加 Hermes Connector 工程命令。
@@ -35,6 +35,9 @@
 - [x] 3.2.2 `connector:hermes:test` 执行 pytest。
 - [x] 3.2.3 `connector:hermes:lint` 执行 ruff。
 - [x] 3.2.4 `connector:hermes:check` 串联 lint 和 test。
+- [x] 3.3 新增 CLI 发布资产目录 `apps/cli/assets/hermes/plugins/memory/memohub/`。
+- [x] 3.3.1 将 Hermes plugin 资产纳入 `@memohub/cli` 发布包。
+- [x] 3.3.2 增加发布资产同步脚本，确保 connector 源码和 CLI 资产一致。
 
 ## 4. Hermes Official Plugin Contract
 
@@ -52,6 +55,10 @@
 - [x] 4.12 实现 `shutdown()`。
 - [x] 4.13 实现 `get_tool_schemas()` 和 `handle_tool_call(name, args)`。
 - [x] 4.14 增加官方协议契约测试，逐项验证方法存在、返回结构、异常处理。
+- [x] 4.15 将 Hermes provider 最低 Python 版本降到 `3.9`。
+- [x] 4.15.1 将类型写法改为 Python 3.9 兼容形式。
+- [x] 4.15.2 调整 `register(ctx)` 为 Hermes 官方上下文注册方式。
+- [x] 4.15.3 收敛 `plugin.yaml` 到 Hermes 官方最小字段。
 
 ## 5. Channel Governance
 
@@ -65,6 +72,10 @@
 - [x] 5.3 支持按 actor/source/project/session/purpose/channel 列表和过滤。
 - [x] 5.4 支持按 actor/source/project/session/purpose/channel clean dry-run。
 - [x] 5.5 清理执行必须二次确认，禁止插件默认执行高风险清理。
+- [x] 5.6 安装命令统一将 Hermes plugin 资产复制到 `~/.memohub/integrations/hermes/`。
+- [x] 5.6.1 创建 `~/.hermes/plugins/memohub` 软链接。
+- [x] 5.6.2 创建 `~/.hermes/memohub-provider.json` 软链接。
+- [x] 5.6.3 首次执行允许自动创建 `~/.hermes/plugins/`。
 
 ## 6. Memory Read Loop
 
@@ -106,6 +117,10 @@
 - [x] 8.4 `memohub://tools` 暴露 Hermes 首次接入建议顺序。
 - [x] 8.5 确保 MCP stdio 不输出非 JSON-RPC 内容。
 - [x] 8.6 确保 CLI/MCP 高层能力等价：channel、memory read/write/list、logs、data clean dry-run。
+- [x] 8.7 新增 `memohub hermes install|doctor|uninstall` 子命令。
+- [x] 8.7.1 `install` 负责复制插件资产、建软链接、输出 `hermes memory setup`。
+- [x] 8.7.2 `doctor` 负责检查 Python 版本、软链接、配置和可发现性。
+- [x] 8.7.3 `uninstall` 只删除 Hermes 接入链路，不碰 MemoHub 主数据。
 
 ## 9. Documentation And Skill
 
@@ -120,6 +135,8 @@
 - [x] 9.3.1 增加 Hermes 官方插件接入流程。
 - [x] 9.3.2 增加首次真实接入话术。
 - [x] 9.3.3 增加 setup、prefetch、sync_turn、query、logs、clean dry-run 验证。
+- [x] 9.3.4 默认接入方式改为固定目录扫描和 `hermes memory setup`。
+- [x] 9.3.5 记录 Python 3.9 环境可用性和安装产物目录。
 - [x] 9.4 更新 `skills/memohub/SKILL.md`，让 Agent 明确 MemoHub 是共享长期记忆中心。
 - [x] 9.5 更新 `AGENTS.md`，禁止把额外中间层作为顶层业务概念重新引入。
 - [x] 9.6 运行 `bun run docs:generate` 和 `bun run docs:check`。
@@ -133,6 +150,8 @@
 - [x] 10.5 Hermes Connector 依赖验证：`bun run connector:hermes:sync`。
 - [x] 10.6 Hermes Connector 测试：`bun run connector:hermes:test`。
 - [x] 10.7 Hermes Connector 完整检查：`bun run connector:hermes:check`。
+- [x] 10.7.1 Python 3.9 环境下的 Hermes 插件发现验证。
+- [x] 10.7.2 `memohub hermes install` / `doctor` / `uninstall` 闭环验证。
 - [x] 10.8 实机接入验证，使用 `purpose=test`。
 - [x] 10.8.1 setup 保存配置。
 - [x] 10.8.2 initialize 创建/恢复 channel。

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import Any, Dict, List, Optional, Set
 
 PREFERENCE_PATTERNS = [r"偏好", r"习惯", r"默认", r"以后都", r"\bprefer\b", r"\balways\b"]
 ACTIVITY_PATTERNS = [r"正在做", r"刚完成", r"接下来", r"阻塞", r"\bworking on\b", r"\bnext\b"]
@@ -11,14 +11,14 @@ CLARIFY_PATTERNS = [r"纠正", r"澄清", r"不是", r"应该是", r"\bclarif", 
 
 def extract_memory_candidates(
     *,
-    user_message: str | None,
-    assistant_message: str | None,
+    user_message: Optional[str],
+    assistant_message: Optional[str],
     project_id: str,
     channel_id: str,
-    session_id: str | None = None,
-    task_id: str | None = None,
-) -> list[dict[str, Any]]:
-    candidates: list[dict[str, Any]] = []
+    session_id: Optional[str] = None,
+    task_id: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    candidates: List[Dict[str, Any]] = []
     for message in [user_message, assistant_message]:
         if not message:
             continue
@@ -37,13 +37,13 @@ def extract_memory_candidates(
     return dedupe_candidates(candidates)
 
 
-def split_candidates(text: str) -> list[str]:
+def split_candidates(text: str) -> List[str]:
     parts = re.split(r"[\n。！？!?]+", text)
     return [part.strip() for part in parts if part and len(part.strip()) >= 6]
 
 
-def detect_categories(text: str) -> list[str]:
-    categories: list[str] = []
+def detect_categories(text: str) -> List[str]:
+    categories: List[str] = []
     if matches_any(CLARIFY_PATTERNS, text):
         categories.append("clarification")
     if matches_any(PREFERENCE_PATTERNS, text):
@@ -65,13 +65,13 @@ def category_to_cli_hint(category: str) -> str:
     }[category]
 
 
-def matches_any(patterns: list[str], text: str) -> bool:
+def matches_any(patterns: List[str], text: str) -> bool:
     return any(re.search(pattern, text, flags=re.IGNORECASE) for pattern in patterns)
 
 
-def dedupe_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    seen: set[str] = set()
-    deduped: list[dict[str, Any]] = []
+def dedupe_candidates(candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    seen: Set[str] = set()
+    deduped: List[Dict[str, Any]] = []
     for candidate in candidates:
         key = f"{candidate['category']}::{candidate['text'].strip().lower()}"
         if key in seen:

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from concurrent.futures import Future, ThreadPoolExecutor
 from pathlib import Path
-from typing import Any
+from threading import Lock
+from typing import Any, Dict, List, Optional
 
 from .client import MemoHubClient, MemoHubClientError
 from .config import DEFAULT_CONFIG, load_provider_config, save_provider_config
@@ -10,13 +12,16 @@ from .formatter import format_prefetch_summary, format_sync_turn_result
 
 
 class MemoHubMemoryProvider:
-    def __init__(self, *, client: MemoHubClient | None = None, config: dict[str, Any] | None = None) -> None:
+    def __init__(self, *, client: Optional[MemoHubClient] = None, config: Optional[Dict[str, Any]] = None) -> None:
         self._client = client
         self._config = {**DEFAULT_CONFIG, **(config or {})}
-        self._active_channel: dict[str, Any] | None = None
-        self._session_id: str | None = None
-        self._hermes_home: str | None = None
-        self._pending_query: str | None = None
+        self._active_channel: Optional[Dict[str, Any]] = None
+        self._session_id: Optional[str] = None
+        self._hermes_home: Optional[str] = None
+        self._pending_query: Optional[str] = None
+        self._executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="memohub-hermes")
+        self._last_sync_future: Optional[Future[Dict[str, Any]]] = None
+        self._sync_lock = Lock()
 
     @property
     def name(self) -> str:
@@ -29,41 +34,11 @@ class MemoHubMemoryProvider:
         except Exception:
             return False
 
-    def get_config_schema(self) -> list[dict[str, Any]]:
-        return [
-            {
-                "key": "memohub_command",
-                "description": "MemoHub CLI command, for example `memohub` or `node /path/to/dist/index.js`.",
-                "required": True,
-                "default": "memohub",
-            },
-            {
-                "key": "project_id",
-                "description": "Default MemoHub project id to bind when Hermes session metadata does not provide one.",
-                "required": False,
-                "default": "default",
-            },
-            {
-                "key": "language",
-                "description": "MemoHub CLI output language for fallback readable output.",
-                "required": False,
-                "default": "auto",
-                "choices": ["auto", "zh", "en"],
-            },
-            {
-                "key": "working_directory",
-                "description": "Optional working directory used when invoking MemoHub CLI commands.",
-                "required": False,
-            },
-            {
-                "key": "test_validation",
-                "description": "Whether onboarding guidance should remind Hermes to use purpose=test for validation writes.",
-                "required": False,
-                "default": True,
-            },
-        ]
+    def get_config_schema(self) -> List[Dict[str, Any]]:
+        # 安装命令已经预写 provider 配置；setup 阶段不再额外提示用户输入。
+        return []
 
-    def save_config(self, values: dict[str, Any], hermes_home: str) -> dict[str, Any]:
+    def save_config(self, values: Dict[str, Any], hermes_home: str) -> Dict[str, Any]:
         self._hermes_home = hermes_home
         self._config = save_provider_config(values, hermes_home)
         self._client = MemoHubClient.from_config(self._config)
@@ -98,11 +73,11 @@ class MemoHubMemoryProvider:
             "Recall order is self -> project -> global, and every write stays bound to the active channel."
         )
 
-    def queue_prefetch(self, query: str | None) -> dict[str, Any]:
+    def queue_prefetch(self, query: Optional[str]) -> Dict[str, Any]:
         self._pending_query = query
         return {"queued": True, "query": query}
 
-    def prefetch(self, query: str | None = None) -> dict[str, Any]:
+    def prefetch(self, query: Optional[str] = None) -> Dict[str, Any]:
         channel = self._require_channel()
         project_id = str(channel["projectId"])
         actor_id = str(channel["actorId"])
@@ -137,21 +112,24 @@ class MemoHubMemoryProvider:
         self,
         user_message: str,
         assistant_message: str,
-        metadata: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         metadata = metadata or {}
-        channel = self._ensure_initialized(metadata)
-        candidates = extract_memory_candidates(
-            user_message=user_message,
-            assistant_message=assistant_message,
-            project_id=str(channel["projectId"]),
-            channel_id=str(channel["channelId"]),
-            session_id=metadata.get("session_id") or metadata.get("sessionId") or self._session_id,
-            task_id=metadata.get("task_id") or metadata.get("taskId"),
-        )
-        return self._write_candidates(channel, candidates)
+        with self._sync_lock:
+            self._last_sync_future = self._executor.submit(
+                self._sync_turn_worker,
+                user_message,
+                assistant_message,
+                metadata,
+            )
+        return {
+            "queued": True,
+            "success": True,
+            "channelId": self._active_channel["channelId"] if self._active_channel else None,
+            "message": "MemoHub sync_turn has been queued for background write.",
+        }
 
-    def on_pre_compress(self, messages: list[Any]) -> dict[str, Any]:
+    def on_pre_compress(self, messages: List[Any]) -> Dict[str, Any]:
         channel = self._require_channel()
         text = "\n".join(extract_message_text(message) for message in messages[-4:] if extract_message_text(message))
         candidates = extract_memory_candidates(
@@ -163,7 +141,7 @@ class MemoHubMemoryProvider:
         )
         return self._write_candidates(channel, candidates)
 
-    def on_session_end(self, messages: list[Any]) -> dict[str, Any]:
+    def on_session_end(self, messages: List[Any]) -> Dict[str, Any]:
         channel = self._require_channel()
         text = "\n".join(extract_message_text(message) for message in messages[-6:] if extract_message_text(message))
         summary = preview_text(text) or "Hermes session ended without durable summary content."
@@ -177,7 +155,7 @@ class MemoHubMemoryProvider:
         )
         return {"success": True, "written": [written], "channelId": channel["channelId"]}
 
-    def on_memory_write(self, action: str, target: str, content: str) -> dict[str, Any]:
+    def on_memory_write(self, action: str, target: str, content: str) -> Dict[str, Any]:
         channel = self._require_channel()
         category = infer_manual_write_category(action, target)
         result = self._require_client().add_memory(
@@ -190,12 +168,13 @@ class MemoHubMemoryProvider:
         )
         return {"success": True, "written": [result], "channelId": channel["channelId"]}
 
-    def shutdown(self) -> dict[str, Any]:
+    def shutdown(self) -> Dict[str, Any]:
         self._pending_query = None
         self._session_id = None
+        self._executor.shutdown(wait=False, cancel_futures=True)
         return {"success": True}
 
-    def get_tool_schemas(self) -> list[dict[str, Any]]:
+    def get_tool_schemas(self) -> List[Dict[str, Any]]:
         return [
             {
                 "name": "memohub_status",
@@ -244,7 +223,7 @@ class MemoHubMemoryProvider:
             },
         ]
 
-    def handle_tool_call(self, name: str, args: dict[str, Any] | None = None) -> dict[str, Any]:
+    def handle_tool_call(self, name: str, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         args = args or {}
         channel = self._require_channel()
         if name == "memohub_status":
@@ -278,9 +257,9 @@ class MemoHubMemoryProvider:
             )
         raise MemoHubClientError(f"Unknown MemoHub Hermes tool: {name}")
 
-    def _write_candidates(self, channel: dict[str, Any], candidates: list[dict[str, Any]]) -> dict[str, Any]:
-        written: list[dict[str, Any]] = []
-        skipped: list[dict[str, Any]] = []
+    def _write_candidates(self, channel: Dict[str, Any], candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+        written: List[Dict[str, Any]] = []
+        skipped: List[Dict[str, Any]] = []
         for candidate in candidates:
             if not candidate.get("text"):
                 skipped.append(candidate)
@@ -297,14 +276,31 @@ class MemoHubMemoryProvider:
             written.append({"category": candidate["category"], "text": candidate["text"], "result": result})
         return format_sync_turn_result(channel=channel, written=written, skipped=skipped)
 
-    def _ensure_initialized(self, metadata: dict[str, Any]) -> dict[str, Any]:
+    def _sync_turn_worker(
+        self,
+        user_message: str,
+        assistant_message: str,
+        metadata: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        channel = self._ensure_initialized(metadata)
+        candidates = extract_memory_candidates(
+            user_message=user_message,
+            assistant_message=assistant_message,
+            project_id=str(channel["projectId"]),
+            channel_id=str(channel["channelId"]),
+            session_id=metadata.get("session_id") or metadata.get("sessionId") or self._session_id,
+            task_id=metadata.get("task_id") or metadata.get("taskId"),
+        )
+        return self._write_candidates(channel, candidates)
+
+    def _ensure_initialized(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
         if self._active_channel:
             return self._active_channel
         session_id = metadata.get("session_id") or metadata.get("sessionId") or self._session_id or "hermes-session"
         result = self.initialize(str(session_id), **metadata)
         return result["channel"]
 
-    def _require_channel(self) -> dict[str, Any]:
+    def _require_channel(self) -> Dict[str, Any]:
         if not self._active_channel:
             raise MemoHubClientError("MemoHub Hermes provider is not initialized. Call initialize() first.")
         return self._active_channel
@@ -318,7 +314,7 @@ class MemoHubMemoryProvider:
         return self._client
 
 
-def resolve_project_id(kwargs: dict[str, Any], config: dict[str, Any]) -> str:
+def resolve_project_id(kwargs: Dict[str, Any], config: Dict[str, Any]) -> str:
     return str(
         kwargs.get("project_id")
         or kwargs.get("projectId")
@@ -327,7 +323,7 @@ def resolve_project_id(kwargs: dict[str, Any], config: dict[str, Any]) -> str:
     )
 
 
-def resolve_purpose(kwargs: dict[str, Any]) -> str:
+def resolve_purpose(kwargs: Dict[str, Any]) -> str:
     purpose = str(kwargs.get("purpose") or kwargs.get("channel_purpose") or "primary")
     return purpose if purpose in {"primary", "test", "session", "connector", "import"} else "primary"
 

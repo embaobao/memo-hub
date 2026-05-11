@@ -15,10 +15,13 @@ export interface ResolvedMemoHubRuntimeConfig {
     dimensions: number;
   };
   ai: {
-    providerId: string;
-    providerType: string;
-    providerUrl: string;
+    embedderProviderId: string;
+    embedderProviderType: string;
+    embedderProviderUrl: string;
     embeddingModel: string;
+    summarizerProviderId: string;
+    summarizerProviderType: string;
+    summarizerProviderUrl: string;
     chatModel: string;
     dimensions: number;
   };
@@ -48,13 +51,17 @@ export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRun
   const root = resolvePath(config.storage?.root ?? config.system?.root ?? "~/.memohub");
   const embedder = config.ai.agents.embedder;
   const summarizer = config.ai.agents.summarizer;
-  const providerId = embedder?.provider ?? config.ai.providers[0]?.id ?? "local";
-  const provider = config.ai.providers.find((item) => item.id === providerId) ?? config.ai.providers[0];
+  const embedderProviderId = embedder?.provider ?? config.ai.providers[0]?.id ?? "ollama";
+  const summarizerProviderId = summarizer?.provider ?? embedderProviderId;
+  const embedderProvider = config.ai.providers.find((item) => item.id === embedderProviderId) ?? config.ai.providers[0];
+  const summarizerProvider = config.ai.providers.find((item) => item.id === summarizerProviderId) ?? embedderProvider;
   const dimensions = Number(process.env.MEMOHUB_DIMENSIONS ?? config.storage?.dimensions ?? embedder?.dimensions ?? 768);
   const vectorDbPath = process.env.MEMOHUB_DB_PATH ?? config.storage?.vectorDbPath ?? `${root}/data/memohub.lancedb`;
   const blobPath = process.env.MEMOHUB_CAS_PATH ?? config.storage?.blobPath ?? `${root}/blobs`;
-  const providerUrl = process.env.EMBEDDING_URL ?? provider?.url ?? "http://localhost:11434/v1";
+  const embedderProviderUrl = process.env.EMBEDDING_URL ?? embedderProvider?.url ?? "http://localhost:11434/v1";
+  const summarizerProviderUrl = process.env.SUMMARIZER_URL ?? summarizerProvider?.url ?? embedderProviderUrl;
   const embeddingModel = process.env.EMBEDDING_MODEL ?? embedder?.model ?? "nomic-embed-text";
+  const chatModel = process.env.SUMMARIZER_MODEL ?? summarizer?.model ?? "qwen2.5:7b";
 
   return {
     version: CLI_METADATA.version,
@@ -70,11 +77,14 @@ export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRun
       dimensions,
     },
     ai: {
-      providerId,
-      providerType: provider?.type ?? "ollama",
-      providerUrl,
+      embedderProviderId,
+      embedderProviderType: embedderProvider?.type ?? "ollama",
+      embedderProviderUrl,
       embeddingModel,
-      chatModel: summarizer?.model ?? "qwen2.5:7b",
+      summarizerProviderId,
+      summarizerProviderType: summarizerProvider?.type ?? embedderProvider?.type ?? "ollama",
+      summarizerProviderUrl,
+      chatModel,
       dimensions,
     },
     mcp: {

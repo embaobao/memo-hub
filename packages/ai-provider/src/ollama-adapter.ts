@@ -111,8 +111,10 @@ export class OllamaAdapter implements IEmbedder, ICompleter {
       prefix,
       `Provider URL: ${this.config.url}`,
       `Embedding model: ${this.config.embeddingModel}`,
-      "Check Ollama availability with: ollama serve",
-      `Ensure the model exists with: ollama pull ${this.config.embeddingModel}`,
+      "Check local model service availability (for example Ollama or LM Studio).",
+      "If using Ollama, verify with: ollama serve",
+      `If using Ollama, ensure the model exists with: ollama pull ${this.config.embeddingModel}`,
+      "If using LM Studio, verify the local server is started and exposes an OpenAI-compatible /v1 API.",
       "Inspect MemoHub config with: memohub config show",
       "Verify MemoHub readiness with: memohub mcp doctor",
     ].join(" | ");

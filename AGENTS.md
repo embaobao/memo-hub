@@ -140,6 +140,9 @@ memohub mcp serve
 
 ```bash
 memohub inspect
+memohub hermes install
+memohub hermes doctor
+memohub hermes uninstall
 memohub add "文本内容" --project memo-hub --source cli --category decision
 memohub query "查询文本" --view project_context --actor hermes --project memo-hub
 memohub summarize "需要总结的文本" --actor hermes

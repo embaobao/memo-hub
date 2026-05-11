@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from memohub_provider.extractor import extract_memory_candidates
-from memohub_provider.provider import MemoHubMemoryProvider
+from plugins.memory.memohub.extractor import extract_memory_candidates
+from plugins.memory.memohub.provider import MemoHubMemoryProvider
 
 
 class RecordingClient:
@@ -64,10 +64,11 @@ def test_sync_turn_and_session_end_write_back_to_memohub() -> None:
         assistant_message="项目约定是使用 Connector -> Channel -> Memory。",
         metadata={"project_id": "memo-hub", "session_id": "session-1"},
     )
+    provider._last_sync_future.result(timeout=3)
     end_result = provider.on_session_end(
         [{"content": "今天完成了 Hermes 纯记忆闭环验证，并确认使用统一记忆模型。"}]
     )
 
-    assert sync_result["writtenCount"] >= 2
+    assert sync_result["queued"] is True
     assert end_result["success"] is True
     assert any(write["category"] == "activity" for write in client.writes)

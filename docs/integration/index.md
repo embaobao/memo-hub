@@ -1,8 +1,8 @@
 # MemoHub 集成指南
 
-最后更新：2026-04-29
+最后更新：2026-05-07
 
-本页只保留当前实际可用的接入入口：CLI、MCP、接入前检查和预置场景验证。
+本页只保留当前实际可用的接入入口：Hermes 官方插件、CLI、MCP、接入前检查和预置场景验证。
 
 ## 接入前先做什么
 
@@ -40,7 +40,18 @@ bun run skill:memohub
 
 ## 如何选择入口
 
-### AI Agent / IDE / Hermes / Codex
+### Hermes
+
+优先使用 Hermes 官方 memory provider plugin：
+
+- 安装：`memohub hermes install`
+- 激活：`hermes memory setup`
+- 重载：`hermes plugins reload`
+- 诊断：`memohub hermes doctor`
+
+详见：[Hermes Plugin 接入](./hermes-guide.md)
+
+### AI Agent / IDE / Codex
 
 使用 MCP：
 
@@ -112,6 +123,7 @@ MCP 资源：
 
 ## 接入场景
 
+- Hermes 插件长期记忆接入
 - Agent 发现 MCP 能力
 - 普通记忆写入与读取
 - 代码 `coding_context` 读取
@@ -124,6 +136,7 @@ MCP 资源：
 
 - [接入前检查清单](./preflight-checklist.md)
 - [接入场景验证](./access-scenarios.md)
+- [Hermes Plugin 接入](./hermes-guide.md)
 - [CLI 集成](./cli-integration.md)
 - [MCP 集成](./mcp-integration.md)
 - [API 参考](../api/reference.md)

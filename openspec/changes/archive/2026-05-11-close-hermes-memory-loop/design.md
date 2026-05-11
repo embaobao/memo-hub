@@ -47,14 +47,16 @@ connectors/
     pyproject.toml
     uv.lock
     README.md
-    memohub_provider/
-      __init__.py
-      plugin.yaml
-      config.py
-      client.py
-      extractor.py
-      formatter.py
-      provider.py
+    plugins/
+      memory/
+        memohub/
+          __init__.py
+          plugin.yaml
+          config.py
+          client.py
+          extractor.py
+          formatter.py
+          provider.py
     test/
       test_contract.py
       test_memory_loop.py
@@ -79,6 +81,40 @@ packages/
       memory-logs.ts
     test/
       memory-loop.test.ts
+```
+
+### CLI Release Assets
+
+```text
+apps/
+  cli/
+    assets/
+      hermes/
+        plugins/
+          memory/
+            memohub/
+              __init__.py
+              plugin.yaml
+              config.py
+              client.py
+              extractor.py
+              formatter.py
+              provider.py
+```
+
+`memohub` 发布包必须携带这份 Hermes plugin 资产。安装时不直接把 Hermes 用户目录指向 CLI 安装目录，而是先把资产复制到 MemoHub 自己的配置目录：
+
+```text
+~/.memohub/integrations/hermes/
+  plugin/
+  provider.json
+```
+
+然后再在 Hermes 用户目录创建软链接：
+
+```text
+~/.hermes/plugins/memohub -> ~/.memohub/integrations/hermes/plugin
+~/.hermes/memohub-provider.json -> ~/.memohub/integrations/hermes/provider.json
 ```
 
 ### Short-Term Compatibility Inside Repository
@@ -121,6 +157,12 @@ Hermes Connector 必须完整实现官方 memory provider plugin 协议：
 - `get_tool_schemas()`
 - `handle_tool_call(name, args)`
 
+此外必须满足 Hermes 官方固定目录扫描范式：
+
+- 插件固定路径为 `plugins/memory/memohub/`
+- `register(ctx)` 负责通过 Hermes 官方上下文注册 provider
+- `plugin.yaml` 只保留 Hermes 官方最小字段，不扩散内部实现细节
+
 ### Connector Responsibilities
 
 Hermes Connector 只做四件事：
@@ -136,6 +178,7 @@ Hermes Connector 不做以下事情：
 - 不自建第二套 channel registry。
 - 不维护独立记忆模型。
 - 不绕过 MemoHub 数据目录。
+- 不把 Hermes 用户目录当作真实插件存储位置。真实插件资产始终由 MemoHub 管理。
 
 ## Channel Model
 
@@ -284,11 +327,34 @@ Hermes Connector 写入四类主要记忆：
 ## Engineering Rules
 
 - Python 和 uv 只放在 `connectors/hermes`。
+- Hermes Connector 最低支持 `Python 3.9`。
+- Hermes Connector 代码必须使用 `Optional`、`List`、`Dict` 等 Python 3.9 兼容类型写法。
 - TypeScript 核心包不依赖 Python。
 - CLI/MCP 工具描述必须来自 `apps/cli/src/interface-metadata.ts`。
 - 变更 CLI/MCP/Skill 后必须运行 docs 生成和检查。
 - 测试只放在 `test/` 或包内 `test/`。
 - 代码注释使用中文，解释关键业务链路和治理规则。
+
+## Hermes Installation Flow
+
+```text
+memohub hermes install
+  -> 检查 memohub 命令、Hermes 用户目录、Python 版本
+  -> 将发布包内 Hermes plugin 资产复制到 ~/.memohub/integrations/hermes/
+  -> 创建 ~/.hermes/plugins/memohub 软链接
+  -> 创建 ~/.hermes/memohub-provider.json 软链接
+  -> 输出下一步：hermes memory setup
+
+memohub hermes doctor
+  -> 检查软链接目标
+  -> 检查 provider 配置
+  -> 检查 Python 3.9+
+  -> 检查 Hermes 是否可发现插件
+
+memohub hermes uninstall
+  -> 删除 Hermes 用户目录软链接
+  -> 保留或按显式参数删除 ~/.memohub/integrations/hermes/ 插件资产
+```
 
 ## Validation Strategy
 
@@ -316,3 +382,5 @@ MemoHub 侧验收：
 - `bun run docs:check`
 - `bun run check:test-layout`
 - `uv run --project connectors/hermes pytest`
+- `memohub hermes install`
+- `memohub hermes doctor`

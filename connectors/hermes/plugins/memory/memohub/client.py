@@ -6,7 +6,7 @@ import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 
 
 class MemoHubClientError(RuntimeError):
@@ -15,23 +15,23 @@ class MemoHubClientError(RuntimeError):
 
 @dataclass
 class MemoHubClient:
-    command: list[str]
-    cwd: str | None = None
-    language: str = "en"
+    command: List[str]
+    cwd: Optional[str] = None
+    language: str = "auto"
 
     @classmethod
-    def from_config(cls, config: dict[str, Any]) -> "MemoHubClient":
+    def from_config(cls, config: Dict[str, Any]) -> "MemoHubClient":
         raw_command = config.get("memohub_command", ["memohub"])
         command = normalize_command(raw_command)
         return cls(
             command=command,
             cwd=config.get("working_directory"),
-            language=config.get("language", "en"),
+            language=config.get("language", "auto"),
         )
 
     def run_json(self, args: Sequence[str]) -> Any:
         completed = subprocess.run(
-            self.command + ["--lang", self.language, *args],
+            self.build_command(args),
             cwd=self.cwd,
             capture_output=True,
             text=True,
@@ -39,7 +39,7 @@ class MemoHubClient:
         )
         if completed.returncode != 0:
             raise MemoHubClientError(
-                f"MemoHub command failed: {' '.join(self.command + list(args))}\n"
+                f"MemoHub command failed: {' '.join(self.build_command(args))}\n"
                 f"stdout: {completed.stdout}\nstderr: {completed.stderr}"
             )
         stdout = completed.stdout.strip()
@@ -49,6 +49,11 @@ class MemoHubClient:
             return json.loads(stdout)
         except json.JSONDecodeError as error:
             raise MemoHubClientError(f"MemoHub output is not valid JSON: {stdout}") from error
+
+    def build_command(self, args: Sequence[str]) -> List[str]:
+        command = list(self.command)
+        command.extend(["--lang", self.language, *args])
+        return command
 
     def inspect(self) -> Any:
         return self.run_json(["inspect", "--json"])
@@ -69,10 +74,10 @@ class MemoHubClient:
         source: str,
         project_id: str,
         purpose: str = "primary",
-        session_id: str | None = None,
-        workspace_id: str | None = None,
-        task_id: str | None = None,
-        channel_id: str | None = None,
+        session_id: Optional[str] = None,
+        workspace_id: Optional[str] = None,
+        task_id: Optional[str] = None,
+        channel_id: Optional[str] = None,
     ) -> Any:
         args = [
             "channel",
@@ -105,8 +110,8 @@ class MemoHubClient:
         project_id: str,
         channel_id: str,
         category: str,
-        session_id: str | None = None,
-        task_id: str | None = None,
+        session_id: Optional[str] = None,
+        task_id: Optional[str] = None,
     ) -> Any:
         args = [
             "add",
@@ -156,8 +161,8 @@ class MemoHubClient:
         self,
         *,
         perspective: str,
-        actor_id: str | None = None,
-        project_id: str | None = None,
+        actor_id: Optional[str] = None,
+        project_id: Optional[str] = None,
         limit: int = 20,
     ) -> Any:
         args = ["ls", "--perspective", perspective, "--limit", str(limit), "--json"]
@@ -171,8 +176,8 @@ class MemoHubClient:
         self,
         *,
         tail: int = 50,
-        channel_id: str | None = None,
-        session_id: str | None = None,
+        channel_id: Optional[str] = None,
+        session_id: Optional[str] = None,
     ) -> Any:
         args = ["logs", "query", "--tail", str(tail), "--json"]
         if channel_id:
@@ -198,7 +203,7 @@ class MemoHubClient:
         )
 
 
-def normalize_command(raw_command: Any) -> list[str]:
+def normalize_command(raw_command: Any) -> List[str]:
     if isinstance(raw_command, str):
         return shlex.split(raw_command)
     if isinstance(raw_command, Sequence):

@@ -1,0 +1,16 @@
+name: memohub
+version: 1.0.0
+entry: plugin:register
+description: |
+  MemoHub official Hermes memory provider. It uses the MemoHub CLI as the
+  shared Connector -> Channel -> Memory entry and does not create a second
+  Hermes-only data source.
+hooks:
+  - queue_prefetch
+  - prefetch
+  - sync_turn
+  - on_pre_compress
+  - on_session_end
+  - on_memory_write
+  - get_tool_schemas
+  - handle_tool_call

@@ -113,13 +113,18 @@ export const MemoHubConfigSchema = z.object({
       providers: z
         .array(ProviderSchema)
         .default([
-          { id: "local", type: "ollama", url: "http://localhost:11434/v1" },
+          { id: "ollama", type: "ollama", url: "http://localhost:11434/v1" },
+          { id: "lmstudio", type: "openai-compatible", url: "http://127.0.0.1:1234/v1" },
         ]),
       agents: z.record(AgentSchema).default({
         embedder: {
-          provider: "local",
+          provider: "ollama",
           model: "nomic-embed-text-v2-moe",
           dimensions: 768,
+        },
+        summarizer: {
+          provider: "ollama",
+          model: "qwen2.5:7b",
         },
       }),
     })

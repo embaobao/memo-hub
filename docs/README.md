@@ -40,7 +40,7 @@ Use it when you want your AI memory to belong to you: Hermes can remember durabl
 - [集成指南首页](integration/index.md)
 - [CLI 集成](integration/cli-integration.md)
 - [MCP 集成](integration/mcp-integration.md)
-- [Hermes 接入](integration/hermes-guide.md)
+- [Hermes Plugin 接入](integration/hermes-guide.md)
 - [Hermes 验证报告](integration/hermes-validation-report.md)
 - [接入场景验证](integration/access-scenarios.md)
 - [Agent Skill](https://github.com/embaobao/memo-hub/blob/main/skills/memohub/SKILL.md)

@@ -23,6 +23,11 @@ import { McpLogger } from "./mcp/logger.js";
 import { loadRuntimeConfig } from "./runtime-config.js";
 import { ChannelRegistry, CHANNEL_PURPOSES } from "@memohub/channel";
 import {
+  doctorHermesIntegration,
+  installHermesIntegration,
+  uninstallHermesIntegration,
+} from "./hermes-integration.js";
+import {
   cleanManagedData,
   cleanChannelData,
   cleanChannelsBySelector,
@@ -95,6 +100,7 @@ function writeCliLog(event: string, message: string, metadata: Record<string, un
 function sortTopLevelCommands(command: Command): void {
   const order = [
     "config",
+    "hermes",
     "inspect",
     "channel",
     "list",
@@ -170,7 +176,8 @@ function printRuntimeConfigSummary(config = loadRuntimeConfig(), lang: CliLang):
   console.log(`${t(lang, "vectorDb")}: ${config.storage.vectorDbPath}`);
   console.log(`${t(lang, "table")}: ${config.storage.vectorTable}`);
   console.log(`${t(lang, "blob")}: ${config.storage.blobPath}`);
-  console.log(`${t(lang, "embedder")}: ${config.ai.embeddingModel} (${config.ai.dimensions})`);
+  console.log(`${t(lang, "embedder")}: ${config.ai.embeddingModel} @ ${config.ai.embedderProviderId} (${config.ai.dimensions})`);
+  console.log(`${t(lang, "summarizer")}: ${config.ai.chatModel} @ ${config.ai.summarizerProviderId}`);
   console.log(`${t(lang, "mcpLog")}: ${config.mcp.logPath}`);
   console.log(`${t(lang, "views")}: ${config.memory.views.join(", ")}`);
   console.log(`${t(lang, "operations")}: ${config.memory.operations.join(", ")}`);
@@ -276,6 +283,40 @@ function printDoctorSummary(result: Awaited<ReturnType<typeof runMcpDoctor>>, la
     console.log(`${mark} ${check.name}`);
   }
   console.log(`${t(lang, "status")}: ${result.ok ? chalk.green(t(lang, "accessible")) : chalk.red(t(lang, "inaccessible"))}`);
+}
+
+function printHermesInstallSummary(result: ReturnType<typeof installHermesIntegration>, lang: CliLang): void {
+  printSectionTitle(t(lang, "hermesInstallTitle"));
+  printKeyValue(t(lang, "status"), chalk.green(t(lang, "ready")));
+  printKeyValue(t(lang, "memohubRootLabel"), result.paths.memoHubRoot);
+  printKeyValue(t(lang, "hermesHomeLabel"), result.paths.hermesHome);
+  printKeyValue(t(lang, "integrationPluginLabel"), result.paths.integrationPluginRoot);
+  printKeyValue(t(lang, "integrationConfigLabel"), result.paths.integrationConfigPath);
+  printKeyValue(t(lang, "pluginLinkLabel"), result.paths.hermesPluginLink);
+  printKeyValue(t(lang, "configLinkLabel"), result.paths.hermesConfigLink);
+  console.log();
+  printSectionTitle(t(lang, "guidanceTitle"));
+  for (const step of result.nextSteps) console.log(`- ${step}`);
+}
+
+function printHermesDoctorSummary(result: ReturnType<typeof doctorHermesIntegration>, lang: CliLang): void {
+  printSectionTitle(t(lang, "hermesDoctorTitle"));
+  printKeyValue(t(lang, "requiredPythonLabel"), result.requiredPython);
+  printKeyValue(t(lang, "memohubRootLabel"), result.paths.memoHubRoot);
+  printKeyValue(t(lang, "hermesHomeLabel"), result.paths.hermesHome);
+  console.log();
+  for (const check of result.checks) {
+    const mark = check.ok ? chalk.green(t(lang, "passed")) : chalk.red(t(lang, "failed"));
+    console.log(`${mark} ${check.name}`);
+    console.log(`  ${check.detail}`);
+  }
+  console.log();
+  console.log(`${t(lang, "status")}: ${result.success ? chalk.green(t(lang, "accessible")) : chalk.red(t(lang, "inaccessible"))}`);
+  if (result.nextSteps.length > 0) {
+    console.log();
+    printSectionTitle(t(lang, "guidanceTitle"));
+    for (const step of result.nextSteps) console.log(`- ${step}`);
+  }
 }
 
 function printLayerResults(
@@ -413,14 +454,16 @@ export async function createRuntime(): Promise<UnifiedMemoryRuntime> {
     dimensions: runtimeConfig.storage.dimensions,
   });
   const channels = new ChannelRegistry(runtimeConfig.registry.channelRegistryPath);
-  const ollama = new OllamaAdapter({
-    url: runtimeConfig.ai.providerUrl,
+  const localAi = new OllamaAdapter({
+    url: runtimeConfig.ai.embedderProviderUrl,
     embeddingModel: runtimeConfig.ai.embeddingModel,
-    chatModel: runtimeConfig.ai.chatModel
+    chatModel: runtimeConfig.ai.summarizerProviderUrl === runtimeConfig.ai.embedderProviderUrl
+      ? runtimeConfig.ai.chatModel
+      : undefined,
   });
 
   // 第二步：初始化统一运行时，CLI/MCP 后续只通过标准入口访问它。
-  const runtime = new UnifiedMemoryRuntime({ cas, vector, embedder: ollama, channels, runtimeConfig });
+  const runtime = new UnifiedMemoryRuntime({ cas, vector, embedder: localAi, channels, runtimeConfig });
   await runtime.initialize();
   return runtime;
 }
@@ -461,6 +504,7 @@ program.hook("preAction", (thisCommand, actionCommand) => {
 
 appendWorkflowGuidance(program, [
   "First-time setup: memohub config check -> memohub config show -> memohub mcp doctor",
+  "Install Hermes provider: memohub hermes install -> hermes memory setup -> hermes plugins reload",
   "Bind an actor channel: memohub channel open --actor hermes --source hermes --project memo-hub --purpose primary",
   "Write and query memory: memohub add ... -> memohub query ...",
   "Start MCP for agents: memohub mcp config --target hermes -> memohub mcp serve",
@@ -828,6 +872,84 @@ configCommand
     const result = writeConfigValue(configPath, value);
     if (options.json) console.log(JSON.stringify({ success: true, ...result }, null, 2));
     else console.log(chalk.green(`${t(lang, "configUpdated")}: ${result.path} = ${formatMaybeJson(result.value)}`));
+  });
+
+const hermesCommand = program
+  .command("hermes")
+  .description(helpText("Manage Hermes memory provider installation and diagnostics"));
+
+appendWorkflowGuidance(hermesCommand, [
+  "Install official Hermes provider files first: memohub hermes install",
+  "Then activate it inside Hermes: hermes memory setup",
+  "Reload Hermes plugins after updates: hermes plugins reload",
+  "Verify links and Python compatibility: memohub hermes doctor",
+]);
+
+hermesCommand
+  .command("install")
+  .description(helpText(cliCommand("hermes install").description))
+  .option("--hermes-home <path>", helpText("Hermes home directory"))
+  .option("--project <projectId>", helpText("Optional default project id written to provider config"))
+  .option("--language <lang>", helpText("Provider output language: auto, zh, or en"), "auto")
+  .option("--cwd <workingDirectory>", helpText("Optional working directory written to provider config"))
+  .option("--json", helpText("Output raw JSON"))
+  .action((options) => {
+    const lang = currentLang(program.opts().lang);
+    const result = installHermesIntegration({
+      hermesHome: options.hermesHome,
+      memoHubRoot: loadRuntimeConfig().root,
+      projectId: options.project,
+      language: options.language,
+      workingDirectory: options.cwd,
+    });
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+    printHermesInstallSummary(result, lang);
+  });
+
+hermesCommand
+  .command("doctor")
+  .description(helpText(cliCommand("hermes doctor").description))
+  .option("--hermes-home <path>", helpText("Hermes home directory"))
+  .option("--json", helpText("Output raw JSON"))
+  .action((options) => {
+    const lang = currentLang(program.opts().lang);
+    const result = doctorHermesIntegration({
+      hermesHome: options.hermesHome,
+      memoHubRoot: loadRuntimeConfig().root,
+    });
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+      if (!result.success) process.exitCode = 1;
+      return;
+    }
+    printHermesDoctorSummary(result, lang);
+    if (!result.success) process.exitCode = 1;
+  });
+
+hermesCommand
+  .command("uninstall")
+  .description(helpText(cliCommand("hermes uninstall").description))
+  .option("--hermes-home <path>", helpText("Hermes home directory"))
+  .option("--purge-assets", helpText("Also remove MemoHub-managed Hermes integration assets"))
+  .option("--json", helpText("Output raw JSON"))
+  .action((options) => {
+    const lang = currentLang(program.opts().lang);
+    const result = uninstallHermesIntegration({
+      hermesHome: options.hermesHome,
+      memoHubRoot: loadRuntimeConfig().root,
+      purgeAssets: options.purgeAssets,
+    });
+    if (options.json) {
+      console.log(JSON.stringify(result, null, 2));
+      return;
+    }
+    printSectionTitle(t(lang, "hermesUninstallTitle"));
+    printKeyValue(t(lang, "status"), chalk.green(t(lang, "ready")));
+    printKeyValue(t(lang, "resultCount"), String(result.removed.length));
+    for (const removed of result.removed) console.log(`- ${removed}`);
   });
 
 const channelCommand = program

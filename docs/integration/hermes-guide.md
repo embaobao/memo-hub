@@ -1,242 +1,304 @@
-# Hermes 接入 MemoHub
+# Hermes Plugin Integration
 
-最后更新：2026-05-06
+Last updated: 2026-05-07
 
-Hermes 现在有两条接入 MemoHub 的正式方式：
+This document defines the single supported Hermes integration pattern for MemoHub:
 
-1. 作为 **Hermes 官方 memory provider plugin** 接入 `connectors/hermes`
-2. 作为 **MCP Client** 连接 `memohub serve`
+- Hermes uses MemoHub as an official memory provider plugin
+- Hermes, CLI, and MCP share one MemoHub datasource
+- Hermes does not maintain a private memory store
 
-两条方式必须共享同一个 MemoHub 数据源，不允许为 Hermes 单独维护私有库。
+This is the standard integration document that can be given directly to Hermes.
 
-## 接入目标
+## What Hermes Gets
 
-Hermes 第一条正式闭环是“纯记忆闭环”，重点验证：
+After integration, Hermes can use MemoHub as its shared long-term memory center:
 
-- Hermes 能恢复自己的主渠道
-- Hermes 能写入长期偏好、近期活动、项目事实和澄清结果
-- Hermes 能读取 `self -> project -> global` 摘要
-- Hermes 能查看日志
-- Hermes 能对 `purpose=test` 的验证数据执行 dry-run 清理
+- recover its own durable habits and preferences
+- replay recent work and session history
+- read project context
+- write clarified facts back into governed memory
+- inspect logs and validate test cleanup safely
 
-## 本地准备
-
-```bash
-bun install
-bun run build:cli
-bun run verify:cli
-bun run link:cli
-bun run connector:hermes:check
-memohub config check
-memohub config show
-memohub mcp doctor
-memohub mcp tools
-```
-
-如果想做一轮不污染真实 `~/.memohub` 的验证，优先使用隔离脚本：
-
-```bash
-bun run test:hermes-isolated
-```
-
-该脚本会启动本地 deterministic mock AI 服务，避免因为外部 embedding 服务不可达导致首次 Hermes 闭环验证失败。
-
-## Hermes 插件位置
-
-Hermes 官方 memory provider plugin 工程位于：
+The default retrieval order stays:
 
 ```text
-connectors/hermes/
+self -> project -> global
 ```
 
-关键文件：
+## Install
 
-- `connectors/hermes/memohub_provider/provider.py`
-- `connectors/hermes/memohub_provider/plugin.yaml`
-- `connectors/hermes/memohub_provider/client.py`
-- `connectors/hermes/test/`
+Hermes only needs this sequence:
 
-该插件不自建存储，也不复制 MemoHub 数据目录；它通过 MemoHub CLI 调用同一套 Connector -> Channel -> Memory 能力。
-
-## 推荐 MCP 配置
-
-推荐使用全局命令：
-
-```json
-{
-  "mcpServers": {
-    "memohub": {
-      "command": "memohub",
-      "args": ["serve"]
-    }
-  }
-}
+```bash
+memohub hermes install
+hermes memory setup
+hermes plugins reload
+memohub hermes doctor
 ```
 
-开发态可使用源码入口：
+Expected result:
 
-```json
-{
-  "mcpServers": {
-    "memohub": {
-      "command": "bun",
-      "args": ["/absolute/path/to/memo-hub/apps/cli/src/index.ts", "serve"]
-    }
-  }
-}
-```
+- `hermes memory setup` can see `memohub`
+- active memory provider can be switched to `memohub`
+- `memohub hermes doctor` passes
+- Hermes shares the same MemoHub datasource used by CLI and MCP
 
-Hermes 不得把 `MEMOHUB_DB_PATH`、`MEMOHUB_CAS_PATH` 指向自己的私有目录。若部署层必须显式传路径，也必须让所有 Agent 指向同一套共享存储。
+## Managed Paths
 
-## Hermes 首次接入顺序
+MemoHub manages one real plugin asset copy:
 
 ```text
-1. 读取 memohub://tools
-2. 查询 memohub_channel_list
-3. 如无主渠道，执行 memohub_channel_open
-4. 调用 prefetch / memohub_query 获取 self/project/global 摘要
-5. 在 purpose=test 渠道写入一条验证记忆
-6. 查询 / list / logs 验证读回
-7. 仅在需要时执行 data clean dry-run
-8. 只有用户明确授权时才允许真实删除或 rebuild schema
+~/.memohub/integrations/hermes/
+  plugin/
+  provider.json
 ```
 
-## MCP 示例
+Hermes reads that installation through symlinks:
 
-### 1. 恢复或创建 Hermes 主渠道
+```text
+~/.hermes/plugins/memohub -> ~/.memohub/integrations/hermes/plugin
+~/.hermes/memohub-provider.json -> ~/.memohub/integrations/hermes/provider.json
+```
+
+Hermes user-side discovery must read:
+
+```text
+~/.hermes/plugins/memohub
+```
+
+MemoHub does not ask Hermes to clone this repository or build the CLI.
+
+## Shared Config
+
+Hermes does not carry a second model configuration layer.
+
+MemoHub shared config is the only source of truth:
+
+```text
+~/.memohub/memohub.json
+```
+
+That shared config can define local providers such as:
+
+- `ollama`
+- `lmstudio`
+
+MemoHub currently supports separate provider and model selection for:
+
+- `ai.agents.embedder`
+- `ai.agents.summarizer`
+
+Example:
 
 ```json
 {
-  "name": "memohub_channel_open",
-  "arguments": {
-    "actorId": "hermes",
-    "source": "hermes",
-    "projectId": "memo-hub",
-    "purpose": "primary"
-  }
-}
-```
-
-### 2. 验证 test 渠道写入
-
-```json
-{
-  "name": "memohub_ingest_event",
-  "arguments": {
-    "event": {
-      "source": "hermes",
-      "channel": "hermes:test:memo-hub:first-validation",
-      "kind": "memory",
-      "projectId": "memo-hub",
-      "confidence": "reported",
-      "payload": {
-        "text": "Hermes validation probe: MemoHub is my durable shared memory center.",
-        "category": "preference",
-        "tags": ["hermes", "validation"]
+  "configVersion": "unified-memory-1",
+  "system": {
+    "root": "~/.memohub",
+    "lang": "zh"
+  },
+  "storage": {
+    "root": "~/.memohub",
+    "blobPath": "~/.memohub/blobs",
+    "vectorDbPath": "~/.memohub/data/memohub.lancedb",
+    "vectorTable": "memohub",
+    "dimensions": 768
+  },
+  "ai": {
+    "providers": [
+      {
+        "id": "ollama",
+        "type": "ollama",
+        "url": "http://localhost:11434/v1"
+      },
+      {
+        "id": "lmstudio",
+        "type": "openai-compatible",
+        "url": "http://127.0.0.1:1234/v1"
+      }
+    ],
+    "agents": {
+      "embedder": {
+        "provider": "ollama",
+        "model": "nomic-embed-text-v2-moe",
+        "dimensions": 768
+      },
+      "summarizer": {
+        "provider": "ollama",
+        "model": "qwen2.5:7b"
       }
     }
   }
 }
 ```
 
-### 3. 查询自己的长期记忆
+If LM Studio is used, it should be configured here, not in a Hermes-only file.
 
-```json
-{
-  "name": "memohub_query",
-  "arguments": {
-    "view": "agent_profile",
-    "actorId": "hermes",
-    "projectId": "memo-hub",
-    "query": "What are my durable habits and preferences?",
-    "limit": 5
-  }
-}
-```
+## Provider Config
 
-### 4. 查看 dry-run 清理范围
-
-```json
-{
-  "name": "memohub_data_manage",
-  "arguments": {
-    "action": "clean_channel",
-    "actorId": "hermes",
-    "purpose": "test",
-    "dryRun": true
-  }
-}
-```
-
-## CLI 验证脚本
-
-```bash
-memohub mcp tools
-memohub channel list --actor hermes
-memohub channel open --actor hermes --source hermes --project memo-hub --purpose primary
-memohub channel open --actor hermes --source hermes --project memo-hub --purpose test --channel hermes:test:memo-hub:manual
-memohub add "Hermes test memory for onboarding validation" --project memo-hub --source hermes --channel hermes:test:memo-hub:manual --category preference
-memohub ls
-memohub list --perspective actor --actor hermes --limit 10
-memohub query "Hermes test memory for onboarding validation" --view agent_profile --actor hermes --project memo-hub
-memohub logs query --channel hermes:test:memo-hub:manual --tail 50
-memohub data clean --actor hermes --purpose test --dry-run
-```
-
-更完整的自动化验证结果见：
-
-- [Hermes 闭环验证报告](./hermes-validation-report.md)
-
-## 高风险操作规则
-
-正常接入不要默认清空数据。
-
-只有两种场景允许高风险操作：
-
-- 用户明确授权的首次验证清库
-- schema 损坏恢复
-
-CLI：
-
-```bash
-memohub data rebuild-schema --yes --confirm DELETE_MEMOHUB_DATA
-memohub data clean --all --yes --confirm DELETE_MEMOHUB_DATA
-```
-
-MCP：
-
-```json
-{ "action": "rebuild_schema", "confirm": "DELETE_MEMOHUB_DATA" }
-```
-
-```json
-{ "action": "clean_all", "confirm": "DELETE_MEMOHUB_DATA" }
-```
-
-## 可以直接发给 Hermes 的话术
+MemoHub writes the Hermes provider config here:
 
 ```text
-你现在接入的是 MemoHub，它是你的共享长期记忆中心，不是私有临时缓存。
-
-执行顺序：
-1. 先读取 memohub://tools。
-2. 调用 memohub_channel_list，查看 actorId=hermes 的现有渠道。
-3. 如果没有主渠道，调用 memohub_channel_open，参数为：
-   actorId=hermes
-   source=hermes
-   projectId=当前项目
-   purpose=primary
-4. 先查询，再写入：优先用 agent_profile / recent_activity / project_context 理解现有记忆。
-5. 需要验证时，使用 purpose=test 的渠道写入测试记忆。
-6. 验证完成后只允许先做 dry-run 清理：
-   memohub_data_manage action=clean_channel actorId=hermes purpose=test dryRun=true
-7. 不要切换到 Hermes 私有数据源，也不要默认执行 clean_all 或 rebuild_schema。
+~/.memohub/integrations/hermes/provider.json
 ```
 
-## 相关文档
+Typical content:
 
-- [接入前检查清单](./preflight-checklist.md)
-- [MCP 集成](./mcp-integration.md)
-- [接入场景验证](./access-scenarios.md)
-- [CLI 集成](./cli-integration.md)
-- [Hermes 闭环验证报告](./hermes-validation-report.md)
+```json
+{
+  "memohub_command": ["memohub"],
+  "language": "auto",
+  "test_validation": true
+}
+```
+
+Rules:
+
+- `memohub_command` must point to the shared global `memohub`
+- do not point Hermes to a private db path
+- do not create a Hermes-only storage root
+
+## Minimal Verification
+
+Run:
+
+```bash
+memohub config check
+memohub config show
+memohub hermes install
+hermes memory setup
+hermes plugins reload
+memohub hermes doctor
+memohub list --perspective actor --actor hermes --json
+memohub logs query --tail 50 --actor hermes --json
+```
+
+If local embedding is required, make sure the configured local provider is already running.
+
+Examples:
+
+```bash
+ollama serve
+```
+
+or use a running LM Studio OpenAI-compatible endpoint.
+
+## First Production Loop
+
+Hermes should use this operational pattern:
+
+1. Activate `memohub` in `hermes memory setup`
+2. Read its own memory first
+3. Continue task work
+4. Write durable preferences, activity, project facts, and clarifications
+5. Use CLI or MCP for traceable recall and troubleshooting
+
+The intended loop is:
+
+```text
+Hermes
+  -> recover self memory
+  -> read project context
+  -> perform task
+  -> write durable memory
+  -> later recover from the same shared memory center
+```
+
+## Safe Test Governance
+
+Validation data must use `purpose=test`.
+
+Preview cleanup first:
+
+```bash
+memohub data clean --actor hermes --purpose test --dry-run --json
+```
+
+Only execute real deletion after explicit authorization:
+
+```bash
+memohub data clean --actor hermes --purpose test --yes --confirm DELETE_MEMOHUB_DATA
+```
+
+Do not execute these during normal onboarding:
+
+- `config-init`
+- full reset
+- schema rebuild
+- clean all data
+
+## What Hermes Can Be Told To Do
+
+The following text can be sent directly to Hermes:
+
+```text
+Use MemoHub as your shared long-term memory provider.
+
+Execute:
+
+memohub hermes install
+hermes memory setup
+hermes plugins reload
+memohub hermes doctor
+
+Then verify:
+
+1. `hermes memory setup` can see `memohub`
+2. active memory provider is `memohub`
+3. `memohub hermes doctor` passes
+4. MemoHub datasource is shared with CLI and MCP
+
+Then run recall checks:
+
+memohub list --perspective actor --actor hermes --json
+memohub query "Hermes habits" --view agent_profile --actor hermes --project memo-hub --json
+memohub logs query --tail 100 --actor hermes --json
+
+If you create validation data, only use test semantics and preview cleanup first:
+
+memohub data clean --actor hermes --purpose test --dry-run --json
+
+Do not execute config-init, rebuild schema, full reset, or create a Hermes-only datasource.
+
+Report:
+
+- install success
+- provider discovery success
+- shared datasource confirmed
+- write -> query -> logs -> dry-run cleanup loop confirmed
+- ready for full adoption or not
+```
+
+## Source Layout
+
+Hermes plugin source in this repository:
+
+```text
+connectors/hermes/plugins/memory/memohub/
+```
+
+Bundled CLI release assets:
+
+```text
+apps/cli/assets/hermes/plugins/memory/memohub/
+```
+
+The plugin follows the official Hermes fixed-directory pattern and supports:
+
+- `register(ctx)`
+- `register_cli(subparsers)`
+- `plugin.yaml`
+
+## Compatibility
+
+- Python `>=3.9`
+- one shared MemoHub datasource
+- no Hermes private storage fork
+
+## Related Documents
+
+- [Integration Index](/Users/embaobao/workspace/ai/memo-hub/docs/integration/index.md)
+- [Configuration Guide](/Users/embaobao/workspace/ai/memo-hub/docs/guides/configuration.md)
+- [Preflight Checklist](/Users/embaobao/workspace/ai/memo-hub/docs/integration/preflight-checklist.md)
+- [Hermes Validation Report](/Users/embaobao/workspace/ai/memo-hub/docs/integration/hermes-validation-report.md)
