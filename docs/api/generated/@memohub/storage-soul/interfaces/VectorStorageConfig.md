@@ -4,7 +4,7 @@
 
 # Interface: VectorStorageConfig
 
-Defined in: [types.ts:31](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L31)
+Defined in: [types.ts:48](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L48)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [types.ts:31](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **dbPath**: `string`
 
-Defined in: [types.ts:32](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L32)
+Defined in: [types.ts:49](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L49)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [types.ts:32](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **dimensions**: `number`
 
-Defined in: [types.ts:34](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L34)
+Defined in: [types.ts:51](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L51)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [types.ts:34](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **tableName**: `string`
 
-Defined in: [types.ts:33](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L33)
+Defined in: [types.ts:50](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L50)

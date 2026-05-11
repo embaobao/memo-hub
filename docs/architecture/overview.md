@@ -1,6 +1,6 @@
 # MemoHub 架构概览
 
-最后更新：2026-05-06
+最后更新：2026-05-11
 
 MemoHub 当前正式架构只保留三层业务概念：
 
@@ -34,6 +34,21 @@ flowchart LR
 - 查询默认遵循 `self -> project -> global`。
 - `channel` 不是共享边界；共享边界由 `scope`、`visibility`、`actorId`、`projectId` 等字段定义。
 - CLI、MCP、Hermes Connector 必须读取同一 Memory service，不得各自维护第二套语义或数据源。
+- 数据治理必须先看当前解析路径，再决定是否做 `purpose=test` 清理或 schema 重建。
+
+## 运行时路径
+
+正式环境下，以下路径现在被视为同一组受管运行时边界：
+
+- `configPath`
+- `root`
+- `storageRoot`
+- `storage.vectorDbPath`
+- `storage.blobPath`
+- `mcp.logPath`
+- `state/channels.json`
+
+建议优先通过 `memohub data status` 观察这组值，而不是靠猜测配置文件或环境变量推断。
 
 ## 写入链路
 

@@ -1,6 +1,6 @@
 # MemoHub 集成指南
 
-最后更新：2026-05-07
+最后更新：2026-05-11
 
 本页只保留当前实际可用的接入入口：Hermes 官方插件、CLI、MCP、接入前检查和预置场景验证。
 
@@ -26,6 +26,7 @@ memohub --help
 memohub mcp config
 memohub mcp tools
 memohub mcp doctor
+memohub data status
 ```
 
 详见：[接入前检查清单](./preflight-checklist.md)
@@ -70,6 +71,8 @@ bun run skill:memohub
 - `memohub query`
 - `memohub clarification resolve`
 - `memohub config show`
+- `memohub data status`
+- `memohub data clean --actor hermes --purpose test --dry-run`
 - `memohub mcp status`
 
 详见：[CLI 集成](./cli-integration.md)
@@ -128,7 +131,7 @@ MCP 资源：
 - 普通记忆写入与读取
 - 代码 `coding_context` 读取
 - 外部澄清写回
-- 配置和服务维护
+- 配置、数据治理和服务维护
 
 详见：[接入场景验证](./access-scenarios.md)
 

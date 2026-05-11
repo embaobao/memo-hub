@@ -4,7 +4,7 @@
 
 # Class: InMemoryStructuredIndex
 
-Defined in: memory-projection.ts:33
+Defined in: [memory-projection.ts:34](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L34)
 
 ## Constructors
 
@@ -22,7 +22,7 @@ Defined in: memory-projection.ts:33
 
 > **add**(`entry`): `void`
 
-Defined in: memory-projection.ts:36
+Defined in: [memory-projection.ts:37](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L37)
 
 #### Parameters
 
@@ -40,7 +40,7 @@ Defined in: memory-projection.ts:36
 
 > **addMemoryObject**(`memory`): `void`
 
-Defined in: memory-projection.ts:40
+Defined in: [memory-projection.ts:41](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L41)
 
 #### Parameters
 
@@ -58,7 +58,7 @@ Defined in: memory-projection.ts:40
 
 > **list**(): [`StructuredIndexEntry`](../interfaces/StructuredIndexEntry.md)[]
 
-Defined in: memory-projection.ts:68
+Defined in: [memory-projection.ts:69](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L69)
 
 #### Returns
 
@@ -70,7 +70,7 @@ Defined in: memory-projection.ts:68
 
 > **queryBySource**(`sourceId`): [`StructuredIndexEntry`](../interfaces/StructuredIndexEntry.md)[]
 
-Defined in: memory-projection.ts:60
+Defined in: [memory-projection.ts:61](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L61)
 
 #### Parameters
 
@@ -88,7 +88,7 @@ Defined in: memory-projection.ts:60
 
 > **queryByTarget**(`targetId`): [`StructuredIndexEntry`](../interfaces/StructuredIndexEntry.md)[]
 
-Defined in: memory-projection.ts:64
+Defined in: [memory-projection.ts:65](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L65)
 
 #### Parameters
 

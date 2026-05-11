@@ -4,7 +4,7 @@
 
 # Interface: PerformanceMetrics
 
-Defined in: [packages/core/src/performance.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L16)
+Defined in: [packages/core/src/performance.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L16)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/performance.ts:16](https://github.com/embaobao/me
 
 > **avgDuration**: `number`
 
-Defined in: [packages/core/src/performance.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L20)
+Defined in: [packages/core/src/performance.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L20)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/core/src/performance.ts:20](https://github.com/embaobao/me
 
 > **count**: `number`
 
-Defined in: [packages/core/src/performance.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L18)
+Defined in: [packages/core/src/performance.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L18)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/core/src/performance.ts:18](https://github.com/embaobao/me
 
 > **maxDuration**: `number`
 
-Defined in: [packages/core/src/performance.ts:22](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L22)
+Defined in: [packages/core/src/performance.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L22)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [packages/core/src/performance.ts:22](https://github.com/embaobao/me
 
 > **minDuration**: `number`
 
-Defined in: [packages/core/src/performance.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L21)
+Defined in: [packages/core/src/performance.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L21)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [packages/core/src/performance.ts:21](https://github.com/embaobao/me
 
 > **operation**: `string`
 
-Defined in: [packages/core/src/performance.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L17)
+Defined in: [packages/core/src/performance.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L17)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [packages/core/src/performance.ts:17](https://github.com/embaobao/me
 
 > **p50**: `number`
 
-Defined in: [packages/core/src/performance.ts:23](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L23)
+Defined in: [packages/core/src/performance.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L23)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: [packages/core/src/performance.ts:23](https://github.com/embaobao/me
 
 > **p95**: `number`
 
-Defined in: [packages/core/src/performance.ts:24](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L24)
+Defined in: [packages/core/src/performance.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L24)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: [packages/core/src/performance.ts:24](https://github.com/embaobao/me
 
 > **p99**: `number`
 
-Defined in: [packages/core/src/performance.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L25)
+Defined in: [packages/core/src/performance.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L25)
 
 ***
 
@@ -76,4 +76,4 @@ Defined in: [packages/core/src/performance.ts:25](https://github.com/embaobao/me
 
 > **totalDuration**: `number`
 
-Defined in: [packages/core/src/performance.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L19)
+Defined in: [packages/core/src/performance.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L19)

@@ -4,7 +4,7 @@
 
 # Class: AgentMemoryOperator
 
-Defined in: packages/core/src/agent-memory-operations.ts:39
+Defined in: [packages/core/src/agent-memory-operations.ts:39](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L39)
 
 ## Constructors
 
@@ -22,7 +22,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:39
 
 > **run**(`request`): `Promise`\<[`AgentMemoryOperationResult`](../interfaces/AgentMemoryOperationResult.md)\>
 
-Defined in: packages/core/src/agent-memory-operations.ts:40
+Defined in: [packages/core/src/agent-memory-operations.ts:40](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L40)
 
 #### Parameters
 

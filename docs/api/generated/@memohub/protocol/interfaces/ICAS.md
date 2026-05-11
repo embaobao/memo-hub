@@ -4,7 +4,7 @@
 
 # Interface: ICAS
 
-Defined in: [packages/protocol/src/types.ts:112](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L112)
+Defined in: [packages/protocol/src/types.ts:112](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L112)
 
 ## Methods
 
@@ -12,7 +12,7 @@ Defined in: [packages/protocol/src/types.ts:112](https://github.com/embaobao/mem
 
 > **read**(`hash`): `Promise`\<`string`\>
 
-Defined in: [packages/protocol/src/types.ts:114](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L114)
+Defined in: [packages/protocol/src/types.ts:114](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L114)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/protocol/src/types.ts:114](https://github.com/embaobao/mem
 
 > **write**(`content`): `Promise`\<`string`\>
 
-Defined in: [packages/protocol/src/types.ts:113](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L113)
+Defined in: [packages/protocol/src/types.ts:113](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L113)
 
 #### Parameters
 

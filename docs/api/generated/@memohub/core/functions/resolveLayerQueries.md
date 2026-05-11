@@ -6,7 +6,7 @@
 
 > **resolveLayerQueries**(`request`, `domains`, `limit`): `Record`\<[`RecallLayer`](../type-aliases/RecallLayer.md), [`RecallQuery`](../interfaces/RecallQuery.md)\>
 
-Defined in: packages/core/src/query-planner.ts:179
+Defined in: [packages/core/src/query-planner.ts:181](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L181)
 
 ## Parameters
 

@@ -4,7 +4,7 @@
 
 # Interface: ITrackProvider
 
-Defined in: [packages/core/src/types.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L15)
+Defined in: [packages/core/src/types.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L15)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/types.ts:15](https://github.com/embaobao/memo-hub
 
 > **id**: `string`
 
-Defined in: [packages/core/src/types.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L16)
+Defined in: [packages/core/src/types.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L16)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/core/src/types.ts:16](https://github.com/embaobao/memo-hub
 
 > **name**: `string`
 
-Defined in: [packages/core/src/types.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L17)
+Defined in: [packages/core/src/types.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L17)
 
 ## Methods
 
@@ -28,7 +28,7 @@ Defined in: [packages/core/src/types.ts:17](https://github.com/embaobao/memo-hub
 
 > **execute**(`instruction`): `Promise`\<`Text2MemResult`\>
 
-Defined in: [packages/core/src/types.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L19)
+Defined in: [packages/core/src/types.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L19)
 
 #### Parameters
 
@@ -46,7 +46,7 @@ Defined in: [packages/core/src/types.ts:19](https://github.com/embaobao/memo-hub
 
 > **initialize**(`kernel`): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/types.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L18)
+Defined in: [packages/core/src/types.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L18)
 
 #### Parameters
 

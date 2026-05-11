@@ -4,7 +4,7 @@
 
 # Class: EntityLinkerTool
 
-Defined in: [entity-linker.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/entity-linker.ts#L9)
+Defined in: [entity-linker.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/entity-linker.ts#L9)
 
 原子化工具接口 (Dify/Node-RED Style Node)
 
@@ -28,7 +28,7 @@ Defined in: [entity-linker.ts:9](https://github.com/embaobao/memo-hub/blob/4f742
 
 > **manifest**: [`IToolManifest`](../../core/interfaces/IToolManifest.md)
 
-Defined in: [entity-linker.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/entity-linker.ts#L11)
+Defined in: [entity-linker.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/entity-linker.ts#L11)
 
 #### Implementation of
 
@@ -40,7 +40,7 @@ Defined in: [entity-linker.ts:11](https://github.com/embaobao/memo-hub/blob/4f74
 
 > **execute**(`input`, `resources`, `context`): `Promise`\<\{ `entities`: `any`[]; \}\>
 
-Defined in: [entity-linker.ts:30](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/entity-linker.ts#L30)
+Defined in: [entity-linker.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/entity-linker.ts#L30)
 
 #### Parameters
 

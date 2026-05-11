@@ -1,17 +1,92 @@
 import { ConfigLoader } from "@memohub/config";
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { stringify } from "comment-json";
 import { MCP_RESOURCES, MCP_TOOLS } from "./interface-metadata.js";
 import { createMcpAccessCatalog } from "./mcp/catalog.js";
 import { McpLogger } from "./mcp/logger.js";
-import { loadRuntimeConfig } from "./runtime-config.js";
+import { loadRuntimeConfig, resolveRuntimeConfig } from "./runtime-config.js";
 import type { UnifiedMemoryRuntime } from "./unified-memory-runtime.js";
 import type { VectorStorage } from "@memohub/storage-soul";
 import type { ChannelPurpose, ChannelStatus } from "@memohub/channel";
 
 export const DATA_CLEAN_CONFIRMATION = "DELETE_MEMOHUB_DATA";
 export const CONFIG_UNINSTALL_CONFIRMATION = "DELETE_MEMOHUB_CONFIG";
+
+const DEFAULT_MANAGED_ROOT = "~/.memohub";
+
+function isDefaultManagedRootSetting(value: string | undefined): boolean {
+  return !value || value === DEFAULT_MANAGED_ROOT;
+}
+
+function getManagedDataStatus(configPath = `${process.env.HOME}/.memohub/memohub.json`) {
+  const configDir = dirname(configPath);
+  const loader = new ConfigLoader(configPath);
+  const config = loader.getConfig();
+  const runtimeConfig = resolveRuntimeConfig(config);
+  const configuredRoot = process.env.MEMOHUB_STORAGE__ROOT ?? config.storage?.root ?? process.env.MEMOHUB_SYSTEM__ROOT ?? config.system?.root;
+  const root = isDefaultManagedRootSetting(configuredRoot) ? configDir : runtimeConfig.root;
+
+  const vectorDbPath = process.env.MEMOHUB_STORAGE__VECTOR_DB_PATH ??
+    process.env.MEMOHUB_DB_PATH ??
+    (config.storage?.vectorDbPath && config.storage.vectorDbPath !== `${DEFAULT_MANAGED_ROOT}/data/memohub.lancedb`
+      ? resolve(config.storage.vectorDbPath)
+      : join(root, "data", "memohub.lancedb"));
+  const blobPath = process.env.MEMOHUB_STORAGE__BLOB_PATH ??
+    process.env.MEMOHUB_CAS_PATH ??
+    (config.storage?.blobPath && config.storage.blobPath !== `${DEFAULT_MANAGED_ROOT}/blobs`
+      ? resolve(config.storage.blobPath)
+      : join(root, "blobs"));
+  const logPath = process.env.MEMOHUB_MCP__LOG_PATH ??
+    (config.mcp?.logPath && config.mcp.logPath !== `${DEFAULT_MANAGED_ROOT}/logs/mcp.ndjson`
+      ? resolve(config.mcp.logPath)
+      : join(root, "logs", "mcp.ndjson"));
+
+  return {
+    configPath,
+    root,
+    storageRoot: root,
+    vectorDbPath,
+    blobPath,
+    logPath,
+    registryPath: join(root, "state", "channels.json"),
+    vectorTable: config.storage?.vectorTable ?? "memohub",
+  };
+}
+
+function isPathInside(parentPath: string, childPath: string): boolean {
+  const relativePath = relative(resolve(parentPath), resolve(childPath));
+  return relativePath === "" || (!relativePath.startsWith("..") && !relativePath.startsWith("../"));
+}
+
+function isProtectedPath(targetPath: string, managedRoot: string): boolean {
+  const resolvedTarget = resolve(targetPath);
+  const resolvedManagedRoot = resolve(managedRoot);
+  const repoRoot = resolve(process.cwd());
+  const homeRoot = resolve(process.env.HOME ?? "~");
+
+  return resolvedTarget === "/" ||
+    resolvedTarget === homeRoot ||
+    resolvedTarget === repoRoot ||
+    resolvedTarget === resolvedManagedRoot;
+}
+
+function isUnsafeManagedRoot(managedRoot: string): boolean {
+  const resolvedManagedRoot = resolve(managedRoot);
+  const repoRoot = resolve(process.cwd());
+  const homeRoot = resolve(process.env.HOME ?? "~");
+  return resolvedManagedRoot === "/" || resolvedManagedRoot === homeRoot || resolvedManagedRoot === repoRoot;
+}
+
+function validateManagedPath(targetPath: string, managedRoot: string): string | null {
+  if (!isPathInside(managedRoot, targetPath)) {
+    return `Refusing to delete unmanaged path: ${targetPath}`;
+  }
+  if (isProtectedPath(targetPath, managedRoot)) {
+    return `Refusing to delete protected path: ${targetPath}`;
+  }
+  return null;
+}
 
 export function getConfigValue(config: Record<string, any>, dottedPath: string): unknown {
   return dottedPath.split(".").reduce<unknown>((current, part) => {
@@ -52,7 +127,8 @@ export function writeConfigValue(path: string, rawValue: string, loader = new Co
 }
 
 export function getManagedDataTargets(configPath = `${process.env.HOME}/.memohub/memohub.json`): string[] {
-  const root = dirname(configPath);
+  const status = getManagedDataStatus(configPath);
+  const root = status.root;
   return [
     join(root, "tracks"),
     join(root, "data"),
@@ -70,9 +146,38 @@ export function cleanManagedData(options: {
   confirm?: string;
 } = {}): Record<string, unknown> {
   const configPath = options.configPath ?? `${process.env.HOME}/.memohub/memohub.json`;
+  const status = getManagedDataStatus(configPath);
   const targets = getManagedDataTargets(configPath);
+  const invalidTargets = targets
+    .map((target) => ({ target, error: validateManagedPath(target, status.root) }))
+    .filter((entry) => entry.error !== null);
   const dryRun = options.dryRun ?? true;
   const authorized = options.all === true && options.yes === true && options.confirm === DATA_CLEAN_CONFIRMATION;
+
+  if (isUnsafeManagedRoot(status.root)) {
+    return {
+      success: false,
+      dryRun,
+      destructive: false,
+      confirmationRequired: DATA_CLEAN_CONFIRMATION,
+      ...status,
+      targets,
+      error: `Refusing to use unsafe managed root: ${status.root}`,
+    };
+  }
+
+  if (invalidTargets.length > 0) {
+    return {
+      success: false,
+      dryRun,
+      destructive: false,
+      confirmationRequired: DATA_CLEAN_CONFIRMATION,
+      ...status,
+      targets,
+      invalidTargets,
+      error: invalidTargets[0]?.error,
+    };
+  }
 
   if (dryRun) {
     return {
@@ -80,6 +185,7 @@ export function cleanManagedData(options: {
       dryRun: true,
       destructive: false,
       confirmationRequired: DATA_CLEAN_CONFIRMATION,
+      ...status,
       targets,
       message: "Dry run only. No data was deleted.",
     };
@@ -91,6 +197,7 @@ export function cleanManagedData(options: {
       dryRun: false,
       destructive: true,
       confirmationRequired: DATA_CLEAN_CONFIRMATION,
+      ...status,
       targets,
       error: `Refusing to delete data. Pass --all --yes --confirm ${DATA_CLEAN_CONFIRMATION}.`,
     };
@@ -105,6 +212,7 @@ export function cleanManagedData(options: {
     success: true,
     dryRun: false,
     destructive: true,
+    ...status,
     removed: targets,
     message: "MemoHub-managed data directories were deleted. Restart MCP before retesting.",
   };
@@ -296,15 +404,15 @@ export function resetGlobalConfig(configPath = `${process.env.HOME}/.memohub/mem
     // 配置版本用于后续迁移和诊断，不等同于 npm 包版本。
     configVersion: "unified-memory-1",
     system: {
-      root: "~/.memohub",
+      root,
       trace_enabled: true,
       log_level: "info",
       lang: "auto",
     },
     storage: {
-      root: "~/.memohub",
-      blobPath: "~/.memohub/blobs",
-      vectorDbPath: "~/.memohub/data/memohub.lancedb",
+      root,
+      blobPath: `${root}/blobs`,
+      vectorDbPath: `${root}/data/memohub.lancedb`,
       vectorTable: "memohub",
       dimensions: 768,
     },
@@ -328,7 +436,7 @@ export function resetGlobalConfig(configPath = `${process.env.HOME}/.memohub/mem
     mcp: {
       enabled: true,
       transport: "stdio",
-      logPath: "~/.memohub/logs/mcp.ndjson",
+      logPath: `${root}/logs/mcp.ndjson`,
       toolsResourceUri: "memohub://tools",
       statsResourceUri: "memohub://stats",
       exposeToolCatalog: true,

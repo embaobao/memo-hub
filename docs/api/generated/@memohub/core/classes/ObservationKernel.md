@@ -4,7 +4,7 @@
 
 # Class: ObservationKernel
 
-Defined in: [packages/core/src/observation.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L18)
+Defined in: [packages/core/src/observation.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L18)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/observation.ts:18](https://github.com/embaobao/me
 
 > **new ObservationKernel**(`root`): `ObservationKernel`
 
-Defined in: [packages/core/src/observation.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L21)
+Defined in: [packages/core/src/observation.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L21)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/core/src/observation.ts:21](https://github.com/embaobao/me
 
 > **createSpanId**(): `string`
 
-Defined in: [packages/core/src/observation.ts:33](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L33)
+Defined in: [packages/core/src/observation.ts:33](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L33)
 
 #### Returns
 
@@ -42,7 +42,7 @@ Defined in: [packages/core/src/observation.ts:33](https://github.com/embaobao/me
 
 > **createTraceId**(): `string`
 
-Defined in: [packages/core/src/observation.ts:29](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L29)
+Defined in: [packages/core/src/observation.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L29)
 
 #### Returns
 
@@ -54,7 +54,7 @@ Defined in: [packages/core/src/observation.ts:29](https://github.com/embaobao/me
 
 > **log**(`entry`): `void`
 
-Defined in: [packages/core/src/observation.ts:37](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L37)
+Defined in: [packages/core/src/observation.ts:37](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L37)
 
 #### Parameters
 
@@ -72,7 +72,7 @@ Defined in: [packages/core/src/observation.ts:37](https://github.com/embaobao/me
 
 > **safeRun**\<`T`\>(`fn`, `context`): `Promise`\<`T`\>
 
-Defined in: [packages/core/src/observation.ts:47](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L47)
+Defined in: [packages/core/src/observation.ts:47](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L47)
 
 Wrap execution in a safe runner with tracking.
 

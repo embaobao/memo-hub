@@ -4,7 +4,7 @@
 
 # Interface: IEmbedder
 
-Defined in: [packages/ai-provider/src/types.ts:1](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L1)
+Defined in: [packages/ai-provider/src/types.ts:1](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L1)
 
 ## Methods
 
@@ -12,7 +12,7 @@ Defined in: [packages/ai-provider/src/types.ts:1](https://github.com/embaobao/me
 
 > **batchEmbed**(`texts`): `Promise`\<`number`[][]\>
 
-Defined in: [packages/ai-provider/src/types.ts:3](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L3)
+Defined in: [packages/ai-provider/src/types.ts:3](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L3)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/ai-provider/src/types.ts:3](https://github.com/embaobao/me
 
 > **embed**(`text`): `Promise`\<`number`[]\>
 
-Defined in: [packages/ai-provider/src/types.ts:2](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L2)
+Defined in: [packages/ai-provider/src/types.ts:2](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L2)
 
 #### Parameters
 

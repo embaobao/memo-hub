@@ -4,7 +4,7 @@
 
 # Class: CodeAnalyzerTool
 
-Defined in: [code-analyzer.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/code-analyzer.ts#L10)
+Defined in: [code-analyzer.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/code-analyzer.ts#L10)
 
 代码解析原子工具 (AST Code Analyzer)
 职责: 基于 Tree-sitter 提取代码符号、结构和实体。
@@ -29,7 +29,7 @@ Defined in: [code-analyzer.ts:10](https://github.com/embaobao/memo-hub/blob/4f74
 
 > **manifest**: `object`
 
-Defined in: [code-analyzer.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/code-analyzer.ts#L11)
+Defined in: [code-analyzer.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/code-analyzer.ts#L11)
 
 #### description
 
@@ -69,7 +69,7 @@ Defined in: [code-analyzer.ts:11](https://github.com/embaobao/memo-hub/blob/4f74
 
 > **execute**(`input`, `resources`, `context`): `Promise`\<`any`\>
 
-Defined in: [code-analyzer.ts:30](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/code-analyzer.ts#L30)
+Defined in: [code-analyzer.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/code-analyzer.ts#L30)
 
 #### Parameters
 

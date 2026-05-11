@@ -1149,6 +1149,14 @@ dataCommand
     const lang = currentLang(program.opts().lang);
     console.log(chalk.bold.cyan(t(lang, "dataStatusTitle")));
     console.log(t(lang, "noDataDeleted"));
+    printKeyValue(t(lang, "configFile"), String(result.configPath ?? ""));
+    printKeyValue(t(lang, "root"), String(result.root ?? ""));
+    printKeyValue(t(lang, "storageRoot"), String(result.storageRoot ?? ""));
+    printKeyValue(t(lang, "vectorDb"), String(result.vectorDbPath ?? ""));
+    printKeyValue(t(lang, "blob"), String(result.blobPath ?? ""));
+    printKeyValue(t(lang, "mcpLog"), String(result.logPath ?? ""));
+    printKeyValue(t(lang, "registryPath"), String(result.registryPath ?? ""));
+    printKeyValue(t(lang, "table"), String(result.vectorTable ?? ""));
     console.log(`${t(lang, "confirmationPhrase")}: ${DATA_CLEAN_CONFIRMATION}`);
     for (const target of result.targets as string[]) console.log(`- ${target}`);
   });

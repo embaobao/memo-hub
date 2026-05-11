@@ -1,6 +1,6 @@
 # MemoHub 业务链路与治理规则
 
-最后更新：2026-05-06
+最后更新：2026-05-11
 
 本文件定义 MemoHub 当前正式业务链路。CLI、MCP、Hermes、Skill、IDE 和后续 Connector 都必须以本文档为准。
 
@@ -73,6 +73,26 @@ self -> project -> global
 7. 排障通过 channel、logs、data dry-run 完成
 ```
 
+## 数据治理链路
+
+真实环境与验证环境现在统一遵循以下流程：
+
+```text
+1. 先用 config show / data status 查看当前生效路径
+2. 正式环境默认使用共享 managed root
+3. 临时验证环境使用 MEMOHUB_STORAGE__ROOT 等显式覆盖
+4. 测试写入统一使用 purpose=test
+5. 清理默认先 dry-run，再显式确认删除
+6. rebuild-schema 只用于旧 schema 恢复或首次真实接入前的授权清场
+```
+
+约束：
+
+- `data status` 必须显示当前解析后的 config root、storage root、vector db、blob、log 和 channel registry。
+- `data clean` 不允许删除非 MemoHub 管理路径。
+- managed root 不允许指向 `/`、`~`、仓库根目录等危险位置。
+- CLI 与 MCP 必须共享同一套数据治理边界和确认门槛。
+
 ## 写入规则
 
 第一阶段统一支持以下纯记忆类型：
@@ -140,6 +160,18 @@ setup
 - Hermes 与 CLI/MCP 共享同一 Memory service
 - Hermes 可以读取自己的习惯、近期活动和项目事实
 - Hermes 可以在 `purpose=test` 下安全验证和清理
+
+## 当前运维入口
+
+当前最常用的治理和排障入口：
+
+```bash
+memohub config show
+memohub data status
+memohub data clean --actor hermes --purpose test --dry-run
+memohub mcp doctor
+memohub logs query --tail 50
+```
 
 ## 非本提案范围
 

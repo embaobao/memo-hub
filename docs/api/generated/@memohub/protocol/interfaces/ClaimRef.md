@@ -4,7 +4,7 @@
 
 # Interface: ClaimRef
 
-Defined in: packages/protocol/src/memory-object.ts:59
+Defined in: [packages/protocol/src/memory-object.ts:59](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L59)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/memory-object.ts:59
 
 > `optional` **confidence?**: `number`
 
-Defined in: packages/protocol/src/memory-object.ts:63
+Defined in: [packages/protocol/src/memory-object.ts:63](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L63)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/memory-object.ts:63
 
 > `optional` **id?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:60
+Defined in: [packages/protocol/src/memory-object.ts:60](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L60)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/memory-object.ts:60
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/memory-object.ts:64
+Defined in: [packages/protocol/src/memory-object.ts:64](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L64)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/memory-object.ts:64
 
 > `optional` **subject?**: [`SubjectDescriptor`](SubjectDescriptor.md)
 
-Defined in: packages/protocol/src/memory-object.ts:62
+Defined in: [packages/protocol/src/memory-object.ts:62](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L62)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: packages/protocol/src/memory-object.ts:62
 
 > **text**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:61
+Defined in: [packages/protocol/src/memory-object.ts:61](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L61)

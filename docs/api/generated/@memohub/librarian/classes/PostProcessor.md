@@ -4,7 +4,7 @@
 
 # Class: PostProcessor
 
-Defined in: [retrieval-pipeline.ts:416](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L416)
+Defined in: [retrieval-pipeline.ts:416](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L416)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [retrieval-pipeline.ts:416](https://github.com/embaobao/memo-hub/blo
 
 > **new PostProcessor**(`options?`): `PostProcessor`
 
-Defined in: [retrieval-pipeline.ts:417](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L417)
+Defined in: [retrieval-pipeline.ts:417](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L417)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [retrieval-pipeline.ts:417](https://github.com/embaobao/memo-hub/blo
 
 > **process**(`exec`): `Promise`\<[`PostResult`](../interfaces/PostResult.md)\>
 
-Defined in: [retrieval-pipeline.ts:498](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L498)
+Defined in: [retrieval-pipeline.ts:498](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L498)
 
 执行 Post 阶段
 

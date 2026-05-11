@@ -4,7 +4,7 @@
 
 # Interface: CASWriteResult
 
-Defined in: [cas-adapter.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L11)
+Defined in: [cas-adapter.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L11)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [cas-adapter.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429
 
 > **exists**: `boolean`
 
-Defined in: [cas-adapter.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L13)
+Defined in: [cas-adapter.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L13)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [cas-adapter.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429
 
 > **hash**: `string`
 
-Defined in: [cas-adapter.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L12)
+Defined in: [cas-adapter.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L12)

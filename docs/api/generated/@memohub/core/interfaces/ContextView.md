@@ -4,7 +4,7 @@
 
 # Interface: ContextView
 
-Defined in: packages/core/src/query-planner.ts:45
+Defined in: [packages/core/src/query-planner.ts:45](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L45)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/query-planner.ts:45
 
 > **conflictsOrGaps**: [`WeightedMemoryResult`](WeightedMemoryResult.md)[]
 
-Defined in: packages/core/src/query-planner.ts:50
+Defined in: [packages/core/src/query-planner.ts:50](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L50)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/core/src/query-planner.ts:50
 
 > **globalContext**: [`WeightedMemoryResult`](WeightedMemoryResult.md)[]
 
-Defined in: packages/core/src/query-planner.ts:49
+Defined in: [packages/core/src/query-planner.ts:49](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L49)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/core/src/query-planner.ts:49
 
 > **metadata**: `object`
 
-Defined in: packages/core/src/query-planner.ts:52
+Defined in: [packages/core/src/query-planner.ts:52](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L52)
 
 #### Index Signature
 
@@ -56,7 +56,7 @@ Defined in: packages/core/src/query-planner.ts:52
 
 > **projectContext**: [`WeightedMemoryResult`](WeightedMemoryResult.md)[]
 
-Defined in: packages/core/src/query-planner.ts:48
+Defined in: [packages/core/src/query-planner.ts:48](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L48)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: packages/core/src/query-planner.ts:48
 
 > **selfContext**: [`WeightedMemoryResult`](WeightedMemoryResult.md)[]
 
-Defined in: packages/core/src/query-planner.ts:47
+Defined in: [packages/core/src/query-planner.ts:47](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L47)
 
 ***
 
@@ -72,7 +72,7 @@ Defined in: packages/core/src/query-planner.ts:47
 
 > **sources**: [`SourceDescriptor`](../../protocol/interfaces/SourceDescriptor.md)[]
 
-Defined in: packages/core/src/query-planner.ts:51
+Defined in: [packages/core/src/query-planner.ts:51](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L51)
 
 ***
 
@@ -80,4 +80,4 @@ Defined in: packages/core/src/query-planner.ts:51
 
 > **view**: `string`
 
-Defined in: packages/core/src/query-planner.ts:46
+Defined in: [packages/core/src/query-planner.ts:46](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L46)

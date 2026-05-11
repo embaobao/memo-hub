@@ -4,7 +4,7 @@
 
 # Interface: SubjectDescriptor
 
-Defined in: packages/protocol/src/memory-object.ts:23
+Defined in: [packages/protocol/src/memory-object.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L23)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/memory-object.ts:23
 
 > **id**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:25
+Defined in: [packages/protocol/src/memory-object.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L25)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/memory-object.ts:25
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/memory-object.ts:27
+Defined in: [packages/protocol/src/memory-object.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L27)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/memory-object.ts:27
 
 > `optional` **name?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:26
+Defined in: [packages/protocol/src/memory-object.ts:26](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L26)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: packages/protocol/src/memory-object.ts:26
 
 > **type**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:24
+Defined in: [packages/protocol/src/memory-object.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L24)

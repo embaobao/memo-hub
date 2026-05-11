@@ -4,7 +4,7 @@
 
 # Interface: EmbeddingRef
 
-Defined in: packages/protocol/src/memory-object.ts:67
+Defined in: [packages/protocol/src/memory-object.ts:67](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L67)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/memory-object.ts:67
 
 > `optional` **contentIndex?**: `number`
 
-Defined in: packages/protocol/src/memory-object.ts:69
+Defined in: [packages/protocol/src/memory-object.ts:69](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L69)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/memory-object.ts:69
 
 > `optional` **dimensions?**: `number`
 
-Defined in: packages/protocol/src/memory-object.ts:71
+Defined in: [packages/protocol/src/memory-object.ts:71](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L71)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/memory-object.ts:71
 
 > `optional` **id?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:68
+Defined in: [packages/protocol/src/memory-object.ts:68](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L68)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/memory-object.ts:68
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/memory-object.ts:73
+Defined in: [packages/protocol/src/memory-object.ts:73](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L73)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/protocol/src/memory-object.ts:73
 
 > `optional` **model?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:70
+Defined in: [packages/protocol/src/memory-object.ts:70](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L70)
 
 ***
 
@@ -52,4 +52,4 @@ Defined in: packages/protocol/src/memory-object.ts:70
 
 > `optional` **vectorRef?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:72
+Defined in: [packages/protocol/src/memory-object.ts:72](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L72)

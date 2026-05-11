@@ -4,7 +4,7 @@
 
 # Interface: QueryIntent
 
-Defined in: [retrieval-pipeline.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L15)
+Defined in: [retrieval-pipeline.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L15)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [retrieval-pipeline.ts:15](https://github.com/embaobao/memo-hub/blob
 
 > **confidence**: `number`
 
-Defined in: [retrieval-pipeline.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L17)
+Defined in: [retrieval-pipeline.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L17)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [retrieval-pipeline.ts:17](https://github.com/embaobao/memo-hub/blob
 
 > **reason**: `string`
 
-Defined in: [retrieval-pipeline.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L18)
+Defined in: [retrieval-pipeline.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L18)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [retrieval-pipeline.ts:18](https://github.com/embaobao/memo-hub/blob
 
 > **type**: `"code"` \| `"knowledge"` \| `"mixed"`
 
-Defined in: [retrieval-pipeline.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L16)
+Defined in: [retrieval-pipeline.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L16)

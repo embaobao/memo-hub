@@ -4,7 +4,7 @@
 
 # Class: IntegrationHub
 
-Defined in: [integration-hub.ts:38](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L38)
+Defined in: [integration-hub.ts:38](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L38)
 
 Integration Hub
 
@@ -16,7 +16,7 @@ Integration Hub
 
 > **new IntegrationHub**(`config`): `IntegrationHub`
 
-Defined in: [integration-hub.ts:44](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L44)
+Defined in: [integration-hub.ts:44](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L44)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: [integration-hub.ts:44](https://github.com/embaobao/memo-hub/blob/4f
 
 > **getPerformance**(): [`PerformanceMonitor`](../../core/classes/PerformanceMonitor.md)
 
-Defined in: [integration-hub.ts:188](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L188)
+Defined in: [integration-hub.ts:188](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L188)
 
 获取性能监控实例
 
@@ -48,7 +48,7 @@ Defined in: [integration-hub.ts:188](https://github.com/embaobao/memo-hub/blob/4
 
 > **ingest**(`event`): `Promise`\<[`IngestResult`](../interfaces/IngestResult.md)\>
 
-Defined in: [integration-hub.ts:60](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L60)
+Defined in: [integration-hub.ts:60](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L60)
 
 摄取外部事件
 
@@ -70,7 +70,7 @@ Defined in: [integration-hub.ts:60](https://github.com/embaobao/memo-hub/blob/4f
 
 > **ingestBatch**(`events`): `Promise`\<[`IngestResult`](../interfaces/IngestResult.md)[]\>
 
-Defined in: [integration-hub.ts:148](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L148)
+Defined in: [integration-hub.ts:148](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L148)
 
 批量摄取事件
 

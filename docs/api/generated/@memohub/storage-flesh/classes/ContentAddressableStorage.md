@@ -4,7 +4,7 @@
 
 # Class: ContentAddressableStorage
 
-Defined in: [index.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L6)
+Defined in: [index.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L6)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [index.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d3
 
 > **new ContentAddressableStorage**(`rootPath`): `ContentAddressableStorage`
 
-Defined in: [index.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L10)
+Defined in: [index.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L10)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [index.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **blobPath**(`hash`): `string`
 
-Defined in: [index.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L21)
+Defined in: [index.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L21)
 
 #### Parameters
 
@@ -48,7 +48,7 @@ Defined in: [index.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **buildContentRef**(`hash`): `string`
 
-Defined in: [index.ts:138](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L138)
+Defined in: [index.ts:138](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L138)
 
 #### Parameters
 
@@ -66,7 +66,7 @@ Defined in: [index.ts:138](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **computeHash**(`content`): `string`
 
-Defined in: [index.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L15)
+Defined in: [index.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L15)
 
 #### Parameters
 
@@ -84,7 +84,7 @@ Defined in: [index.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **delete**(`hash`): `Promise`\<`void`\>
 
-Defined in: [index.ts:95](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L95)
+Defined in: [index.ts:95](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L95)
 
 #### Parameters
 
@@ -102,7 +102,7 @@ Defined in: [index.ts:95](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **has**(`hash`): `Promise`\<`boolean`\>
 
-Defined in: [index.ts:86](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L86)
+Defined in: [index.ts:86](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L86)
 
 #### Parameters
 
@@ -120,7 +120,7 @@ Defined in: [index.ts:86](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **listAllHashes**(): `Promise`\<`string`[]\>
 
-Defined in: [index.ts:103](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L103)
+Defined in: [index.ts:103](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L103)
 
 #### Returns
 
@@ -132,7 +132,7 @@ Defined in: [index.ts:103](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **parseHashFromRef**(`ref`): `string` \| `null`
 
-Defined in: [index.ts:142](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L142)
+Defined in: [index.ts:142](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L142)
 
 #### Parameters
 
@@ -150,7 +150,7 @@ Defined in: [index.ts:142](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **read**(`hash`): `Promise`\<`string`\>
 
-Defined in: [index.ts:77](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L77)
+Defined in: [index.ts:77](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L77)
 
 #### Parameters
 
@@ -168,7 +168,7 @@ Defined in: [index.ts:77](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **readVerified**(`hash`): `Promise`\<`string` \| `null`\>
 
-Defined in: [index.ts:125](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L125)
+Defined in: [index.ts:125](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L125)
 
 #### Parameters
 
@@ -186,7 +186,7 @@ Defined in: [index.ts:125](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **write**(`content`): `Promise`\<`string`\>
 
-Defined in: [index.ts:49](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-flesh/src/index.ts#L49)
+Defined in: [index.ts:49](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-flesh/src/index.ts#L49)
 
 #### Parameters
 

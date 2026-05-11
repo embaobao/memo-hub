@@ -4,7 +4,7 @@
 
 # Interface: RankingFactor
 
-Defined in: [retrieval-pipeline.ts:72](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L72)
+Defined in: [retrieval-pipeline.ts:72](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L72)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [retrieval-pipeline.ts:72](https://github.com/embaobao/memo-hub/blob
 
 > **entityCoverage**: `number`
 
-Defined in: [retrieval-pipeline.ts:75](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L75)
+Defined in: [retrieval-pipeline.ts:75](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L75)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [retrieval-pipeline.ts:75](https://github.com/embaobao/memo-hub/blob
 
 > **finalScore**: `number`
 
-Defined in: [retrieval-pipeline.ts:78](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L78)
+Defined in: [retrieval-pipeline.ts:78](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L78)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [retrieval-pipeline.ts:78](https://github.com/embaobao/memo-hub/blob
 
 > `optional` **freshness?**: `number`
 
-Defined in: [retrieval-pipeline.ts:77](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L77)
+Defined in: [retrieval-pipeline.ts:77](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L77)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [retrieval-pipeline.ts:77](https://github.com/embaobao/memo-hub/blob
 
 > **recordId**: `string`
 
-Defined in: [retrieval-pipeline.ts:73](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L73)
+Defined in: [retrieval-pipeline.ts:73](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L73)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [retrieval-pipeline.ts:73](https://github.com/embaobao/memo-hub/blob
 
 > **trackWeight**: `number`
 
-Defined in: [retrieval-pipeline.ts:76](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L76)
+Defined in: [retrieval-pipeline.ts:76](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L76)
 
 ***
 
@@ -52,4 +52,4 @@ Defined in: [retrieval-pipeline.ts:76](https://github.com/embaobao/memo-hub/blob
 
 > **vectorScore**: `number`
 
-Defined in: [retrieval-pipeline.ts:74](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L74)
+Defined in: [retrieval-pipeline.ts:74](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L74)

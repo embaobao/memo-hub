@@ -4,7 +4,7 @@
 
 # Interface: IngestResult
 
-Defined in: [integration-hub.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L17)
+Defined in: [integration-hub.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L17)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [integration-hub.ts:17](https://github.com/embaobao/memo-hub/blob/4f
 
 > `optional` **canonicalEvent?**: [`CanonicalMemoryEvent`](../../protocol/interfaces/CanonicalMemoryEvent.md)
 
-Defined in: [integration-hub.ts:22](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L22)
+Defined in: [integration-hub.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L22)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [integration-hub.ts:22](https://github.com/embaobao/memo-hub/blob/4f
 
 > `optional` **contentHash?**: `string`
 
-Defined in: [integration-hub.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L20)
+Defined in: [integration-hub.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L20)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [integration-hub.ts:20](https://github.com/embaobao/memo-hub/blob/4f
 
 > `optional` **error?**: `string`
 
-Defined in: [integration-hub.ts:24](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L24)
+Defined in: [integration-hub.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L24)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [integration-hub.ts:24](https://github.com/embaobao/memo-hub/blob/4f
 
 > **eventId**: `string`
 
-Defined in: [integration-hub.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L19)
+Defined in: [integration-hub.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L19)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [integration-hub.ts:19](https://github.com/embaobao/memo-hub/blob/4f
 
 > `optional` **instruction?**: `any`
 
-Defined in: [integration-hub.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L21)
+Defined in: [integration-hub.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L21)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [integration-hub.ts:21](https://github.com/embaobao/memo-hub/blob/4f
 
 > `optional` **memoryObject?**: [`MemoryObject`](../../protocol/interfaces/MemoryObject.md)
 
-Defined in: [integration-hub.ts:23](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L23)
+Defined in: [integration-hub.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L23)
 
 ***
 
@@ -60,4 +60,4 @@ Defined in: [integration-hub.ts:23](https://github.com/embaobao/memo-hub/blob/4f
 
 > **success**: `boolean`
 
-Defined in: [integration-hub.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L18)
+Defined in: [integration-hub.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L18)

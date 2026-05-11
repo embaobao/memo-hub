@@ -4,7 +4,7 @@
 
 # Interface: ITool\<TInput, TOutput\>
 
-Defined in: [packages/core/src/tool-registry.ts:26](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L26)
+Defined in: [packages/core/src/tool-registry.ts:26](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L26)
 
 原子化工具接口 (Dify/Node-RED Style Node)
 
@@ -24,7 +24,7 @@ Defined in: [packages/core/src/tool-registry.ts:26](https://github.com/embaobao/
 
 > **manifest**: [`IToolManifest`](IToolManifest.md)
 
-Defined in: [packages/core/src/tool-registry.ts:27](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L27)
+Defined in: [packages/core/src/tool-registry.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L27)
 
 ## Methods
 
@@ -32,7 +32,7 @@ Defined in: [packages/core/src/tool-registry.ts:27](https://github.com/embaobao/
 
 > **execute**(`input`, `resources`, `context`): `Promise`\<`TOutput`\>
 
-Defined in: [packages/core/src/tool-registry.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L28)
+Defined in: [packages/core/src/tool-registry.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L28)
 
 #### Parameters
 

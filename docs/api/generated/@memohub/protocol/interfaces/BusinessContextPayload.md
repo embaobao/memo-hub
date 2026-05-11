@@ -4,7 +4,7 @@
 
 # Interface: BusinessContextPayload
 
-Defined in: [packages/protocol/src/event.ts:72](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/event.ts#L72)
+Defined in: [packages/protocol/src/event.ts:72](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/event.ts#L72)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/protocol/src/event.ts:72](https://github.com/embaobao/memo
 
 > **context**: `string`
 
-Defined in: [packages/protocol/src/event.ts:73](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/event.ts#L73)
+Defined in: [packages/protocol/src/event.ts:73](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/event.ts#L73)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [packages/protocol/src/event.ts:73](https://github.com/embaobao/memo
 
 > **details**: `unknown`
 
-Defined in: [packages/protocol/src/event.ts:74](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/event.ts#L74)
+Defined in: [packages/protocol/src/event.ts:74](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/event.ts#L74)

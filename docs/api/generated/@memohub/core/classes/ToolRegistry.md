@@ -4,7 +4,7 @@
 
 # Class: ToolRegistry
 
-Defined in: [packages/core/src/tool-registry.ts:38](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L38)
+Defined in: [packages/core/src/tool-registry.ts:38](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L38)
 
 原子工具注册中心
 
@@ -24,7 +24,7 @@ Defined in: [packages/core/src/tool-registry.ts:38](https://github.com/embaobao/
 
 > **get**(`id`): [`ITool`](../interfaces/ITool.md)
 
-Defined in: [packages/core/src/tool-registry.ts:51](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L51)
+Defined in: [packages/core/src/tool-registry.ts:51](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L51)
 
 获取工具 (支持简写，如 "cas" 匹配 "builtin:cas")
 
@@ -44,7 +44,7 @@ Defined in: [packages/core/src/tool-registry.ts:51](https://github.com/embaobao/
 
 > **list**(): [`ITool`](../interfaces/ITool.md)\<`any`, `any`\>[]
 
-Defined in: [packages/core/src/tool-registry.ts:63](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L63)
+Defined in: [packages/core/src/tool-registry.ts:63](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L63)
 
 列出所有已加载节点
 
@@ -58,7 +58,7 @@ Defined in: [packages/core/src/tool-registry.ts:63](https://github.com/embaobao/
 
 > **loadExtensions**(`configs`): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/tool-registry.ts:70](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L70)
+Defined in: [packages/core/src/tool-registry.ts:70](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L70)
 
 动态加载配置中定义的扩展工具 (TBD)
 
@@ -78,7 +78,7 @@ Defined in: [packages/core/src/tool-registry.ts:70](https://github.com/embaobao/
 
 > **register**(`tool`): `void`
 
-Defined in: [packages/core/src/tool-registry.ts:44](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L44)
+Defined in: [packages/core/src/tool-registry.ts:44](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L44)
 
 注册工具节点
 

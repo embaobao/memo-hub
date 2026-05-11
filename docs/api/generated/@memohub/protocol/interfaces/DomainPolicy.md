@@ -4,7 +4,7 @@
 
 # Interface: DomainPolicy
 
-Defined in: packages/protocol/src/governance.ts:9
+Defined in: [packages/protocol/src/governance.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L9)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/governance.ts:9
 
 > **defaultState**: `string`
 
-Defined in: packages/protocol/src/governance.ts:13
+Defined in: [packages/protocol/src/governance.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L13)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/governance.ts:13
 
 > **defaultVisibility**: `string`
 
-Defined in: packages/protocol/src/governance.ts:12
+Defined in: [packages/protocol/src/governance.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L12)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/governance.ts:12
 
 > **description**: `string`
 
-Defined in: packages/protocol/src/governance.ts:14
+Defined in: [packages/protocol/src/governance.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L14)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/governance.ts:14
 
 > **domain**: `string`
 
-Defined in: packages/protocol/src/governance.ts:10
+Defined in: [packages/protocol/src/governance.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L10)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: packages/protocol/src/governance.ts:10
 
 > **transitionTrack**: `string`
 
-Defined in: packages/protocol/src/governance.ts:11
+Defined in: [packages/protocol/src/governance.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L11)

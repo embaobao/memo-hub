@@ -4,7 +4,7 @@
 
 # Interface: ICompleter
 
-Defined in: [packages/ai-provider/src/types.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L11)
+Defined in: [packages/ai-provider/src/types.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L11)
 
 ## Methods
 
@@ -12,7 +12,7 @@ Defined in: [packages/ai-provider/src/types.ts:11](https://github.com/embaobao/m
 
 > **chat**(`messages`): `Promise`\<`string`\>
 
-Defined in: [packages/ai-provider/src/types.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L12)
+Defined in: [packages/ai-provider/src/types.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L12)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/ai-provider/src/types.ts:12](https://github.com/embaobao/m
 
 > **summarize**(`text`): `Promise`\<`string`\>
 
-Defined in: [packages/ai-provider/src/types.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L13)
+Defined in: [packages/ai-provider/src/types.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L13)
 
 #### Parameters
 

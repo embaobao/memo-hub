@@ -4,7 +4,7 @@
 
 # Class: ErrorFormatter
 
-Defined in: [packages/protocol/src/errors.ts:185](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L185)
+Defined in: [packages/protocol/src/errors.ts:185](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L185)
 
 错误格式化工具
 
@@ -24,7 +24,7 @@ Defined in: [packages/protocol/src/errors.ts:185](https://github.com/embaobao/me
 
 > `static` **format**(`error`): `string`
 
-Defined in: [packages/protocol/src/errors.ts:189](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L189)
+Defined in: [packages/protocol/src/errors.ts:189](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L189)
 
 格式化错误为用户友好的消息
 
@@ -44,7 +44,7 @@ Defined in: [packages/protocol/src/errors.ts:189](https://github.com/embaobao/me
 
 > `static` **formatJSON**(`error`): `string`
 
-Defined in: [packages/protocol/src/errors.ts:206](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L206)
+Defined in: [packages/protocol/src/errors.ts:206](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L206)
 
 格式化错误为 JSON（用于日志）
 

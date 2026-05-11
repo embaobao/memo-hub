@@ -4,7 +4,7 @@
 
 # Class: AIProviderRegistry
 
-Defined in: [packages/ai-provider/src/registry.ts:5](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/registry.ts#L5)
+Defined in: [packages/ai-provider/src/registry.ts:5](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/registry.ts#L5)
 
 ## Constructors
 
@@ -22,7 +22,7 @@ Defined in: [packages/ai-provider/src/registry.ts:5](https://github.com/embaobao
 
 > **getCompleter**(`name`, `config?`): [`ICompleter`](../interfaces/ICompleter.md)
 
-Defined in: [packages/ai-provider/src/registry.ts:35](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/registry.ts#L35)
+Defined in: [packages/ai-provider/src/registry.ts:35](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/registry.ts#L35)
 
 #### Parameters
 
@@ -44,7 +44,7 @@ Defined in: [packages/ai-provider/src/registry.ts:35](https://github.com/embaoba
 
 > **getEmbedder**(`name`, `config?`): [`IEmbedder`](../interfaces/IEmbedder.md)
 
-Defined in: [packages/ai-provider/src/registry.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/registry.ts#L19)
+Defined in: [packages/ai-provider/src/registry.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/registry.ts#L19)
 
 #### Parameters
 
@@ -66,7 +66,7 @@ Defined in: [packages/ai-provider/src/registry.ts:19](https://github.com/embaoba
 
 > **registerCompleter**(`name`, `factory`): `void`
 
-Defined in: [packages/ai-provider/src/registry.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/registry.ts#L15)
+Defined in: [packages/ai-provider/src/registry.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/registry.ts#L15)
 
 #### Parameters
 
@@ -88,7 +88,7 @@ Defined in: [packages/ai-provider/src/registry.ts:15](https://github.com/embaoba
 
 > **registerEmbedder**(`name`, `factory`): `void`
 
-Defined in: [packages/ai-provider/src/registry.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/registry.ts#L11)
+Defined in: [packages/ai-provider/src/registry.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/registry.ts#L11)
 
 #### Parameters
 

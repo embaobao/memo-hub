@@ -4,7 +4,7 @@
 
 # Interface: SearchOptions
 
-Defined in: [types.ts:26](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L26)
+Defined in: [types.ts:43](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L43)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [types.ts:26](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > `optional` **filter?**: `string`
 
-Defined in: [types.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L28)
+Defined in: [types.ts:45](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L45)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [types.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > `optional` **limit?**: `number`
 
-Defined in: [types.ts:27](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/types.ts#L27)
+Defined in: [types.ts:44](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/types.ts#L44)

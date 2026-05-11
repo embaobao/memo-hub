@@ -4,7 +4,7 @@
 
 # Class: OllamaAdapter
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L12)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L12)
 
 ## Implements
 
@@ -17,7 +17,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:12](https://github.com/e
 
 > **new OllamaAdapter**(`config`): `OllamaAdapter`
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L15)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L15)
 
 #### Parameters
 
@@ -35,7 +35,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:15](https://github.com/e
 
 > **batchEmbed**(`texts`): `Promise`\<`number`[][]\>
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:59](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L59)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:59](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L59)
 
 #### Parameters
 
@@ -57,7 +57,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:59](https://github.com/e
 
 > **chat**(`messages`): `Promise`\<`string`\>
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:63](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L63)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:63](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L63)
 
 #### Parameters
 
@@ -79,7 +79,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:63](https://github.com/e
 
 > **embed**(`text`): `Promise`\<`number`[]\>
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L19)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L19)
 
 #### Parameters
 
@@ -101,7 +101,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:19](https://github.com/e
 
 > **summarize**(`text`): `Promise`\<`string`\>
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:102](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L102)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:102](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L102)
 
 #### Parameters
 

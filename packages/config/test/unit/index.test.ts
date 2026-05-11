@@ -46,14 +46,20 @@ describe("ConfigLoader", () => {
     process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__PROVIDER = "test-provider";
     process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__MODEL = "test-model";
     process.env.MEMOHUB_MCP__LOG_PATH = "/tmp/memohub-test/mcp.ndjson";
+    process.env.MEMOHUB_STORAGE__ROOT = "/tmp/memohub-test";
+    process.env.MEMOHUB_STORAGE__VECTOR_DB_PATH = "/tmp/memohub-test/data/runtime.lancedb";
     const loader = new ConfigLoader();
     const config = loader.getConfig();
     expect(config.ai.agents.summarizer.provider).toBe("test-provider");
     expect(config.ai.agents.summarizer.model).toBe("test-model");
     expect(config.mcp.logPath).toBe("/tmp/memohub-test/mcp.ndjson");
+    expect(config.storage.root).toBe("/tmp/memohub-test");
+    expect(config.storage.vectorDbPath).toBe("/tmp/memohub-test/data/runtime.lancedb");
     delete process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__PROVIDER;
     delete process.env.MEMOHUB_AI__AGENTS__SUMMARIZER__MODEL;
     delete process.env.MEMOHUB_MCP__LOG_PATH;
+    delete process.env.MEMOHUB_STORAGE__ROOT;
+    delete process.env.MEMOHUB_STORAGE__VECTOR_DB_PATH;
   });
 
   test("should mask secrets", () => {

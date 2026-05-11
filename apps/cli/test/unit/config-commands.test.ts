@@ -16,9 +16,12 @@ import {
 
 describe("CLI config commands", () => {
   let tempDir: string | undefined;
+  const originalEnv = { ...process.env };
 
   afterEach(async () => {
+    process.env = { ...originalEnv };
     if (tempDir) await rm(tempDir, { recursive: true, force: true });
+    tempDir = undefined;
   });
 
   test("reads and writes dotted config paths", () => {
@@ -108,6 +111,35 @@ describe("CLI config commands", () => {
     expect(deleted.success).toBe(true);
     expect(deleted.dryRun).toBe(false);
     expect(existsSync(dataDir)).toBe(false);
+  });
+
+  test("cleanManagedData exposes resolved runtime paths in status output", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-data-status-"));
+    const configPath = join(tempDir, "memohub.json");
+
+    resetGlobalConfig(configPath);
+    const result = cleanManagedData({ configPath, dryRun: true, all: true });
+
+    expect(result.success).toBe(true);
+    expect(result.root).toBe(tempDir);
+    expect(result.storageRoot).toBe(tempDir);
+    expect(result.vectorDbPath).toBe(join(tempDir, "data", "memohub.lancedb"));
+    expect(result.blobPath).toBe(join(tempDir, "blobs"));
+    expect(result.logPath).toBe(join(tempDir, "logs", "mcp.ndjson"));
+    expect(result.registryPath).toBe(join(tempDir, "state", "channels.json"));
+    expect(result.vectorTable).toBe("memohub");
+  });
+
+  test("cleanManagedData refuses protected or unmanaged deletion targets", async () => {
+    tempDir = await mkdtemp(join(tmpdir(), "memohub-data-guard-"));
+    const configPath = join(tempDir, "memohub.json");
+    process.env.HOME = tempDir;
+    process.env.MEMOHUB_STORAGE__ROOT = "/";
+
+    const result = cleanManagedData({ configPath, dryRun: false, all: true, yes: true, confirm: DATA_CLEAN_CONFIRMATION });
+
+    expect(result.success).toBe(false);
+    expect(String(result.error)).toContain("Refusing to use unsafe managed root");
   });
 
   test("cleanChannelData previews and deletes only the requested channel", async () => {

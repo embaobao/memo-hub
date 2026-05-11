@@ -4,7 +4,7 @@
 
 # Class: VectorStorage
 
-Defined in: [index.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L11)
+Defined in: [index.ts:75](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L75)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [index.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **new VectorStorage**(`config`): `VectorStorage`
 
-Defined in: [index.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L16)
+Defined in: [index.ts:80](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L80)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [index.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **add**(`records`): `Promise`\<`void`\>
 
-Defined in: [index.ts:96](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L96)
+Defined in: [index.ts:171](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L171)
 
 #### Parameters
 
@@ -48,7 +48,7 @@ Defined in: [index.ts:96](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **delete**(`filter`): `Promise`\<`void`\>
 
-Defined in: [index.ts:120](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L120)
+Defined in: [index.ts:196](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L196)
 
 #### Parameters
 
@@ -66,7 +66,7 @@ Defined in: [index.ts:120](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **initialize**(): `Promise`\<`void`\>
 
-Defined in: [index.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L20)
+Defined in: [index.ts:84](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L84)
 
 #### Returns
 
@@ -78,7 +78,7 @@ Defined in: [index.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **list**(`filter?`, `limit?`): `Promise`\<[`VectorRecord`](../interfaces/VectorRecord.md)[]\>
 
-Defined in: [index.ts:125](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L125)
+Defined in: [index.ts:201](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L201)
 
 #### Parameters
 
@@ -100,7 +100,7 @@ Defined in: [index.ts:125](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **search**(`queryVector`, `options?`): `Promise`\<[`VectorRecord`](../interfaces/VectorRecord.md) & `object`[]\>
 
-Defined in: [index.ts:102](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L102)
+Defined in: [index.ts:178](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L178)
 
 #### Parameters
 
@@ -122,7 +122,7 @@ Defined in: [index.ts:102](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **update**(`id`, `changes`): `Promise`\<`void`\>
 
-Defined in: [index.ts:135](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/storage-soul/src/index.ts#L135)
+Defined in: [index.ts:211](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/storage-soul/src/index.ts#L211)
 
 #### Parameters
 

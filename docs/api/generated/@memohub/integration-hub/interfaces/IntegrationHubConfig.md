@@ -4,7 +4,7 @@
 
 # Interface: IntegrationHubConfig
 
-Defined in: [integration-hub.ts:27](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L27)
+Defined in: [integration-hub.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L27)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [integration-hub.ts:27](https://github.com/embaobao/memo-hub/blob/4f
 
 > **cas**: [`ContentAddressableStorage`](../../storage-flesh/classes/ContentAddressableStorage.md)
 
-Defined in: [integration-hub.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L28)
+Defined in: [integration-hub.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L28)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [integration-hub.ts:28](https://github.com/embaobao/memo-hub/blob/4f
 
 > **kernel**: [`MemoryKernel`](../../core/classes/MemoryKernel.md)
 
-Defined in: [integration-hub.ts:29](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L29)
+Defined in: [integration-hub.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L29)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: [integration-hub.ts:29](https://github.com/embaobao/memo-hub/blob/4f
 
 > `optional` **performance?**: [`PerformanceMonitor`](../../core/classes/PerformanceMonitor.md)
 
-Defined in: [integration-hub.ts:30](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/integration-hub.ts#L30)
+Defined in: [integration-hub.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/integration-hub.ts#L30)

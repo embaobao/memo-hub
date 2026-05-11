@@ -42,13 +42,29 @@ export interface ResolvedMemoHubRuntimeConfig {
   sources: string[];
 }
 
+const DEFAULT_ROOT = "~/.memohub";
+
+function resolveManagedRoot(config: EnhancedConfig): string {
+  return resolvePath(
+    process.env.MEMOHUB_STORAGE__ROOT ??
+    config.storage?.root ??
+    process.env.MEMOHUB_SYSTEM__ROOT ??
+    config.system?.root ??
+    DEFAULT_ROOT,
+  );
+}
+
+function resolveManagedPath(override: string | undefined, configuredPath: string | undefined, fallbackPath: string): string {
+  return resolvePath(override ?? configuredPath ?? fallbackPath);
+}
+
 export function loadRuntimeConfig(loader = new ConfigLoader()): ResolvedMemoHubRuntimeConfig {
   const config = loader.getConfig();
   return resolveRuntimeConfig(config);
 }
 
 export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRuntimeConfig {
-  const root = resolvePath(config.storage?.root ?? config.system?.root ?? "~/.memohub");
+  const root = resolveManagedRoot(config);
   const embedder = config.ai.agents.embedder;
   const summarizer = config.ai.agents.summarizer;
   const embedderProviderId = embedder?.provider ?? config.ai.providers[0]?.id ?? "ollama";
@@ -56,8 +72,21 @@ export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRun
   const embedderProvider = config.ai.providers.find((item) => item.id === embedderProviderId) ?? config.ai.providers[0];
   const summarizerProvider = config.ai.providers.find((item) => item.id === summarizerProviderId) ?? embedderProvider;
   const dimensions = Number(process.env.MEMOHUB_DIMENSIONS ?? config.storage?.dimensions ?? embedder?.dimensions ?? 768);
-  const vectorDbPath = process.env.MEMOHUB_DB_PATH ?? config.storage?.vectorDbPath ?? `${root}/data/memohub.lancedb`;
-  const blobPath = process.env.MEMOHUB_CAS_PATH ?? config.storage?.blobPath ?? `${root}/blobs`;
+  const vectorDbPath = resolveManagedPath(
+    process.env.MEMOHUB_STORAGE__VECTOR_DB_PATH ?? process.env.MEMOHUB_DB_PATH,
+    config.storage?.vectorDbPath,
+    `${root}/data/memohub.lancedb`,
+  );
+  const blobPath = resolveManagedPath(
+    process.env.MEMOHUB_STORAGE__BLOB_PATH ?? process.env.MEMOHUB_CAS_PATH,
+    config.storage?.blobPath,
+    `${root}/blobs`,
+  );
+  const logPath = resolveManagedPath(
+    process.env.MEMOHUB_MCP__LOG_PATH,
+    config.mcp?.logPath,
+    `${root}/logs/mcp.ndjson`,
+  );
   const embedderProviderUrl = process.env.EMBEDDING_URL ?? embedderProvider?.url ?? "http://localhost:11434/v1";
   const summarizerProviderUrl = process.env.SUMMARIZER_URL ?? summarizerProvider?.url ?? embedderProviderUrl;
   const embeddingModel = process.env.EMBEDDING_MODEL ?? embedder?.model ?? "nomic-embed-text";
@@ -71,8 +100,8 @@ export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRun
       channelRegistryPath: `${root}/state/channels.json`,
     },
     storage: {
-      blobPath: resolvePath(blobPath),
-      vectorDbPath: resolvePath(vectorDbPath),
+      blobPath,
+      vectorDbPath,
       vectorTable: config.storage?.vectorTable ?? "memohub",
       dimensions,
     },
@@ -90,7 +119,7 @@ export function resolveRuntimeConfig(config: EnhancedConfig): ResolvedMemoHubRun
     mcp: {
       enabled: config.mcp?.enabled ?? true,
       transport: "stdio",
-      logPath: resolvePath(config.mcp?.logPath ?? `${root}/logs/mcp.ndjson`),
+      logPath,
       toolsResourceUri: config.mcp?.toolsResourceUri ?? "memohub://tools",
       statsResourceUri: config.mcp?.statsResourceUri ?? "memohub://stats",
       exposeToolCatalog: config.mcp?.exposeToolCatalog ?? true,

@@ -4,7 +4,7 @@
 
 # Interface: StructuredIndexEntry
 
-Defined in: memory-projection.ts:26
+Defined in: [memory-projection.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L27)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: memory-projection.ts:26
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: memory-projection.ts:30
+Defined in: [memory-projection.ts:31](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L31)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: memory-projection.ts:30
 
 > **relation**: `string`
 
-Defined in: memory-projection.ts:28
+Defined in: [memory-projection.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L29)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: memory-projection.ts:28
 
 > **sourceId**: `string`
 
-Defined in: memory-projection.ts:27
+Defined in: [memory-projection.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L28)
 
 ***
 
@@ -36,4 +36,4 @@ Defined in: memory-projection.ts:27
 
 > **targetId**: `string`
 
-Defined in: memory-projection.ts:29
+Defined in: [memory-projection.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L30)

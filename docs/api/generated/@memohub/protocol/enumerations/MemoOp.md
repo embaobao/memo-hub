@@ -4,7 +4,7 @@
 
 # Enumeration: MemoOp
 
-Defined in: [packages/protocol/src/types.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L6)
+Defined in: [packages/protocol/src/types.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L6)
 
 Text2Mem 协议核心类型定义 (v1.1.0)
 职责: 定义指令集、操作码、错误码及指令流生命周期状态。
@@ -15,7 +15,7 @@ Text2Mem 协议核心类型定义 (v1.1.0)
 
 > **ADD**: `"ADD"`
 
-Defined in: [packages/protocol/src/types.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L7)
+Defined in: [packages/protocol/src/types.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L7)
 
 ***
 
@@ -23,7 +23,7 @@ Defined in: [packages/protocol/src/types.ts:7](https://github.com/embaobao/memo-
 
 > **ANCHOR**: `"ANCHOR"`
 
-Defined in: [packages/protocol/src/types.ts:14](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L14)
+Defined in: [packages/protocol/src/types.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L14)
 
 ***
 
@@ -31,7 +31,7 @@ Defined in: [packages/protocol/src/types.ts:14](https://github.com/embaobao/memo
 
 > **CLARIFY**: `"CLARIFY"`
 
-Defined in: [packages/protocol/src/types.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L18)
+Defined in: [packages/protocol/src/types.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L18)
 
 ***
 
@@ -39,7 +39,7 @@ Defined in: [packages/protocol/src/types.ts:18](https://github.com/embaobao/memo
 
 > **DELETE**: `"DELETE"`
 
-Defined in: [packages/protocol/src/types.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L10)
+Defined in: [packages/protocol/src/types.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L10)
 
 ***
 
@@ -47,7 +47,7 @@ Defined in: [packages/protocol/src/types.ts:10](https://github.com/embaobao/memo
 
 > **DIFF**: `"DIFF"`
 
-Defined in: [packages/protocol/src/types.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L17)
+Defined in: [packages/protocol/src/types.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L17)
 
 ***
 
@@ -55,7 +55,7 @@ Defined in: [packages/protocol/src/types.ts:17](https://github.com/embaobao/memo
 
 > **DISTILL**: `"DISTILL"`
 
-Defined in: [packages/protocol/src/types.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L16)
+Defined in: [packages/protocol/src/types.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L16)
 
 ***
 
@@ -63,7 +63,7 @@ Defined in: [packages/protocol/src/types.ts:16](https://github.com/embaobao/memo
 
 > **EXPORT**: `"EXPORT"`
 
-Defined in: [packages/protocol/src/types.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L13)
+Defined in: [packages/protocol/src/types.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L13)
 
 ***
 
@@ -71,7 +71,7 @@ Defined in: [packages/protocol/src/types.ts:13](https://github.com/embaobao/memo
 
 > **LIST**: `"LIST"`
 
-Defined in: [packages/protocol/src/types.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L11)
+Defined in: [packages/protocol/src/types.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L11)
 
 ***
 
@@ -79,7 +79,7 @@ Defined in: [packages/protocol/src/types.ts:11](https://github.com/embaobao/memo
 
 > **MERGE**: `"MERGE"`
 
-Defined in: [packages/protocol/src/types.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L15)
+Defined in: [packages/protocol/src/types.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L15)
 
 ***
 
@@ -87,7 +87,7 @@ Defined in: [packages/protocol/src/types.ts:15](https://github.com/embaobao/memo
 
 > **RETRIEVE**: `"RETRIEVE"`
 
-Defined in: [packages/protocol/src/types.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L8)
+Defined in: [packages/protocol/src/types.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L8)
 
 ***
 
@@ -95,7 +95,7 @@ Defined in: [packages/protocol/src/types.ts:8](https://github.com/embaobao/memo-
 
 > **SYNC**: `"SYNC"`
 
-Defined in: [packages/protocol/src/types.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L12)
+Defined in: [packages/protocol/src/types.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L12)
 
 ***
 
@@ -103,4 +103,4 @@ Defined in: [packages/protocol/src/types.ts:12](https://github.com/embaobao/memo
 
 > **UPDATE**: `"UPDATE"`
 
-Defined in: [packages/protocol/src/types.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L9)
+Defined in: [packages/protocol/src/types.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L9)

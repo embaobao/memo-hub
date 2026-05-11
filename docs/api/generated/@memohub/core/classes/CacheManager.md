@@ -4,7 +4,7 @@
 
 # Class: CacheManager
 
-Defined in: [packages/core/src/cache.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/cache.ts#L6)
+Defined in: [packages/core/src/cache.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/cache.ts#L6)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/cache.ts:6](https://github.com/embaobao/memo-hub/
 
 > **new CacheManager**(`root`): `CacheManager`
 
-Defined in: [packages/core/src/cache.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/cache.ts#L9)
+Defined in: [packages/core/src/cache.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/cache.ts#L9)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/core/src/cache.ts:9](https://github.com/embaobao/memo-hub/
 
 > **clear**(): `void`
 
-Defined in: [packages/core/src/cache.ts:57](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/cache.ts#L57)
+Defined in: [packages/core/src/cache.ts:57](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/cache.ts#L57)
 
 Clear all cache.
 
@@ -44,7 +44,7 @@ Clear all cache.
 
 > **generateKey**(`toolId`, `input`, `agentContext?`): `string`
 
-Defined in: [packages/core/src/cache.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/cache.ts#L19)
+Defined in: [packages/core/src/cache.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/cache.ts#L19)
 
 Generate a cache key based on tool id and inputs.
 
@@ -72,7 +72,7 @@ Generate a cache key based on tool id and inputs.
 
 > **get**\<`T`\>(`key`): `T` \| `null`
 
-Defined in: [packages/core/src/cache.ts:31](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/cache.ts#L31)
+Defined in: [packages/core/src/cache.ts:31](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/cache.ts#L31)
 
 Get cached result.
 
@@ -98,7 +98,7 @@ Get cached result.
 
 > **set**(`key`, `value`): `void`
 
-Defined in: [packages/core/src/cache.ts:47](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/cache.ts#L47)
+Defined in: [packages/core/src/cache.ts:47](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/cache.ts#L47)
 
 Set cached result.
 

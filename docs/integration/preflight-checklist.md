@@ -1,6 +1,6 @@
 # MemoHub 接入前检查清单
 
-最后更新：2026-04-29
+最后更新：2026-05-11
 
 本文档用于在 Hermes、IDE、Codex、Claude Desktop 或其他 Agent 接入 MemoHub 前完成统一检查。
 
@@ -77,9 +77,25 @@ memohub config get storage.vectorDbPath
 通过标准：
 
 - `storage.blobPath`、`storage.vectorDbPath`、`storage.vectorTable` 均有解析值。
+- `memohub data status` 能显示 `configPath`、`root`、`storageRoot`、`vectorDbPath`、`blobPath`、`mcp.logPath` 和 `channel registry`。
 - `ai.embeddingModel` 和 `ai.dimensions` 有解析值。
 - `mcp.logPath` 可写，或已通过环境变量覆盖。
 - `memory.views` 至少包含 `project_context` 和 `coding_context`。
+
+如果这是临时验证环境，优先显式覆盖 managed root，而不是复用默认 `~/.memohub`：
+
+```bash
+MEMOHUB_STORAGE__ROOT=/tmp/memohub-test \
+MEMOHUB_STORAGE__VECTOR_DB_PATH=/tmp/memohub-test/data/memohub.lancedb \
+MEMOHUB_STORAGE__BLOB_PATH=/tmp/memohub-test/blobs \
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-test/logs/mcp.ndjson \
+memohub data status
+```
+
+通过标准：
+
+- `data status` 中显示的 root 和各路径都落在临时目录下。
+- 测试、接入演练、Hermes 验证不写默认生产共享目录。
 
 ## 3. MCP 能力发现
 
@@ -112,6 +128,15 @@ MEMOHUB_STORAGE__VECTOR_DB_PATH=/tmp/memohub-test/data/memohub.lancedb \
 MEMOHUB_MCP__LOG_PATH=/tmp/memohub-test/logs/mcp.ndjson \
 memohub mcp doctor
 ```
+
+建议正式环境和临时验证环境都统一用新的路径覆盖变量：
+
+- `MEMOHUB_STORAGE__ROOT`
+- `MEMOHUB_STORAGE__VECTOR_DB_PATH`
+- `MEMOHUB_STORAGE__BLOB_PATH`
+- `MEMOHUB_MCP__LOG_PATH`
+
+旧变量 `MEMOHUB_DB_PATH`、`MEMOHUB_CAS_PATH` 仍兼容，但不建议继续作为新的部署约定。
 
 ## 4. Agent Skill 安装源
 

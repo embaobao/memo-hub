@@ -6,7 +6,7 @@
 
 > **resolvePath**(`inputPath`): `string`
 
-Defined in: [utils.ts:45](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/utils.ts#L45)
+Defined in: [utils.ts:45](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/utils.ts#L45)
 
 Resolve XDG paths and home directory tildes.
 

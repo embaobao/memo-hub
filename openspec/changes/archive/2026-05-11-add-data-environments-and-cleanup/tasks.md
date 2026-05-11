@@ -11,14 +11,14 @@
 - [x] 2.2 Add `memohub data clean --dry-run` as the default behavior.
 - [x] 2.3 Add `memohub data clean --all --yes --confirm DELETE_MEMOHUB_DATA` for explicit full environment cleanup.
 - [x] 2.4 Add scoped cleanup flag: `--channel`.
-- [ ] 2.5 Add path safety guard tests.
+- [x] 2.5 Add path safety guard tests.
 
 ## 3. Data Root Isolation
 
-- [ ] 3.1 Add config validation for managed root guard and path overrides.
-- [ ] 3.2 Ensure `memohub data status` shows resolved storage/log/config roots.
-- [ ] 3.3 Ensure runtime config resolves storage/log paths from explicit config and environment overrides.
-- [ ] 3.4 Ensure tests default to temporary data roots.
+- [x] 3.1 Add config validation for managed root guard and path overrides.
+- [x] 3.2 Ensure `memohub data status` shows resolved storage/log/config roots.
+- [x] 3.3 Ensure runtime config resolves storage/log paths from explicit config and environment overrides.
+- [x] 3.4 Ensure tests default to temporary data roots.
 
 ## 4. MCP Data Management
 
@@ -30,6 +30,6 @@
 ## 5. Documentation And Verification
 
 - [x] 5.1 Update Hermes and MCP integration docs with first-integration cleanup.
-- [ ] 5.2 Add docs for temporary test data roots and environment-variable path overrides.
+- [x] 5.2 Add docs for temporary test data roots and environment-variable path overrides.
 - [x] 5.3 Add data cleanup examples to README or integration guide.
-- [ ] 5.4 Run `bun run docs:site` and `bun run check:release`.
+- [x] 5.4 Run `bun run docs:site` and `bun run check:release`.

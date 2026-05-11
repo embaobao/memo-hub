@@ -4,7 +4,7 @@
 
 # Interface: RecallWeightPolicy
 
-Defined in: packages/core/src/query-planner.ts:27
+Defined in: [packages/core/src/query-planner.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L27)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/query-planner.ts:27
 
 > `optional` **confidence?**: `Record`\<`string`, `number`\>
 
-Defined in: packages/core/src/query-planner.ts:31
+Defined in: [packages/core/src/query-planner.ts:31](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L31)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/core/src/query-planner.ts:31
 
 > `optional` **domain?**: `Record`\<`string`, `number`\>
 
-Defined in: packages/core/src/query-planner.ts:33
+Defined in: [packages/core/src/query-planner.ts:33](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L33)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/core/src/query-planner.ts:33
 
 > **id**: `string`
 
-Defined in: packages/core/src/query-planner.ts:28
+Defined in: [packages/core/src/query-planner.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L28)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/core/src/query-planner.ts:28
 
 > **layer**: `Record`\<`string`, `number`\>
 
-Defined in: packages/core/src/query-planner.ts:29
+Defined in: [packages/core/src/query-planner.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L29)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/core/src/query-planner.ts:29
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/core/src/query-planner.ts:35
+Defined in: [packages/core/src/query-planner.ts:35](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L35)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/core/src/query-planner.ts:35
 
 > `optional` **recency?**: `object`
 
-Defined in: packages/core/src/query-planner.ts:30
+Defined in: [packages/core/src/query-planner.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L30)
 
 #### halfLifeDays?
 
@@ -68,7 +68,7 @@ Defined in: packages/core/src/query-planner.ts:30
 
 > `optional` **sourceTrust?**: `Record`\<`string`, `number`\>
 
-Defined in: packages/core/src/query-planner.ts:32
+Defined in: [packages/core/src/query-planner.ts:32](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L32)
 
 ***
 
@@ -76,4 +76,4 @@ Defined in: packages/core/src/query-planner.ts:32
 
 > `optional` **state?**: `Record`\<`string`, `number`\>
 
-Defined in: packages/core/src/query-planner.ts:34
+Defined in: [packages/core/src/query-planner.ts:34](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L34)

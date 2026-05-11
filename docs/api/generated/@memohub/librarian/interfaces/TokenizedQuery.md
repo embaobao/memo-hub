@@ -4,7 +4,7 @@
 
 # Interface: TokenizedQuery
 
-Defined in: [retrieval-pipeline.ts:27](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L27)
+Defined in: [retrieval-pipeline.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L27)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [retrieval-pipeline.ts:27](https://github.com/embaobao/memo-hub/blob
 
 > **original**: `string`
 
-Defined in: [retrieval-pipeline.ts:29](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L29)
+Defined in: [retrieval-pipeline.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L29)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [retrieval-pipeline.ts:29](https://github.com/embaobao/memo-hub/blob
 
 > **tokens**: `string`[]
 
-Defined in: [retrieval-pipeline.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L28)
+Defined in: [retrieval-pipeline.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L28)

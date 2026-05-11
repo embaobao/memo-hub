@@ -4,7 +4,7 @@
 
 # Interface: IKernel
 
-Defined in: [packages/core/src/types.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L6)
+Defined in: [packages/core/src/types.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L6)
 
 ## Methods
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/types.ts:6](https://github.com/embaobao/memo-hub/
 
 > **dispatch**(`instruction`): `Promise`\<`Text2MemResult`\>
 
-Defined in: [packages/core/src/types.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L12)
+Defined in: [packages/core/src/types.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L12)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/core/src/types.ts:12](https://github.com/embaobao/memo-hub
 
 > **getCAS**(): [`ContentAddressableStorage`](../../storage-flesh/classes/ContentAddressableStorage.md)
 
-Defined in: [packages/core/src/types.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L9)
+Defined in: [packages/core/src/types.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L9)
 
 #### Returns
 
@@ -42,7 +42,7 @@ Defined in: [packages/core/src/types.ts:9](https://github.com/embaobao/memo-hub/
 
 > **getCompleter**(): [`ICompleter`](../../ai-provider/interfaces/ICompleter.md) \| `null`
 
-Defined in: [packages/core/src/types.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L8)
+Defined in: [packages/core/src/types.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L8)
 
 #### Returns
 
@@ -54,7 +54,7 @@ Defined in: [packages/core/src/types.ts:8](https://github.com/embaobao/memo-hub/
 
 > **getConfig**(): `Record`\<`string`, `any`\>
 
-Defined in: [packages/core/src/types.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L11)
+Defined in: [packages/core/src/types.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L11)
 
 #### Returns
 
@@ -66,7 +66,7 @@ Defined in: [packages/core/src/types.ts:11](https://github.com/embaobao/memo-hub
 
 > **getEmbedder**(): [`IEmbedder`](../../ai-provider/interfaces/IEmbedder.md)
 
-Defined in: [packages/core/src/types.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L7)
+Defined in: [packages/core/src/types.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L7)
 
 #### Returns
 
@@ -78,7 +78,7 @@ Defined in: [packages/core/src/types.ts:7](https://github.com/embaobao/memo-hub/
 
 > **getVectorStorage**(): [`VectorStorage`](../../storage-soul/classes/VectorStorage.md)
 
-Defined in: [packages/core/src/types.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types.ts#L10)
+Defined in: [packages/core/src/types.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types.ts#L10)
 
 #### Returns
 

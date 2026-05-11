@@ -4,7 +4,7 @@
 
 # Interface: ICompleter
 
-Defined in: [packages/protocol/src/types.ts:130](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L130)
+Defined in: [packages/protocol/src/types.ts:130](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L130)
 
 ## Methods
 
@@ -12,7 +12,7 @@ Defined in: [packages/protocol/src/types.ts:130](https://github.com/embaobao/mem
 
 > **chat**(`messages`): `Promise`\<`string`\>
 
-Defined in: [packages/protocol/src/types.ts:131](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L131)
+Defined in: [packages/protocol/src/types.ts:131](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L131)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/protocol/src/types.ts:131](https://github.com/embaobao/mem
 
 > **summarize**(`text`): `Promise`\<`string`\>
 
-Defined in: [packages/protocol/src/types.ts:132](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L132)
+Defined in: [packages/protocol/src/types.ts:132](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L132)
 
 #### Parameters
 

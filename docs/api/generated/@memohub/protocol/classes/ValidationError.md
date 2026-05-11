@@ -4,7 +4,7 @@
 
 # Class: ValidationError
 
-Defined in: [packages/protocol/src/errors.ts:161](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L161)
+Defined in: [packages/protocol/src/errors.ts:161](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L161)
 
 验证错误
 
@@ -18,7 +18,7 @@ Defined in: [packages/protocol/src/errors.ts:161](https://github.com/embaobao/me
 
 > **new ValidationError**(`errors`): `ValidationError`
 
-Defined in: [packages/protocol/src/errors.ts:164](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L164)
+Defined in: [packages/protocol/src/errors.ts:164](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L164)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib
 
 > `readonly` **code**: [`IntegrationErrorCode`](../enumerations/IntegrationErrorCode.md)
 
-Defined in: [packages/protocol/src/errors.ts:38](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L38)
+Defined in: [packages/protocol/src/errors.ts:38](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L38)
 
 #### Inherited from
 
@@ -64,7 +64,7 @@ Defined in: [packages/protocol/src/errors.ts:38](https://github.com/embaobao/mem
 
 > `readonly` `optional` **details?**: `unknown`
 
-Defined in: [packages/protocol/src/errors.ts:39](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L39)
+Defined in: [packages/protocol/src/errors.ts:39](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L39)
 
 #### Inherited from
 
@@ -112,7 +112,7 @@ Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib
 
 > `readonly` **validationErrors**: `string`[]
 
-Defined in: [packages/protocol/src/errors.ts:162](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L162)
+Defined in: [packages/protocol/src/errors.ts:162](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L162)
 
 ***
 
@@ -142,7 +142,7 @@ not capture any frames.
 
 > **toJSON**(): `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/protocol/src/errors.ts:147](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L147)
+Defined in: [packages/protocol/src/errors.ts:147](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L147)
 
 转换为 JSON
 
@@ -230,7 +230,7 @@ a();
 
 > `static` **casWriteFailed**(`error`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:103](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L103)
+Defined in: [packages/protocol/src/errors.ts:103](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L103)
 
 创建"CAS 写入失败"错误
 
@@ -254,7 +254,7 @@ Defined in: [packages/protocol/src/errors.ts:103](https://github.com/embaobao/me
 
 > `static` **internal**(`error`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:136](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L136)
+Defined in: [packages/protocol/src/errors.ts:136](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L136)
 
 创建"内部错误"错误
 
@@ -278,7 +278,7 @@ Defined in: [packages/protocol/src/errors.ts:136](https://github.com/embaobao/me
 
 > `static` **invalidEvent**(`errors`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:59](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L59)
+Defined in: [packages/protocol/src/errors.ts:59](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L59)
 
 创建"无效事件"错误
 
@@ -302,7 +302,7 @@ Defined in: [packages/protocol/src/errors.ts:59](https://github.com/embaobao/mem
 
 > `static` **invalidFieldValue**(`field`, `value`, `expected`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:81](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L81)
+Defined in: [packages/protocol/src/errors.ts:81](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L81)
 
 创建"无效字段值"错误
 
@@ -334,7 +334,7 @@ Defined in: [packages/protocol/src/errors.ts:81](https://github.com/embaobao/mem
 
 > `static` **missingField**(`field`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:70](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L70)
+Defined in: [packages/protocol/src/errors.ts:70](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L70)
 
 创建"缺少必需字段"错误
 
@@ -388,7 +388,7 @@ https://v8.dev/docs/stack-trace-api#customizing-stack-traces
 
 > `static` **projectionFailed**(`kind`, `reason`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:114](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L114)
+Defined in: [packages/protocol/src/errors.ts:114](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L114)
 
 创建"投影失败"错误
 
@@ -416,7 +416,7 @@ Defined in: [packages/protocol/src/errors.ts:114](https://github.com/embaobao/me
 
 > `static` **routingFailed**(`reason`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:125](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L125)
+Defined in: [packages/protocol/src/errors.ts:125](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L125)
 
 创建"路由失败"错误
 
@@ -440,7 +440,7 @@ Defined in: [packages/protocol/src/errors.ts:125](https://github.com/embaobao/me
 
 > `static` **unsupportedKind**(`kind`, `supported`): [`IntegrationHubError`](IntegrationHubError.md)
 
-Defined in: [packages/protocol/src/errors.ts:92](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/errors.ts#L92)
+Defined in: [packages/protocol/src/errors.ts:92](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/errors.ts#L92)
 
 创建"不支持的事件类型"错误
 

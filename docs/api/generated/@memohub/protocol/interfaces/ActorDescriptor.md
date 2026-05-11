@@ -4,7 +4,7 @@
 
 # Interface: ActorDescriptor
 
-Defined in: packages/protocol/src/memory-object.ts:15
+Defined in: [packages/protocol/src/memory-object.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L15)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/memory-object.ts:15
 
 > **id**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:17
+Defined in: [packages/protocol/src/memory-object.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L17)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/memory-object.ts:17
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/memory-object.ts:20
+Defined in: [packages/protocol/src/memory-object.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L20)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/memory-object.ts:20
 
 > `optional` **name?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:18
+Defined in: [packages/protocol/src/memory-object.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L18)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/memory-object.ts:18
 
 > `optional` **source?**: [`SourceDescriptor`](SourceDescriptor.md)
 
-Defined in: packages/protocol/src/memory-object.ts:19
+Defined in: [packages/protocol/src/memory-object.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L19)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: packages/protocol/src/memory-object.ts:19
 
 > **type**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:16
+Defined in: [packages/protocol/src/memory-object.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L16)

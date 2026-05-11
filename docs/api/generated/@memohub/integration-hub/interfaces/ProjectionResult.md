@@ -4,7 +4,7 @@
 
 # Interface: ProjectionResult
 
-Defined in: [projector.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/projector.ts#L11)
+Defined in: [projector.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/projector.ts#L11)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [projector.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0
 
 > **instruction**: `any`
 
-Defined in: [projector.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/projector.ts#L12)
+Defined in: [projector.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/projector.ts#L12)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [projector.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0
 
 > **metadata**: `object`
 
-Defined in: [projector.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/projector.ts#L13)
+Defined in: [projector.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/projector.ts#L13)
 
 #### contentHash?
 

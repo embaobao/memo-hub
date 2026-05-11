@@ -4,7 +4,7 @@
 
 # Interface: ClarificationItem
 
-Defined in: packages/protocol/src/governance.ts:17
+Defined in: [packages/protocol/src/governance.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L17)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/governance.ts:17
 
 > **createdAt**: `string`
 
-Defined in: packages/protocol/src/governance.ts:31
+Defined in: [packages/protocol/src/governance.ts:31](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L31)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/governance.ts:31
 
 > **id**: `string`
 
-Defined in: packages/protocol/src/governance.ts:18
+Defined in: [packages/protocol/src/governance.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L18)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/governance.ts:18
 
 > `optional` **links?**: [`LinkRef`](LinkRef.md)[]
 
-Defined in: packages/protocol/src/governance.ts:23
+Defined in: [packages/protocol/src/governance.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L23)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/governance.ts:23
 
 > **memoryIds**: `string`[]
 
-Defined in: packages/protocol/src/governance.ts:22
+Defined in: [packages/protocol/src/governance.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L22)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/protocol/src/governance.ts:22
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/governance.ts:30
+Defined in: [packages/protocol/src/governance.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L30)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/protocol/src/governance.ts:30
 
 > **question**: `string`
 
-Defined in: packages/protocol/src/governance.ts:20
+Defined in: [packages/protocol/src/governance.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L20)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: packages/protocol/src/governance.ts:20
 
 > **reason**: `string`
 
-Defined in: packages/protocol/src/governance.ts:21
+Defined in: [packages/protocol/src/governance.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L21)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: packages/protocol/src/governance.ts:21
 
 > `optional` **resolution?**: `object`
 
-Defined in: packages/protocol/src/governance.ts:25
+Defined in: [packages/protocol/src/governance.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L25)
 
 #### resolvedAt
 
@@ -88,7 +88,7 @@ Defined in: packages/protocol/src/governance.ts:25
 
 > `optional` **source?**: [`SourceDescriptor`](SourceDescriptor.md)
 
-Defined in: packages/protocol/src/governance.ts:24
+Defined in: [packages/protocol/src/governance.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L24)
 
 ***
 
@@ -96,7 +96,7 @@ Defined in: packages/protocol/src/governance.ts:24
 
 > **status**: `string`
 
-Defined in: packages/protocol/src/governance.ts:19
+Defined in: [packages/protocol/src/governance.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L19)
 
 ***
 
@@ -104,4 +104,4 @@ Defined in: packages/protocol/src/governance.ts:19
 
 > **updatedAt**: `string`
 
-Defined in: packages/protocol/src/governance.ts:32
+Defined in: [packages/protocol/src/governance.ts:32](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L32)

@@ -4,7 +4,7 @@
 
 # Interface: CanonicalMemoryEvent
 
-Defined in: packages/protocol/src/memory-object.ts:107
+Defined in: [packages/protocol/src/memory-object.ts:107](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L107)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/memory-object.ts:107
 
 > `optional` **actor?**: [`ActorDescriptor`](ActorDescriptor.md)
 
-Defined in: packages/protocol/src/memory-object.ts:111
+Defined in: [packages/protocol/src/memory-object.ts:111](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L111)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/memory-object.ts:111
 
 > `optional` **confidence?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:119
+Defined in: [packages/protocol/src/memory-object.ts:119](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L119)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/memory-object.ts:119
 
 > **content**: [`ContentBlock`](ContentBlock.md)[]
 
-Defined in: packages/protocol/src/memory-object.ts:116
+Defined in: [packages/protocol/src/memory-object.ts:116](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L116)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/memory-object.ts:116
 
 > **domains**: [`DomainRef`](DomainRef.md)[]
 
-Defined in: packages/protocol/src/memory-object.ts:115
+Defined in: [packages/protocol/src/memory-object.ts:115](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L115)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/protocol/src/memory-object.ts:115
 
 > **id**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:108
+Defined in: [packages/protocol/src/memory-object.ts:108](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L108)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/protocol/src/memory-object.ts:108
 
 > **kind**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:109
+Defined in: [packages/protocol/src/memory-object.ts:109](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L109)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: packages/protocol/src/memory-object.ts:109
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/memory-object.ts:121
+Defined in: [packages/protocol/src/memory-object.ts:121](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L121)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: packages/protocol/src/memory-object.ts:121
 
 > **occurredAt**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:117
+Defined in: [packages/protocol/src/memory-object.ts:117](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L117)
 
 ***
 
@@ -76,7 +76,7 @@ Defined in: packages/protocol/src/memory-object.ts:117
 
 > `optional` **provenance?**: `Partial`\<[`Provenance`](Provenance.md)\>
 
-Defined in: packages/protocol/src/memory-object.ts:122
+Defined in: [packages/protocol/src/memory-object.ts:122](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L122)
 
 ***
 
@@ -84,7 +84,7 @@ Defined in: packages/protocol/src/memory-object.ts:122
 
 > **receivedAt**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:118
+Defined in: [packages/protocol/src/memory-object.ts:118](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L118)
 
 ***
 
@@ -92,7 +92,7 @@ Defined in: packages/protocol/src/memory-object.ts:118
 
 > **scopes**: [`ScopeRef`](ScopeRef.md)[]
 
-Defined in: packages/protocol/src/memory-object.ts:113
+Defined in: [packages/protocol/src/memory-object.ts:113](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L113)
 
 ***
 
@@ -100,7 +100,7 @@ Defined in: packages/protocol/src/memory-object.ts:113
 
 > **source**: [`SourceDescriptor`](SourceDescriptor.md)
 
-Defined in: packages/protocol/src/memory-object.ts:110
+Defined in: [packages/protocol/src/memory-object.ts:110](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L110)
 
 ***
 
@@ -108,7 +108,7 @@ Defined in: packages/protocol/src/memory-object.ts:110
 
 > `optional` **subject?**: [`SubjectDescriptor`](SubjectDescriptor.md)
 
-Defined in: packages/protocol/src/memory-object.ts:112
+Defined in: [packages/protocol/src/memory-object.ts:112](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L112)
 
 ***
 
@@ -116,7 +116,7 @@ Defined in: packages/protocol/src/memory-object.ts:112
 
 > `optional` **tags?**: `string`[]
 
-Defined in: packages/protocol/src/memory-object.ts:120
+Defined in: [packages/protocol/src/memory-object.ts:120](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L120)
 
 ***
 
@@ -124,4 +124,4 @@ Defined in: packages/protocol/src/memory-object.ts:120
 
 > **visibility**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:114
+Defined in: [packages/protocol/src/memory-object.ts:114](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L114)

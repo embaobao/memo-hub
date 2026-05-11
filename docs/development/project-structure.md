@@ -1,6 +1,6 @@
 # MemoHub 项目结构
 
-最后更新：2026-05-06
+最后更新：2026-05-11
 
 MemoHub 当前的工程组织围绕新主链路展开：
 
@@ -13,7 +13,7 @@ Connector -> Channel -> Memory
 ```text
 memohub/
 ├── apps/
-│   └── cli/                         # CLI Connector + MCP Connector 当前工程位置
+│   └── cli/                         # CLI Connector + MCP Connector 当前工程位置，包含 Hermes 安装入口与打包资产
 ├── connectors/
 │   └── hermes/                      # Hermes 官方 memory provider plugin（Python + uv）
 ├── packages/
@@ -41,12 +41,15 @@ memohub/
 ### `apps/cli`
 
 - 当前保留 CLI 与 MCP 的构建、发布和全局链接位置。
+- 负责 `memohub hermes install|doctor|uninstall`、`data status/clean/rebuild-schema` 等正式接入入口。
+- `assets/hermes/` 打包 Hermes 官方 plugin 发布资产。
 - 不再维护 Channel/Memory 的业务实现，只消费 `@memohub/channel` 和 `@memohub/memory`。
 - 对外定位是 Connector，不是业务核心层。
 
 ### `connectors/hermes`
 
 - 使用 Python + uv 管理 Hermes 官方 memory provider plugin。
+- 源码目录对齐官方插件结构：`plugins/memory/memohub/`。
 - 不维护独立数据源。
 - 通过 MemoHub CLI 访问同一套 Channel/Memory 能力。
 
@@ -77,6 +80,8 @@ bun run connector:hermes:check
 bun run skill:memohub
 bun run docs:generate
 bun run docs:check
+bun run docs:site
+bun run check:release
 ```
 
 Hermes Connector 工程命令：

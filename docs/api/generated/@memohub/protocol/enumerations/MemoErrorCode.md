@@ -4,7 +4,7 @@
 
 # Enumeration: MemoErrorCode
 
-Defined in: [packages/protocol/src/types.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L21)
+Defined in: [packages/protocol/src/types.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L21)
 
 ## Enumeration Members
 
@@ -12,7 +12,7 @@ Defined in: [packages/protocol/src/types.ts:21](https://github.com/embaobao/memo
 
 > **ERR\_AI\_TIMEOUT**: `"ERR_AI_TIMEOUT"`
 
-Defined in: [packages/protocol/src/types.ts:29](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L29)
+Defined in: [packages/protocol/src/types.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L29)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/protocol/src/types.ts:29](https://github.com/embaobao/memo
 
 > **ERR\_CAS\_WRITE\_FAILED**: `"ERR_CAS_WRITE_FAILED"`
 
-Defined in: [packages/protocol/src/types.ts:27](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L27)
+Defined in: [packages/protocol/src/types.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L27)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/protocol/src/types.ts:27](https://github.com/embaobao/memo
 
 > **ERR\_CONFIG\_INVALID**: `"ERR_CONFIG_INVALID"`
 
-Defined in: [packages/protocol/src/types.ts:23](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L23)
+Defined in: [packages/protocol/src/types.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L23)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [packages/protocol/src/types.ts:23](https://github.com/embaobao/memo
 
 > **ERR\_KERNEL\_OFFLINE**: `"ERR_KERNEL_OFFLINE"`
 
-Defined in: [packages/protocol/src/types.ts:24](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L24)
+Defined in: [packages/protocol/src/types.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L24)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [packages/protocol/src/types.ts:24](https://github.com/embaobao/memo
 
 > **ERR\_SYSTEM\_BOOT**: `"ERR_SYSTEM_BOOT"`
 
-Defined in: [packages/protocol/src/types.ts:22](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L22)
+Defined in: [packages/protocol/src/types.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L22)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [packages/protocol/src/types.ts:22](https://github.com/embaobao/memo
 
 > **ERR\_TOOL\_NOT\_FOUND**: `"ERR_TOOL_NOT_FOUND"`
 
-Defined in: [packages/protocol/src/types.ts:26](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L26)
+Defined in: [packages/protocol/src/types.ts:26](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L26)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: [packages/protocol/src/types.ts:26](https://github.com/embaobao/memo
 
 > **ERR\_TRACK\_NOT\_FOUND**: `"ERR_TRACK_NOT_FOUND"`
 
-Defined in: [packages/protocol/src/types.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L25)
+Defined in: [packages/protocol/src/types.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L25)
 
 ***
 
@@ -68,4 +68,4 @@ Defined in: [packages/protocol/src/types.ts:25](https://github.com/embaobao/memo
 
 > **ERR\_VECTOR\_SEARCH\_FAILED**: `"ERR_VECTOR_SEARCH_FAILED"`
 
-Defined in: [packages/protocol/src/types.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L28)
+Defined in: [packages/protocol/src/types.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L28)

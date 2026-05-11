@@ -4,7 +4,7 @@
 
 # Interface: RecallQuery
 
-Defined in: packages/core/src/query-planner.ts:19
+Defined in: [packages/core/src/query-planner.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L19)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/query-planner.ts:19
 
 > **domains**: `string`[]
 
-Defined in: packages/core/src/query-planner.ts:23
+Defined in: [packages/core/src/query-planner.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L23)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/core/src/query-planner.ts:23
 
 > **layer**: [`RecallLayer`](../type-aliases/RecallLayer.md)
 
-Defined in: packages/core/src/query-planner.ts:20
+Defined in: [packages/core/src/query-planner.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L20)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/core/src/query-planner.ts:20
 
 > **limit**: `number`
 
-Defined in: packages/core/src/query-planner.ts:24
+Defined in: [packages/core/src/query-planner.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L24)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/core/src/query-planner.ts:24
 
 > `optional` **query?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:21
+Defined in: [packages/core/src/query-planner.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L21)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/core/src/query-planner.ts:21
 
 > **scopes**: `object`[]
 
-Defined in: packages/core/src/query-planner.ts:22
+Defined in: [packages/core/src/query-planner.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L22)
 
 #### id
 

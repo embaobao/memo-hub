@@ -4,7 +4,7 @@
 
 # Class: MemoryKernel
 
-Defined in: [packages/core/src/kernel.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L25)
+Defined in: [packages/core/src/kernel.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L25)
 
 ## Extends
 
@@ -20,7 +20,7 @@ Defined in: [packages/core/src/kernel.ts:25](https://github.com/embaobao/memo-hu
 
 > **new MemoryKernel**(`config`): `MemoryKernel`
 
-Defined in: [packages/core/src/kernel.ts:41](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L41)
+Defined in: [packages/core/src/kernel.ts:41](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L41)
 
 #### Parameters
 
@@ -229,7 +229,7 @@ v0.1.26
 
 > **dispatch**(`instruction`): `Promise`\<`Text2MemResult`\>
 
-Defined in: [packages/core/src/kernel.ts:76](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L76)
+Defined in: [packages/core/src/kernel.ts:76](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L76)
 
 #### Parameters
 
@@ -362,7 +362,7 @@ v6.0.0
 
 > **getCAS**(): [`ICAS`](../../protocol/interfaces/ICAS.md)
 
-Defined in: [packages/core/src/kernel.ts:145](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L145)
+Defined in: [packages/core/src/kernel.ts:145](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L145)
 
 #### Returns
 
@@ -378,7 +378,7 @@ Defined in: [packages/core/src/kernel.ts:145](https://github.com/embaobao/memo-h
 
 > **getCompleter**(): [`ICompleter`](../../protocol/interfaces/ICompleter.md) \| `null`
 
-Defined in: [packages/core/src/kernel.ts:144](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L144)
+Defined in: [packages/core/src/kernel.ts:144](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L144)
 
 #### Returns
 
@@ -394,7 +394,7 @@ Defined in: [packages/core/src/kernel.ts:144](https://github.com/embaobao/memo-h
 
 > **getConfig**(): `any`
 
-Defined in: [packages/core/src/kernel.ts:147](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L147)
+Defined in: [packages/core/src/kernel.ts:147](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L147)
 
 #### Returns
 
@@ -406,7 +406,7 @@ Defined in: [packages/core/src/kernel.ts:147](https://github.com/embaobao/memo-h
 
 > **getEmbedder**(): [`IEmbedder`](../../protocol/interfaces/IEmbedder.md)
 
-Defined in: [packages/core/src/kernel.ts:143](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L143)
+Defined in: [packages/core/src/kernel.ts:143](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L143)
 
 #### Returns
 
@@ -445,7 +445,7 @@ v1.0.0
 
 > **getResources**(): `any`
 
-Defined in: [packages/core/src/kernel.ts:165](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L165)
+Defined in: [packages/core/src/kernel.ts:165](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L165)
 
 #### Returns
 
@@ -461,7 +461,7 @@ Defined in: [packages/core/src/kernel.ts:165](https://github.com/embaobao/memo-h
 
 > **getTool**(`id`): [`ITool`](../interfaces/ITool.md)\<`any`, `any`\>
 
-Defined in: [packages/core/src/kernel.ts:149](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L149)
+Defined in: [packages/core/src/kernel.ts:149](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L149)
 
 #### Parameters
 
@@ -483,7 +483,7 @@ Defined in: [packages/core/src/kernel.ts:149](https://github.com/embaobao/memo-h
 
 > **getToolRegistry**(): [`ToolRegistry`](ToolRegistry.md)
 
-Defined in: [packages/core/src/kernel.ts:163](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L163)
+Defined in: [packages/core/src/kernel.ts:163](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L163)
 
 #### Returns
 
@@ -495,7 +495,7 @@ Defined in: [packages/core/src/kernel.ts:163](https://github.com/embaobao/memo-h
 
 > **getVectorStorage**(): [`IVectorStorage`](../../protocol/interfaces/IVectorStorage.md)
 
-Defined in: [packages/core/src/kernel.ts:146](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L146)
+Defined in: [packages/core/src/kernel.ts:146](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L146)
 
 #### Returns
 
@@ -511,7 +511,7 @@ Defined in: [packages/core/src/kernel.ts:146](https://github.com/embaobao/memo-h
 
 > **initialize**(): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/kernel.ts:64](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L64)
+Defined in: [packages/core/src/kernel.ts:64](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L64)
 
 #### Returns
 
@@ -609,7 +609,7 @@ v0.1.26
 
 > **listTools**(): [`IToolManifest`](../../protocol/interfaces/IToolManifest.md)[]
 
-Defined in: [packages/core/src/kernel.ts:155](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L155)
+Defined in: [packages/core/src/kernel.ts:155](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L155)
 
 #### Returns
 
@@ -621,7 +621,7 @@ Defined in: [packages/core/src/kernel.ts:155](https://github.com/embaobao/memo-h
 
 > **listTracks**(): `Promise`\<`ITrackProvider`[]\>
 
-Defined in: [packages/core/src/kernel.ts:159](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L159)
+Defined in: [packages/core/src/kernel.ts:159](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L159)
 
 #### Returns
 
@@ -967,7 +967,7 @@ v9.4.0
 
 > **registerTrack**(`track`): `Promise`\<`void`\>
 
-Defined in: [packages/core/src/kernel.ts:71](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L71)
+Defined in: [packages/core/src/kernel.ts:71](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L71)
 
 #### Parameters
 
@@ -1135,7 +1135,7 @@ v0.1.26
 
 > **setComponents**(`components`): `void`
 
-Defined in: [packages/core/src/kernel.ts:52](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/kernel.ts#L52)
+Defined in: [packages/core/src/kernel.ts:52](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/kernel.ts#L52)
 
 #### Parameters
 

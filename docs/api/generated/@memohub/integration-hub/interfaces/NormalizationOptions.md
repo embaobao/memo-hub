@@ -4,7 +4,7 @@
 
 # Interface: NormalizationOptions
 
-Defined in: normalizer.ts:24
+Defined in: [normalizer.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/normalizer.ts#L24)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: normalizer.ts:24
 
 > `optional` **contentHash?**: `string`
 
-Defined in: normalizer.ts:27
+Defined in: [normalizer.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/normalizer.ts#L27)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: normalizer.ts:27
 
 > `optional` **eventId?**: `string`
 
-Defined in: normalizer.ts:25
+Defined in: [normalizer.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/normalizer.ts#L25)
 
 ***
 
@@ -28,4 +28,4 @@ Defined in: normalizer.ts:25
 
 > `optional` **receivedAt?**: `string`
 
-Defined in: normalizer.ts:26
+Defined in: [normalizer.ts:26](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/normalizer.ts#L26)

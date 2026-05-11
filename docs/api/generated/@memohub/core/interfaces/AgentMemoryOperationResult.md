@@ -4,7 +4,7 @@
 
 # Interface: AgentMemoryOperationResult
 
-Defined in: packages/core/src/agent-memory-operations.ts:24
+Defined in: [packages/core/src/agent-memory-operations.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L24)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:24
 
 > **clarifications**: [`ClarificationItem`](../../protocol/interfaces/ClarificationItem.md)[]
 
-Defined in: packages/core/src/agent-memory-operations.ts:35
+Defined in: [packages/core/src/agent-memory-operations.ts:35](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L35)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:35
 
 > **confidence**: `number`
 
-Defined in: packages/core/src/agent-memory-operations.ts:32
+Defined in: [packages/core/src/agent-memory-operations.ts:32](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L32)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:32
 
 > **inputMemoryIds**: `string`[]
 
-Defined in: packages/core/src/agent-memory-operations.ts:27
+Defined in: [packages/core/src/agent-memory-operations.ts:27](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L27)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:27
 
 > **metadata**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/core/src/agent-memory-operations.ts:36
+Defined in: [packages/core/src/agent-memory-operations.ts:36](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L36)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:36
 
 > `optional` **model?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:31
+Defined in: [packages/core/src/agent-memory-operations.ts:31](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L31)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:31
 
 > **operationId**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:25
+Defined in: [packages/core/src/agent-memory-operations.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L25)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:25
 
 > **outputMemoryIds**: `string`[]
 
-Defined in: packages/core/src/agent-memory-operations.ts:28
+Defined in: [packages/core/src/agent-memory-operations.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L28)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:28
 
 > **outputs**: [`MemoryObject`](../../protocol/interfaces/MemoryObject.md)[]
 
-Defined in: packages/core/src/agent-memory-operations.ts:34
+Defined in: [packages/core/src/agent-memory-operations.ts:34](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L34)
 
 ***
 
@@ -76,7 +76,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:34
 
 > `optional` **provider?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:30
+Defined in: [packages/core/src/agent-memory-operations.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L30)
 
 ***
 
@@ -84,7 +84,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:30
 
 > **reviewState**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:33
+Defined in: [packages/core/src/agent-memory-operations.ts:33](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L33)
 
 ***
 
@@ -92,7 +92,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:33
 
 > **sourceAgent**: [`SourceDescriptor`](../../protocol/interfaces/SourceDescriptor.md)
 
-Defined in: packages/core/src/agent-memory-operations.ts:29
+Defined in: [packages/core/src/agent-memory-operations.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L29)
 
 ***
 
@@ -100,4 +100,4 @@ Defined in: packages/core/src/agent-memory-operations.ts:29
 
 > **type**: [`AgentMemoryOperationType`](../type-aliases/AgentMemoryOperationType.md)
 
-Defined in: packages/core/src/agent-memory-operations.ts:26
+Defined in: [packages/core/src/agent-memory-operations.ts:26](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L26)

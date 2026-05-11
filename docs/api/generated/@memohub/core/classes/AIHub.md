@@ -4,7 +4,7 @@
 
 # Class: AIHub
 
-Defined in: [packages/core/src/ai-hub.ts:3](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/ai-hub.ts#L3)
+Defined in: [packages/core/src/ai-hub.ts:3](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/ai-hub.ts#L3)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/ai-hub.ts:3](https://github.com/embaobao/memo-hub
 
 > **new AIHub**(`providers`, `agents`): `AIHub`
 
-Defined in: [packages/core/src/ai-hub.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/ai-hub.ts#L7)
+Defined in: [packages/core/src/ai-hub.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/ai-hub.ts#L7)
 
 #### Parameters
 
@@ -34,7 +34,7 @@ Defined in: [packages/core/src/ai-hub.ts:7](https://github.com/embaobao/memo-hub
 
 > **getCompleter**(`id?`): [`ICompleter`](../../ai-provider/interfaces/ICompleter.md)
 
-Defined in: [packages/core/src/ai-hub.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/ai-hub.ts#L25)
+Defined in: [packages/core/src/ai-hub.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/ai-hub.ts#L25)
 
 #### Parameters
 
@@ -52,7 +52,7 @@ Defined in: [packages/core/src/ai-hub.ts:25](https://github.com/embaobao/memo-hu
 
 > **getEmbedder**(`id?`): [`IEmbedder`](../../ai-provider/interfaces/IEmbedder.md)
 
-Defined in: [packages/core/src/ai-hub.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/ai-hub.ts#L18)
+Defined in: [packages/core/src/ai-hub.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/ai-hub.ts#L18)
 
 #### Parameters
 

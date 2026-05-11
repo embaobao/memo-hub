@@ -4,7 +4,7 @@
 
 # Class: EmbedderTool
 
-Defined in: [embedder.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/embedder.ts#L9)
+Defined in: [embedder.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/embedder.ts#L9)
 
 原子化工具接口 (Dify/Node-RED Style Node)
 
@@ -28,7 +28,7 @@ Defined in: [embedder.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d048
 
 > **manifest**: [`IToolManifest`](../../core/interfaces/IToolManifest.md)
 
-Defined in: [embedder.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/embedder.ts#L11)
+Defined in: [embedder.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/embedder.ts#L11)
 
 #### Implementation of
 
@@ -40,7 +40,7 @@ Defined in: [embedder.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d04
 
 > **execute**(`input`, `resources`, `context`): `Promise`\<\{ `vector`: `number`[]; \}\>
 
-Defined in: [embedder.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/embedder.ts#L25)
+Defined in: [embedder.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/embedder.ts#L25)
 
 #### Parameters
 

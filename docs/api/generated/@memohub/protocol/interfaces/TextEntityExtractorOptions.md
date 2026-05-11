@@ -4,7 +4,7 @@
 
 # Interface: TextEntityExtractorOptions
 
-Defined in: [packages/protocol/src/text-entities.ts:14](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L14)
+Defined in: [packages/protocol/src/text-entities.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L14)
 
 通用文本实体抽取器（用于 GBrain 写入时填充 entities）
 
@@ -23,7 +23,7 @@ Defined in: [packages/protocol/src/text-entities.ts:14](https://github.com/embao
 
 > `optional` **enabled?**: `boolean`
 
-Defined in: [packages/protocol/src/text-entities.ts:22](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L22)
+Defined in: [packages/protocol/src/text-entities.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L22)
 
 是否启用实体抽取
 
@@ -37,7 +37,7 @@ Defined in: [packages/protocol/src/text-entities.ts:22](https://github.com/embao
 
 > `optional` **includeAcronym?**: `boolean`
 
-Defined in: [packages/protocol/src/text-entities.ts:50](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L50)
+Defined in: [packages/protocol/src/text-entities.ts:50](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L50)
 
 是否抽取缩写（API / MCP / HTTP2 等）
 
@@ -47,7 +47,7 @@ Defined in: [packages/protocol/src/text-entities.ts:50](https://github.com/embao
 
 > `optional` **includeCamelCase?**: `boolean`
 
-Defined in: [packages/protocol/src/text-entities.ts:35](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L35)
+Defined in: [packages/protocol/src/text-entities.ts:35](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L35)
 
 是否抽取驼峰词（camelCase / PascalCase）
 
@@ -57,7 +57,7 @@ Defined in: [packages/protocol/src/text-entities.ts:35](https://github.com/embao
 
 > `optional` **includeDottedIdentifier?**: `boolean`
 
-Defined in: [packages/protocol/src/text-entities.ts:40](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L40)
+Defined in: [packages/protocol/src/text-entities.ts:40](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L40)
 
 是否抽取带点标识符（a.b / config.embedding.url）
 
@@ -67,7 +67,7 @@ Defined in: [packages/protocol/src/text-entities.ts:40](https://github.com/embao
 
 > `optional` **includeVersion?**: `boolean`
 
-Defined in: [packages/protocol/src/text-entities.ts:45](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L45)
+Defined in: [packages/protocol/src/text-entities.ts:45](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L45)
 
 是否抽取版本号（v1.2.3 / 1.2.0-beta.1 等）
 
@@ -77,7 +77,7 @@ Defined in: [packages/protocol/src/text-entities.ts:45](https://github.com/embao
 
 > `optional` **maxEntities?**: `number`
 
-Defined in: [packages/protocol/src/text-entities.ts:30](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L30)
+Defined in: [packages/protocol/src/text-entities.ts:30](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L30)
 
 最大实体数量（超过会截断）
 
@@ -90,7 +90,7 @@ Defined in: [packages/protocol/src/text-entities.ts:30](https://github.com/embao
 
 > `optional` **maxLength?**: `number`
 
-Defined in: [packages/protocol/src/text-entities.ts:60](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L60)
+Defined in: [packages/protocol/src/text-entities.ts:60](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L60)
 
 最长 token 长度（避免把超长 hash/url 误认为实体）
 
@@ -100,6 +100,6 @@ Defined in: [packages/protocol/src/text-entities.ts:60](https://github.com/embao
 
 > `optional` **minLength?**: `number`
 
-Defined in: [packages/protocol/src/text-entities.ts:55](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/text-entities.ts#L55)
+Defined in: [packages/protocol/src/text-entities.ts:55](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/text-entities.ts#L55)
 
 最短 token 长度（过短的 token 往往噪声更大）

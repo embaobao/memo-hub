@@ -4,7 +4,7 @@
 
 # Interface: ITool
 
-Defined in: [packages/protocol/src/types.ts:84](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L84)
+Defined in: [packages/protocol/src/types.ts:84](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L84)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/protocol/src/types.ts:84](https://github.com/embaobao/memo
 
 > **manifest**: [`IToolManifest`](IToolManifest.md)
 
-Defined in: [packages/protocol/src/types.ts:85](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L85)
+Defined in: [packages/protocol/src/types.ts:85](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L85)
 
 ## Methods
 
@@ -20,7 +20,7 @@ Defined in: [packages/protocol/src/types.ts:85](https://github.com/embaobao/memo
 
 > **execute**(`input`, `resources`, `context`): `Promise`\<`any`\>
 
-Defined in: [packages/protocol/src/types.ts:86](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/types.ts#L86)
+Defined in: [packages/protocol/src/types.ts:86](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/types.ts#L86)
 
 #### Parameters
 

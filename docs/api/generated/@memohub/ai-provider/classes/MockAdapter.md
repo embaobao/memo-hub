@@ -4,7 +4,7 @@
 
 # Class: MockAdapter
 
-Defined in: [packages/ai-provider/src/mock-adapter.ts:3](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/mock-adapter.ts#L3)
+Defined in: [packages/ai-provider/src/mock-adapter.ts:3](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/mock-adapter.ts#L3)
 
 ## Implements
 
@@ -27,7 +27,7 @@ Defined in: [packages/ai-provider/src/mock-adapter.ts:3](https://github.com/emba
 
 > **batchEmbed**(`texts`): `Promise`\<`number`[][]\>
 
-Defined in: [packages/ai-provider/src/mock-adapter.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/mock-adapter.ts#L10)
+Defined in: [packages/ai-provider/src/mock-adapter.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/mock-adapter.ts#L10)
 
 #### Parameters
 
@@ -49,7 +49,7 @@ Defined in: [packages/ai-provider/src/mock-adapter.ts:10](https://github.com/emb
 
 > **chat**(`messages`): `Promise`\<`string`\>
 
-Defined in: [packages/ai-provider/src/mock-adapter.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/mock-adapter.ts#L18)
+Defined in: [packages/ai-provider/src/mock-adapter.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/mock-adapter.ts#L18)
 
 #### Parameters
 
@@ -71,7 +71,7 @@ Defined in: [packages/ai-provider/src/mock-adapter.ts:18](https://github.com/emb
 
 > **embed**(`text`): `Promise`\<`number`[]\>
 
-Defined in: [packages/ai-provider/src/mock-adapter.ts:4](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/mock-adapter.ts#L4)
+Defined in: [packages/ai-provider/src/mock-adapter.ts:4](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/mock-adapter.ts#L4)
 
 #### Parameters
 
@@ -93,7 +93,7 @@ Defined in: [packages/ai-provider/src/mock-adapter.ts:4](https://github.com/emba
 
 > **summarize**(`text`): `Promise`\<`string`\>
 
-Defined in: [packages/ai-provider/src/mock-adapter.ts:22](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/mock-adapter.ts#L22)
+Defined in: [packages/ai-provider/src/mock-adapter.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/mock-adapter.ts#L22)
 
 #### Parameters
 

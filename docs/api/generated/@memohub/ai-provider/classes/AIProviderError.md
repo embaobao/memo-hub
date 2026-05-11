@@ -4,7 +4,7 @@
 
 # Class: AIProviderError
 
-Defined in: [packages/ai-provider/src/types.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L16)
+Defined in: [packages/ai-provider/src/types.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L16)
 
 ## Extends
 
@@ -16,7 +16,7 @@ Defined in: [packages/ai-provider/src/types.ts:16](https://github.com/embaobao/m
 
 > **new AIProviderError**(`message`, `provider`, `cause?`): `AIProviderError`
 
-Defined in: [packages/ai-provider/src/types.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L17)
+Defined in: [packages/ai-provider/src/types.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L17)
 
 #### Parameters
 
@@ -46,7 +46,7 @@ Defined in: [packages/ai-provider/src/types.ts:17](https://github.com/embaobao/m
 
 > `readonly` `optional` **cause?**: `Error`
 
-Defined in: [packages/ai-provider/src/types.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L20)
+Defined in: [packages/ai-provider/src/types.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L20)
 
 #### Inherited from
 
@@ -82,7 +82,7 @@ Defined in: node\_modules/.bun/typescript@5.9.3/node\_modules/typescript/lib/lib
 
 > `readonly` **provider**: `string`
 
-Defined in: [packages/ai-provider/src/types.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/types.ts#L19)
+Defined in: [packages/ai-provider/src/types.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/types.ts#L19)
 
 ***
 

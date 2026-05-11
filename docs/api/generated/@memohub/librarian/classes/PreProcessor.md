@@ -4,7 +4,7 @@
 
 # Class: PreProcessor
 
-Defined in: [retrieval-pipeline.ts:99](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L99)
+Defined in: [retrieval-pipeline.ts:99](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L99)
 
 ## Constructors
 
@@ -22,7 +22,7 @@ Defined in: [retrieval-pipeline.ts:99](https://github.com/embaobao/memo-hub/blob
 
 > `static` **detectIntent**(`query`): [`QueryIntent`](../interfaces/QueryIntent.md)
 
-Defined in: [retrieval-pipeline.ts:103](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L103)
+Defined in: [retrieval-pipeline.ts:103](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L103)
 
 意图识别：判断查询是代码、知识还是混合型
 
@@ -42,7 +42,7 @@ Defined in: [retrieval-pipeline.ts:103](https://github.com/embaobao/memo-hub/blo
 
 > `static` **extractEntities**(`query`): [`QueryEntities`](../interfaces/QueryEntities.md)
 
-Defined in: [retrieval-pipeline.ts:173](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L173)
+Defined in: [retrieval-pipeline.ts:173](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L173)
 
 抽取查询实体
 
@@ -62,7 +62,7 @@ Defined in: [retrieval-pipeline.ts:173](https://github.com/embaobao/memo-hub/blo
 
 > `static` **process**(`query`): `Promise`\<[`PreResult`](../interfaces/PreResult.md)\>
 
-Defined in: [retrieval-pipeline.ts:210](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L210)
+Defined in: [retrieval-pipeline.ts:210](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L210)
 
 执行 Pre 阶段
 
@@ -82,7 +82,7 @@ Defined in: [retrieval-pipeline.ts:210](https://github.com/embaobao/memo-hub/blo
 
 > `static` **tokenize**(`query`): [`TokenizedQuery`](../interfaces/TokenizedQuery.md)
 
-Defined in: [retrieval-pipeline.ts:193](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L193)
+Defined in: [retrieval-pipeline.ts:193](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L193)
 
 Token化查询
 

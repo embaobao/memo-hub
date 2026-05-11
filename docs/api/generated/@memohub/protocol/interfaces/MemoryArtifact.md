@@ -4,7 +4,7 @@
 
 # Interface: MemoryArtifact
 
-Defined in: packages/protocol/src/governance.ts:35
+Defined in: [packages/protocol/src/governance.ts:35](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L35)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/governance.ts:35
 
 > `optional` **checksum?**: `string`
 
-Defined in: packages/protocol/src/governance.ts:41
+Defined in: [packages/protocol/src/governance.ts:41](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L41)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/governance.ts:41
 
 > **createdAt**: `string`
 
-Defined in: packages/protocol/src/governance.ts:42
+Defined in: [packages/protocol/src/governance.ts:42](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L42)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/governance.ts:42
 
 > **id**: `string`
 
-Defined in: packages/protocol/src/governance.ts:36
+Defined in: [packages/protocol/src/governance.ts:36](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L36)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/governance.ts:36
 
 > **kind**: `string`
 
-Defined in: packages/protocol/src/governance.ts:37
+Defined in: [packages/protocol/src/governance.ts:37](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L37)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/protocol/src/governance.ts:37
 
 > **memoryIds**: `string`[]
 
-Defined in: packages/protocol/src/governance.ts:39
+Defined in: [packages/protocol/src/governance.ts:39](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L39)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/protocol/src/governance.ts:39
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/governance.ts:43
+Defined in: [packages/protocol/src/governance.ts:43](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L43)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: packages/protocol/src/governance.ts:43
 
 > **source**: [`SourceDescriptor`](SourceDescriptor.md)
 
-Defined in: packages/protocol/src/governance.ts:38
+Defined in: [packages/protocol/src/governance.ts:38](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L38)
 
 ***
 
@@ -68,4 +68,4 @@ Defined in: packages/protocol/src/governance.ts:38
 
 > `optional` **uri?**: `string`
 
-Defined in: packages/protocol/src/governance.ts:40
+Defined in: [packages/protocol/src/governance.ts:40](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/governance.ts#L40)

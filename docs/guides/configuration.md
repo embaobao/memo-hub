@@ -1,6 +1,6 @@
 # MemoHub 配置指南
 
-最后更新：2026-04-29
+最后更新：2026-05-11
 
 MemoHub 当前配置服务于统一记忆中枢。CLI 和 MCP 共享同一份解析后的运行时配置。
 
@@ -75,6 +75,81 @@ memohub config uninstall --yes --confirm DELETE_MEMOHUB_CONFIG
 ```
 
 `configVersion` 是配置结构版本，用于后续迁移和诊断；它不等同于 CLI 包版本。
+
+## 数据根与路径覆盖
+
+MemoHub 现在把共享数据目录明确收敛到一个 managed root，并从这里派生运行时路径：
+
+- `storage.root`
+- `storage.vectorDbPath`
+- `storage.blobPath`
+- `mcp.logPath`
+- `state/channels.json`
+
+建议在正式环境里先看一眼当前实际生效值：
+
+```bash
+memohub data status
+memohub config show
+```
+
+`memohub data status` 会直接显示：
+
+- 当前 `configPath`
+- 当前 `root`
+- 当前 `storageRoot`
+- 当前 `vectorDbPath`
+- 当前 `blobPath`
+- 当前 `mcp.logPath`
+- 当前 `channel registry`
+- 当前 `vectorTable`
+
+如果你需要在某个环境里临时覆盖路径，优先使用新的 `MEMOHUB_*` 命名：
+
+```bash
+MEMOHUB_STORAGE__ROOT=/srv/memohub \
+MEMOHUB_STORAGE__VECTOR_DB_PATH=/srv/memohub/data/memohub.lancedb \
+MEMOHUB_STORAGE__BLOB_PATH=/srv/memohub/blobs \
+MEMOHUB_MCP__LOG_PATH=/srv/memohub/logs/mcp.ndjson \
+memohub data status
+```
+
+当前仍兼容旧变量：
+
+- `MEMOHUB_DB_PATH`
+- `MEMOHUB_CAS_PATH`
+
+但新的正式环境配置建议统一迁到：
+
+- `MEMOHUB_STORAGE__ROOT`
+- `MEMOHUB_STORAGE__VECTOR_DB_PATH`
+- `MEMOHUB_STORAGE__BLOB_PATH`
+- `MEMOHUB_MCP__LOG_PATH`
+
+## 临时测试根目录
+
+如果只是做本地验证、集成测试或接入演练，不要直接写默认 `~/.memohub`。
+
+推荐做法：
+
+```bash
+MEMOHUB_STORAGE__ROOT=/tmp/memohub-test \
+MEMOHUB_STORAGE__VECTOR_DB_PATH=/tmp/memohub-test/data/memohub.lancedb \
+MEMOHUB_STORAGE__BLOB_PATH=/tmp/memohub-test/blobs \
+MEMOHUB_MCP__LOG_PATH=/tmp/memohub-test/logs/mcp.ndjson \
+memohub mcp doctor
+```
+
+对于 Hermes 或其他 Agent 验证，优先再配合 `purpose=test` 渠道和 dry-run 清理：
+
+```bash
+memohub data clean --actor hermes --purpose test --dry-run
+```
+
+这样可以同时避免两类风险：
+
+- 测试数据污染正式共享记忆
+- 高风险清理误删默认运行环境数据
 
 ## 本地模型配置
 

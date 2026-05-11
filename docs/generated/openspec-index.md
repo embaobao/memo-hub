@@ -4,9 +4,7 @@ Generated from `openspec/changes` and `openspec/specs`.
 
 ## Active Changes
 
-- [add-data-environments-and-cleanup](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-data-environments-and-cleanup/proposal.md)
 - [add-git-code-asset-layer](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/add-git-code-asset-layer/proposal.md)
-- [close-hermes-memory-loop](https://github.com/embaobao/memo-hub/blob/main/openspec/changes/close-hermes-memory-loop/proposal.md)
 
 ## Specs
 

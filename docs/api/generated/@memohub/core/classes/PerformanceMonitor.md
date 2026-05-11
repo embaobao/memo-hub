@@ -4,7 +4,7 @@
 
 # Class: PerformanceMonitor
 
-Defined in: [packages/core/src/performance.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L28)
+Defined in: [packages/core/src/performance.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L28)
 
 ## Constructors
 
@@ -22,7 +22,7 @@ Defined in: [packages/core/src/performance.ts:28](https://github.com/embaobao/me
 
 > **getAllMetrics**(): `Map`\<`string`, [`PerformanceMetrics`](../interfaces/PerformanceMetrics.md)\>
 
-Defined in: [packages/core/src/performance.ts:108](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L108)
+Defined in: [packages/core/src/performance.ts:108](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L108)
 
 获取所有操作的指标
 
@@ -36,7 +36,7 @@ Defined in: [packages/core/src/performance.ts:108](https://github.com/embaobao/m
 
 > **getEvents**(): [`PerformanceEvent`](../interfaces/PerformanceEvent.md)[]
 
-Defined in: [packages/core/src/performance.ts:132](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L132)
+Defined in: [packages/core/src/performance.ts:132](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L132)
 
 获取所有事件
 
@@ -50,7 +50,7 @@ Defined in: [packages/core/src/performance.ts:132](https://github.com/embaobao/m
 
 > **getMetrics**(`operation`): [`PerformanceMetrics`](../interfaces/PerformanceMetrics.md) \| `null`
 
-Defined in: [packages/core/src/performance.ts:80](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L80)
+Defined in: [packages/core/src/performance.ts:80](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L80)
 
 获取操作的性能指标
 
@@ -70,7 +70,7 @@ Defined in: [packages/core/src/performance.ts:80](https://github.com/embaobao/me
 
 > **recordEvent**(`event`): `void`
 
-Defined in: [packages/core/src/performance.ts:35](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L35)
+Defined in: [packages/core/src/performance.ts:35](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L35)
 
 记录性能事件
 
@@ -90,7 +90,7 @@ Defined in: [packages/core/src/performance.ts:35](https://github.com/embaobao/me
 
 > **reset**(): `void`
 
-Defined in: [packages/core/src/performance.ts:124](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L124)
+Defined in: [packages/core/src/performance.ts:124](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L124)
 
 重置监控数据
 
@@ -104,7 +104,7 @@ Defined in: [packages/core/src/performance.ts:124](https://github.com/embaobao/m
 
 > **startOperation**(`operation`, `traceId`, `metadata?`): () => `void`
 
-Defined in: [packages/core/src/performance.ts:48](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L48)
+Defined in: [packages/core/src/performance.ts:48](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L48)
 
 开始测量
 

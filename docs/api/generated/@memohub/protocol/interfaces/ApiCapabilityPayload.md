@@ -4,7 +4,7 @@
 
 # Interface: ApiCapabilityPayload
 
-Defined in: [packages/protocol/src/event.ts:62](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/event.ts#L62)
+Defined in: [packages/protocol/src/event.ts:62](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/event.ts#L62)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/protocol/src/event.ts:62](https://github.com/embaobao/memo
 
 > **api**: `string`
 
-Defined in: [packages/protocol/src/event.ts:63](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/event.ts#L63)
+Defined in: [packages/protocol/src/event.ts:63](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/event.ts#L63)
 
 ***
 
@@ -20,4 +20,4 @@ Defined in: [packages/protocol/src/event.ts:63](https://github.com/embaobao/memo
 
 > **capability**: `unknown`
 
-Defined in: [packages/protocol/src/event.ts:64](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/protocol/src/event.ts#L64)
+Defined in: [packages/protocol/src/event.ts:64](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/event.ts#L64)

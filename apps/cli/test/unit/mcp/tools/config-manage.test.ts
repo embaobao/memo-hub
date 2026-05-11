@@ -119,10 +119,13 @@ describe("MCP config manage tool", () => {
     mkdirSync(staleData, { recursive: true });
     writeFileSync(join(staleData, "stale.txt"), "old schema", "utf8");
 
-    const parsed = DataManageInputSchema.safeParse({ action: "rebuild_schema" });
+    const parsed = DataManageInputSchema.safeParse({ action: "rebuild_schema", confirm: DATA_CLEAN_CONFIRMATION });
     expect(parsed.success).toBe(true);
 
-    const result = await createDataManageHandler()({ action: "rebuild_schema" });
+    const refused = await createDataManageHandler()({ action: "rebuild_schema" });
+    expect(refused.success).toBe(false);
+
+    const result = await createDataManageHandler()({ action: "rebuild_schema", confirm: DATA_CLEAN_CONFIRMATION });
     expect(result.success).toBe(true);
     expect(result.action).toBe("rebuild_schema");
     expect(result.message).toContain("Restart");

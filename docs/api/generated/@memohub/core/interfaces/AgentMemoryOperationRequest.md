@@ -4,7 +4,7 @@
 
 # Interface: AgentMemoryOperationRequest
 
-Defined in: packages/core/src/agent-memory-operations.ts:11
+Defined in: [packages/core/src/agent-memory-operations.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L11)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:11
 
 > `optional` **annotation?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:20
+Defined in: [packages/core/src/agent-memory-operations.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L20)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:20
 
 > `optional` **confidence?**: `number`
 
-Defined in: packages/core/src/agent-memory-operations.ts:17
+Defined in: [packages/core/src/agent-memory-operations.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L17)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:17
 
 > **inputMemories**: [`MemoryObject`](../../protocol/interfaces/MemoryObject.md)[]
 
-Defined in: packages/core/src/agent-memory-operations.ts:13
+Defined in: [packages/core/src/agent-memory-operations.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L13)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:13
 
 > `optional` **instruction?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:19
+Defined in: [packages/core/src/agent-memory-operations.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L19)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:19
 
 > `optional` **model?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:16
+Defined in: [packages/core/src/agent-memory-operations.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L16)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:16
 
 > `optional` **now?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:21
+Defined in: [packages/core/src/agent-memory-operations.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L21)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:21
 
 > `optional` **provider?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:15
+Defined in: [packages/core/src/agent-memory-operations.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L15)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:15
 
 > `optional` **reviewState?**: `string`
 
-Defined in: packages/core/src/agent-memory-operations.ts:18
+Defined in: [packages/core/src/agent-memory-operations.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L18)
 
 ***
 
@@ -76,7 +76,7 @@ Defined in: packages/core/src/agent-memory-operations.ts:18
 
 > **sourceAgent**: [`SourceDescriptor`](../../protocol/interfaces/SourceDescriptor.md)
 
-Defined in: packages/core/src/agent-memory-operations.ts:14
+Defined in: [packages/core/src/agent-memory-operations.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L14)
 
 ***
 
@@ -84,4 +84,4 @@ Defined in: packages/core/src/agent-memory-operations.ts:14
 
 > **type**: [`AgentMemoryOperationType`](../type-aliases/AgentMemoryOperationType.md)
 
-Defined in: packages/core/src/agent-memory-operations.ts:12
+Defined in: [packages/core/src/agent-memory-operations.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/agent-memory-operations.ts#L12)

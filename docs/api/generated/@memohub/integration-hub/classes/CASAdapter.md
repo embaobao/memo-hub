@@ -4,7 +4,7 @@
 
 # Class: CASAdapter
 
-Defined in: [cas-adapter.ts:21](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L21)
+Defined in: [cas-adapter.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L21)
 
 CAS 适配器
 
@@ -16,7 +16,7 @@ CAS 适配器
 
 > **new CASAdapter**(`cas`, `performance`): `CASAdapter`
 
-Defined in: [cas-adapter.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L25)
+Defined in: [cas-adapter.ts:25](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L25)
 
 #### Parameters
 
@@ -38,7 +38,7 @@ Defined in: [cas-adapter.ts:25](https://github.com/embaobao/memo-hub/blob/4f7429
 
 > **checkExists**(`hash`): `Promise`\<`boolean`\>
 
-Defined in: [cas-adapter.ts:54](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L54)
+Defined in: [cas-adapter.ts:54](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L54)
 
 检查哈希是否已存在
 
@@ -58,7 +58,7 @@ Defined in: [cas-adapter.ts:54](https://github.com/embaobao/memo-hub/blob/4f7429
 
 > **computeHash**(`content`): `Promise`\<`string`\>
 
-Defined in: [cas-adapter.ts:33](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L33)
+Defined in: [cas-adapter.ts:33](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L33)
 
 计算内容的哈希值
 
@@ -78,7 +78,7 @@ Defined in: [cas-adapter.ts:33](https://github.com/embaobao/memo-hub/blob/4f7429
 
 > **readContent**(`hash`): `Promise`\<`string` \| `null`\>
 
-Defined in: [cas-adapter.ts:132](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L132)
+Defined in: [cas-adapter.ts:132](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L132)
 
 从 CAS 读取内容
 
@@ -98,7 +98,7 @@ Defined in: [cas-adapter.ts:132](https://github.com/embaobao/memo-hub/blob/4f742
 
 > **writeBatch**(`contents`): `Promise`\<`Map`\<`string`, [`CASWriteResult`](../interfaces/CASWriteResult.md)\>\>
 
-Defined in: [cas-adapter.ts:111](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L111)
+Defined in: [cas-adapter.ts:111](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L111)
 
 批量写入内容到 CAS
 适用于包含多个大负载的事件
@@ -119,7 +119,7 @@ Defined in: [cas-adapter.ts:111](https://github.com/embaobao/memo-hub/blob/4f742
 
 > **writeContent**(`content`): `Promise`\<[`CASWriteResult`](../interfaces/CASWriteResult.md)\>
 
-Defined in: [cas-adapter.ts:77](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/integration-hub/src/cas-adapter.ts#L77)
+Defined in: [cas-adapter.ts:77](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/cas-adapter.ts#L77)
 
 写入内容到 CAS
 如果内容已存在，返回现有哈希

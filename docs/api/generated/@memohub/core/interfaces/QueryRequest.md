@@ -4,7 +4,7 @@
 
 # Interface: QueryRequest
 
-Defined in: packages/core/src/query-planner.ts:6
+Defined in: [packages/core/src/query-planner.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L6)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/query-planner.ts:6
 
 > `optional` **actorId?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:9
+Defined in: [packages/core/src/query-planner.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L9)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/core/src/query-planner.ts:9
 
 > `optional` **domains?**: `string`[]
 
-Defined in: packages/core/src/query-planner.ts:14
+Defined in: [packages/core/src/query-planner.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L14)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/core/src/query-planner.ts:14
 
 > `optional` **limit?**: `number`
 
-Defined in: packages/core/src/query-planner.ts:15
+Defined in: [packages/core/src/query-planner.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L15)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/core/src/query-planner.ts:15
 
 > `optional` **projectId?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:10
+Defined in: [packages/core/src/query-planner.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L10)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: packages/core/src/query-planner.ts:10
 
 > `optional` **query?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:8
+Defined in: [packages/core/src/query-planner.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L8)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: packages/core/src/query-planner.ts:8
 
 > `optional` **sessionId?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:12
+Defined in: [packages/core/src/query-planner.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L12)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: packages/core/src/query-planner.ts:12
 
 > `optional` **taskId?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:13
+Defined in: [packages/core/src/query-planner.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L13)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: packages/core/src/query-planner.ts:13
 
 > **view**: `string`
 
-Defined in: packages/core/src/query-planner.ts:7
+Defined in: [packages/core/src/query-planner.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L7)
 
 ***
 
@@ -76,7 +76,7 @@ Defined in: packages/core/src/query-planner.ts:7
 
 > `optional` **weightPolicy?**: `Partial`\<[`RecallWeightPolicy`](RecallWeightPolicy.md)\>
 
-Defined in: packages/core/src/query-planner.ts:16
+Defined in: [packages/core/src/query-planner.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L16)
 
 ***
 
@@ -84,4 +84,4 @@ Defined in: packages/core/src/query-planner.ts:16
 
 > `optional` **workspaceId?**: `string`
 
-Defined in: packages/core/src/query-planner.ts:11
+Defined in: [packages/core/src/query-planner.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L11)

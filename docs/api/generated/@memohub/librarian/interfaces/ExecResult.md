@@ -4,7 +4,7 @@
 
 # Interface: ExecResult
 
-Defined in: [retrieval-pipeline.ts:38](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L38)
+Defined in: [retrieval-pipeline.ts:38](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L38)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [retrieval-pipeline.ts:38](https://github.com/embaobao/memo-hub/blob
 
 > `optional` **entityExpandedResults?**: [`RetrievedRecord`](RetrievedRecord.md)[]
 
-Defined in: [retrieval-pipeline.ts:41](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L41)
+Defined in: [retrieval-pipeline.ts:41](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L41)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [retrieval-pipeline.ts:41](https://github.com/embaobao/memo-hub/blob
 
 > `optional` **lexicalResults?**: [`RetrievedRecord`](RetrievedRecord.md)[]
 
-Defined in: [retrieval-pipeline.ts:40](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L40)
+Defined in: [retrieval-pipeline.ts:40](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L40)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [retrieval-pipeline.ts:40](https://github.com/embaobao/memo-hub/blob
 
 > **stats**: `object`
 
-Defined in: [retrieval-pipeline.ts:42](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L42)
+Defined in: [retrieval-pipeline.ts:42](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L42)
 
 #### entityExpandedCount?
 
@@ -52,4 +52,4 @@ Defined in: [retrieval-pipeline.ts:42](https://github.com/embaobao/memo-hub/blob
 
 > **vectorResults**: [`RetrievedRecord`](RetrievedRecord.md)[]
 
-Defined in: [retrieval-pipeline.ts:39](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L39)
+Defined in: [retrieval-pipeline.ts:39](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L39)

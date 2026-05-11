@@ -4,7 +4,7 @@
 
 # Interface: PerformanceBudget
 
-Defined in: [performance.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/performance.ts#L7)
+Defined in: [performance.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/performance.ts#L7)
 
 Performance Budget Configuration
 
@@ -16,7 +16,7 @@ Performance Budget Configuration
 
 > **baselineP99**: `number`
 
-Defined in: [performance.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/performance.ts#L9)
+Defined in: [performance.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/performance.ts#L9)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [performance.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d
 
 > **maxOverhead**: `number`
 
-Defined in: [performance.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/performance.ts#L11)
+Defined in: [performance.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/performance.ts#L11)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [performance.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429
 
 > **operation**: `string`
 
-Defined in: [performance.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/performance.ts#L8)
+Defined in: [performance.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/performance.ts#L8)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [performance.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d
 
 > **targetP99**: `number`
 
-Defined in: [performance.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/performance.ts#L10)
+Defined in: [performance.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/performance.ts#L10)

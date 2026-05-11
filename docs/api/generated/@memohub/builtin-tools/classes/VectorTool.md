@@ -4,7 +4,7 @@
 
 # Class: VectorTool
 
-Defined in: [vector.ts:5](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/vector.ts#L5)
+Defined in: [vector.ts:5](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/vector.ts#L5)
 
 原子化工具接口 (Dify/Node-RED Style Node)
 
@@ -28,7 +28,7 @@ Defined in: [vector.ts:5](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **manifest**: [`IToolManifest`](../../core/interfaces/IToolManifest.md)
 
-Defined in: [vector.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/vector.ts#L7)
+Defined in: [vector.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/vector.ts#L7)
 
 #### Implementation of
 
@@ -40,7 +40,7 @@ Defined in: [vector.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **execute**(`input`, `resources`, `context`): `Promise`\<\{ `success`: `boolean`; \}\>
 
-Defined in: [vector.ts:29](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/builtin-tools/src/vector.ts#L29)
+Defined in: [vector.ts:29](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/builtin-tools/src/vector.ts#L29)
 
 #### Parameters
 

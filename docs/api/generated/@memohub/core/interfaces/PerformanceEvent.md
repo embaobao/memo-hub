@@ -4,7 +4,7 @@
 
 # Interface: PerformanceEvent
 
-Defined in: [packages/core/src/performance.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L7)
+Defined in: [packages/core/src/performance.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L7)
 
 Performance Monitoring Module
 
@@ -16,7 +16,7 @@ Performance Monitoring Module
 
 > **duration**: `number`
 
-Defined in: [packages/core/src/performance.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L12)
+Defined in: [packages/core/src/performance.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L12)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [packages/core/src/performance.ts:12](https://github.com/embaobao/me
 
 > **endTime**: `number`
 
-Defined in: [packages/core/src/performance.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L11)
+Defined in: [packages/core/src/performance.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L11)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [packages/core/src/performance.ts:11](https://github.com/embaobao/me
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: [packages/core/src/performance.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L13)
+Defined in: [packages/core/src/performance.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L13)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [packages/core/src/performance.ts:13](https://github.com/embaobao/me
 
 > **operation**: `string`
 
-Defined in: [packages/core/src/performance.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L9)
+Defined in: [packages/core/src/performance.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L9)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [packages/core/src/performance.ts:9](https://github.com/embaobao/mem
 
 > **startTime**: `number`
 
-Defined in: [packages/core/src/performance.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L10)
+Defined in: [packages/core/src/performance.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L10)
 
 ***
 
@@ -56,4 +56,4 @@ Defined in: [packages/core/src/performance.ts:10](https://github.com/embaobao/me
 
 > **traceId**: `string`
 
-Defined in: [packages/core/src/performance.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/performance.ts#L8)
+Defined in: [packages/core/src/performance.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/performance.ts#L8)

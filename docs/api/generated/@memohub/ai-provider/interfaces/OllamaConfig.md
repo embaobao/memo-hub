@@ -4,7 +4,7 @@
 
 # Interface: OllamaConfig
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:4](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L4)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:4](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L4)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:4](https://github.com/em
 
 > `optional` **chatModel?**: `string`
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L7)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L7)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:7](https://github.com/em
 
 > **dimensions**: `number`
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L8)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L8)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:8](https://github.com/em
 
 > **embeddingModel**: `string`
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L6)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L6)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:6](https://github.com/em
 
 > **timeout**: `number`
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L9)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L9)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: [packages/ai-provider/src/ollama-adapter.ts:9](https://github.com/em
 
 > **url**: `string`
 
-Defined in: [packages/ai-provider/src/ollama-adapter.ts:5](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/ai-provider/src/ollama-adapter.ts#L5)
+Defined in: [packages/ai-provider/src/ollama-adapter.ts:5](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/ai-provider/src/ollama-adapter.ts#L5)

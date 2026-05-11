@@ -4,7 +4,7 @@
 
 # Class: ConfigLoader
 
-Defined in: [index.ts:24](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L24)
+Defined in: [index.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L24)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [index.ts:24](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **new ConfigLoader**(`customPath?`): `ConfigLoader`
 
-Defined in: [index.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L28)
+Defined in: [index.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L28)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [index.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **getConfig**(): [`EnhancedConfig`](../interfaces/EnhancedConfig.md)
 
-Defined in: [index.ts:134](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L134)
+Defined in: [index.ts:134](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L134)
 
 #### Returns
 
@@ -42,7 +42,7 @@ Defined in: [index.ts:134](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **getMaskedConfig**(): `Record`\<`string`, `any`\>
 
-Defined in: [index.ts:138](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L138)
+Defined in: [index.ts:138](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L138)
 
 #### Returns
 
@@ -54,7 +54,7 @@ Defined in: [index.ts:138](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > **load**(): [`EnhancedConfig`](../interfaces/EnhancedConfig.md)
 
-Defined in: [index.ts:48](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L48)
+Defined in: [index.ts:48](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L48)
 
 #### Returns
 
@@ -66,7 +66,7 @@ Defined in: [index.ts:48](https://github.com/embaobao/memo-hub/blob/4f7429d0489d
 
 > **save**(): `void`
 
-Defined in: [index.ts:142](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L142)
+Defined in: [index.ts:142](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L142)
 
 #### Returns
 
@@ -78,7 +78,7 @@ Defined in: [index.ts:142](https://github.com/embaobao/memo-hub/blob/4f7429d0489
 
 > `static` **initDefault**(`targetPath?`): `void`
 
-Defined in: [index.ts:152](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/config/src/index.ts#L152)
+Defined in: [index.ts:152](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/config/src/index.ts#L152)
 
 #### Parameters
 

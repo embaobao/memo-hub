@@ -4,9 +4,9 @@
 
 # Function: scoreMemory()
 
-> **scoreMemory**(`object`, `layer`, `policy`, `requestedDomains`): `Record`\<`string`, `number`\>
+> **scoreMemory**(`object`, `layer`, `policy`, `requestedDomains`, `query?`): `Record`\<`string`, `number`\>
 
-Defined in: packages/core/src/query-planner.ts:216
+Defined in: [packages/core/src/query-planner.ts:218](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L218)
 
 ## Parameters
 
@@ -25,6 +25,10 @@ Defined in: packages/core/src/query-planner.ts:216
 ### requestedDomains
 
 `string`[]
+
+### query?
+
+`string`
 
 ## Returns
 

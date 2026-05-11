@@ -4,7 +4,7 @@
 
 # Interface: TraceLog
 
-Defined in: [packages/core/src/observation.ts:6](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L6)
+Defined in: [packages/core/src/observation.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L6)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/observation.ts:6](https://github.com/embaobao/mem
 
 > `optional` **error?**: `string`
 
-Defined in: [packages/core/src/observation.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L13)
+Defined in: [packages/core/src/observation.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L13)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: [packages/core/src/observation.ts:13](https://github.com/embaobao/me
 
 > `optional` **input?**: `any`
 
-Defined in: [packages/core/src/observation.ts:11](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L11)
+Defined in: [packages/core/src/observation.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L11)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [packages/core/src/observation.ts:11](https://github.com/embaobao/me
 
 > **latencyMs**: `number`
 
-Defined in: [packages/core/src/observation.ts:14](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L14)
+Defined in: [packages/core/src/observation.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L14)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: [packages/core/src/observation.ts:14](https://github.com/embaobao/me
 
 > `optional` **output?**: `any`
 
-Defined in: [packages/core/src/observation.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L12)
+Defined in: [packages/core/src/observation.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L12)
 
 ***
 
@@ -44,7 +44,7 @@ Defined in: [packages/core/src/observation.ts:12](https://github.com/embaobao/me
 
 > **spanId**: `string`
 
-Defined in: [packages/core/src/observation.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L8)
+Defined in: [packages/core/src/observation.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L8)
 
 ***
 
@@ -52,7 +52,7 @@ Defined in: [packages/core/src/observation.ts:8](https://github.com/embaobao/mem
 
 > `optional` **step?**: `string`
 
-Defined in: [packages/core/src/observation.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L9)
+Defined in: [packages/core/src/observation.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L9)
 
 ***
 
@@ -60,7 +60,7 @@ Defined in: [packages/core/src/observation.ts:9](https://github.com/embaobao/mem
 
 > **timestamp**: `string`
 
-Defined in: [packages/core/src/observation.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L15)
+Defined in: [packages/core/src/observation.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L15)
 
 ***
 
@@ -68,7 +68,7 @@ Defined in: [packages/core/src/observation.ts:15](https://github.com/embaobao/me
 
 > `optional` **tool?**: `string`
 
-Defined in: [packages/core/src/observation.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L10)
+Defined in: [packages/core/src/observation.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L10)
 
 ***
 
@@ -76,4 +76,4 @@ Defined in: [packages/core/src/observation.ts:10](https://github.com/embaobao/me
 
 > **traceId**: `string`
 
-Defined in: [packages/core/src/observation.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/observation.ts#L7)
+Defined in: [packages/core/src/observation.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/observation.ts#L7)

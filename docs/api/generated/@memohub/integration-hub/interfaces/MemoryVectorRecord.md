@@ -4,7 +4,7 @@
 
 # Interface: MemoryVectorRecord
 
-Defined in: memory-projection.ts:3
+Defined in: [memory-projection.ts:3](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L3)
 
 ## Indexable
 
@@ -16,7 +16,15 @@ Defined in: memory-projection.ts:3
 
 > `optional` **actor\_id?**: `string`
 
-Defined in: memory-projection.ts:19
+Defined in: [memory-projection.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L20)
+
+***
+
+### channel?
+
+> `optional` **channel?**: `string`
+
+Defined in: [memory-projection.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L19)
 
 ***
 
@@ -24,7 +32,7 @@ Defined in: memory-projection.ts:19
 
 > **content\_index**: `number`
 
-Defined in: memory-projection.ts:11
+Defined in: [memory-projection.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L11)
 
 ***
 
@@ -32,7 +40,7 @@ Defined in: memory-projection.ts:11
 
 > **domain\_types**: `string`[]
 
-Defined in: memory-projection.ts:15
+Defined in: [memory-projection.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L15)
 
 ***
 
@@ -40,7 +48,7 @@ Defined in: memory-projection.ts:15
 
 > **entities**: `string`[]
 
-Defined in: memory-projection.ts:8
+Defined in: [memory-projection.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L8)
 
 ***
 
@@ -48,7 +56,7 @@ Defined in: memory-projection.ts:8
 
 > **hash**: `string`
 
-Defined in: memory-projection.ts:6
+Defined in: [memory-projection.ts:6](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L6)
 
 ***
 
@@ -56,7 +64,7 @@ Defined in: memory-projection.ts:6
 
 > **id**: `string`
 
-Defined in: memory-projection.ts:4
+Defined in: [memory-projection.ts:4](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L4)
 
 ***
 
@@ -64,7 +72,7 @@ Defined in: memory-projection.ts:4
 
 > **memory\_id**: `string`
 
-Defined in: memory-projection.ts:10
+Defined in: [memory-projection.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L10)
 
 ***
 
@@ -72,7 +80,7 @@ Defined in: memory-projection.ts:10
 
 > **scope\_ids**: `string`[]
 
-Defined in: memory-projection.ts:13
+Defined in: [memory-projection.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L13)
 
 ***
 
@@ -80,7 +88,7 @@ Defined in: memory-projection.ts:13
 
 > **scope\_types**: `string`[]
 
-Defined in: memory-projection.ts:12
+Defined in: [memory-projection.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L12)
 
 ***
 
@@ -88,7 +96,7 @@ Defined in: memory-projection.ts:12
 
 > **source\_id**: `string`
 
-Defined in: memory-projection.ts:18
+Defined in: [memory-projection.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L18)
 
 ***
 
@@ -96,7 +104,7 @@ Defined in: memory-projection.ts:18
 
 > **source\_type**: `string`
 
-Defined in: memory-projection.ts:17
+Defined in: [memory-projection.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L17)
 
 ***
 
@@ -104,7 +112,7 @@ Defined in: memory-projection.ts:17
 
 > **state**: `string`
 
-Defined in: memory-projection.ts:16
+Defined in: [memory-projection.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L16)
 
 ***
 
@@ -112,7 +120,7 @@ Defined in: memory-projection.ts:16
 
 > `optional` **subject\_id?**: `string`
 
-Defined in: memory-projection.ts:20
+Defined in: [memory-projection.ts:21](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L21)
 
 ***
 
@@ -120,7 +128,7 @@ Defined in: memory-projection.ts:20
 
 > `optional` **tags?**: `string`[]
 
-Defined in: memory-projection.ts:22
+Defined in: [memory-projection.ts:23](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L23)
 
 ***
 
@@ -128,7 +136,7 @@ Defined in: memory-projection.ts:22
 
 > `optional` **text?**: `string`
 
-Defined in: memory-projection.ts:21
+Defined in: [memory-projection.ts:22](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L22)
 
 ***
 
@@ -136,7 +144,7 @@ Defined in: memory-projection.ts:21
 
 > **timestamp**: `string`
 
-Defined in: memory-projection.ts:9
+Defined in: [memory-projection.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L9)
 
 ***
 
@@ -144,7 +152,7 @@ Defined in: memory-projection.ts:9
 
 > **track\_id**: `string`
 
-Defined in: memory-projection.ts:7
+Defined in: [memory-projection.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L7)
 
 ***
 
@@ -152,7 +160,7 @@ Defined in: memory-projection.ts:7
 
 > **vector**: `number`[]
 
-Defined in: memory-projection.ts:5
+Defined in: [memory-projection.ts:5](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L5)
 
 ***
 
@@ -160,4 +168,4 @@ Defined in: memory-projection.ts:5
 
 > **visibility**: `string`
 
-Defined in: memory-projection.ts:14
+Defined in: [memory-projection.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/integration-hub/src/memory-projection.ts#L14)

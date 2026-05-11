@@ -4,7 +4,7 @@
 
 # Class: SessionCacheLayer
 
-Defined in: [packages/core/src/session-cache.ts:5](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/session-cache.ts#L5)
+Defined in: [packages/core/src/session-cache.ts:5](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/session-cache.ts#L5)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: [packages/core/src/session-cache.ts:5](https://github.com/embaobao/m
 
 > **new SessionCacheLayer**(`maxSize?`): `SessionCacheLayer`
 
-Defined in: [packages/core/src/session-cache.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/session-cache.ts#L8)
+Defined in: [packages/core/src/session-cache.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/session-cache.ts#L8)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: [packages/core/src/session-cache.ts:8](https://github.com/embaobao/m
 
 > **clear**(): `void`
 
-Defined in: [packages/core/src/session-cache.ts:28](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/session-cache.ts#L28)
+Defined in: [packages/core/src/session-cache.ts:28](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/session-cache.ts#L28)
 
 #### Returns
 
@@ -42,7 +42,7 @@ Defined in: [packages/core/src/session-cache.ts:28](https://github.com/embaobao/
 
 > **delete**(`id`): `void`
 
-Defined in: [packages/core/src/session-cache.ts:24](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/session-cache.ts#L24)
+Defined in: [packages/core/src/session-cache.ts:24](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/session-cache.ts#L24)
 
 #### Parameters
 
@@ -60,7 +60,7 @@ Defined in: [packages/core/src/session-cache.ts:24](https://github.com/embaobao/
 
 > **get**(`id`): [`VectorRecord`](../../storage-soul/interfaces/VectorRecord.md) \| `undefined`
 
-Defined in: [packages/core/src/session-cache.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/session-cache.ts#L16)
+Defined in: [packages/core/src/session-cache.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/session-cache.ts#L16)
 
 #### Parameters
 
@@ -78,7 +78,7 @@ Defined in: [packages/core/src/session-cache.ts:16](https://github.com/embaobao/
 
 > **set**(`id`, `record`): `void`
 
-Defined in: [packages/core/src/session-cache.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/session-cache.ts#L20)
+Defined in: [packages/core/src/session-cache.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/session-cache.ts#L20)
 
 #### Parameters
 

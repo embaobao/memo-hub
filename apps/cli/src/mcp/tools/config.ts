@@ -120,6 +120,13 @@ export function createDataManageHandler(runtime?: UnifiedMemoryRuntime) {
       });
     }
     if (parsed.data.action === "rebuild_schema") {
+      if (parsed.data.confirm !== DATA_CLEAN_CONFIRMATION) {
+        return {
+          success: false,
+          action: parsed.data.action,
+          error: `Refusing to rebuild schema. Pass confirm=${DATA_CLEAN_CONFIRMATION}.`,
+        };
+      }
       return {
         success: true,
         action: parsed.data.action,

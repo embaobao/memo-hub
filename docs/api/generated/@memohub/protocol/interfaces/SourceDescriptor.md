@@ -4,7 +4,7 @@
 
 # Interface: SourceDescriptor
 
-Defined in: packages/protocol/src/memory-object.ts:7
+Defined in: [packages/protocol/src/memory-object.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L7)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: packages/protocol/src/memory-object.ts:7
 
 > **id**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:9
+Defined in: [packages/protocol/src/memory-object.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L9)
 
 ***
 
@@ -20,7 +20,7 @@ Defined in: packages/protocol/src/memory-object.ts:9
 
 > `optional` **metadata?**: `Record`\<`string`, `unknown`\>
 
-Defined in: packages/protocol/src/memory-object.ts:12
+Defined in: [packages/protocol/src/memory-object.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L12)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: packages/protocol/src/memory-object.ts:12
 
 > `optional` **name?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:10
+Defined in: [packages/protocol/src/memory-object.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L10)
 
 ***
 
@@ -36,7 +36,7 @@ Defined in: packages/protocol/src/memory-object.ts:10
 
 > **type**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:8
+Defined in: [packages/protocol/src/memory-object.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L8)
 
 ***
 
@@ -44,4 +44,4 @@ Defined in: packages/protocol/src/memory-object.ts:8
 
 > `optional` **vendor?**: `string`
 
-Defined in: packages/protocol/src/memory-object.ts:11
+Defined in: [packages/protocol/src/memory-object.ts:11](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/protocol/src/memory-object.ts#L11)

@@ -4,7 +4,7 @@
 
 # Interface: PostResult
 
-Defined in: [retrieval-pipeline.ts:50](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L50)
+Defined in: [retrieval-pipeline.ts:50](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L50)
 
 ## Properties
 
@@ -12,7 +12,7 @@ Defined in: [retrieval-pipeline.ts:50](https://github.com/embaobao/memo-hub/blob
 
 > **dedupStats**: `object`
 
-Defined in: [retrieval-pipeline.ts:52](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L52)
+Defined in: [retrieval-pipeline.ts:52](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L52)
 
 #### afterCount
 
@@ -32,7 +32,7 @@ Defined in: [retrieval-pipeline.ts:52](https://github.com/embaobao/memo-hub/blob
 
 > **finalResults**: [`RetrievedRecord`](RetrievedRecord.md)[]
 
-Defined in: [retrieval-pipeline.ts:51](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L51)
+Defined in: [retrieval-pipeline.ts:51](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L51)
 
 ***
 
@@ -40,4 +40,4 @@ Defined in: [retrieval-pipeline.ts:51](https://github.com/embaobao/memo-hub/blob
 
 > **rankingFactors**: [`RankingFactor`](RankingFactor.md)[]
 
-Defined in: [retrieval-pipeline.ts:57](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/librarian/src/retrieval-pipeline.ts#L57)
+Defined in: [retrieval-pipeline.ts:57](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/librarian/src/retrieval-pipeline.ts#L57)

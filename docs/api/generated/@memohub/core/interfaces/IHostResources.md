@@ -4,7 +4,7 @@
 
 # Interface: IHostResources
 
-Defined in: [packages/core/src/types-host.ts:12](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types-host.ts#L12)
+Defined in: [packages/core/src/types-host.ts:12](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types-host.ts#L12)
 
 宿主资源接口 (DI Container)
 
@@ -14,7 +14,7 @@ Defined in: [packages/core/src/types-host.ts:12](https://github.com/embaobao/mem
 
 > **ai**: `object`
 
-Defined in: [packages/core/src/types-host.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types-host.ts#L16)
+Defined in: [packages/core/src/types-host.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types-host.ts#L16)
 
 #### getCompleter
 
@@ -50,7 +50,7 @@ Defined in: [packages/core/src/types-host.ts:16](https://github.com/embaobao/mem
 
 > **flesh**: [`ICAS`](../../protocol/interfaces/ICAS.md)
 
-Defined in: [packages/core/src/types-host.ts:14](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types-host.ts#L14)
+Defined in: [packages/core/src/types-host.ts:14](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types-host.ts#L14)
 
 ***
 
@@ -58,7 +58,7 @@ Defined in: [packages/core/src/types-host.ts:14](https://github.com/embaobao/mem
 
 > **kernel**: `IKernel`
 
-Defined in: [packages/core/src/types-host.ts:13](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types-host.ts#L13)
+Defined in: [packages/core/src/types-host.ts:13](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types-host.ts#L13)
 
 ***
 
@@ -66,7 +66,7 @@ Defined in: [packages/core/src/types-host.ts:13](https://github.com/embaobao/mem
 
 > **logger**: `object`
 
-Defined in: [packages/core/src/types-host.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types-host.ts#L20)
+Defined in: [packages/core/src/types-host.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types-host.ts#L20)
 
 #### log
 
@@ -92,4 +92,4 @@ Defined in: [packages/core/src/types-host.ts:20](https://github.com/embaobao/mem
 
 > **soul**: [`IVectorStorage`](../../protocol/interfaces/IVectorStorage.md)
 
-Defined in: [packages/core/src/types-host.ts:15](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/types-host.ts#L15)
+Defined in: [packages/core/src/types-host.ts:15](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/types-host.ts#L15)

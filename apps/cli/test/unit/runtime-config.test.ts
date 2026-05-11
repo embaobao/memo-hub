@@ -62,6 +62,21 @@ describe("runtime config", () => {
     expect(config.ai.embeddingModel).toBe("nomic-embed-text-v2-moe");
   });
 
+  test("prefers explicit managed-root environment overrides for storage and logs", () => {
+    process.env.MEMOHUB_STORAGE__ROOT = "/srv/memohub/runtime";
+    process.env.MEMOHUB_STORAGE__VECTOR_DB_PATH = "/srv/memohub/runtime/vector/production.lancedb";
+    process.env.MEMOHUB_STORAGE__BLOB_PATH = "/srv/memohub/runtime/blob-store";
+    process.env.MEMOHUB_MCP__LOG_PATH = "/srv/memohub/runtime/logs/mcp.ndjson";
+
+    const config = resolveRuntimeConfig(baseConfig as never);
+
+    expect(config.root).toBe("/srv/memohub/runtime");
+    expect(config.storage.vectorDbPath).toBe("/srv/memohub/runtime/vector/production.lancedb");
+    expect(config.storage.blobPath).toBe("/srv/memohub/runtime/blob-store");
+    expect(config.mcp.logPath).toBe("/srv/memohub/runtime/logs/mcp.ndjson");
+    expect(config.registry.channelRegistryPath).toBe("/srv/memohub/runtime/state/channels.json");
+  });
+
   test("resolves separate embedder and summarizer providers", () => {
     const config = resolveRuntimeConfig(baseConfig as never);
 

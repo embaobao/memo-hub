@@ -4,7 +4,7 @@
 
 # Class: QueryPlanner
 
-Defined in: packages/core/src/query-planner.ts:85
+Defined in: [packages/core/src/query-planner.ts:86](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L86)
 
 ## Constructors
 
@@ -12,7 +12,7 @@ Defined in: packages/core/src/query-planner.ts:85
 
 > **new QueryPlanner**(`store`): `QueryPlanner`
 
-Defined in: packages/core/src/query-planner.ts:86
+Defined in: [packages/core/src/query-planner.ts:87](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L87)
 
 #### Parameters
 
@@ -30,7 +30,7 @@ Defined in: packages/core/src/query-planner.ts:86
 
 > **query**(`request`): `Promise`\<[`ContextView`](../interfaces/ContextView.md)\>
 
-Defined in: packages/core/src/query-planner.ts:88
+Defined in: [packages/core/src/query-planner.ts:89](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/query-planner.ts#L89)
 
 #### Parameters
 

@@ -4,7 +4,7 @@
 
 # Interface: ExecutionContext
 
-Defined in: [packages/core/src/tool-registry.ts:7](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L7)
+Defined in: [packages/core/src/tool-registry.ts:7](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L7)
 
 执行上下文
 
@@ -14,7 +14,7 @@ Defined in: [packages/core/src/tool-registry.ts:7](https://github.com/embaobao/m
 
 > **spanId**: `string`
 
-Defined in: [packages/core/src/tool-registry.ts:9](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L9)
+Defined in: [packages/core/src/tool-registry.ts:9](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L9)
 
 ***
 
@@ -22,7 +22,7 @@ Defined in: [packages/core/src/tool-registry.ts:9](https://github.com/embaobao/m
 
 > **state**: `Record`\<`string`, `any`\>
 
-Defined in: [packages/core/src/tool-registry.ts:10](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L10)
+Defined in: [packages/core/src/tool-registry.ts:10](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L10)
 
 ***
 
@@ -30,4 +30,4 @@ Defined in: [packages/core/src/tool-registry.ts:10](https://github.com/embaobao/
 
 > **traceId**: `string`
 
-Defined in: [packages/core/src/tool-registry.ts:8](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L8)
+Defined in: [packages/core/src/tool-registry.ts:8](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L8)

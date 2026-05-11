@@ -4,7 +4,7 @@
 
 # Interface: IToolManifest
 
-Defined in: [packages/core/src/tool-registry.ts:16](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L16)
+Defined in: [packages/core/src/tool-registry.ts:16](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L16)
 
 工具元数据
 
@@ -46,7 +46,7 @@ Defined in: packages/config/dist/schema.d.ts:55
 
 > **id**: `string`
 
-Defined in: [packages/core/src/tool-registry.ts:17](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L17)
+Defined in: [packages/core/src/tool-registry.ts:17](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L17)
 
 #### Overrides
 
@@ -58,7 +58,7 @@ Defined in: [packages/core/src/tool-registry.ts:17](https://github.com/embaobao/
 
 > **inputSchema**: `unknown`
 
-Defined in: [packages/core/src/tool-registry.ts:19](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L19)
+Defined in: [packages/core/src/tool-registry.ts:19](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L19)
 
 ***
 
@@ -90,7 +90,7 @@ Defined in: packages/config/dist/schema.d.ts:56
 
 > **outputSchema**: `unknown`
 
-Defined in: [packages/core/src/tool-registry.ts:20](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L20)
+Defined in: [packages/core/src/tool-registry.ts:20](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L20)
 
 ***
 
@@ -110,7 +110,7 @@ Defined in: packages/config/dist/schema.d.ts:52
 
 > **type**: `"builtin"` \| `"extension"`
 
-Defined in: [packages/core/src/tool-registry.ts:18](https://github.com/embaobao/memo-hub/blob/4f7429d0489d39abf3013db09992428b2e6ea781/packages/core/src/tool-registry.ts#L18)
+Defined in: [packages/core/src/tool-registry.ts:18](https://github.com/embaobao/memo-hub/blob/ea96329ee7b59e412642bd4fa52bf38a845c560c/packages/core/src/tool-registry.ts#L18)
 
 #### Overrides
 
